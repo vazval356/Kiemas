@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
-import type { Category, Locale, Place, Plan, Profile, Space } from '../lib/types'
+import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
 
 /**
@@ -47,6 +47,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [places, setPlaces] = useState<Place[]>([])
   const [plans, setPlans] = useState<Plan[]>([])
+  const [tags, setTags] = useState<Tag[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [fallbackLocale, setFallbackLocale] = useState<Locale>(detectLocale)
 
@@ -66,6 +68,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setCategories([])
       setPlaces([])
       setPlans([])
+      setTags([])
+      setCollections([])
       return
     }
     // Los planes se piden desde ayer, no desde ahora: uno que empezó hace dos
@@ -74,14 +78,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const since = new Date()
     since.setDate(since.getDate() - 1)
 
-    const [cats, pls, plns] = await Promise.all([
+    const [cats, pls, plns, tgs, cols] = await Promise.all([
       api.listCategories(activeSpace.id),
       api.listPlaces(activeSpace.id),
       api.listPlans(activeSpace.id, since),
+      api.listTags(activeSpace.id),
+      api.listCollections(activeSpace.id),
     ])
     setCategories(cats)
     setPlaces(pls)
     setPlans(plns)
+    setTags(tgs)
+    setCollections(cols)
   }, [api, activeSpace])
 
   const refreshSpaces = useCallback(async () => {
@@ -108,6 +116,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCategories([])
         setPlaces([])
         setPlans([])
+        setTags([])
+        setCollections([])
         setAuthStatus('signedOut')
         loadedRef.current = false
         return
@@ -191,6 +201,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       categories,
       places,
       plans,
+      tags,
+      collections,
       position,
       requestPosition,
       api,
@@ -210,6 +222,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       categories,
       places,
       plans,
+      tags,
+      collections,
       position,
       requestPosition,
       api,

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { CommentThread } from '../components/CommentThread'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
+import { TagBadges } from '../components/TagPicker'
 import {
   BackIcon,
   EditIcon,
@@ -125,6 +127,8 @@ export function PlaceDetailPage() {
             </span>
           )}
         </div>
+
+        <TagBadges tagIds={place.tagIds} className="mt-2" />
 
         {place.address && <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>}
         {creator && (
@@ -293,6 +297,8 @@ export function PlaceDetailPage() {
             </div>
           </section>
         )}
+
+        <CommentThread placeId={place.id} />
 
         {error && <p className="mt-4 text-sm font-semibold text-error">{error}</p>}
 

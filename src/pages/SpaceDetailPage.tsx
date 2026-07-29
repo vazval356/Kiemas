@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
@@ -133,6 +133,15 @@ export function SpaceDetailPage() {
             ? t('space.memberCount_one')
             : t('space.membersCount', { count: space.members.length })}
         </p>
+
+        <Link
+          to="/activity"
+          className="mt-4 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
+        >
+          <span className="text-lg">🌱</span>
+          <span className="flex-1 font-semibold text-on-surface">{t('activity.title')}</span>
+          <span className="text-on-surface-variant">›</span>
+        </Link>
 
         {!isAdmin && (
           <p className="mt-3 rounded-control bg-surface-container px-3 py-2 text-sm text-on-surface-variant">

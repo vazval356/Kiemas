@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { DataApi } from '../lib/dataApi'
 import type { Translate } from '../lib/i18n'
-import type { Category, Locale, Place, Plan, Profile, Space } from '../lib/types'
+import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 
 /**
  * El objeto de contexto y el hook viven aquí, separados del componente
@@ -32,6 +32,10 @@ export interface AppState {
    * en dos sitios obligaría a duplicar esa fontanería.
    */
   plans: Plan[]
+  /** Etiquetas de ambiente del espacio activo (Fase 3). */
+  tags: Tag[]
+  /** Colecciones del espacio activo, con su enlace público si lo tienen. */
+  collections: Collection[]
   position: { lat: number; lng: number } | null
   requestPosition: () => Promise<{ lat: number; lng: number } | null>
   api: DataApi

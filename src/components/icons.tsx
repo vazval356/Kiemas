@@ -201,3 +201,12 @@ export function CalendarIcon({ className = 'w-6 h-6' }: IconProps) {
     </svg>
   )
 }
+
+export function CollectionIcon({ className = 'w-6 h-6' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="7" width="13" height="14" rx="2.5" />
+      <path d="M7 4h10.5A2.5 2.5 0 0 1 20 6.5V17" />
+    </svg>
+  )
+}

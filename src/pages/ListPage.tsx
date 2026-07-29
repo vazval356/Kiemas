@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
 import { PlaceCard } from '../components/PlaceCard'
-import { AddIcon } from '../components/icons'
+import { AddIcon, CollectionIcon } from '../components/icons'
 import type { Place, PlaceStatus } from '../lib/types'
 import { averageRating } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -11,17 +11,19 @@ type StatusFilter = 'all' | PlaceStatus
 type SortKey = 'recent' | 'name' | 'rating'
 
 export function ListPage() {
-  const { places, categories, activeSpace, api, refresh, locale, t } = useApp()
+  const { places, categories, tags, activeSpace, api, refresh, locale, t } = useApp()
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [onlyFavorites, setOnlyFavorites] = useState(false)
+  const [tagFilter, setTagFilter] = useState<string[]>([])
   const [sort, setSort] = useState<SortKey>('recent')
 
   // Las categorías son de cada espacio: un filtro heredado del anterior no
   // casaría con nada y la lista aparecería vacía sin explicación.
   useEffect(() => {
     setCategoryFilter(null)
+    setTagFilter([])
   }, [activeSpace?.id])
 
   const filtered = useMemo(() => {
@@ -29,6 +31,9 @@ export function ListPage() {
       if (statusFilter !== 'all' && p.status !== statusFilter) return false
       if (categoryFilter && p.categoryId !== categoryFilter) return false
       if (onlyFavorites && !p.favorite) return false
+      // Varias etiquetas se combinan con Y, no con O: quien marca «terraza» y
+      // «económico» busca un sitio que cumpla ambas, no la suma de las dos listas.
+      if (tagFilter.length > 0 && !tagFilter.every((id) => p.tagIds.includes(id))) return false
       return true
     })
     return [...list].sort((a, b) => {
@@ -36,7 +41,7 @@ export function ListPage() {
       if (sort === 'rating') return (averageRating(b) ?? -1) - (averageRating(a) ?? -1)
       return b.createdAt.localeCompare(a.createdAt)
     })
-  }, [places, statusFilter, categoryFilter, onlyFavorites, sort, locale])
+  }, [places, statusFilter, categoryFilter, onlyFavorites, tagFilter, sort, locale])
 
   async function toggleFavorite(place: Place) {
     await api.updatePlace(place.id, { favorite: !place.favorite })
@@ -78,6 +83,42 @@ export function ListPage() {
           onSelect={setCategoryFilter}
           className="py-1"
         />
+
+        {tags.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto py-1 hide-scrollbar">
+            {tags.map((tag) => {
+              const on = tagFilter.includes(tag.id)
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() =>
+                    setTagFilter(
+                      on ? tagFilter.filter((x) => x !== tag.id) : [...tagFilter, tag.id]
+                    )
+                  }
+                  className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold squish"
+                  style={
+                    on
+                      ? { backgroundColor: tag.color, color: '#fff' }
+                      : { color: tag.color, boxShadow: `inset 0 0 0 1.5px ${tag.color}` }
+                  }
+                >
+                  {tag.name}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        <Link
+          to="/collections"
+          className="mt-3 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
+        >
+          <CollectionIcon className="size-5 text-primary" />
+          <span className="flex-1 font-semibold text-on-surface">{t('collection.plural')}</span>
+          <span className="text-on-surface-variant">›</span>
+        </Link>
 
         <div className="mb-3 mt-3 flex items-center justify-between">
           <p className="text-sm text-on-surface-variant">

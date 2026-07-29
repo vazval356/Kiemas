@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Category, Place } from '../lib/types'
 import { averageRating, formatKm, formatRating, kmBetween, priceLabel } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { TagBadges } from './TagPicker'
 import { HeartIcon, StarIcon } from './icons'
 
 interface Props {
@@ -102,6 +103,7 @@ export function PlaceCard({ place, category, onToggleFavorite }: Props) {
           {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}
           {distance !== null && <span>· {formatKm(distance)}</span>}
         </div>
+        <TagBadges tagIds={place.tagIds} className="mt-2" />
         {place.notes && (
           <p className="mt-2 line-clamp-2 text-sm text-on-surface-variant">{place.notes}</p>
         )}

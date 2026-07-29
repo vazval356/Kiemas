@@ -2,6 +2,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { TagPicker } from '../components/TagPicker'
 import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
 import type { PlaceStatus } from '../lib/types'
 import {
@@ -37,6 +38,7 @@ export function PlaceFormPage() {
   const [notes, setNotes] = useState(existing?.notes ?? '')
   const [phone, setPhone] = useState(existing?.phone ?? '')
   const [website, setWebsite] = useState(existing?.website ?? '')
+  const [tagIds, setTagIds] = useState<string[]>(existing?.tagIds ?? [])
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -223,11 +225,13 @@ export function PlaceFormPage() {
       }
       if (existing) {
         await api.updatePlace(existing.id, input)
+        await api.setPlaceTags(existing.id, tagIds)
         if (photoFiles.length > 0) await api.addPhotos(existing.id, photoFiles)
         await refresh()
         navigate(`/place/${existing.id}`)
       } else {
         const created = await api.addPlace(activeSpace.id, input)
+        if (tagIds.length > 0) await api.setPlaceTags(created.id, tagIds)
         if (photoFiles.length > 0) await api.addPhotos(created.id, photoFiles)
         await refresh()
         navigate(`/place/${created.id}`)
@@ -456,6 +460,9 @@ export function PlaceFormPage() {
             </button>
           ))}
         </div>
+
+        <Label className="mt-5">{t('tag.plural')}</Label>
+        <TagPicker selected={tagIds} onChange={setTagIds} />
 
         <Label className="mt-5">{t('place.notes')}</Label>
         <textarea

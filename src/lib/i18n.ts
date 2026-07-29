@@ -336,6 +336,75 @@ const es = {
 
   'calendar.today': 'Hoy',
   'calendar.tomorrow': 'Mañana',
+
+  // Etiquetas de ambiente (Fase 3)
+  'tag.plural': 'Etiquetas',
+  'tag.hint': 'La categoría dice qué es el sitio; la etiqueta, cómo es.',
+  'tag.new': '+ Nueva etiqueta',
+  'tag.namePlaceholder': 'Nombre (p. ej. Con terraza)',
+  'tag.create': 'Crear etiqueta',
+  'tag.none': 'Sin etiquetas todavía.',
+  'tag.deleteConfirm': '¿Borrar la etiqueta «{name}» de todos los sitios?',
+
+  // Colecciones (Fase 3)
+  'collection.plural': 'Colecciones',
+  'collection.new': 'Nueva colección',
+  'collection.namePlaceholder': 'Nombre (p. ej. Mejores brunch)',
+  'collection.descPlaceholder': 'Descripción (opcional)',
+  'collection.create': 'Crear',
+  'collection.none': 'Todavía no hay colecciones',
+  'collection.noneHint': 'Agrupa sitios en listas y compártelas.',
+  'collection.count': '{count} sitios',
+  'collection.countOne': '1 sitio',
+  'collection.empty': 'Esta colección está vacía.',
+  'collection.addPlaces': 'Añadir sitios',
+  'collection.inCollection': 'En la colección',
+  'collection.deleteConfirm': '¿Borrar esta colección? Los sitios no se borran.',
+  'collection.notFound': 'Esta colección ya no existe.',
+
+  // Compartir en público (Fase 3)
+  'share.title': 'Compartir en público',
+  'share.body': 'Cualquiera con el enlace puede ver esta lista, sin cuenta.',
+  'share.warning':
+    'Se verán el nombre, la dirección, la categoría, el precio, las fotos y las etiquetas. Las notas y las puntuaciones NO se comparten.',
+  'share.create': 'Crear enlace público',
+  'share.copy': 'Copiar enlace',
+  'share.copied': 'Enlace copiado',
+  'share.revoke': 'Dejar de compartir',
+  'share.revoked': 'Ya no se comparte',
+  'share.views': '{count} visitas',
+  'share.expiry': 'Caducidad',
+
+  // Comentarios (Fase 3)
+  'comment.plural': 'Comentarios',
+  'comment.none': 'Nadie ha comentado todavía.',
+  'comment.placeholder': 'Escribe un comentario…',
+  'comment.send': 'Enviar',
+  'comment.reply': 'Responder',
+  'comment.replyTo': 'Respondiendo a {name}',
+  'comment.deleteConfirm': '¿Borrar este comentario?',
+  'comment.edited': 'editado',
+
+  // Feed de actividad (Fase 3)
+  'activity.title': 'Actividad',
+  'activity.none': 'Todavía no ha pasado nada aquí.',
+  'activity.saved_place': '{actor} guardó {object}',
+  'activity.visited_place': '{actor} marcó {object} como visitado',
+  'activity.rated_place': '{actor} puntuó {object}',
+  'activity.created_plan': '{actor} creó el plan {object}',
+  'activity.confirmed_plan': '{actor} confirmó {object}',
+  'activity.commented': '{actor} comentó en {object}',
+  'activity.created_collection': '{actor} creó la colección {object}',
+  'activity.someone': 'Alguien',
+
+  // Lista pública (Fase 3)
+  'public.by': 'Una lista de {space}',
+  'public.notFound': 'Este enlace no existe.',
+  'public.expired': 'Este enlace ha caducado.',
+  'public.revoked': 'Este enlace ya no está disponible.',
+  'public.empty': 'Esta lista está vacía.',
+  'public.madeWith': 'Hecho con Kedada',
+  'public.openInMaps': 'Ver en el mapa',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -643,6 +712,69 @@ const en: Record<TranslationKey, string> = {
 
   'calendar.today': 'Today',
   'calendar.tomorrow': 'Tomorrow',
+
+  'tag.plural': 'Tags',
+  'tag.hint': 'The category says what the place is; the tag says what it is like.',
+  'tag.new': '+ New tag',
+  'tag.namePlaceholder': 'Name (e.g. Has a terrace)',
+  'tag.create': 'Create tag',
+  'tag.none': 'No tags yet.',
+  'tag.deleteConfirm': 'Delete the tag “{name}” from every place?',
+
+  'collection.plural': 'Collections',
+  'collection.new': 'New collection',
+  'collection.namePlaceholder': 'Name (e.g. Best brunch)',
+  'collection.descPlaceholder': 'Description (optional)',
+  'collection.create': 'Create',
+  'collection.none': 'No collections yet',
+  'collection.noneHint': 'Group places into lists and share them.',
+  'collection.count': '{count} places',
+  'collection.countOne': '1 place',
+  'collection.empty': 'This collection is empty.',
+  'collection.addPlaces': 'Add places',
+  'collection.inCollection': 'In the collection',
+  'collection.deleteConfirm': 'Delete this collection? The places stay.',
+  'collection.notFound': 'This collection no longer exists.',
+
+  'share.title': 'Share publicly',
+  'share.body': 'Anyone with the link can see this list, no account needed.',
+  'share.warning':
+    'Name, address, category, price, photos and tags will be visible. Notes and ratings are NOT shared.',
+  'share.create': 'Create public link',
+  'share.copy': 'Copy link',
+  'share.copied': 'Link copied',
+  'share.revoke': 'Stop sharing',
+  'share.revoked': 'No longer shared',
+  'share.views': '{count} views',
+  'share.expiry': 'Expiration',
+
+  'comment.plural': 'Comments',
+  'comment.none': 'No comments yet.',
+  'comment.placeholder': 'Write a comment…',
+  'comment.send': 'Send',
+  'comment.reply': 'Reply',
+  'comment.replyTo': 'Replying to {name}',
+  'comment.deleteConfirm': 'Delete this comment?',
+  'comment.edited': 'edited',
+
+  'activity.title': 'Activity',
+  'activity.none': 'Nothing has happened here yet.',
+  'activity.saved_place': '{actor} saved {object}',
+  'activity.visited_place': '{actor} marked {object} as visited',
+  'activity.rated_place': '{actor} rated {object}',
+  'activity.created_plan': '{actor} created the plan {object}',
+  'activity.confirmed_plan': '{actor} confirmed {object}',
+  'activity.commented': '{actor} commented on {object}',
+  'activity.created_collection': '{actor} created the collection {object}',
+  'activity.someone': 'Someone',
+
+  'public.by': 'A list from {space}',
+  'public.notFound': 'This link does not exist.',
+  'public.expired': 'This link has expired.',
+  'public.revoked': 'This link is no longer available.',
+  'public.empty': 'This list is empty.',
+  'public.madeWith': 'Made with Kedada',
+  'public.openInMaps': 'View on the map',
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }
