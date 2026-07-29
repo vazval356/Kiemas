@@ -4,6 +4,26 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  /**
+   * Se declaran las dependencias para que Vite las pre-empaquete todas en una
+   * sola pasada al arrancar.
+   *
+   * Si las descubre de una en una según van importándose, reoptimiza a mitad de
+   * sesión y le da a cada tanda su propio hash de versión: la página acaba
+   * cargando `react.js?v=aaa` y `react-dom_client.js?v=bbb`, que son dos copias
+   * distintas de React, y todo hook revienta con «Invalid hook call».
+   */
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-dom/client',
+      'react/jsx-runtime',
+      'react-router-dom',
+      '@supabase/supabase-js',
+      'maplibre-gl',
+    ],
+  },
   plugins: [
     react(),
     tailwindcss(),

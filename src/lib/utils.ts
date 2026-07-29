@@ -1,0 +1,324 @@
+import type { Place } from './types'
+
+/**
+ * Utilidades heredadas de Warm Hearth (`src/lib/utils.ts`), con dos cambios:
+ * `priceLabel` admite ahora cuatro niveles y se ha añadido el analizador de
+ * enlaces de Google Maps de la Fase 1.
+ */
+
+/**
+ * Convierte cualquier representación de coordenada a número.
+ * Acepta números y cadenas (incluida coma decimal: "40,4168"). NaN si no vale.
+ */
+export function parseCoord(value: unknown): number {
+  if (typeof value === 'number') return value
+  if (typeof value === 'string') return Number(value.trim().replace(',', '.'))
+  return NaN
+}
+
+/** true si el sitio tiene coordenadas utilizables en el mapa. */
+export function hasValidCoords(p: { lat: number; lng: number }): boolean {
+  return (
+    Number.isFinite(p.lat) &&
+    Number.isFinite(p.lng) &&
+    Math.abs(p.lat) <= 90 &&
+    Math.abs(p.lng) <= 180
+  )
+}
+
+/** Extrae un mensaje legible de cualquier error (Error, PostgrestError, etc.). */
+export function errorMessage(e: unknown, fallback = 'Algo ha fallado'): string {
+  if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message) {
+    return e.message
+  }
+  return fallback
+}
+
+export function kmBetween(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+export function formatKm(km: number): string {
+  if (km < 1) return `${Math.round(km * 1000)} m`
+  return `${km.toFixed(1).replace('.', ',')} km`
+}
+
+/** Warm Hearth tenía 1..3; el formulario de Kedada muestra cuatro niveles. */
+export function priceLabel(level: number | null): string {
+  if (!level) return ''
+  return '€'.repeat(Math.min(Math.max(level, 1), 4))
+}
+
+export function averageRating(place: Place): number | null {
+  if (place.ratings.length === 0) return null
+  const sum = place.ratings.reduce((acc, r) => acc + r.score, 0)
+  return Math.round((sum / place.ratings.length) * 10) / 10
+}
+
+export function formatRating(score: number): string {
+  return score.toFixed(1).replace('.', ',')
+}
+
+export const CATEGORY_EMOJIS = [
+  '🍽️', '☕', '🍕', '🍣', '🍔', '🍦', '🍹', '🍷', '🌅', '🏛️',
+  '🎨', '🎬', '🎡', '🌿', '🏖️', '⛰️', '🛍️', '🎳', '💃', '📍',
+]
+
+/** Redimensiona una imagen a un JPEG razonable para subir/guardar. */
+export function resizeImage(file: File, maxSize = 1280, quality = 0.82): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('canvas'))
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error('toBlob'))),
+        'image/jpeg',
+        quality
+      )
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('No se pudo leer la imagen'))
+    }
+    img.src = url
+  })
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Búsqueda de direcciones (OpenStreetMap, sin claves ni coste)
+// ───────────────────────────────────────────────────────────────────────────
+
+export interface GeoResult {
+  label: string
+  address: string
+  lat: number
+  lng: number
+}
+
+/** Photon (OpenStreetMap). OJO: no soporta lang=es — devuelve 400 si se envía. */
+async function searchPhoton(query: string, near?: { lat: number; lng: number }): Promise<GeoResult[]> {
+  const params = new URLSearchParams({ q: query, limit: '5' })
+  if (near) {
+    params.set('lat', String(near.lat))
+    params.set('lon', String(near.lng))
+  }
+  const res = await fetch(`https://photon.komoot.io/api/?${params.toString()}`)
+  if (!res.ok) throw new Error('photon')
+  const data = await res.json()
+  const results: GeoResult[] = []
+  for (const f of data.features ?? []) {
+    const p = f.properties ?? {}
+    const [lng, lat] = f.geometry?.coordinates ?? []
+    if (typeof lat !== 'number' || typeof lng !== 'number') continue
+    const streetPart = [p.street ?? '', p.housenumber ?? ''].filter(Boolean).join(' ')
+    const parts = [p.name, streetPart, p.city ?? p.county, p.country]
+      .filter((x) => x && String(x).trim().length > 0)
+      .map(String)
+    if (parts.length === 0) continue
+    results.push({
+      label: parts.join(', '),
+      address: parts.slice(1).join(', ') || parts.join(', '),
+      lat,
+      lng,
+    })
+  }
+  return results
+}
+
+/** Nominatim (OpenStreetMap): encuentra bien nombres de negocios y direcciones. */
+async function searchNominatim(query: string, lang = 'es'): Promise<GeoResult[]> {
+  const params = new URLSearchParams({
+    format: 'jsonv2',
+    q: query,
+    limit: '5',
+    'accept-language': lang,
+  })
+  const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`)
+  if (!res.ok) throw new Error('nominatim')
+  const data = await res.json()
+  const results: GeoResult[] = []
+  for (const d of data ?? []) {
+    const lat = Number(d.lat)
+    const lng = Number(d.lon)
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue
+    const parts = String(d.display_name ?? '').split(', ')
+    results.push({
+      label: parts.slice(0, 4).join(', '),
+      address: parts.slice(1, 5).join(', ') || parts.slice(0, 4).join(', '),
+      lat,
+      lng,
+    })
+  }
+  return results
+}
+
+/** Busca en Photon y Nominatim a la vez y mezcla resultados únicos. */
+export async function searchAddress(
+  query: string,
+  near?: { lat: number; lng: number },
+  lang = 'es'
+): Promise<GeoResult[]> {
+  const [photon, nominatim] = await Promise.allSettled([
+    searchPhoton(query, near),
+    searchNominatim(query, lang),
+  ])
+  const merged: GeoResult[] = []
+  const seen = new Set<string>()
+  for (const settled of [photon, nominatim]) {
+    if (settled.status !== 'fulfilled') continue
+    for (const r of settled.value) {
+      const key = r.label.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      merged.push(r)
+    }
+  }
+  if (photon.status === 'rejected' && nominatim.status === 'rejected') {
+    throw new Error('No se pudo buscar la dirección (¿sin conexión?)')
+  }
+  return merged.slice(0, 8)
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Importar desde un enlace de Google Maps (Fase 1)
+// ───────────────────────────────────────────────────────────────────────────
+
+export interface GoogleMapsLink {
+  /** Nombre del sitio si el enlace lo lleva. */
+  name: string | null
+  lat: number | null
+  lng: number | null
+  /**
+   * true cuando es un enlace corto (`maps.app.goo.gl`, `goo.gl/maps`), que hay
+   * que resolver antes de poder leer nada de él.
+   */
+  needsResolving: boolean
+}
+
+/**
+ * Saca nombre y coordenadas de una URL de Google Maps.
+ *
+ * Los formatos habituales son:
+ *   .../maps/place/Nombre+Del+Sitio/@40.4168,-3.7038,17z/data=...
+ *   .../maps/place/Nombre/data=!3m1!4b1!4m...!8m2!3d40.4168!4d-3.7038
+ *   .../maps/search/?api=1&query=40.4168,-3.7038
+ *   .../maps?q=40.4168,-3.7038
+ *
+ * Se prefieren las coordenadas de `!3d…!4d…` sobre las de `@…`: las primeras
+ * son el sitio en sí, mientras que `@` es el centro de la cámara, que puede
+ * estar desplazado respecto al pin.
+ *
+ * Los enlaces cortos que genera «Compartir» en el móvil no se pueden resolver
+ * desde el navegador: son una redirección a otro dominio y CORS bloquea la
+ * lectura de la respuesta. Se marcan con `needsResolving` para que la interfaz
+ * pida el enlace largo. Resolverlos automáticamente exigiría una Edge Function
+ * que siga la redirección desde el servidor.
+ */
+export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
+  const raw = input.trim()
+  if (!raw) return null
+
+  let url: URL
+  try {
+    url = new URL(raw)
+  } catch {
+    return null
+  }
+
+  const host = url.hostname.toLowerCase()
+  const isGoogleMaps =
+    host.endsWith('google.com') ||
+    host.endsWith('google.es') ||
+    /(^|\.)goo\.gl$/.test(host) ||
+    host === 'maps.app.goo.gl'
+  if (!isGoogleMaps) return null
+
+  if (host === 'maps.app.goo.gl' || /(^|\.)goo\.gl$/.test(host)) {
+    return { name: null, lat: null, lng: null, needsResolving: true }
+  }
+
+  const full = url.href
+  let lat: number | null = null
+  let lng: number | null = null
+
+  // 1. `!3d<lat>!4d<lng>` — la posición real del pin.
+  const pin = full.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/)
+  if (pin) {
+    lat = Number(pin[1])
+    lng = Number(pin[2])
+  }
+
+  // 2. `@<lat>,<lng>,<zoom>z` — centro de la cámara.
+  if (lat === null) {
+    const at = full.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/)
+    if (at) {
+      lat = Number(at[1])
+      lng = Number(at[2])
+    }
+  }
+
+  // 3. Parámetros `query` / `q` / `ll`, que a veces traen «lat,lng».
+  if (lat === null) {
+    for (const key of ['query', 'q', 'll', 'center']) {
+      const value = url.searchParams.get(key)
+      if (!value) continue
+      const pair = value.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/)
+      if (pair) {
+        lat = Number(pair[1])
+        lng = Number(pair[2])
+        break
+      }
+    }
+  }
+
+  // Nombre: el segmento que va detrás de `/place/`.
+  let name: string | null = null
+  const placeSegment = url.pathname.match(/\/place\/([^/@]+)/)
+  if (placeSegment) {
+    const decoded = safeDecode(placeSegment[1]).replace(/\+/g, ' ').trim()
+    // Google mete a veces las coordenadas como nombre cuando no hay ficha.
+    if (decoded && !/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(decoded)) {
+      name = decoded
+    }
+  }
+  if (!name) {
+    const q = url.searchParams.get('q') ?? url.searchParams.get('query')
+    if (q && !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
+      name = safeDecode(q).replace(/\+/g, ' ').trim() || null
+    }
+  }
+
+  if (lat !== null && (!Number.isFinite(lat) || !Number.isFinite(lng ?? NaN))) {
+    lat = null
+    lng = null
+  }
+  if (lat !== null && lng !== null && !hasValidCoords({ lat, lng })) {
+    lat = null
+    lng = null
+  }
+
+  if (name === null && lat === null) return null
+  return { name, lat, lng, needsResolving: false }
+}
+
+function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value)
+  } catch {
+    return value
+  }
+}
