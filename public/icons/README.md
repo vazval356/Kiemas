@@ -1,12 +1,10 @@
 # Iconos de la app
 
-Deja aquí el logo original como **`source.png`** y ejecuta:
+Deja aquí el logotipo como **`source.png`** y ejecuta:
 
 ```bash
 npm run icons
 ```
-
-El script genera los tamaños que necesitan la PWA, iOS y Android:
 
 | Fichero | Tamaño | Para qué |
 |---|---|---|
@@ -15,19 +13,35 @@ El script genera los tamaños que necesitan la PWA, iOS y Android:
 | `icon-512-maskable.png` | 512×512 | Android adaptativo, con margen de seguridad |
 | `apple-touch-icon.png` | 180×180 | Pantalla de inicio de iOS |
 
-## Requisitos del original
+## El script recorta el símbolo por su cuenta
 
-- **PNG cuadrado, 1024×1024 como mínimo.** Los tamaños se generan reduciendo;
-  ampliar un original pequeño da bordes sucios.
-- **Sin esquinas redondeadas propias.** iOS y Android recortan el icono con su
-  propia máscara: si el PNG ya trae esquinas redondeadas, se ven dos redondeos
-  superpuestos y el resultado parece un error.
-- **Sin márgenes vacíos grandes.** El logo debe ocupar el lienzo; el margen que
-  necesita Android lo añade el propio script en la versión *maskable*.
+El logotipo de Kedada es tarjeta blanca + símbolo de la K + la palabra
+«Kedada». Eso funciona en una cabecera, pero es mal icono de app:
+
+- **Las esquinas redondeadas y la sombra sobran.** iOS y Android aplican su
+  propia máscara encima; si el PNG ya viene redondeado se ven dos redondeos
+  superpuestos y parece un fallo.
+- **El texto no se lee.** A 192px cuesta, y a 48px en la barra de notificaciones
+  es una mancha.
+- **El margen deja la marca diminuta**, sobre todo en la versión *maskable*.
+
+Por eso el script no usa el original tal cual: localiza los píxeles del color de
+marca, los agrupa en bandas horizontales y se queda con la más alta, que es el
+símbolo. El texto forma siempre una banda mucho más baja y se descarta. Al
+ejecutarlo verás qué ha recortado:
+
+```
+Original 1024×1024. Bandas de marca detectadas: 2.
+Símbolo recortado en x 352–671, y 249–606 (320×358).
+Las demás bandas (texto del logotipo) se descartan.
+```
+
+Si algún día cambias el logo, sigue funcionando: no hay coordenadas fijas.
 
 ## Sobre la versión maskable
 
-Android recorta el icono en círculo, cuadrado redondeado o gota según el
-lanzador, y puede llegar a comerse el 20% de cada borde. El script encoge el
-logo al 80% y lo centra sobre fondo blanco, de modo que ningún recorte se lleve
-por delante parte de la marca.
+Android recorta el icono con la máscara de cada lanzador —círculo, cuadrado
+redondeado o gota— y la zona garantizada es solo el círculo central de diámetro
+80%. Un cuadrado inscrito en ese círculo mide el 56% del lado; el script usa el
+62%, que sobresale un pelo por las esquinas pero mantiene el símbolo a un tamaño
+razonable sin que ninguna máscara real llegue a morder el trazo.
