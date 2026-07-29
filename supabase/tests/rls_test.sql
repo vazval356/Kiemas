@@ -52,6 +52,12 @@ declare
   v_chosen   timestamptz;
   v_status   text;
   v_export   json;
+  v_collection uuid;
+  v_comment  uuid;
+  v_reply    uuid;
+  v_token    text;
+  v_public   jsonb;
+  v_tag      uuid;
 begin
   -- ─────────────────────────────────────────────────────────────────────────
   -- Preparación: tres personas. Ana y Beto comparten un espacio; Carla no.
@@ -352,7 +358,187 @@ begin
   raise notice 'OK 10 — la encuesta de fecha elige la opción más votada';
 
   -- ─────────────────────────────────────────────────────────────────────────
-  -- 11. RGPD: exportar devuelve datos propios y borrar la cuenta traspasa el rol
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 11. Fase 3: etiquetas, colecciones y comentarios respetan el espacio
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  execute 'set local role none';
+  perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+  execute 'set local role authenticated';
+
+  -- El espacio se crea con seis etiquetas de ambiente sembradas.
+  select count(*) into v_n from public.tags where space_id = v_space;
+  if v_n <> 6 then raise exception 'FALLO 11a: el espacio tiene % etiquetas, esperaba 6', v_n; end if;
+
+  select id into v_tag from public.tags where space_id = v_space limit 1;
+  insert into public.place_tags (place_id, tag_id) values (v_place, v_tag);
+
+  insert into public.collections (space_id, name, created_by)
+  values (v_space, 'Mejores brunch', '11111111-1111-1111-1111-111111111111')
+  returning id into v_collection;
+  insert into public.collection_places (collection_id, place_id) values (v_collection, v_place);
+
+  insert into public.comments (place_id, user_id, body)
+  values (v_place, '11111111-1111-1111-1111-111111111111', 'Buenísimo')
+  returning id into v_comment;
+
+  -- Responder está permitido; responder a una respuesta, no: en móvil los hilos
+  -- que anidan sin fin acaban en dos palabras por línea.
+  insert into public.comments (place_id, user_id, parent_id, body)
+  values (v_place, '11111111-1111-1111-1111-111111111111', v_comment, 'De acuerdo')
+  returning id into v_reply;
+
+  v_blocked := false;
+  begin
+    insert into public.comments (place_id, user_id, parent_id, body)
+    values (v_place, '11111111-1111-1111-1111-111111111111', v_reply, 'Anidado de más');
+  exception when others then v_blocked := true;
+  end;
+  if not v_blocked then raise exception 'FALLO 11b: se ha podido responder a una respuesta'; end if;
+
+  -- Carla no ve nada de todo esto.
+  execute 'set local role none';
+  perform set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', true);
+  execute 'set local role authenticated';
+
+  select count(*) into v_n from public.tags where space_id = v_space;
+  if v_n <> 0 then raise exception 'FALLO 11c: Carla ve % etiquetas ajenas', v_n; end if;
+  select count(*) into v_n from public.collections where space_id = v_space;
+  if v_n <> 0 then raise exception 'FALLO 11d: Carla ve % colecciones ajenas', v_n; end if;
+  select count(*) into v_n from public.comments where place_id = v_place;
+  if v_n <> 0 then raise exception 'FALLO 11e: Carla ve % comentarios ajenos', v_n; end if;
+  select count(*) into v_n from public.activity where space_id = v_space;
+  if v_n <> 0 then raise exception 'FALLO 11f: Carla ve % líneas de actividad ajenas', v_n; end if;
+
+  execute 'set local role none';
+  raise notice 'OK 11 — etiquetas, colecciones y comentarios no salen del espacio';
+
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 12. El feed de actividad lo escriben los disparadores, no el cliente
+  --
+  -- Importa que sea automático: si dependiera de que la app recuerde registrar
+  -- cada acción, una ruta nueva que se olvide haría que el feed mintiera por
+  -- omisión, y un feed en el que no te puedes fiar de lo que falta no sirve.
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+  execute 'set local role authenticated';
+
+  select count(*) into v_n from public.activity
+   where space_id = v_space and verb = 'saved_place';
+  if v_n < 1 then raise exception 'FALLO 12a: guardar un sitio no ha dejado rastro en el feed'; end if;
+
+  select count(*) into v_n from public.activity
+   where space_id = v_space and verb = 'created_collection';
+  if v_n <> 1 then raise exception 'FALLO 12b: crear una colección ha dejado % líneas, esperaba 1', v_n; end if;
+
+  select count(*) into v_n from public.activity
+   where space_id = v_space and verb = 'commented';
+  if v_n < 1 then raise exception 'FALLO 12c: comentar no ha dejado rastro en el feed'; end if;
+
+  -- El feed es de solo lectura para todo el mundo.
+  v_blocked := false;
+  begin
+    insert into public.activity (space_id, actor_id, verb, object_type, object_label)
+    values (v_space, '11111111-1111-1111-1111-111111111111', 'saved_place', 'place', 'Inventado');
+  exception when others then v_blocked := true;
+  end;
+  if not v_blocked then raise exception 'FALLO 12d: se ha podido escribir en el feed a mano'; end if;
+
+  execute 'set local role none';
+  raise notice 'OK 12 — el feed lo escriben los disparadores y no se puede falsear';
+
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 13. Lista pública: se lee SIN cuenta, y sin abrir ninguna tabla
+  --
+  -- Es la prueba clave de la Fase 3. Quien abre el enlace es el rol `anon`.
+  -- La salida fácil habría sido darle permiso de lectura sobre `public_shares`
+  -- y `places` filtrando por token, pero para filtrar hay que poder leer, y eso
+  -- deja enumerar todos los enlaces. Aquí se comprueba lo contrario: que con la
+  -- función basta y que las tablas siguen cerradas a cal y canto.
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+  execute 'set local role authenticated';
+  v_token := public.share_collection(v_collection) ->> 'token';
+
+  -- Compartir dos veces devuelve el mismo enlace: generar otro dejaría el
+  -- primero vivo y suelto, y quien revocara uno creería haber cerrado el acceso.
+  if public.share_collection(v_collection) ->> 'token' <> v_token then
+    raise exception 'FALLO 13a: compartir dos veces ha generado dos enlaces distintos';
+  end if;
+
+  execute 'set local role none';
+  perform set_config('request.jwt.claim.sub', '', true);
+  execute 'set local role anon';
+
+  v_public := public.get_public_list(v_token)::jsonb;
+  if v_public ->> 'name' <> 'Mejores brunch' then
+    raise exception 'FALLO 13b: la lista pública no devuelve la colección';
+  end if;
+  if jsonb_array_length(v_public -> 'places') <> 1 then
+    raise exception 'FALLO 13c: la lista pública trae % sitios, esperaba 1',
+      jsonb_array_length(v_public -> 'places');
+  end if;
+
+  -- Una lista pública es una recomendación, no el cuaderno privado del grupo.
+  if (v_public -> 'places' -> 0) ? 'notes' then
+    raise exception 'FALLO 13d: la lista pública expone las notas privadas';
+  end if;
+  if (v_public -> 'places' -> 0) ? 'ratings' then
+    raise exception 'FALLO 13e: la lista pública expone las puntuaciones';
+  end if;
+
+  -- Sin token no hay nada: ninguna tabla está abierta a `anon`.
+  select count(*) into v_n from public.public_shares;
+  if v_n <> 0 then raise exception 'FALLO 13f: anon puede enumerar % enlaces públicos', v_n; end if;
+  select count(*) into v_n from public.places;
+  if v_n <> 0 then raise exception 'FALLO 13g: anon puede leer % sitios', v_n; end if;
+  select count(*) into v_n from public.collections;
+  if v_n <> 0 then raise exception 'FALLO 13h: anon puede leer % colecciones', v_n; end if;
+  select count(*) into v_n from public.comments;
+  if v_n <> 0 then raise exception 'FALLO 13i: anon puede leer % comentarios', v_n; end if;
+
+  v_err := null;
+  begin perform public.get_public_list('0000000000000000');
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%share_not_found%' then
+    raise exception 'FALLO 13j: un token inexistente ha devuelto datos (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  execute 'set local role none';
+  raise notice 'OK 13 — la lista pública se lee por token y las tablas siguen cerradas a anon';
+
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 14. El enlace público caduca y se revoca de verdad
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  update public.public_shares set expires_at = now() - interval '1 minute' where token = v_token;
+
+  perform set_config('request.jwt.claim.sub', '', true);
+  execute 'set local role anon';
+  v_err := null;
+  begin perform public.get_public_list(v_token);
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%share_expired%' then
+    raise exception 'FALLO 14a: un enlace caducado sigue funcionando (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  execute 'set local role none';
+  update public.public_shares set expires_at = null, revoked_at = now() where token = v_token;
+
+  execute 'set local role anon';
+  v_err := null;
+  begin perform public.get_public_list(v_token);
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%share_revoked%' then
+    raise exception 'FALLO 14b: un enlace revocado sigue funcionando (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  execute 'set local role none';
+  raise notice 'OK 14 — el enlace público caduca y se revoca';
+
+  -- 15. RGPD: exportar devuelve datos propios y borrar la cuenta traspasa el rol
   -- ─────────────────────────────────────────────────────────────────────────
 
   perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
@@ -360,10 +546,10 @@ begin
 
   v_export := public.export_my_data();
   if v_export -> 'profile' ->> 'display_name' <> 'Ana' then
-    raise exception 'FALLO 11a: la exportación no trae el perfil';
+    raise exception 'FALLO 15a: la exportación no trae el perfil';
   end if;
   if json_array_length(v_export -> 'places_created') < 1 then
-    raise exception 'FALLO 11b: la exportación no trae los sitios creados';
+    raise exception 'FALLO 15b: la exportación no trae los sitios creados';
   end if;
 
   -- Ana es la única admin, pero Beto sigue en el espacio: al borrarse la
@@ -374,19 +560,19 @@ begin
   select count(*) into v_admins from public.space_members
    where space_id = v_space and role = 'admin';
   if v_admins <> 1 then
-    raise exception 'FALLO 11c: el espacio se ha quedado con % administradores', v_admins;
+    raise exception 'FALLO 15c: el espacio se ha quedado con % administradores', v_admins;
   end if;
 
   if exists (select 1 from auth.users where id = '11111111-1111-1111-1111-111111111111') then
-    raise exception 'FALLO 11d: la cuenta no se ha borrado';
+    raise exception 'FALLO 15d: la cuenta no se ha borrado';
   end if;
 
   -- El contenido del grupo sobrevive al borrado de quien lo creó.
   if not exists (select 1 from public.places where space_id = v_space) then
-    raise exception 'FALLO 11e: borrar la cuenta se ha llevado los sitios del grupo';
+    raise exception 'FALLO 15e: borrar la cuenta se ha llevado los sitios del grupo';
   end if;
 
-  raise notice 'OK 11 — RGPD: exportar funciona y borrar no destruye el grupo';
+  raise notice 'OK 15 — RGPD: exportar funciona y borrar no destruye el grupo';
 
   raise notice '─────────────────────────────────────';
   raise notice 'TODAS LAS PRUEBAS PASAN';

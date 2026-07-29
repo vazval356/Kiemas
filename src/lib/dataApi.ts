@@ -13,6 +13,12 @@ import type {
   AttendeeResponse,
   DateVote,
   UsernameStatus,
+  Tag,
+  Collection,
+  CollectionShare,
+  Comment,
+  ActivityEntry,
+  PublicList,
 } from './types'
 
 /**
@@ -99,6 +105,41 @@ export interface DataApi {
   /** Sin `optionId` gana la fecha más votada. */
   closeDatePoll(planId: string, optionId?: string): Promise<void>
 
+  // ── Etiquetas de ambiente (Fase 3) ───────────────────────────────────────
+  listTags(spaceId: string): Promise<Tag[]>
+  addTag(spaceId: string, name: string, color: string): Promise<Tag>
+  deleteTag(tagId: string): Promise<void>
+  /** Reemplaza el juego completo de etiquetas de un sitio. */
+  setPlaceTags(placeId: string, tagIds: string[]): Promise<void>
+
+  // ── Colecciones (Fase 3) ─────────────────────────────────────────────────
+  listCollections(spaceId: string): Promise<Collection[]>
+  createCollection(spaceId: string, name: string, description?: string): Promise<Collection>
+  updateCollection(
+    collectionId: string,
+    patch: Partial<Pick<Collection, 'name' | 'description' | 'coverPlaceId'>>
+  ): Promise<void>
+  deleteCollection(collectionId: string): Promise<void>
+  addPlaceToCollection(collectionId: string, placeId: string): Promise<void>
+  removePlaceFromCollection(collectionId: string, placeId: string): Promise<void>
+
+  /**
+   * Publica la colección y devuelve el token del enlace. Compartir dos veces la
+   * misma colección devuelve el enlace que ya existía, en vez de generar otro
+   * que dejaría el primero vivo y suelto.
+   */
+  shareCollection(collectionId: string, expiry: InviteExpiry): Promise<CollectionShare>
+  revokeShare(collectionId: string): Promise<void>
+
+  // ── Comentarios (Fase 3) ─────────────────────────────────────────────────
+  listComments(placeId: string): Promise<Comment[]>
+  addComment(placeId: string, body: string, parentId?: string | null): Promise<Comment>
+  deleteComment(commentId: string): Promise<void>
+
+  // ── Feed de actividad (Fase 3) ───────────────────────────────────────────
+  /** Solo lectura: lo escriben disparadores en la base de datos. */
+  listActivity(spaceId: string, limit?: number): Promise<ActivityEntry[]>
+
   // ── Cumplimiento ─────────────────────────────────────────────────────────
   blockUser(userId: string): Promise<void>
   unblockUser(userId: string): Promise<void>
@@ -113,6 +154,13 @@ export interface DataApi {
   /** Avisa cuando otro dispositivo cambia datos del espacio. Devuelve la limpieza. */
   subscribe(spaceId: string, onChange: () => void): () => void
 }
+
+/**
+ * Lee una lista pública por su token. No forma parte de `DataApi` a propósito:
+ * se usa desde una pantalla sin sesión, donde no hay contexto de aplicación ni
+ * espacio activo del que colgar la llamada.
+ */
+export type GetPublicList = (token: string) => Promise<PublicList>
 
 /** Traduce la opción de caducidad de la interfaz al intervalo que espera Postgres. */
 export function expiryToInterval(expiry: InviteExpiry): string | null {

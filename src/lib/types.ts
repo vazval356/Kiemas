@@ -134,6 +134,8 @@ export interface Place {
   website: string
   photos: Photo[]
   ratings: PlaceRating[]
+  /** Etiquetas de ambiente aplicadas a este sitio (Fase 3). */
+  tagIds: string[]
   visibility: PlaceVisibility
   createdBy: string | null
   createdAt: string
@@ -214,6 +216,90 @@ export interface PlanInput {
 // ───────────────────────────────────────────────────────────────────────────
 // Cumplimiento
 // ───────────────────────────────────────────────────────────────────────────
+
+// ───────────────────────────────────────────────────────────────────────────
+// Social y contenido (Fase 3)
+// ───────────────────────────────────────────────────────────────────────────
+
+/**
+ * Etiqueta de ambiente. Distinta de la categoría: la categoría dice QUÉ es el
+ * sitio y solo puede haber una; la etiqueta dice CÓMO es y se combinan.
+ */
+export interface Tag {
+  id: string
+  name: string
+  color: string
+}
+
+export interface Collection {
+  id: string
+  name: string
+  description: string
+  coverPlaceId: string | null
+  placeIds: string[]
+  createdBy: string | null
+  createdAt: string
+  /** Enlace público si la colección está compartida. */
+  share: CollectionShare | null
+}
+
+export interface CollectionShare {
+  token: string
+  expiresAt: string | null
+  revokedAt: string | null
+  viewCount: number
+}
+
+export interface Comment {
+  id: string
+  placeId: string
+  userId: string | null
+  /** Solo un nivel: no se puede responder a una respuesta. */
+  parentId: string | null
+  body: string
+  createdAt: string
+  editedAt: string | null
+}
+
+export type ActivityVerb =
+  | 'saved_place'
+  | 'visited_place'
+  | 'rated_place'
+  | 'created_plan'
+  | 'confirmed_plan'
+  | 'commented'
+  | 'created_collection'
+
+export interface ActivityEntry {
+  id: string
+  actorId: string | null
+  verb: ActivityVerb
+  objectType: 'place' | 'plan' | 'collection'
+  objectId: string | null
+  /** Nombre copiado en el momento del hecho, para que la línea siga teniendo
+   *  sentido aunque el sitio se haya borrado después. */
+  objectLabel: string
+  createdAt: string
+}
+
+/** Lo que ve quien abre un enlace público, sin cuenta. */
+export interface PublicList {
+  name: string
+  description: string
+  spaceName: string
+  places: {
+    id: string
+    name: string
+    address: string
+    lat: number
+    lng: number
+    priceLevel: number | null
+    photos: string[]
+    category: string | null
+    emoji: string | null
+    tags: { name: string; color: string }[]
+  }[]
+}
 
 export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fake' | 'other'
 

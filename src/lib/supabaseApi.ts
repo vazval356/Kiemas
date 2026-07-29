@@ -18,6 +18,13 @@ import type {
   SpaceMember,
   SpaceRole,
   UsernameStatus,
+  Tag,
+  Collection,
+  CollectionShare,
+  Comment,
+  ActivityEntry,
+  PublicList,
+  ActivityVerb,
 } from './types'
 import type { DataApi } from './dataApi'
 import { parseCoord, resizeImage } from './utils'
@@ -62,6 +69,7 @@ interface PlaceRow {
   created_at: string
   visited_at: string | null
   ratings: { user_id: string; score: number }[] | null
+  place_tags: { tag_id: string }[] | null
 }
 
 interface PlanRow {
@@ -121,6 +129,7 @@ function mapPlace(row: PlaceRow): Place {
     website: row.website,
     photos: (row.photos ?? []).map(photoFromPath),
     ratings: (row.ratings ?? []).map((r) => ({ userId: r.user_id, score: Number(r.score) })),
+    tagIds: (row.place_tags ?? []).map((t) => t.tag_id),
     visibility: row.visibility,
     createdBy: row.created_by,
     createdAt: row.created_at,
@@ -202,6 +211,12 @@ export const RPC_ERRORS = [
   'username_invalid',
   'username_reserved',
   'username_taken',
+  'collection_not_found',
+  'share_not_found',
+  'share_revoked',
+  'share_expired',
+  'comment_too_deep',
+  'comment_parent_mismatch',
 ] as const
 
 export type RpcErrorCode = (typeof RPC_ERRORS)[number]
@@ -454,7 +469,7 @@ export const supabaseApi: DataApi = {
     const rows = check(
       await supabase
         .from('places')
-        .select('*, ratings(user_id, score)')
+        .select('*, ratings(user_id, score), place_tags(tag_id)')
         .eq('space_id', spaceId)
         .order('created_at', { ascending: false })
     )
@@ -482,7 +497,7 @@ export const supabaseApi: DataApi = {
           created_by: uid,
           visited_at: input.status === 'visited' ? new Date().toISOString() : null,
         })
-        .select('*, ratings(user_id, score)')
+        .select('*, ratings(user_id, score), place_tags(tag_id)')
         .single()
     )
     return mapPlace(row as PlaceRow)
@@ -640,6 +655,230 @@ export const supabaseApi: DataApi = {
     if (res.error) throw new Error(res.error.message)
   },
 
+  // ── Etiquetas de ambiente ────────────────────────────────────────────────
+
+  async listTags(spaceId: string): Promise<Tag[]> {
+    const rows = check(
+      await supabase.from('tags').select('id, name, color').eq('space_id', spaceId).order('name')
+    )
+    return rows.map((r) => ({ id: r.id, name: r.name, color: r.color }))
+  },
+
+  async addTag(spaceId: string, name: string, color: string): Promise<Tag> {
+    const row = check(
+      await supabase
+        .from('tags')
+        .insert({ space_id: spaceId, name: name.trim(), color })
+        .select('id, name, color')
+        .single()
+    )
+    return { id: row.id, name: row.name, color: row.color }
+  },
+
+  async deleteTag(tagId: string) {
+    ok(await supabase.from('tags').delete().eq('id', tagId))
+  },
+
+  async setPlaceTags(placeId: string, tagIds: string[]) {
+    // Borrar y volver a insertar en vez de calcular el diferencial: son un
+    // puñado de filas y el diferencial habría que mantenerlo correcto para
+    // siempre, mientras que esto no puede quedar a medias de forma silenciosa.
+    ok(await supabase.from('place_tags').delete().eq('place_id', placeId))
+    if (tagIds.length === 0) return
+    ok(
+      await supabase
+        .from('place_tags')
+        .insert(tagIds.map((tag_id) => ({ place_id: placeId, tag_id })))
+    )
+  },
+
+  // ── Colecciones ──────────────────────────────────────────────────────────
+
+  async listCollections(spaceId: string): Promise<Collection[]> {
+    const [colsRes, itemsRes, sharesRes] = await Promise.all([
+      supabase
+        .from('collections')
+        .select('id, name, description, cover_place_id, created_by, created_at')
+        .eq('space_id', spaceId)
+        .order('created_at', { ascending: false }),
+      supabase.from('collection_places').select('collection_id, place_id, position, added_at'),
+      supabase
+        .from('public_shares')
+        .select('collection_id, token, expires_at, revoked_at, view_count')
+        .eq('space_id', spaceId),
+    ])
+    const cols = check(colsRes)
+    const items = check(itemsRes)
+    const shares = check(sharesRes)
+
+    const shareByCollection = new Map(shares.map((s) => [s.collection_id, s]))
+
+    return cols.map((c) => {
+      const share = shareByCollection.get(c.id)
+      return {
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        coverPlaceId: c.cover_place_id,
+        placeIds: items
+          .filter((i) => i.collection_id === c.id)
+          .sort((a, b) => a.position - b.position || a.added_at.localeCompare(b.added_at))
+          .map((i) => i.place_id),
+        createdBy: c.created_by,
+        createdAt: c.created_at,
+        share: share
+          ? {
+              token: share.token,
+              expiresAt: share.expires_at,
+              revokedAt: share.revoked_at,
+              viewCount: share.view_count,
+            }
+          : null,
+      }
+    })
+  },
+
+  async createCollection(spaceId: string, name: string, description = ''): Promise<Collection> {
+    const uid = await myId()
+    const row = check(
+      await supabase
+        .from('collections')
+        .insert({ space_id: spaceId, name: name.trim(), description, created_by: uid })
+        .select('id, name, description, cover_place_id, created_by, created_at')
+        .single()
+    )
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      coverPlaceId: row.cover_place_id,
+      placeIds: [],
+      createdBy: row.created_by,
+      createdAt: row.created_at,
+      share: null,
+    }
+  },
+
+  async updateCollection(collectionId, patch) {
+    const row: Record<string, unknown> = {}
+    if (patch.name !== undefined) row.name = patch.name
+    if (patch.description !== undefined) row.description = patch.description
+    if (patch.coverPlaceId !== undefined) row.cover_place_id = patch.coverPlaceId
+    if (Object.keys(row).length === 0) return
+    ok(await supabase.from('collections').update(row).eq('id', collectionId))
+  },
+
+  async deleteCollection(collectionId: string) {
+    ok(await supabase.from('collections').delete().eq('id', collectionId))
+  },
+
+  async addPlaceToCollection(collectionId: string, placeId: string) {
+    ok(
+      await supabase
+        .from('collection_places')
+        .upsert(
+          { collection_id: collectionId, place_id: placeId },
+          { onConflict: 'collection_id,place_id' }
+        )
+    )
+  },
+
+  async removePlaceFromCollection(collectionId: string, placeId: string) {
+    ok(
+      await supabase
+        .from('collection_places')
+        .delete()
+        .eq('collection_id', collectionId)
+        .eq('place_id', placeId)
+    )
+  },
+
+  async shareCollection(collectionId: string, expiry: InviteExpiry): Promise<CollectionShare> {
+    const res = await supabase.rpc('share_collection', {
+      p_collection_id: collectionId,
+      p_expires_in: expiry ? EXPIRY_TO_INTERVAL[expiry] : null,
+    })
+    if (res.error) throw new Error(res.error.message)
+    const d = res.data as { token: string; expires_at: string | null }
+    return { token: d.token, expiresAt: d.expires_at, revokedAt: null, viewCount: 0 }
+  },
+
+  async revokeShare(collectionId: string) {
+    ok(
+      await supabase
+        .from('public_shares')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('collection_id', collectionId)
+    )
+  },
+
+  // ── Comentarios ──────────────────────────────────────────────────────────
+
+  async listComments(placeId: string): Promise<Comment[]> {
+    const rows = check(
+      await supabase
+        .from('comments')
+        .select('id, place_id, user_id, parent_id, body, created_at, edited_at')
+        .eq('place_id', placeId)
+        .order('created_at')
+    )
+    return rows.map((r) => ({
+      id: r.id,
+      placeId: r.place_id,
+      userId: r.user_id,
+      parentId: r.parent_id,
+      body: r.body,
+      createdAt: r.created_at,
+      editedAt: r.edited_at,
+    }))
+  },
+
+  async addComment(placeId: string, body: string, parentId = null): Promise<Comment> {
+    const uid = await myId()
+    const row = check(
+      await supabase
+        .from('comments')
+        .insert({ place_id: placeId, user_id: uid, parent_id: parentId, body: body.trim() })
+        .select('id, place_id, user_id, parent_id, body, created_at, edited_at')
+        .single()
+    )
+    return {
+      id: row.id,
+      placeId: row.place_id,
+      userId: row.user_id,
+      parentId: row.parent_id,
+      body: row.body,
+      createdAt: row.created_at,
+      editedAt: row.edited_at,
+    }
+  },
+
+  async deleteComment(commentId: string) {
+    ok(await supabase.from('comments').delete().eq('id', commentId))
+  },
+
+  // ── Feed de actividad ────────────────────────────────────────────────────
+
+  async listActivity(spaceId: string, limit = 50): Promise<ActivityEntry[]> {
+    const rows = check(
+      await supabase
+        .from('activity')
+        .select('id, actor_id, verb, object_type, object_id, object_label, created_at')
+        .eq('space_id', spaceId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+    )
+    return rows.map((r) => ({
+      id: r.id,
+      actorId: r.actor_id,
+      verb: r.verb as ActivityVerb,
+      objectType: r.object_type as ActivityEntry['objectType'],
+      objectId: r.object_id,
+      objectLabel: r.object_label,
+      createdAt: r.created_at,
+    }))
+  },
+
   // ── Cumplimiento ─────────────────────────────────────────────────────────
 
   async blockUser(userId: string) {
@@ -710,4 +949,52 @@ export const supabaseApi: DataApi = {
       void supabase.removeChannel(channel)
     }
   },
+}
+
+/**
+ * Lee una lista pública por su token, sin sesión.
+ *
+ * Va fuera de `supabaseApi` porque no es una operación del espacio activo: la
+ * ejecuta quien abre el enlace, que puede no tener cuenta. Toda la seguridad
+ * está en la función de la base de datos — ninguna tabla está abierta al rol
+ * `anon`, así que sin un token válido no hay nada que leer.
+ */
+export async function getPublicList(token: string): Promise<PublicList> {
+  const res = await supabase.rpc('get_public_list', { p_token: token.trim().toLowerCase() })
+  if (res.error) throw new Error(res.error.message)
+  const d = res.data as {
+    name: string
+    description: string
+    space_name: string
+    places: {
+      id: string
+      name: string
+      address: string
+      lat: number
+      lng: number
+      price_level: number | null
+      photos: string[]
+      category: string | null
+      emoji: string | null
+      tags: { name: string; color: string }[]
+    }[]
+  }
+  return {
+    name: d.name,
+    description: d.description ?? '',
+    spaceName: d.space_name,
+    places: (d.places ?? []).map((p) => ({
+      id: p.id,
+      name: p.name,
+      address: p.address,
+      lat: parseCoord(p.lat),
+      lng: parseCoord(p.lng),
+      priceLevel: p.price_level,
+      // Las rutas llegan sin resolver, igual que en `places.photos`.
+      photos: (p.photos ?? []).map((path) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl),
+      category: p.category,
+      emoji: p.emoji,
+      tags: p.tags ?? [],
+    })),
+  }
 }
