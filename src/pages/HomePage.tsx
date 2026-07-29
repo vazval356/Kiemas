@@ -1,3 +1,4 @@
+import { UsernameEditor } from '../components/UsernameEditor'
 import { useApp } from '../state/AppContext'
 import { averageRating, formatRating, priceLabel } from '../lib/utils'
 
@@ -25,9 +26,7 @@ export function HomePage() {
             <h1 className="font-display text-2xl font-bold text-on-surface">
               {profile?.displayName ?? '—'}
             </h1>
-            {profile?.username && (
-              <p className="text-sm text-on-surface-variant">@{profile.username}</p>
-            )}
+            <UsernameEditor />
           </div>
           <button
             type="button"

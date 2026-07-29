@@ -157,6 +157,17 @@ const es = {
   'settings.block': 'Bloquear',
   'settings.unblock': 'Desbloquear',
   'settings.report': 'Reportar',
+
+  // @usuario
+  'username.label': 'Tu @usuario',
+  'username.hint': 'Entre 3 y 30 caracteres: letras, números y guion bajo.',
+  'username.change': 'Cambiar',
+  'username.checking': 'Comprobando…',
+  'username.available': 'Disponible',
+  'username.taken': 'Ese @usuario ya está cogido',
+  'username.reserved': 'Ese @usuario está reservado',
+  'username.invalid': 'Solo letras minúsculas, números y guion bajo, de 3 a 30 caracteres',
+  'username.saved': '@usuario actualizado',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -294,6 +305,16 @@ const en: Record<TranslationKey, string> = {
   'settings.block': 'Block',
   'settings.unblock': 'Unblock',
   'settings.report': 'Report',
+
+  'username.label': 'Your @username',
+  'username.hint': 'Between 3 and 30 characters: letters, numbers and underscore.',
+  'username.change': 'Change',
+  'username.checking': 'Checking…',
+  'username.available': 'Available',
+  'username.taken': 'That @username is already taken',
+  'username.reserved': 'That @username is reserved',
+  'username.invalid': 'Lowercase letters, numbers and underscore only, 3 to 30 characters',
+  'username.saved': '@username updated',
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

@@ -198,6 +198,9 @@ export const RPC_ERRORS = [
   'plan_not_found',
   'not_a_poll',
   'no_option_chosen',
+  'username_invalid',
+  'username_reserved',
+  'username_taken',
 ] as const
 
 export type RpcErrorCode = (typeof RPC_ERRORS)[number]
@@ -207,6 +210,12 @@ export function rpcErrorCode(e: unknown): RpcErrorCode | null {
   const message = e && typeof e === 'object' && 'message' in e ? String(e.message) : String(e)
   return RPC_ERRORS.find((code) => message.includes(code)) ?? null
 }
+
+/**
+ * Mismo formato que `public.username_is_valid()` y que la restricción de la
+ * tabla. Si cambia una, tienen que cambiar las tres.
+ */
+export const USERNAME_PATTERN = /^[a-z0-9_]{3,30}$/
 
 const EXPIRY_TO_INTERVAL: Record<string, string | null> = {
   '30 minutes': '30 minutes',
@@ -243,10 +252,23 @@ export const supabaseApi: DataApi = {
     const uid = await myId()
     const row: Record<string, unknown> = {}
     if (patch.displayName !== undefined) row.display_name = patch.displayName
-    if (patch.username !== undefined) row.username = patch.username.toLowerCase()
     if (patch.locale !== undefined) row.locale = patch.locale
     if (Object.keys(row).length === 0) return
     ok(await supabase.from('profiles').update(row).eq('id', uid))
+  },
+
+  async setUsername(username: string) {
+    const res = await supabase.rpc('set_username', { p_username: username.trim().toLowerCase() })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async isUsernameAvailable(username: string): Promise<boolean> {
+    const clean = username.trim().toLowerCase()
+    // Se filtra en el cliente lo que ni siquiera merece un viaje al servidor.
+    if (!USERNAME_PATTERN.test(clean)) return false
+    const res = await supabase.rpc('is_username_available', { p_username: clean })
+    if (res.error) throw new Error(res.error.message)
+    return res.data === true
   },
 
   async setAvatar(file: File): Promise<string> {

@@ -33,8 +33,21 @@ import type {
 export interface DataApi {
   // ── Perfil ───────────────────────────────────────────────────────────────
   me(): Promise<Profile>
-  updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'username' | 'locale'>>): Promise<void>
+  updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'locale'>>): Promise<void>
   setAvatar(file: File): Promise<string>
+
+  /**
+   * El @usuario va por su propia vía y no por `updateProfile`, porque necesita
+   * validación y una respuesta clara cuando ya lo tiene otra persona.
+   * Lanza `username_taken`, `username_reserved` o `username_invalid`.
+   */
+  setUsername(username: string): Promise<void>
+  /**
+   * Tiene que preguntarlo el servidor: la RLS de `profiles` oculta a quien no
+   * comparte espacio contigo, así que una consulta desde el cliente daría por
+   * libre un nombre que sí está cogido. Devuelve true también si es el tuyo.
+   */
+  isUsernameAvailable(username: string): Promise<boolean>
 
   // ── Espacios ─────────────────────────────────────────────────────────────
   /** Todos los espacios de la persona conectada, incluido el personal. */
