@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
-import type { Category, Locale, Place, Profile, Space } from '../lib/types'
+import type { Category, Locale, Place, Plan, Profile, Space } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
 
 /**
@@ -46,6 +46,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeSpaceId, setActiveSpaceId] = useState<string | null>(readStoredSpaceId)
   const [categories, setCategories] = useState<Category[]>([])
   const [places, setPlaces] = useState<Place[]>([])
+  const [plans, setPlans] = useState<Plan[]>([])
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [fallbackLocale, setFallbackLocale] = useState<Locale>(detectLocale)
 
@@ -64,14 +65,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!activeSpace) {
       setCategories([])
       setPlaces([])
+      setPlans([])
       return
     }
-    const [cats, pls] = await Promise.all([
+    // Los planes se piden desde ayer, no desde ahora: uno que empezó hace dos
+    // horas sigue siendo el plan de esta noche y desaparecer de la lista a mitad
+    // de la cena sería absurdo.
+    const since = new Date()
+    since.setDate(since.getDate() - 1)
+
+    const [cats, pls, plns] = await Promise.all([
       api.listCategories(activeSpace.id),
       api.listPlaces(activeSpace.id),
+      api.listPlans(activeSpace.id, since),
     ])
     setCategories(cats)
     setPlaces(pls)
+    setPlans(plns)
   }, [api, activeSpace])
 
   const refreshSpaces = useCallback(async () => {
@@ -97,6 +107,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setSpaces([])
         setCategories([])
         setPlaces([])
+        setPlans([])
         setAuthStatus('signedOut')
         loadedRef.current = false
         return
@@ -179,6 +190,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setActiveSpace,
       categories,
       places,
+      plans,
       position,
       requestPosition,
       api,
@@ -197,6 +209,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setActiveSpace,
       categories,
       places,
+      plans,
       position,
       requestPosition,
       api,

@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { DataApi } from '../lib/dataApi'
 import type { Translate } from '../lib/i18n'
-import type { Category, Locale, Place, Profile, Space } from '../lib/types'
+import type { Category, Locale, Place, Plan, Profile, Space } from '../lib/types'
 
 /**
  * El objeto de contexto y el hook viven aquí, separados del componente
@@ -26,6 +26,12 @@ export interface AppState {
   setActiveSpace: (spaceId: string) => void
   categories: Category[]
   places: Place[]
+  /**
+   * Planes del espacio activo. Viven aquí y no en la pantalla del calendario
+   * porque la suscripción en tiempo real ya escucha la tabla `plans`: tenerlos
+   * en dos sitios obligaría a duplicar esa fontanería.
+   */
+  plans: Plan[]
   position: { lat: number; lng: number } | null
   requestPosition: () => Promise<{ lat: number; lng: number } | null>
   api: DataApi

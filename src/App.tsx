@@ -4,10 +4,13 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
+import { CalendarPage } from './pages/CalendarPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
 import { PlaceFormPage } from './pages/PlaceFormPage'
+import { PlanDetailPage } from './pages/PlanDetailPage'
+import { PlanFormPage } from './pages/PlanFormPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SetupPage } from './pages/SetupPage'
@@ -26,7 +29,7 @@ import { useApp } from './state/appState'
  * llevan barra superior ni inferior, porque son pantallas de pila, no destinos
  * de navegación.
  */
-const FULL_SCREEN = ['/add', '/edit/', '/place/', '/settings', '/spaces/']
+const FULL_SCREEN = ['/add', '/edit/', '/place/', '/settings', '/spaces/', '/plan/']
 
 function Shell() {
   const { authStatus, t } = useApp()
@@ -51,6 +54,9 @@ function Shell() {
       <Routes>
         <Route path="/" element={<MapPage />} />
         <Route path="/list" element={<ListPage />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/plan/new" element={<PlanFormPage />} />
+        <Route path="/plan/:id" element={<PlanDetailPage />} />
         <Route path="/spaces" element={<SpacesPage />} />
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
