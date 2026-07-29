@@ -1,0 +1,15 @@
+node_modules
+dist
+dev-dist
+.env
+.env.local
+*.log
+*.tsbuildinfo
+
+# Capacitor: las plataformas nativas se generan con `npx cap add`
+android
+ios
+
+# Supabase CLI
+supabase/.temp
+supabase/.branches
