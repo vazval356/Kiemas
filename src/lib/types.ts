@@ -27,6 +27,13 @@ export interface Profile {
   locale: Locale
 }
 
+/**
+ * Por qué un @usuario se puede o no usar. Los mismos cuatro valores que
+ * devuelve `public.username_status()` y con los que falla `set_username()`,
+ * para que comprobar y guardar hablen el mismo idioma.
+ */
+export type UsernameStatus = 'available' | 'invalid' | 'reserved' | 'taken'
+
 export interface SessionUser {
   id: string
   name: string

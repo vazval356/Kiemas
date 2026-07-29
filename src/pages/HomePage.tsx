@@ -1,5 +1,5 @@
 import { UsernameEditor } from '../components/UsernameEditor'
-import { useApp } from '../state/AppContext'
+import { useApp } from '../state/appState'
 import { averageRating, formatRating, priceLabel } from '../lib/utils'
 
 /**

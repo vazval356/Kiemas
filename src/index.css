@@ -104,3 +104,126 @@ textarea {
   -webkit-user-select: text;
   user-select: text;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Utilidades heredadas de Warm Hearth, con los colores de Kedada
+   ───────────────────────────────────────────────────────────────────────── */
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* El sistema de diseño pide una escala al pulsar para que el toque se note. */
+.squish {
+  transition: transform 0.1s ease;
+}
+.squish:active {
+  transform: scale(0.96);
+}
+
+@keyframes kd-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-pop {
+  animation: kd-pop 0.25s ease-out;
+}
+
+/* Respeta la zona segura de iOS bajo la barra de navegación. */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ── Marcadores del mapa ──────────────────────────────────────────────────
+   Forma de gota, como pide el sistema de diseño. La transición vive aquí, en
+   el hijo, y no en el elemento que MapLibre mueve: MapLibre reescribe el
+   `transform` del contenedor en cada fotograma, así que una transición ahí
+   haría que los pines se arrastrasen con retardo y "flotaran" fuera de su
+   sitio al hacer zoom. */
+.kd-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 4px;
+  background: var(--color-primary-container);
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgb(17 28 45 / 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.kd-marker.visited {
+  background: var(--color-outline);
+}
+.kd-marker.selected {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 6px rgb(70 72 212 / 0.25), 0 6px 14px rgb(17 28 45 / 0.4);
+}
+
+/* ── Campos de formulario ─────────────────────────────────────────────────
+   El sistema de diseño pide borde gris fino que pasa a 2px índigo al enfocar. */
+.kd-input {
+  width: 100%;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-lowest);
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  color: var(--color-on-surface);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.kd-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(70 72 212 / 0.15);
+}
+.kd-input::placeholder {
+  color: var(--color-on-surface-variant);
+  opacity: 0.7;
+}
+
+/* ── Deslizador de puntuación ──────────────────────────────────────────── */
+input[type='range'].kd-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-surface-highest);
+  outline: none;
+}
+input[type='range'].kd-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgb(17 28 45 / 0.3);
+  cursor: pointer;
+}
+input[type='range'].kd-range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid #fff;
+  box-shadow: 0 2px 6px rgb(17 28 45 / 0.3);
+  cursor: pointer;
+}

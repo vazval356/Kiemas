@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { rpcErrorCode, USERNAME_PATTERN } from '../lib/supabaseApi'
-import { useApp } from '../state/AppContext'
+import { useApp } from '../state/appState'
 
 type Status =
   | { kind: 'idle' }
@@ -63,10 +63,12 @@ export function UsernameEditor() {
     const seq = ++requestSeq.current
     const timer = setTimeout(() => {
       api
-        .isUsernameAvailable(clean)
-        .then((free) => {
+        .checkUsername(clean)
+        .then((result) => {
           if (seq !== requestSeq.current) return
-          setStatus(free ? { kind: 'available' } : { kind: 'taken' })
+          // El motivo llega del servidor: «reservado» y «cogido» se arreglan de
+          // formas distintas y conviene no confundirlos.
+          setStatus({ kind: result })
         })
         .catch((e) => {
           if (seq !== requestSeq.current) return

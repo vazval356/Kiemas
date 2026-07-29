@@ -17,6 +17,7 @@ import type {
   Space,
   SpaceMember,
   SpaceRole,
+  UsernameStatus,
 } from './types'
 import type { DataApi } from './dataApi'
 import { parseCoord, resizeImage } from './utils'
@@ -262,13 +263,13 @@ export const supabaseApi: DataApi = {
     if (res.error) throw new Error(res.error.message)
   },
 
-  async isUsernameAvailable(username: string): Promise<boolean> {
+  async checkUsername(username: string): Promise<UsernameStatus> {
     const clean = username.trim().toLowerCase()
-    // Se filtra en el cliente lo que ni siquiera merece un viaje al servidor.
-    if (!USERNAME_PATTERN.test(clean)) return false
-    const res = await supabase.rpc('is_username_available', { p_username: clean })
+    // Un formato imposible no merece un viaje al servidor.
+    if (!USERNAME_PATTERN.test(clean)) return 'invalid'
+    const res = await supabase.rpc('username_status', { p_username: clean })
     if (res.error) throw new Error(res.error.message)
-    return res.data === true
+    return res.data as UsernameStatus
   },
 
   async setAvatar(file: File): Promise<string> {

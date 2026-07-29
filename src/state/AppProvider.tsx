@@ -1,18 +1,9 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
-import type { DataApi } from '../lib/dataApi'
-import { createTranslate, detectLocale, type Translate } from '../lib/i18n'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Locale, Place, Profile, Space } from '../lib/types'
+import { AppContext, type AppState, type AuthStatus } from './appState'
 
 /**
  * Estado global: sesión, espacios, espacio activo y sus datos.
@@ -27,38 +18,7 @@ import type { Category, Locale, Place, Profile, Space } from '../lib/types'
  * así que en cuanto hay sesión hay algo que enseñar.
  */
 
-export type AuthStatus = 'loading' | 'signedOut' | 'ready'
-
 const ACTIVE_SPACE_KEY = 'kedada-active-space'
-
-interface AppState {
-  authStatus: AuthStatus
-  profile: Profile | null
-  spaces: Space[]
-  activeSpace: Space | null
-  setActiveSpace: (spaceId: string) => void
-  categories: Category[]
-  places: Place[]
-  position: { lat: number; lng: number } | null
-  requestPosition: () => Promise<{ lat: number; lng: number } | null>
-  api: DataApi
-  locale: Locale
-  setLocale: (locale: Locale) => Promise<void>
-  t: Translate
-  /** Recarga los datos del espacio activo. */
-  refresh: () => Promise<void>
-  /** Recarga la lista de espacios y el perfil (tras crear, unirse o salir). */
-  refreshSpaces: () => Promise<void>
-  signOut: () => Promise<void>
-}
-
-const AppContext = createContext<AppState | null>(null)
-
-export function useApp(): AppState {
-  const ctx = useContext(AppContext)
-  if (!ctx) throw new Error('useApp fuera de AppProvider')
-  return ctx
-}
 
 function readStoredSpaceId(): string | null {
   try {

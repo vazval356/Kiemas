@@ -12,6 +12,7 @@ import type {
   Space,
   AttendeeResponse,
   DateVote,
+  UsernameStatus,
 } from './types'
 
 /**
@@ -45,9 +46,14 @@ export interface DataApi {
   /**
    * Tiene que preguntarlo el servidor: la RLS de `profiles` oculta a quien no
    * comparte espacio contigo, así que una consulta desde el cliente daría por
-   * libre un nombre que sí está cogido. Devuelve true también si es el tuyo.
+   * libre un nombre que sí está cogido.
+   *
+   * Devuelve el motivo, no un sí/no: «reservado» y «cogido» se arreglan de
+   * formas distintas y decir lo segundo cuando pasa lo primero manda a la
+   * persona a probar variantes que tampoco va a poder usar. `available`
+   * incluye el nombre que ya tienes.
    */
-  isUsernameAvailable(username: string): Promise<boolean>
+  checkUsername(username: string): Promise<UsernameStatus>
 
   // ── Espacios ─────────────────────────────────────────────────────────────
   /** Todos los espacios de la persona conectada, incluido el personal. */
