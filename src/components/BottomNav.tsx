@@ -1,18 +1,19 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../state/appState'
-import { ListIcon, MapIcon, UserIcon } from './icons'
+import { GroupIcon, ListIcon, MapIcon, UserIcon } from './icons'
 import type { TranslationKey } from '../lib/i18n'
 
 /**
  * El sistema de diseño pide barra inferior con efecto vidrio sobre el mapa.
  *
- * Las pestañas de Calendario y Espacios que aparecen en las pantallas de diseño
- * llegan con la Fase 2 y la 1c. Poner ahora los cuatro iconos con dos que no
- * llevan a ningún sitio es peor que enseñar solo lo que existe.
+ * La pestaña de Calendario que aparece en las pantallas de diseño llega con la
+ * Fase 2. Poner ahora un icono que no lleva a ningún sitio es peor que enseñar
+ * solo lo que existe.
  */
 const tabs: { to: string; labelKey: TranslationKey; icon: typeof MapIcon }[] = [
   { to: '/', labelKey: 'nav.map', icon: MapIcon },
   { to: '/list', labelKey: 'nav.list', icon: ListIcon },
+  { to: '/spaces', labelKey: 'nav.spaces', icon: GroupIcon },
   { to: '/profile', labelKey: 'nav.profile', icon: UserIcon },
 ]
 
@@ -29,7 +30,7 @@ export function BottomNav() {
           return (
             <NavLink key={to} to={to} className="flex flex-col items-center gap-0.5 py-1 squish">
               <span
-                className={`rounded-full px-5 py-1.5 transition-colors ${
+                className={`rounded-full px-4 py-1.5 transition-colors ${
                   active ? 'bg-primary-fixed text-primary' : 'text-on-surface-variant'
                 }`}
               >

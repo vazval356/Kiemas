@@ -4,12 +4,15 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
-import { HomePage } from './pages/HomePage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
 import { PlaceFormPage } from './pages/PlaceFormPage'
+import { ProfilePage } from './pages/ProfilePage'
+import { SettingsPage } from './pages/SettingsPage'
 import { SetupPage } from './pages/SetupPage'
+import { SpaceDetailPage } from './pages/SpaceDetailPage'
+import { SpacesPage } from './pages/SpacesPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
 
@@ -17,6 +20,14 @@ import { useApp } from './state/appState'
  * `HashRouter` y no `BrowserRouter`: dentro del contenedor de Capacitor la app
  * se sirve desde el sistema de ficheros, sin servidor que resuelva rutas.
  */
+
+/**
+ * Rutas que ocupan toda la pantalla: traen su propio botón de volver y no
+ * llevan barra superior ni inferior, porque son pantallas de pila, no destinos
+ * de navegación.
+ */
+const FULL_SCREEN = ['/add', '/edit/', '/place/', '/settings', '/spaces/']
+
 function Shell() {
   const { authStatus, t } = useApp()
   const location = useLocation()
@@ -32,12 +43,7 @@ function Shell() {
 
   if (authStatus === 'signedOut') return <AuthPage />
 
-  // El formulario y el detalle son pantallas de pila: ocupan todo y traen su
-  // propio botón de volver, así que ni barra superior ni inferior.
-  const isFullScreen =
-    location.pathname.startsWith('/add') ||
-    location.pathname.startsWith('/edit/') ||
-    location.pathname.startsWith('/place/')
+  const isFullScreen = FULL_SCREEN.some((prefix) => location.pathname.startsWith(prefix))
 
   return (
     <div className="flex h-full flex-col">
@@ -45,7 +51,10 @@ function Shell() {
       <Routes>
         <Route path="/" element={<MapPage />} />
         <Route path="/list" element={<ListPage />} />
-        <Route path="/profile" element={<HomePage />} />
+        <Route path="/spaces" element={<SpacesPage />} />
+        <Route path="/spaces/:id" element={<SpaceDetailPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="/add" element={<PlaceFormPage />} />
         <Route path="/edit/:id" element={<PlaceFormPage />} />
         <Route path="/place/:id" element={<PlaceDetailPage />} />
