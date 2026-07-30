@@ -438,6 +438,7 @@ const es = {
   'wrapped.emptyHint': 'Guarda sitios y haz planes, y en unos meses esto tendrá algo que contar.',
   'wrapped.share': 'Compartir',
   'wrapped.shared': 'Resumen copiado',
+  'wrapped.tapToContinue': 'Toca para continuar',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -838,6 +839,7 @@ const en: Record<TranslationKey, string> = {
   'wrapped.emptyHint': 'Save places and make plans, and in a few months this will have a story to tell.',
   'wrapped.share': 'Share',
   'wrapped.shared': 'Recap copied',
+  'wrapped.tapToContinue': 'Tap to continue',
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

@@ -197,6 +197,94 @@ textarea {
   opacity: 0.7;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Resumen anual, en formato historia
+
+   Lo que pide el diseño: barras de progreso arriba, paneles de cristal
+   esmerilado y avance automático. Es el lenguaje de Instagram Stories, y se
+   respeta porque es lo que hace que apetezca compartirlo.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.kd-progress-segment {
+  height: 3px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.3);
+}
+.kd-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  background: #fff;
+}
+
+/* Cristal esmerilado sobre el degradado de fondo. */
+.kd-glass {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Viñeta oscura arriba y abajo: separa las barras y los controles del fondo
+   sin poner encima una banda opaca. */
+.kd-story-gradient {
+  background: linear-gradient(
+    180deg,
+    rgb(0 0 0 / 0.4) 0%,
+    rgb(0 0 0 / 0) 20%,
+    rgb(0 0 0 / 0) 80%,
+    rgb(0 0 0 / 0.55) 100%
+  );
+}
+
+@keyframes kd-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.kd-slide-in {
+  animation: kd-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes kd-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.kd-spin-slow {
+  animation: kd-spin-slow 8s linear infinite;
+}
+
+@keyframes kd-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.kd-float {
+  animation: kd-float 3.5s ease-in-out infinite;
+}
+
+/* Quien pide menos movimiento no debería recibir un carrusel que avanza solo
+   ni elementos girando: se quedan quietos y el avance pasa a ser manual. */
+@media (prefers-reduced-motion: reduce) {
+  .kd-slide-in,
+  .kd-spin-slow,
+  .kd-float {
+    animation: none;
+  }
+}
+
 /* ── Deslizador de puntuación ──────────────────────────────────────────── */
 input[type='range'].kd-range {
   -webkit-appearance: none;
