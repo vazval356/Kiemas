@@ -41,3 +41,5 @@ android/app/google-services.json
 # Supabase CLI
 supabase/.temp
 supabase/.branches
+
+serviceAccount.json

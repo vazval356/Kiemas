@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kedada.app",
+      "sha256_cert_fingerprints": [
+        "C0:C5:1A:32:56:78:16:1A:6D:F7:D2:03:9A:C3:BF:A9:21:45:26:77:78:83:21:FC:D4:84:51:46:E7:57:87:D2"
+      ]
+    }
+  }
+]
