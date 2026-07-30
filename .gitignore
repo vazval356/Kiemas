@@ -6,9 +6,37 @@ dev-dist
 *.log
 *.tsbuildinfo
 
-# Capacitor: las plataformas nativas se generan con `npx cap add`
-android
-ios
+# ── Plataformas nativas ─────────────────────────────────────────────────────
+# El proyecto Android SÍ se versiona. Contiene cambios que no se pueden
+# regenerar: los enlaces profundos y los permisos del AndroidManifest, y los
+# iconos adaptativos. Si se ignorara la carpeta, un clon nuevo tendría que
+# ejecutar `cap add android` y obtendría un proyecto virgen sin nada de eso.
+#
+# Lo que sí se ignora es lo que produce la compilación o depende de la máquina.
+android/build
+android/app/build
+android/.gradle
+android/captures
+# Ruta del SDK de quien compila: distinta en cada ordenador.
+android/local.properties
+# Copia de la web que rehace `cap sync` en cada compilación.
+android/app/src/main/assets/public
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/capacitor-cordova-android-plugins
+
+# iOS no se puede generar desde Windows; cuando exista, mismo criterio.
+ios/App/build
+ios/App/Pods
+ios/App/App/public
+ios/App/App/capacitor.config.json
+ios/App/App/capacitor.plugins.json
+
+# Claves de firma: si esto acaba en el repositorio, cualquiera puede publicar
+# actualizaciones de la app en tu nombre.
+*.keystore
+*.jks
+android/app/google-services.json
 
 # Supabase CLI
 supabase/.temp

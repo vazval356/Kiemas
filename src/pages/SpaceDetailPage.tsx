@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
+import { inviteUrl } from '../lib/appUrl'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -103,7 +104,7 @@ export function SpaceDetailPage() {
   }
 
   function inviteLink(code: string): string {
-    return `${window.location.origin}/#/spaces?code=${code}`
+    return inviteUrl(code)
   }
 
   function inviteState(invite: Invite): string {

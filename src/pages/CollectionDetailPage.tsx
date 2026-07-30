@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -52,7 +53,9 @@ export function CollectionDetailPage() {
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
   const outside = places.filter((p) => !collection.placeIds.includes(p.id))
   const share = collection.share && !collection.share.revokedAt ? collection.share : null
-  const publicUrl = share ? `${window.location.origin}/#/l/${share.token}` : ''
+  // No se usa window.location.origin: dentro del contenedor nativo vale
+  // http://localhost y el enlace compartido llegaría roto a quien lo recibe.
+  const publicUrl = share ? publicListUrl(share.token) : ''
 
   async function run(action: () => Promise<void>) {
     setBusy(true)

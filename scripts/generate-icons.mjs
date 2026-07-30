@@ -1,5 +1,6 @@
 import sharp from 'sharp'
 import { existsSync } from 'node:fs'
+import { mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -135,5 +136,21 @@ await write('apple-touch-icon.png', 180, 0.78)
 // símbolo sobresale un pelo por las esquinas pero ninguna máscara real (círculo,
 // cuadrado redondeado o gota) llega a morder el trazo.
 await write('icon-512-maskable.png', 512, 0.62)
+
+// ── Fuentes para las apps nativas ───────────────────────────────────────────
+// `@capacitor/assets` parte de estas dos imágenes y genera por su cuenta todas
+// las densidades que piden Android e iOS. Se escriben aquí, del mismo recorte,
+// para que el icono de la app y el de la PWA no puedan divergir.
+const assetsDir = join(root, 'assets')
+await mkdir(assetsDir, { recursive: true })
+
+await sharp(await compose(1024, 0.78)).toFile(join(assetsDir, 'icon.png'))
+console.log('  assets/icon.png  1024×1024  (fuente para Android e iOS)')
+
+// La pantalla de arranque se recorta al formato de cada pantalla, así que el
+// símbolo va pequeño y muy centrado: al 22% sobrevive incluso a un móvil muy
+// alargado sin que se le coman los bordes.
+await sharp(await compose(2732, 0.22)).toFile(join(assetsDir, 'splash.png'))
+console.log('  assets/splash.png  2732×2732  (pantalla de arranque)')
 
 console.log('\nListo.\n')
