@@ -1,3 +1,4 @@
+import { BRAND_NAME } from './brand'
 import type { Locale } from './types'
 
 /**
@@ -15,7 +16,7 @@ import type { Locale } from './types'
 
 const es = {
   // Genéricos
-  'app.name': 'Kedada',
+  'app.name': BRAND_NAME,
   'common.save': 'Guardar',
   'common.cancel': 'Cancelar',
   'common.delete': 'Borrar',
@@ -403,14 +404,14 @@ const es = {
   'public.expired': 'Este enlace ha caducado.',
   'public.revoked': 'Este enlace ya no está disponible.',
   'public.empty': 'Esta lista está vacía.',
-  'public.madeWith': 'Hecho con Kedada',
+  'public.madeWith': `Hecho con ${BRAND_NAME}`,
   'public.openInMaps': 'Ver en el mapa',
 } as const
 
 export type TranslationKey = keyof typeof es
 
 const en: Record<TranslationKey, string> = {
-  'app.name': 'Kedada',
+  'app.name': BRAND_NAME,
   'common.save': 'Save',
   'common.cancel': 'Cancel',
   'common.delete': 'Delete',
@@ -773,7 +774,7 @@ const en: Record<TranslationKey, string> = {
   'public.expired': 'This link has expired.',
   'public.revoked': 'This link is no longer available.',
   'public.empty': 'This list is empty.',
-  'public.madeWith': 'Made with Kedada',
+  'public.madeWith': `Made with ${BRAND_NAME}`,
   'public.openInMaps': 'View on the map',
 }
 

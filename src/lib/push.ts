@@ -1,6 +1,7 @@
 import { PushNotifications } from '@capacitor/push-notifications'
 import { Capacitor } from '@capacitor/core'
 import { isNative } from './appUrl'
+import { storageKey } from './brand'
 import { supabase } from './supabaseClient'
 
 /**
@@ -14,7 +15,7 @@ import { supabase } from './supabaseClient'
  * rota los tokens por su cuenta y uno viejo deja de recibir en silencio.
  */
 
-const STORED_TOKEN_KEY = 'kedada-push-token'
+const STORED_TOKEN_KEY = storageKey('push-token')
 
 let started = false
 

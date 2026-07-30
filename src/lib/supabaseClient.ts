@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { storageKey } from './brand'
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
@@ -6,7 +7,7 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 export const isSupabaseConfigured = Boolean(url && anonKey)
 
 /** Clave donde se guarda si la persona quiere que recordemos este dispositivo. */
-export const REMEMBER_KEY = 'kedada-remember'
+export const REMEMBER_KEY = storageKey('remember')
 
 /**
  * Almacenamiento de sesión que respeta el «recordar dispositivo», heredado de
@@ -55,7 +56,7 @@ export const supabase: SupabaseClient = isSupabaseConfigured
         // `detectSessionInUrl` en false porque dentro de Capacitor la app no se
         // sirve desde una URL con fragmento de OAuth.
         detectSessionInUrl: false,
-        storageKey: 'kedada-auth',
+        storageKey: storageKey('auth'),
         storage: rememberAwareStorage,
       },
     })

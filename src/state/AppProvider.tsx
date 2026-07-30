@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { storageKey } from '../lib/brand'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { setupPush, teardownPush } from '../lib/push'
@@ -19,7 +20,7 @@ import { AppContext, type AppState, type AuthStatus } from './appState'
  * así que en cuanto hay sesión hay algo que enseñar.
  */
 
-const ACTIVE_SPACE_KEY = 'kedada-active-space'
+const ACTIVE_SPACE_KEY = storageKey('active-space')
 
 function readStoredSpaceId(): string | null {
   try {
