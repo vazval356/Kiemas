@@ -15,7 +15,7 @@ Este documento cubre lo que hay hecho, lo que tienes que hacer tú y lo que falt
 | Enlaces externos | ✅ Se abren en el navegador del sistema |
 | Barra de estado | ✅ La app dibuja debajo, como pide el diseño |
 | Enlaces compartibles | ✅ Usan `VITE_PUBLIC_URL`, no `localhost` |
-| Enlaces profundos | ⚠️ Configurados, pendientes de dominio |
+| Enlaces profundos | ⚠️ Apuntan a kedada356.vercel.app; revisar al tener dominio propio |
 | Notificaciones push | ⚠️ Todo escrito, pendiente de Firebase |
 | Proyecto iOS | ❌ Imposible desde Windows |
 
@@ -57,7 +57,7 @@ Para un APK de prueba que puedas pasar a alguien:
 En `.env`:
 
 ```
-VITE_PUBLIC_URL=https://kedada.app
+VITE_PUBLIC_URL=https://kedada356.vercel.app
 ```
 
 Es la base de los enlaces de invitación y de listas públicas. Dentro del
@@ -68,12 +68,12 @@ que el fallo pase desapercibido.
 
 ### 2. Enlaces profundos (cuando tengas dominio)
 
-El `AndroidManifest.xml` ya declara el filtro para `https://kedada.app`. Para
+El `AndroidManifest.xml` ya declara el filtro para `https://kedada356.vercel.app`. Para
 que Android lo verifique y abra la app en vez del navegador, hay que publicar en
 el dominio:
 
 ```
-https://kedada.app/.well-known/assetlinks.json
+https://kedada356.vercel.app/.well-known/assetlinks.json
 ```
 
 con la huella SHA-256 del certificado con el que firmes. La sacas así:

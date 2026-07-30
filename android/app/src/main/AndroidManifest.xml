@@ -24,7 +24,7 @@
               lista pública abre Kedada en vez del navegador.
 
               android:autoVerify exige publicar
-              https://kedada.app/.well-known/assetlinks.json con la huella SHA-256
+              https://kedada356.vercel.app/.well-known/assetlinks.json con la huella SHA-256
               del certificado de firma. Hasta que exista el dominio, Android
               simplemente no verifica y el enlace sigue abriendo el navegador:
               no rompe nada, solo no llega a activarse.
@@ -33,7 +33,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="kedada.app" />
+                <data android:scheme="https" android:host="kedada356.vercel.app" />
             </intent-filter>
         </activity>
 
