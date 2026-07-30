@@ -72,6 +72,18 @@ export function ProfilePage() {
 
         <section className="mt-8 flex flex-col gap-2">
           <Link
+            to="/wrapped"
+            className="rounded-control bg-gradient-to-r from-primary to-primary-container px-4 py-3 font-semibold text-on-primary squish"
+          >
+            ✨ {t('wrapped.open')}
+          </Link>
+          <Link
+            to="/following"
+            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
+          >
+            {t('followed.title')}
+          </Link>
+          <Link
             to="/settings"
             className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
           >

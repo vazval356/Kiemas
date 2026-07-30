@@ -25,6 +25,8 @@ import type {
   ActivityEntry,
   PublicList,
   ActivityVerb,
+  FollowedList,
+  YearInReview,
 } from './types'
 import type { DataApi } from './dataApi'
 import { parseCoord, resizeImage } from './utils'
@@ -877,6 +879,52 @@ export const supabaseApi: DataApi = {
       objectLabel: r.object_label,
       createdAt: r.created_at,
     }))
+  },
+
+  // ── Seguir listas y resumen anual ────────────────────────────────────────
+
+  async followList(token: string) {
+    const res = await supabase.rpc('follow_public_list', { p_token: token.trim().toLowerCase() })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async unfollowList(token: string) {
+    const res = await supabase.rpc('unfollow_public_list', { p_token: token.trim().toLowerCase() })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async listFollowedLists(): Promise<FollowedList[]> {
+    const res = await supabase.rpc('my_followed_lists')
+    if (res.error) throw new Error(res.error.message)
+    return (res.data as Record<string, unknown>[]).map((r) => ({
+      token: r.token as string,
+      name: r.name as string,
+      description: (r.description as string) ?? '',
+      spaceName: r.space_name as string,
+      places: Number(r.places),
+      followedAt: r.followed_at as string,
+      available: r.available === true,
+    }))
+  },
+
+  async yearInReview(spaceId: string, year: number): Promise<YearInReview> {
+    const res = await supabase.rpc('year_in_review', { p_space_id: spaceId, p_year: year })
+    if (res.error) throw new Error(res.error.message)
+    const d = res.data as Record<string, unknown>
+    return {
+      year: Number(d.year),
+      spaceName: d.space_name as string,
+      placesSaved: Number(d.places_saved),
+      placesVisited: Number(d.places_visited),
+      plansTotal: Number(d.plans_total),
+      plansAttended: Number(d.plans_attended),
+      kmTogether: Number(d.km_together),
+      topCategory: (d.top_category as string) ?? null,
+      topPlace: (d.top_place as string) ?? null,
+      busiestMonth: d.busiest_month === null ? null : Number(d.busiest_month),
+      companion: (d.companion as string) ?? null,
+      myAvgRating: d.my_avg_rating === null ? null : Number(d.my_avg_rating),
+    }
   },
 
   // ── Cumplimiento ─────────────────────────────────────────────────────────

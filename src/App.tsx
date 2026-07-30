@@ -8,6 +8,7 @@ import { AuthPage } from './pages/AuthPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { CollectionDetailPage } from './pages/CollectionDetailPage'
 import { CollectionsPage } from './pages/CollectionsPage'
+import { FollowedListsPage } from './pages/FollowedListsPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
@@ -20,6 +21,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { SetupPage } from './pages/SetupPage'
 import { SpaceDetailPage } from './pages/SpaceDetailPage'
 import { SpacesPage } from './pages/SpacesPage'
+import { YearInReviewPage } from './pages/YearInReviewPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
 
@@ -37,6 +39,8 @@ const FULL_SCREEN = [
   '/plan/',
   '/collections',
   '/activity',
+  '/following',
+  '/wrapped',
 ]
 
 function Shell() {
@@ -68,6 +72,8 @@ function Shell() {
         <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/collections/:id" element={<CollectionDetailPage />} />
         <Route path="/activity" element={<ActivityPage />} />
+        <Route path="/following" element={<FollowedListsPage />} />
+        <Route path="/wrapped" element={<YearInReviewPage />} />
         <Route path="/spaces" element={<SpacesPage />} />
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />

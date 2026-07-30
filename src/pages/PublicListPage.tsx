@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { createTranslate, detectLocale } from '../lib/i18n'
-import { getPublicList, rpcErrorCode } from '../lib/supabaseApi'
+import { getPublicList, rpcErrorCode, supabaseApi } from '../lib/supabaseApi'
+import { supabase } from '../lib/supabaseClient'
 import type { PublicList } from '../lib/types'
 import { priceLabel } from '../lib/utils'
 
@@ -24,6 +25,25 @@ export function PublicListPage() {
   const [list, setList] = useState<PublicList | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  // Esta pantalla vive fuera de AppProvider, porque quien abre el enlace puede
+  // no tener cuenta. Así que la sesión se consulta aquí directamente.
+  const [signedIn, setSignedIn] = useState<boolean | null>(null)
+  const [following, setFollowing] = useState(false)
+  const [followBusy, setFollowBusy] = useState(false)
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => {
+      const has = Boolean(data.session)
+      setSignedIn(has)
+      if (!has || !token) return
+      // Si ya la sigue, el botón tiene que salir en ese estado, no invitando a
+      // seguir algo que ya está guardado.
+      void supabaseApi
+        .listFollowedLists()
+        .then((all) => setFollowing(all.some((l) => l.token === token.toLowerCase())))
+        .catch(() => {})
+    })
+  }, [token])
 
   useEffect(() => {
     if (!token) return
@@ -146,6 +166,35 @@ export function PublicListPage() {
               </li>
             ))}
           </ul>
+        )}
+
+        {signedIn && token && (
+          <button
+            type="button"
+            disabled={followBusy}
+            onClick={() => {
+              setFollowBusy(true)
+              const action = following
+                ? supabaseApi.unfollowList(token)
+                : supabaseApi.followList(token)
+              void action
+                .then(() => setFollowing(!following))
+                .catch(() => {})
+                .finally(() => setFollowBusy(false))
+            }}
+            className={`mt-8 w-full rounded-full py-3.5 font-semibold squish disabled:opacity-50 ${
+              following
+                ? 'border border-outline-variant text-on-surface-variant'
+                : 'bg-primary text-on-primary'
+            }`}
+          >
+            {following ? t('public.following') : t('public.follow')}
+          </button>
+        )}
+        {signedIn === false && (
+          <p className="mt-8 rounded-card bg-surface-container px-4 py-3 text-center text-sm text-on-surface-variant">
+            {t('public.needAccount')}
+          </p>
         )}
 
         <footer className="mt-10 text-center">

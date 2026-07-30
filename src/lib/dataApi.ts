@@ -19,6 +19,8 @@ import type {
   Comment,
   ActivityEntry,
   PublicList,
+  FollowedList,
+  YearInReview,
 } from './types'
 
 /**
@@ -139,6 +141,14 @@ export interface DataApi {
   // ── Feed de actividad (Fase 3) ───────────────────────────────────────────
   /** Solo lectura: lo escriben disparadores en la base de datos. */
   listActivity(spaceId: string, limit?: number): Promise<ActivityEntry[]>
+
+  // ── Seguir listas y resumen anual (Fase 4) ───────────────────────────────
+  /** Sigue una lista pública por su token. Falla si el enlace ya no sirve. */
+  followList(token: string): Promise<void>
+  unfollowList(token: string): Promise<void>
+  listFollowedLists(): Promise<FollowedList[]>
+  /** Resumen del año para el espacio indicado. Se calcula al vuelo. */
+  yearInReview(spaceId: string, year: number): Promise<YearInReview>
 
   // ── Cumplimiento ─────────────────────────────────────────────────────────
   blockUser(userId: string): Promise<void>

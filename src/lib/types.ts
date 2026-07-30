@@ -301,6 +301,39 @@ export interface PublicList {
   }[]
 }
 
+// ───────────────────────────────────────────────────────────────────────────
+// Fase 4
+// ───────────────────────────────────────────────────────────────────────────
+
+/** Una lista pública que sigo. Puede haber dejado de estar disponible. */
+export interface FollowedList {
+  token: string
+  name: string
+  description: string
+  spaceName: string
+  places: number
+  followedAt: string
+  /** false si quien la publicó la revocó o caducó. */
+  available: boolean
+}
+
+export interface YearInReview {
+  year: number
+  spaceName: string
+  placesSaved: number
+  placesVisited: number
+  plansTotal: number
+  plansAttended: number
+  /** Suma de distancias entre los sitios de planes consecutivos del año. */
+  kmTogether: number
+  topCategory: string | null
+  topPlace: string | null
+  /** 1-12, o null si no hubo planes. */
+  busiestMonth: number | null
+  companion: string | null
+  myAvgRating: number | null
+}
+
 export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fake' | 'other'
 
 export interface ReportInput {
