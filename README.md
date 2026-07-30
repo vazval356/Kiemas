@@ -97,3 +97,4 @@ antes de la Fase 5.
 | 5 | Suscripciones Free / Plus / Pro | — |
 | 6 | Feed «Explorar» y recomendaciones | — |
 | 7 | Perfiles de negocio, patrocinios, afiliación, analítica | — |
+# Kedada
