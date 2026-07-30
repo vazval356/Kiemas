@@ -16,7 +16,7 @@ Este documento cubre lo que hay hecho, lo que tienes que hacer tú y lo que falt
 | Barra de estado | ✅ La app dibuja debajo, como pide el diseño |
 | Enlaces compartibles | ✅ Usan `VITE_PUBLIC_URL`, no `localhost` |
 | Enlaces profundos | ⚠️ Configurados, pendientes de dominio |
-| Notificaciones push | ❌ No empezadas — requieren Firebase |
+| Notificaciones push | ⚠️ Todo escrito, pendiente de Firebase |
 | Proyecto iOS | ❌ Imposible desde Windows |
 
 ---
@@ -105,16 +105,56 @@ instalaciones y las reseñas. No lo metas en el repositorio.
 
 ### Notificaciones push
 
-El documento de alcance las pone en la Fase 2, pero no están hechas. Necesitan:
+**Todo el código está escrito.** Falta solo enchufar Firebase, que requiere
+credenciales tuyas.
 
-1. Un proyecto en **Firebase** y su `google-services.json` dentro de `android/app/`.
-2. El complemento `@capacitor/push-notifications`.
-3. Una tabla `device_tokens` en Supabase que guarde el token de cada dispositivo.
-4. Una Edge Function que envíe la notificación cuando alguien crea un plan,
-   responde a una encuesta o comenta.
+Cómo funciona: los disparadores de la base de datos deciden a quién avisar y
+escriben en `notification_outbox`, ya con el texto traducido al idioma de quien
+lo va a leer. Una Edge Function vacía esa bandeja cada pocos minutos y habla con
+Firebase. Los avisos no se envían dentro de la transacción que crea el plan
+—si Firebase tardara o se cayera, fallaría el plan por culpa del aviso.
 
-No se pueden probar sin las credenciales de Firebase, así que quedan a la espera
-de que crees el proyecto.
+Se avisa al crear un plan, al confirmar la fecha de una encuesta y al comentar
+en un sitio. Nunca a quien provoca el hecho, ni a quien no tenga ningún
+dispositivo registrado.
+
+**Pasos que te tocan:**
+
+1. Crea un proyecto en [Firebase](https://console.firebase.google.com), añade
+   una app Android con el paquete `com.kedada.app` y descarga
+   `google-services.json`. Déjalo en `android/app/` — está en `.gitignore`
+   porque identifica tu proyecto.
+
+2. En **Configuración del proyecto → Cuentas de servicio**, genera una clave
+   privada nueva. Descarga el JSON.
+
+3. Publica la función y guarda los secretos:
+
+   ```bash
+   supabase functions deploy send-push --no-verify-jwt
+   supabase secrets set FCM_SERVICE_ACCOUNT="$(cat serviceAccount.json)"
+   supabase secrets set CRON_SECRET=una-cadena-larga-y-aleatoria
+   ```
+
+   `--no-verify-jwt` porque la llama un programador, no una persona; la
+   protección es la cabecera `x-cron-secret`.
+
+4. Programa la ejecución. En el panel de Supabase, **Integrations → Cron**:
+
+   ```
+   cada minuto → POST https://TUPROYECTO.supabase.co/functions/v1/send-push
+   cabecera: x-cron-secret: <lo que pusieras arriba>
+   ```
+
+5. Compila e instala la app en un móvil de verdad. **En el emulador las
+   notificaciones no llegan** si no tiene los Servicios de Google Play.
+
+**Para probar que funciona:** con dos cuentas en el mismo espacio y la app
+instalada en un móvil, crea un plan desde la otra cuenta. Si no llega nada,
+mira `notification_outbox`: si hay filas con `sent_at` a null y `last_error`
+relleno, el problema está en Firebase; si no hay filas, no se llegó a encolar
+—normalmente porque el móvil no registró su token, y eso se ve en
+`device_tokens`.
 
 ### iOS
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
+import { setupPush, teardownPush } from '../lib/push'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
@@ -125,7 +126,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (loadedRef.current) return
       loadedRef.current = true
       void refreshSpaces()
-        .then(() => setAuthStatus('ready'))
+        .then(() => {
+          setAuthStatus('ready')
+          // Después de tener sesión: el registro llama a una RPC que exige
+          // estar autenticado. Se pide en cada arranque porque Firebase rota
+          // los tokens y uno viejo deja de recibir en silencio.
+          void setupPush((route) => {
+            window.location.hash = route
+          })
+        })
         .catch(() => {
           // Sesión válida pero sin perfil: algo se ha quedado a medias en el
           // alta. Es preferible sacar a la persona que dejarla en un limbo.
@@ -187,6 +196,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    // Antes de cerrar la sesión: la baja del dispositivo necesita estar
+    // autenticado. Sin esto, el móvil seguiría recibiendo los avisos de la
+    // cuenta anterior, que en un dispositivo compartido significa enseñar los
+    // planes de otra persona en la pantalla de bloqueo.
+    await teardownPush()
     await supabase.auth.signOut()
     storeSpaceId(null)
   }, [])
