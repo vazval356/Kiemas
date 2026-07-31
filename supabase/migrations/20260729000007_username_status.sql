@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Decir POR QUÉ un @usuario no vale
+-- Kopasymas · Decir POR QUÉ un @usuario no vale
 --
 -- `is_username_available()` devolvía un booleano, así que la interfaz no podía
 -- distinguir «lo tiene otra persona» de «está reservado». Al escribir `soporte`

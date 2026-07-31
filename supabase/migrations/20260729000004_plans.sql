@@ -1,7 +1,7 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 2 · Planes y calendario
+-- Kopasymas · Fase 2 · Planes y calendario
 --
--- Es lo que separa a Kedada de un mapa de sitios: el lugar donde el grupo
+-- Es lo que separa a Kopasymas de un mapa de sitios: el lugar donde el grupo
 -- decide y confirma cuándo va.
 --
 -- Una sola tabla `plans` cubre los dos modos de la pantalla «New Plan»:

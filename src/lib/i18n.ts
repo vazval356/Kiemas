@@ -409,7 +409,7 @@ const es = {
   'public.follow': 'Seguir esta lista',
   'public.following': 'Siguiendo',
   'public.followHint': 'Guárdala para volver desde tu perfil.',
-  'public.needAccount': 'Entra en Kedada para seguir esta lista.',
+  'public.needAccount': 'Entra en Kopasymas para seguir esta lista.',
 
   // Listas seguidas (Fase 4)
   'followed.title': 'Listas que sigues',
@@ -812,7 +812,7 @@ const en: Record<TranslationKey, string> = {
   'public.follow': 'Follow this list',
   'public.following': 'Following',
   'public.followHint': 'Save it to come back from your profile.',
-  'public.needAccount': 'Sign in to Kedada to follow this list.',
+  'public.needAccount': 'Sign in to Kopasymas to follow this list.',
 
   'followed.title': 'Lists you follow',
   'followed.none': "You don't follow any list yet",

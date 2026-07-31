@@ -1,10 +1,10 @@
-# Kedada 🗺️📅
+# Kopasymas 🗺️📅
 
 Mapa compartido de sitios y calendario de planes, para grupos de cualquier
 tamaño y también para quien lo usa en solitario.
 
 Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo para
-parejas. Kedada hereda su interfaz y sus decisiones técnicas, y rehace el modelo
+parejas. Kopasymas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
 **Estado: Fase 0 — cimientos.** La base de datos está terminada y probada; la
@@ -97,4 +97,4 @@ antes de la Fase 5.
 | 5 | Suscripciones Free / Plus / Pro | — |
 | 6 | Feed «Explorar» y recomendaciones | — |
 | 7 | Perfiles de negocio, patrocinios, afiliación, analítica | — |
-# Kedada
+# Kopasymas

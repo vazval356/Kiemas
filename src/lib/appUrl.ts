@@ -5,7 +5,7 @@ import { Capacitor } from '@capacitor/core'
  *
  * Este fichero existe por un fallo que solo aparece al empaquetar. Los enlaces
  * de invitación y de lista pública se construían con `window.location.origin`,
- * que en el navegador da `https://kedada.app` pero dentro del contenedor de
+ * que en el navegador da `https://kopasymas.app` pero dentro del contenedor de
  * Capacitor da `http://localhost` (Android) o `capacitor://localhost` (iOS).
  * Es decir: todo enlace compartido desde el móvil —justo el caso normal—
  * llegaba roto a quien lo recibía, y en web parecía funcionar perfectamente.

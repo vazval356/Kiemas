@@ -1,4 +1,4 @@
-project_id = "kedada"
+project_id = "kopasymas"
 
 [api]
 enabled = true
@@ -19,7 +19,7 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173", "capacitor://localhost", "kedada://auth"]
+additional_redirect_urls = ["http://localhost:5173", "capacitor://localhost", "kopasymas://auth"]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 enable_signup = true

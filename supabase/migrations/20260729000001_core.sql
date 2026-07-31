@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 0-1 · Tablas base
+-- Kopasymas · Fase 0-1 · Tablas base
 --
 -- Generaliza el modelo de Warm Hearth (`couples`, exactamente dos personas) a
 -- espacios de tamaño variable con roles. Aquí solo van tablas, índices y
@@ -149,7 +149,7 @@ create table if not exists public.places (
   lng double precision not null check (lng between -180 and 180),
   category_id uuid references public.categories (id) on delete set null,
   status text not null default 'want_to_go' check (status in ('want_to_go', 'visited')),
-  -- Warm Hearth usaba 1-3; el formulario de Kedada muestra $ $$ $$$ $$$$.
+  -- Warm Hearth usaba 1-3; el formulario de Kopasymas muestra $ $$ $$$ $$$$.
   price_level int check (price_level between 1 and 4),
   favorite boolean not null default false,
   notes text not null default '',

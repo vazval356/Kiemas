@@ -1,4 +1,4 @@
-package com.kedada.app;
+package com.kopasymas.app;
 
 import com.getcapacitor.BridgeActivity;
 

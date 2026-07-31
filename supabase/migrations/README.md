@@ -1,4 +1,4 @@
-# Esquema de Kedada
+# Esquema de Kopasymas
 
 ## Qué hay ahora (Fases 0–2)
 

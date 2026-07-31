@@ -1,4 +1,4 @@
-# Llevar Kedada al móvil
+# Llevar Kopasymas al móvil
 
 La app es la misma base de código web, envuelta con [Capacitor](https://capacitorjs.com).
 Este documento cubre lo que hay hecho, lo que tienes que hacer tú y lo que falta.
@@ -15,7 +15,7 @@ Este documento cubre lo que hay hecho, lo que tienes que hacer tú y lo que falt
 | Enlaces externos | ✅ Se abren en el navegador del sistema |
 | Barra de estado | ✅ La app dibuja debajo, como pide el diseño |
 | Enlaces compartibles | ✅ Usan `VITE_PUBLIC_URL`, no `localhost` |
-| Enlaces profundos | ⚠️ Apuntan a kedada356.vercel.app; revisar al tener dominio propio |
+| Enlaces profundos | ⚠️ Apuntan a kopasymas.vercel.app; revisar al tener dominio propio |
 | Notificaciones push | ⚠️ Todo escrito, pendiente de Firebase |
 | Proyecto iOS | ❌ Imposible desde Windows |
 
@@ -57,7 +57,7 @@ Para un APK de prueba que puedas pasar a alguien:
 En `.env`:
 
 ```
-VITE_PUBLIC_URL=https://kedada356.vercel.app
+VITE_PUBLIC_URL=https://kopasymas.vercel.app
 ```
 
 Es la base de los enlaces de invitación y de listas públicas. Dentro del
@@ -68,19 +68,27 @@ que el fallo pase desapercibido.
 
 ### 2. Enlaces profundos (cuando tengas dominio)
 
-El `AndroidManifest.xml` ya declara el filtro para `https://kedada356.vercel.app`. Para
+El `AndroidManifest.xml` ya declara el filtro para `https://kopasymas.vercel.app`. Para
 que Android lo verifique y abra la app en vez del navegador, hay que publicar en
 el dominio:
 
 ```
-https://kedada356.vercel.app/.well-known/assetlinks.json
+https://kopasymas.vercel.app/.well-known/assetlinks.json
 ```
 
 con la huella SHA-256 del certificado con el que firmes. La sacas así:
 
 ```bash
-keytool -list -v -keystore kedada.keystore -alias kedada
+keytool -list -v -keystore kedada.keystore
 ```
+
+El fichero sigue llamándose `kedada.keystore` aunque la app se llame ahora
+Kopasymas, y es intencionado: un keystore no es un nombre, es la identidad con
+la que Google Play reconoce que una actualización viene de ti. Su nombre y su
+alias dan igual; lo único que importa es que la huella no cambie, porque es la
+que está publicada en `assetlinks.json`. Renombrar el fichero es inofensivo,
+pero regenerarlo o cambiarle el alias no aporta nada y sí puede dejarte sin
+poder actualizar la app.
 
 Mientras no exista, Android no verifica nada y los enlaces siguen abriéndose en
 el navegador: no rompe nada, simplemente no llega a activarse.
@@ -89,8 +97,12 @@ el navegador: no rompe nada, simplemente no llega a activarse.
 
 Google Play exige un APK firmado con un certificado propio.
 
+Este paso **ya está hecho**: el certificado existe en `kedada.keystore` y su
+huella está publicada. El comando queda aquí solo por si algún día hubiera que
+empezar de cero con un proyecto nuevo.
+
 ```bash
-keytool -genkey -v -keystore kedada.keystore -alias kedada \
+keytool -genkey -v -keystore kopasymas.keystore -alias kopasymas \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
@@ -121,7 +133,7 @@ dispositivo registrado.
 **Pasos que te tocan:**
 
 1. Crea un proyecto en [Firebase](https://console.firebase.google.com), añade
-   una app Android con el paquete `com.kedada.app` y descarga
+   una app Android con el paquete `com.kopasymas.app` y descarga
    `google-services.json`. Déjalo en `android/app/` — está en `.gitignore`
    porque identifica tu proyecto.
 

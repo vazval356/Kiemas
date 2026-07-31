@@ -15,8 +15,8 @@ npm run icons
 
 ## El script recorta el símbolo por su cuenta
 
-El logotipo de Kedada es tarjeta blanca + símbolo de la K + la palabra
-«Kedada». Eso funciona en una cabecera, pero es mal icono de app:
+El logotipo de Kopasymas es tarjeta blanca + símbolo de la K + la palabra
+«Kopasymas». Eso funciona en una cabecera, pero es mal icono de app:
 
 - **Las esquinas redondeadas y la sombra sobran.** iOS y Android aplican su
   propia máscara encima; si el PNG ya viene redondeado se ven dos redondeos

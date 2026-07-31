@@ -86,7 +86,7 @@ function setupExternalLinks(): void {
 /**
  * Enlaces que abren la app.
  *
- * Cuando alguien toca un enlace de invitación o de lista pública y tiene Kedada
+ * Cuando alguien toca un enlace de invitación o de lista pública y tiene Kopasymas
  * instalada, Android abre la app en vez del navegador y entrega aquí la URL. Se
  * traslada el fragmento a la ruta interna para acabar en la pantalla correcta
  * en vez de en el mapa.

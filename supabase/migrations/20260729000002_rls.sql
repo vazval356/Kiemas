@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 0-1 · Seguridad a nivel de fila y funciones RPC
+-- Kopasymas · Fase 0-1 · Seguridad a nivel de fila y funciones RPC
 --
 -- ─── El punto crítico de todo el esquema ───────────────────────────────────
 -- Una política sobre `space_members` que consulte `space_members` para decidir

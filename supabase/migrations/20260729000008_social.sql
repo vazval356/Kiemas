@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 3 · Social y contenido
+-- Kopasymas · Fase 3 · Social y contenido
 --
 -- Etiquetas de ambiente, colecciones, comentarios en hilo, feed de actividad y
 -- listas públicas compartibles por enlace.

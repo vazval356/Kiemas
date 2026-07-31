@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url'
 /**
  * Genera los iconos de la app a partir de `public/icons/source.png`.
  *
- * El original de Kedada es un logotipo completo: tarjeta blanca con esquinas
- * redondeadas y sombra, el símbolo de la K, y debajo la palabra «Kedada». Eso
+ * El original de Kopasymas es un logotipo completo: tarjeta blanca con esquinas
+ * redondeadas y sombra, el símbolo de la K, y debajo la palabra «Kopasymas». Eso
  * está bien para una cabecera, pero es mal icono de app por tres motivos:
  *
  *   · iOS y Android aplican SU máscara al icono. Si el PNG ya trae esquinas

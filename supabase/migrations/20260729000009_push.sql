@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 2 (pendiente) · Notificaciones push
+-- Kopasymas · Fase 2 (pendiente) · Notificaciones push
 --
 -- Dos tablas y unos disparadores. La idea es que la base de datos decida A
 -- QUIÉN hay que avisar y QUÉ decirle, y que la función de envío solo se ocupe

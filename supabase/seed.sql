@@ -1,13 +1,13 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Datos de prueba para desarrollo local
+-- Kopasymas · Datos de prueba para desarrollo local
 --
 -- Lo aplica `supabase db reset` automáticamente. NO ejecutar contra producción:
 -- crea usuarios con contraseñas conocidas.
 --
--- Cuentas (contraseña `kedada123` en las tres):
---   ana@kedada.test    · administradora de «Cuadrilla»
---   beto@kedada.test   · miembro de «Cuadrilla»
---   carla@kedada.test  · solo espacio personal, para probar el modo en solitario
+-- Cuentas (contraseña `kopasymas123` en las tres):
+--   ana@kopasymas.test    · administradora de «Cuadrilla»
+--   beto@kopasymas.test   · miembro de «Cuadrilla»
+--   carla@kopasymas.test  · solo espacio personal, para probar el modo en solitario
 -- ═══════════════════════════════════════════════════════════════════════════
 
 -- El disparador `handle_new_user` se encarga del perfil y del espacio personal.
@@ -18,18 +18,18 @@ insert into auth.users (
 )
 values
   ('a0000000-0000-4000-8000-000000000001', '00000000-0000-0000-0000-000000000000',
-   'authenticated', 'authenticated', 'ana@kedada.test',
-   crypt('kedada123', gen_salt('bf')), now(),
+   'authenticated', 'authenticated', 'ana@kopasymas.test',
+   crypt('kopasymas123', gen_salt('bf')), now(),
    '{"provider":"email","providers":["email"]}'::jsonb,
    '{"display_name":"Ana"}'::jsonb, now(), now()),
   ('a0000000-0000-4000-8000-000000000002', '00000000-0000-0000-0000-000000000000',
-   'authenticated', 'authenticated', 'beto@kedada.test',
-   crypt('kedada123', gen_salt('bf')), now(),
+   'authenticated', 'authenticated', 'beto@kopasymas.test',
+   crypt('kopasymas123', gen_salt('bf')), now(),
    '{"provider":"email","providers":["email"]}'::jsonb,
    '{"display_name":"Beto"}'::jsonb, now(), now()),
   ('a0000000-0000-4000-8000-000000000003', '00000000-0000-0000-0000-000000000000',
-   'authenticated', 'authenticated', 'carla@kedada.test',
-   crypt('kedada123', gen_salt('bf')), now(),
+   'authenticated', 'authenticated', 'carla@kopasymas.test',
+   crypt('kopasymas123', gen_salt('bf')), now(),
    '{"provider":"email","providers":["email"]}'::jsonb,
    '{"display_name":"Carla"}'::jsonb, now(), now())
 on conflict (id) do nothing;
@@ -41,7 +41,7 @@ select
   json_build_object('sub', u.id::text, 'email', u.email)::jsonb,
   'email', now(), now(), now()
 from auth.users u
-where u.email like '%@kedada.test'
+where u.email like '%@kopasymas.test'
   and not exists (select 1 from auth.identities i where i.user_id = u.id)
 on conflict do nothing;
 

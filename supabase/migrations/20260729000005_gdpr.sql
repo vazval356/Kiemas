@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 1 · RGPD: exportar y borrar los datos
+-- Kopasymas · Fase 1 · RGPD: exportar y borrar los datos
 --
 -- Obligatorio en cuanto haya usuarios reales en la UE, y también requisito de
 -- App Store (guideline 5.1.1(v): toda app con cuentas debe permitir borrarlas

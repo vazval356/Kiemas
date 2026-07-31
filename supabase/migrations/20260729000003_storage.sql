@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 0-1 · Almacenamiento de imágenes
+-- Kopasymas · Fase 0-1 · Almacenamiento de imágenes
 --
 -- Dos cubos:
 --   photos/   <space_id>/<place_id>/<uuid>.jpg   fotos de los sitios

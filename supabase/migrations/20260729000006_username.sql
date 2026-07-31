@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Fase 1 · El @usuario se puede elegir
+-- Kopasymas · Fase 1 · El @usuario se puede elegir
 --
 -- Hasta aquí el handle lo generaba `generate_username()` a partir del correo y
 -- no había forma de cambiarlo. Ahora se elige, siempre que no lo tenga nadie.

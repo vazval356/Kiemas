@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════════
--- Kedada · Pruebas de aislamiento (RLS)
+-- Kopasymas · Pruebas de aislamiento (RLS)
 --
 -- Comprueba que un espacio no puede ver ni tocar el contenido de otro, que los
 -- roles se respetan y que las invitaciones caducan de verdad.

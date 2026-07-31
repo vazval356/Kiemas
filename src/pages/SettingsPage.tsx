@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackIcon } from '../components/icons'
+import { BRAND_KEY } from '../lib/brand'
 import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -48,7 +49,7 @@ export function SettingsPage() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `kedada-datos-${new Date().toISOString().slice(0, 10)}.json`
+      a.download = `${BRAND_KEY}-datos-${new Date().toISOString().slice(0, 10)}.json`
       a.click()
       URL.revokeObjectURL(url)
       setNotice(t('settings.exported'))
