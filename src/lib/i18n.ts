@@ -482,6 +482,9 @@ const es = {
   'limit.plans': 'Ya hay un plan en marcha en este grupo.',
   'limit.plansHint': 'Cierra el que hay o amplía tu plan para llevar varios a la vez.',
   'limit.seePlans': 'Ver planes',
+
+  // Widget de pantalla de inicio (Fase 4)
+  'widget.empty': 'No tenéis ningún plan a la vista',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -926,6 +929,9 @@ const en: Record<TranslationKey, string> = {
   'limit.plans': "There's already a plan running in this group.",
   'limit.plansHint': 'Close the current one, or upgrade to run several at once.',
   'limit.seePlans': 'See plans',
+
+  // Home screen widget (Phase 4)
+  'widget.empty': 'No plans coming up',
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

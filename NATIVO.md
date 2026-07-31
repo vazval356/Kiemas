@@ -191,6 +191,50 @@ npx cap add ios
 npx cap open ios
 ```
 
+### Widget de pantalla de inicio
+
+Enseña el próximo plan del grupo. Se añade como cualquier otro widget: mantener
+pulsado en la pantalla de inicio → **Widgets** → Kopasymas.
+
+**El widget no habla con Supabase.** La app calcula cuál es el próximo plan —que
+ya lo tiene en pantalla— y se lo pasa hecho a `WidgetPlugin`, que lo guarda en
+SharedPreferences. Consultar la base de datos desde Java habría exigido sacar el
+token de sesión del WebView, renovarlo al caducar y repetir allí la lógica de
+permisos, todo para pintar tres líneas de texto.
+
+El precio de esa decisión: el widget solo se entera de novedades cuando alguien
+abre la app. Se compensa con dos cosas:
+
+- `updatePeriodMillis` lo despierta cada 30 minutos (el mínimo que Android
+  respeta de verdad; pedir menos solo lo aparenta).
+- En cada repintado compara la fecha guardada con la hora actual, así que un
+  plan que ya ha pasado deja de anunciarse aunque nadie haya abierto la app.
+
+Tocarlo abre la app en el plan, reutilizando el mismo `ACTION_VIEW` que los
+enlaces compartidos en vez de inventar una segunda vía de navegación.
+
+Está escrito en **Java y no en Kotlin** a propósito: el módulo `app` no tiene la
+cadena de Kotlin configurada, y añadirla por dos ficheros significaba meter el
+plugin de Gradle y arriesgar un desajuste de versiones con AGP 8.7.2.
+
+Ficheros implicados:
+
+| | |
+|---|---|
+| `NextPlanWidget.java` | Dibuja el widget y decide entre plan y estado vacío |
+| `WidgetPlugin.java` | Recibe los datos de la web y pide el repintado |
+| `res/layout/widget_next_plan.xml` | Los dos estados, alternados por visibilidad |
+| `res/xml/widget_next_plan_info.xml` | Tamaño y frecuencia de refresco |
+| `src/lib/widget.ts` | Elige el próximo plan y formatea la fecha |
+
+**El widget sigue al espacio activo.** Si estás en varios grupos, enseña el
+próximo plan de aquel en el que estuvieras al abrir la app por última vez, no el
+más cercano de todos. Es consecuencia de que la app solo carga los planes del
+espacio activo; cambiarlo obligaría a pedir todos los espacios en cada arranque.
+
+**iOS no lo tiene.** Un widget de iOS es una extensión de WidgetKit en Swift, y
+eso solo se construye desde un Mac con Xcode.
+
 ### Suscripciones (RevenueCat)
 
 Todo el código está escrito y no se puede probar todavía: los productos de

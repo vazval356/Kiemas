@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  `updatePeriodMillis` a 30 minutos, que es el mínimo que Android respeta de
+  verdad: pedir menos no acelera nada, solo aparenta hacerlo.
+
+  No está aquí para traer datos nuevos —eso lo hace la app al abrirse— sino para
+  que el widget pueda darse cuenta por su cuenta de que el plan guardado ya ha
+  pasado y dejar de anunciarlo.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_next_plan"
+    android:previewLayout="@layout/widget_next_plan"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:description="@string/widget_description" />

@@ -4,6 +4,7 @@ import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { setupPush, teardownPush } from '../lib/push'
 import { purchasesLogOut, setupPurchases } from '../lib/purchases'
+import { updateWidget } from '../lib/widget'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
@@ -165,6 +166,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       void refresh()
     })
   }, [authStatus, api, activeSpace, refresh])
+
+  // ── Widget de pantalla de inicio ─────────────────────────────────────────
+  // Se alimenta de lo que ya está cargado, sin pedir nada extra. Va aquí y no
+  // en la pantalla del calendario porque el widget tiene que quedar al día
+  // aunque esa pantalla no llegue a abrirse. En web no hace nada.
+  useEffect(() => {
+    if (authStatus !== 'ready') return
+    void updateWidget(plans, places, locale, t('widget.empty'))
+  }, [authStatus, plans, places, locale, t])
 
   const setActiveSpace = useCallback((spaceId: string) => {
     storeSpaceId(spaceId)

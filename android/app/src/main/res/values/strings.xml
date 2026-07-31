@@ -4,4 +4,15 @@
     <string name="title_activity_main">Kopasymas</string>
     <string name="package_name">com.kopasymas.app</string>
     <string name="custom_url_scheme">com.kopasymas.app</string>
+
+    <!--
+      Textos del widget.
+
+      Solo se ven mientras nadie haya abierto la app: en cuanto lo hace, el
+      contenido llega ya traducido desde la web, que es donde vive el idioma del
+      perfil. Duplicar aquí las traducciones significaría mantenerlas dos veces.
+    -->
+    <string name="widget_heading">PRÓXIMO PLAN</string>
+    <string name="widget_empty">Abre Kopasymas para ver vuestros planes</string>
+    <string name="widget_description">El próximo plan de tu grupo</string>
 </resources>

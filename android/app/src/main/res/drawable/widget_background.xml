@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Índigo eléctrico del sistema de diseño (#4648d4 → #6063ee), el mismo degradado
+  que usa la app en los elementos de acción. Las esquinas a 24dp son el radio de
+  contenedor del sistema.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:startColor="#4648D4"
+        android:endColor="#6063EE"
+        android:type="linear" />
+    <corners android:radius="24dp" />
+</shape>

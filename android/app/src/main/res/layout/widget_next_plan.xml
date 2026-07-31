@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  RemoteViews solo admite un puñado de contenedores: LinearLayout, RelativeLayout
+  y FrameLayout. Nada de ConstraintLayout, por eso la estructura es a base de
+  LinearLayout anidados.
+
+  Los dos estados —con plan y sin plan— viven los dos en el árbol y se enseña uno
+  u otro con la visibilidad. Un widget no puede inflar vistas condicionalmente
+  desde el proveedor.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_heading"
+        android:textColor="#CCFFFFFF"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.08"
+        android:maxLines="1" />
+
+    <!-- Con plan -->
+    <LinearLayout
+        android:id="@+id/widget_plan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/widget_when"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/widget_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:textColor="#CCFFFFFF"
+            android:textSize="13sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
+    </LinearLayout>
+
+    <!-- Sin plan. El texto por defecto solo se ve si nadie ha abierto la app
+         todavía; en cuanto lo hace, llega traducido desde la web. -->
+    <TextView
+        android:id="@+id/widget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/widget_empty"
+        android:textColor="#EEFFFFFF"
+        android:textSize="14sp"
+        android:maxLines="3"
+        android:visibility="gone" />
+</LinearLayout>
