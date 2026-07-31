@@ -1,7 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BackIcon, TrashIcon } from '../components/icons'
 import { nextRoundHour, toDateTimeLocalValue } from '../lib/dates'
+import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -32,6 +33,7 @@ export function PlanFormPage() {
   const [invited, setInvited] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [atLimit, setAtLimit] = useState(false)
 
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
 
@@ -52,6 +54,7 @@ export function PlanFormPage() {
 
     setBusy(true)
     setError('')
+    setAtLimit(false)
     try {
       const plan = await api.createPlan(activeSpace.id, {
         title: clean,
@@ -67,7 +70,14 @@ export function PlanFormPage() {
       await refresh()
       navigate(`/plan/${plan.id}`)
     } catch (e) {
-      setError(errorMessage(e, t('common.error')))
+      // El tope de planes se explica, en vez de soltar el código crudo del
+      // servidor: quien lo ve acaba de escribir un formulario entero.
+      if (rpcErrorCode(e) === 'limit_plans') {
+        setError(`${t('limit.plans')} ${t('limit.plansHint')}`)
+        setAtLimit(true)
+      } else {
+        setError(errorMessage(e, t('common.error')))
+      }
     } finally {
       setBusy(false)
     }
@@ -261,7 +271,19 @@ export function PlanFormPage() {
           className="kd-input resize-none"
         />
 
-        {error && <p className="mt-4 text-sm font-semibold text-error">{error}</p>}
+        {error && (
+          <div className="mt-4 text-sm font-semibold text-error">
+            <p>{error}</p>
+            {atLimit && (
+              <Link
+                to="/subscription"
+                className="mt-1 inline-block text-primary underline underline-offset-2"
+              >
+                {t('limit.seePlans')}
+              </Link>
+            )}
+          </div>
+        )}
 
         <button
           type="button"

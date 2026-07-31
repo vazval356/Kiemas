@@ -78,6 +78,12 @@ export function ProfilePage() {
             ✨ {t('wrapped.open')}
           </Link>
           <Link
+            to="/subscription"
+            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
+          >
+            {t('sub.open')}
+          </Link>
+          <Link
             to="/following"
             className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
           >

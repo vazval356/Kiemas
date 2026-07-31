@@ -7,8 +7,9 @@ Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo par
 parejas. Kopasymas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
-**Estado: Fase 0 — cimientos.** La base de datos está terminada y probada; la
-interfaz se porta en la Fase 1.
+**Estado: Fase 5 — monetización.** La app funciona de punta a punta en web y en
+Android. Quedan el widget de pantalla de inicio, y probar compras y
+notificaciones, que necesitan la app publicada en Play Console.
 
 ## Cómo está montado
 
@@ -90,11 +91,17 @@ antes de la Fase 5.
 | Fase | Qué añade | Estado |
 |---|---|---|
 | 0 | Cimientos: repositorio y modelo de datos | ✅ Hecha |
-| 1 | MVP multi-grupo: porte de la interfaz, invitaciones, RGPD, es/en | Siguiente |
-| 2 | Planes y calendario, encuestas de fecha, notificaciones | Esquema listo |
-| 3 | Etiquetas, colecciones, comentarios, feed, listas públicas | — |
-| 4 | Resumen anual, widget, seguir listas | — |
-| 5 | Suscripciones Free / Plus / Pro | — |
+| 1 | MVP multi-grupo: porte de la interfaz, invitaciones, RGPD, es/en | ✅ Hecha |
+| 2 | Planes y calendario, encuestas de fecha, notificaciones | ✅ Hecha |
+| 3 | Etiquetas, colecciones, comentarios, feed, listas públicas | ✅ Hecha |
+| — | Contenedor nativo: Capacitor, Android, enlaces profundos | ✅ Hecho |
+| 4 | Resumen anual y seguir listas | ✅ Hecha |
+| 4 | Widget de pantalla de inicio | Pendiente (Kotlin/SwiftUI) |
+| 5 | Suscripciones Free / Plus / Pro, códigos promocionales | ✅ Código listo ⚠️ |
 | 6 | Feed «Explorar» y recomendaciones | — |
 | 7 | Perfiles de negocio, patrocinios, afiliación, analítica | — |
+
+⚠️ Los límites y los códigos promocionales funcionan desde ya. Las compras
+necesitan productos dados de alta en Play Console, y para eso hace falta subir
+la app a una prueba cerrada. Ver [NATIVO.md](NATIVO.md).
 # Kopasymas

@@ -20,6 +20,9 @@ export function SpacesPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  // Solo cuando el fallo es por el tope del nivel: es el único caso en que
+  // ofrecer la pantalla de planes ayuda en vez de estorbar.
+  const [atLimit, setAtLimit] = useState(false)
 
   function translateJoinError(e: unknown): string {
     switch (rpcErrorCode(e)) {
@@ -31,6 +34,11 @@ export function SpacesPage() {
         return t('invite.revoked')
       case 'invite_exhausted':
         return t('invite.exhausted')
+      // El aforo lo marca quien creó el espacio, así que ampliarlo no está en
+      // manos de quien intenta entrar. Se dice, para no mandarle a la pantalla
+      // de planes a pagar por algo que no le va a servir.
+      case 'limit_members':
+        return `${t('limit.members')} ${t('limit.membersHint')}`
       default:
         return errorMessage(e, t('common.error'))
     }
@@ -42,6 +50,7 @@ export function SpacesPage() {
     setBusy(true)
     setError('')
     setNotice('')
+    setAtLimit(false)
     try {
       const space = await api.createSpace(name)
       await refreshSpaces()
@@ -50,7 +59,12 @@ export function SpacesPage() {
       setActiveSpace(space.id)
       setNewName('')
     } catch (e) {
-      setError(errorMessage(e, t('common.error')))
+      setError(
+        rpcErrorCode(e) === 'limit_spaces'
+          ? t('limit.spaces')
+          : errorMessage(e, t('common.error'))
+      )
+      setAtLimit(rpcErrorCode(e) === 'limit_spaces')
     } finally {
       setBusy(false)
     }
@@ -62,6 +76,7 @@ export function SpacesPage() {
     setBusy(true)
     setError('')
     setNotice('')
+    setAtLimit(false)
     try {
       const result = await api.joinWithCode(clean)
       await refreshSpaces()
@@ -134,9 +149,17 @@ export function SpacesPage() {
         <p className="mt-3 text-xs text-on-surface-variant">{t('spaces.personalNote')}</p>
 
         {error && (
-          <p className="mt-4 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
-            {error}
-          </p>
+          <div className="mt-4 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
+            <p>{error}</p>
+            {atLimit && (
+              <Link
+                to="/subscription"
+                className="mt-1.5 inline-block font-semibold underline underline-offset-2"
+              >
+                {t('limit.seePlans')}
+              </Link>
+            )}
+          </div>
         )}
         {notice && (
           <p className="mt-4 rounded-control bg-primary-fixed px-3 py-2 text-sm text-on-primary-fixed">

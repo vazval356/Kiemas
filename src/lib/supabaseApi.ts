@@ -27,6 +27,10 @@ import type {
   ActivityVerb,
   FollowedList,
   YearInReview,
+  Entitlement,
+  MyEntitlement,
+  PlanLimits,
+  PromoRedemption,
 } from './types'
 import type { DataApi } from './dataApi'
 import { parseCoord, resizeImage } from './utils'
@@ -219,6 +223,14 @@ export const RPC_ERRORS = [
   'share_expired',
   'comment_too_deep',
   'comment_parent_mismatch',
+  // Fase 5. Los `limit_*` los lanzan las RPC de creación al topar con el nivel.
+  'limit_spaces',
+  'limit_members',
+  'limit_plans',
+  'promo_not_found',
+  'promo_expired',
+  'promo_exhausted',
+  'promo_already_used',
 ] as const
 
 export type RpcErrorCode = (typeof RPC_ERRORS)[number]
@@ -924,6 +936,59 @@ export const supabaseApi: DataApi = {
       busiestMonth: d.busiest_month === null ? null : Number(d.busiest_month),
       companion: (d.companion as string) ?? null,
       myAvgRating: d.my_avg_rating === null ? null : Number(d.my_avg_rating),
+    }
+  },
+
+  // ── Suscripción ──────────────────────────────────────────────────────────
+
+  async myEntitlement(): Promise<MyEntitlement> {
+    const res = await supabase.rpc('my_entitlement')
+    if (res.error) throw new Error(res.error.message)
+    const d = res.data as Record<string, unknown>
+    return {
+      entitlement: d.entitlement as Entitlement,
+      source: (d.source ?? null) as MyEntitlement['source'],
+      promoCode: (d.promoCode ?? null) as string | null,
+      promoExpiresAt: (d.promoExpiresAt ?? null) as string | null,
+      currentPeriodEnd: (d.currentPeriodEnd ?? null) as string | null,
+      // Se conserva el null tal cual: aquí significa «sin tope», y convertirlo
+      // a 0 con un `?? 0` bloquearía justo a quien más ha pagado.
+      maxSpaces: (d.maxSpaces ?? null) as number | null,
+      maxMembers: (d.maxMembers ?? null) as number | null,
+      maxActivePlans: (d.maxActivePlans ?? null) as number | null,
+      spacesUsed: Number(d.spacesUsed ?? 0),
+    }
+  },
+
+  async listPlanLimits(): Promise<PlanLimits[]> {
+    const rows = check(
+      await supabase
+        .from('plan_limits')
+        .select('entitlement, max_spaces, max_members, max_active_plans')
+    )
+    const order: Entitlement[] = ['free', 'plus', 'pro']
+    return rows
+      .map((r) => ({
+        entitlement: r.entitlement as Entitlement,
+        maxSpaces: r.max_spaces,
+        maxMembers: r.max_members,
+        maxActivePlans: r.max_active_plans,
+      }))
+      // La tabla no garantiza orden, y el alfabético deja «free, plus, pro»
+      // por pura casualidad: bastaría renombrar un nivel para que la tabla de
+      // precios saliera desordenada. Se ordena a propósito.
+      .sort((a, b) => order.indexOf(a.entitlement) - order.indexOf(b.entitlement))
+  },
+
+  async redeemPromoCode(code: string): Promise<PromoRedemption> {
+    // La normalización de verdad la hace el servidor; esto solo evita el viaje
+    // cuando alguien pega el código con espacios de más.
+    const res = await supabase.rpc('redeem_promo_code', { p_code: code.trim() })
+    if (res.error) throw new Error(res.error.message)
+    const d = res.data as Record<string, unknown>
+    return {
+      entitlement: d.entitlement as Entitlement,
+      expiresAt: (d.expiresAt ?? null) as string | null,
     }
   },
 

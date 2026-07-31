@@ -38,6 +38,7 @@ begin;
 do $$
 declare
   v_space    uuid;
+  v_space2   uuid;
   v_place    uuid;
   v_code     text;
   v_personal uuid;
@@ -67,6 +68,15 @@ begin
     ('11111111-1111-1111-1111-111111111111', 'ana@test.dev',   '{"display_name":"Ana"}'::jsonb),
     ('22222222-2222-2222-2222-222222222222', 'beto@test.dev',  '{"display_name":"Beto"}'::jsonb),
     ('33333333-3333-3333-3333-333333333333', 'carla@test.dev', '{"display_name":"Carla"}'::jsonb);
+
+  -- Ana lleva suscripción de pago durante todo el guion. No es lo que se prueba
+  -- aquí, pero sin ella los límites del nivel gratuito harían fallar secciones
+  -- que no tienen nada que ver con el precio: la 10 crea un segundo plan en el
+  -- mismo espacio y chocaría con el tope de un plan activo. Atar estas pruebas
+  -- a los límites comerciales significaría romperlas cada vez que se ajuste una
+  -- tarifa. Los límites tienen su propia sección, la 16.
+  insert into public.subscriptions (user_id, provider, entitlement, status)
+  values ('11111111-1111-1111-1111-111111111111', 'stripe', 'pro', 'active');
 
   -- Ana crea el espacio y una invitación válida.
   perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
@@ -573,6 +583,182 @@ begin
   end if;
 
   raise notice 'OK 15 — RGPD: exportar funciona y borrar no destruye el grupo';
+
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 16. Límites de suscripción
+  --
+  -- Lo que hay que garantizar: que el tope viva en la base de datos y no se
+  -- pueda esquivar llamando a la API a pelo, y que la capacidad de un espacio
+  -- la marque quien lo creó y no quien intenta entrar. Si contara el que entra,
+  -- a un espacio gratuito le bastaría un amigo con plan de pago para volverse
+  -- ilimitado.
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  execute 'set local role none';
+
+  insert into auth.users (id, email, raw_user_meta_data) values
+    ('44444444-4444-4444-4444-444444444444', 'dani@test.dev',  '{"display_name":"Dani"}'::jsonb),
+    ('55555555-5555-5555-5555-555555555555', 'elena@test.dev', '{"display_name":"Elena"}'::jsonb);
+
+  insert into public.subscriptions (user_id, provider, entitlement, status)
+  values ('55555555-5555-5555-5555-555555555555', 'play_store', 'pro', 'active');
+
+  -- Dani va en el nivel gratuito: un solo grupo.
+  perform set_config('request.jwt.claim.sub', '44444444-4444-4444-4444-444444444444', true);
+  execute 'set local role authenticated';
+
+  v_space2 := (public.create_space('Grupo de Dani') ->> 'id')::uuid;
+
+  v_err := null;
+  begin perform public.create_space('Otro más');
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%limit_spaces%' then
+    raise exception 'FALLO 16a: el nivel gratuito ha creado un segundo grupo (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  -- Y un solo plan vivo a la vez.
+  perform public.create_plan(v_space2, 'Primero', null::uuid, now() + interval '2 days');
+
+  v_err := null;
+  begin perform public.create_plan(v_space2, 'Segundo', null::uuid, now() + interval '3 days');
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%limit_plans%' then
+    raise exception 'FALLO 16b: el nivel gratuito ha creado un segundo plan activo (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  -- Los planes pasados no ocupan sitio: contarlos dejaría el nivel gratuito
+  -- inservible a las pocas semanas de uso.
+  execute 'set local role none';
+  update public.plans set starts_at = now() - interval '10 days' where space_id = v_space2;
+  perform set_config('request.jwt.claim.sub', '44444444-4444-4444-4444-444444444444', true);
+  execute 'set local role authenticated';
+
+  begin perform public.create_plan(v_space2, 'Tercero', null::uuid, now() + interval '4 days');
+  exception when others then
+    raise exception 'FALLO 16c: un plan ya pasado sigue ocupando el cupo (%)', sqlerrm;
+  end;
+
+  v_code := public.create_invite(v_space2) ->> 'code';
+
+  -- Se llena el aforo del espacio de Dani hasta su tope de seis.
+  execute 'set local role none';
+  insert into auth.users (id, email, raw_user_meta_data)
+  select ('77777777-7777-7777-7777-77777777777' || i)::uuid,
+         'relleno' || i || '@test.dev',
+         ('{"display_name":"Relleno ' || i || '"}')::jsonb
+  from generate_series(1, 5) i;
+
+  insert into public.space_members (space_id, user_id, role, color)
+  select v_space2, ('77777777-7777-7777-7777-77777777777' || i)::uuid, 'member', '#888888'
+  from generate_series(1, 5) i;
+
+  -- Elena tiene plan pro, pero entra en un espacio ajeno y gratuito: manda el
+  -- nivel de Dani, que es quien lo creó. Esta es la propiedad importante.
+  perform set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', true);
+  execute 'set local role authenticated';
+
+  v_err := null;
+  begin perform public.join_space_with_code(v_code);
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%limit_members%' then
+    raise exception 'FALLO 16d: tener plan de pago ha colado a Elena en un espacio gratuito ajeno (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  execute 'set local role none';
+
+  -- Y al revés: el espacio de quien sí paga no tiene tope.
+  if public.limit_for('55555555-5555-5555-5555-555555555555', 'members') is not null then
+    raise exception 'FALLO 16e: el nivel pro tiene tope de miembros';
+  end if;
+
+  -- Una suscripción vencida deja de dar derechos, aunque la fila siga ahí.
+  update public.subscriptions set status = 'expired'
+   where user_id = '55555555-5555-5555-5555-555555555555';
+  if public.entitlement_of('55555555-5555-5555-5555-555555555555') <> 'free' then
+    raise exception 'FALLO 16f: una suscripción caducada sigue dando nivel de pago';
+  end if;
+
+  update public.subscriptions
+     set status = 'active', current_period_end = now() - interval '1 day'
+   where user_id = '55555555-5555-5555-5555-555555555555';
+  if public.entitlement_of('55555555-5555-5555-5555-555555555555') <> 'free' then
+    raise exception 'FALLO 16g: una suscripción activa con periodo vencido sigue dando nivel';
+  end if;
+
+  raise notice 'OK 16 — los límites se aplican y no se heredan del que entra';
+
+  -- ─────────────────────────────────────────────────────────────────────────
+  -- 17. Códigos promocionales
+  --
+  -- Elena acabó la sección anterior con la suscripción vencida, así que está en
+  -- el nivel gratuito: sirve para comprobar que un código la sube.
+  -- ─────────────────────────────────────────────────────────────────────────
+
+  perform public.create_promo_code('PRENSA26', 'pro');
+  perform public.create_promo_code('UNSOLOUSO', 'plus', null, 1);
+  perform public.create_promo_code('REVOCADO', 'pro');
+  update public.promo_codes set revoked_at = now() where code = 'REVOCADO';
+
+  perform set_config('request.jwt.claim.sub', '55555555-5555-5555-5555-555555555555', true);
+  execute 'set local role authenticated';
+
+  perform public.redeem_promo_code('PRENSA26');
+
+  -- `entitlement_of` es de uso interno de las RPC y no está concedida a
+  -- `authenticated`: exponerla dejaría consultar el nivel de pago de cualquiera
+  -- por su id. Se comprueba con el rol quitado.
+  execute 'set local role none';
+  if public.entitlement_of('55555555-5555-5555-5555-555555555555') <> 'pro' then
+    raise exception 'FALLO 17a: el código canjeado no ha dado el nivel';
+  end if;
+  execute 'set local role authenticated';
+
+  -- Se teclea como llega por mensaje: minúsculas, espacios, guiones.
+  v_err := null;
+  begin perform public.redeem_promo_code(' prensa-26 ');
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%already_used%' then
+    raise exception 'FALLO 17b: se ha podido canjear dos veces el mismo código (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  -- Un código revocado y uno inexistente dan el mismo error: distinguirlos
+  -- confirmaría aciertos a quien esté probando combinaciones.
+  v_err := null;
+  begin perform public.redeem_promo_code('REVOCADO');
+  exception when others then v_err := sqlerrm; end;
+  if v_err is null or v_err not like '%not_found%' then
+    raise exception 'FALLO 17c: un código revocado no se comporta como inexistente (%)', coalesce(v_err, 'sin error');
+  end if;
+
+  -- Editar el código después no rebaja a quien ya lo canjeó.
+  execute 'set local role none';
+  update public.promo_codes set entitlement = 'plus' where code = 'PRENSA26';
+  if public.entitlement_of('55555555-5555-5555-5555-555555555555') <> 'pro' then
+    raise exception 'FALLO 17d: editar el código ha rebajado a quien ya lo tenía';
+  end if;
+
+  -- Y un canje vencido deja de dar derechos.
+  update public.promo_redemptions set expires_at = now() - interval '1 day'
+   where user_id = '55555555-5555-5555-5555-555555555555';
+  if public.entitlement_of('55555555-5555-5555-5555-555555555555') <> 'free' then
+    raise exception 'FALLO 17e: un canje vencido sigue dando nivel';
+  end if;
+
+  -- La lista de códigos no se puede leer desde la app: quien pudiera se
+  -- llevaría todos los válidos de una consulta.
+  perform set_config('request.jwt.claim.sub', '44444444-4444-4444-4444-444444444444', true);
+  execute 'set local role authenticated';
+  v_err := null;
+  begin
+    select count(*) into v_n from public.promo_codes;
+    if v_n > 0 then v_err := 'ha leído ' || v_n || ' códigos'; end if;
+  exception when others then v_err := null; end;
+  if v_err is not null then
+    raise exception 'FALLO 17f: la lista de códigos es legible desde la app (%)', v_err;
+  end if;
+
+  execute 'set local role none';
+  raise notice 'OK 17 — los códigos se canjean una vez y no se pueden listar';
 
   raise notice '─────────────────────────────────────';
   raise notice 'TODAS LAS PRUEBAS PASAN';

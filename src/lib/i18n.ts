@@ -439,6 +439,49 @@ const es = {
   'wrapped.share': 'Compartir',
   'wrapped.shared': 'Resumen copiado',
   'wrapped.tapToContinue': 'Toca para continuar',
+
+  // Suscripción (Fase 5)
+  'sub.open': 'Tu plan',
+  'sub.title': 'Planes',
+  'sub.subtitle': 'Grupos más grandes y más planes a la vez.',
+  'sub.current': 'Tu plan',
+  'sub.free': 'Gratis',
+  'sub.plus': 'Plus',
+  'sub.pro': 'Pro',
+  'sub.featSpaces': 'Grupos',
+  'sub.featMembers': 'Personas por grupo',
+  'sub.featPlans': 'Planes a la vez',
+  'sub.unlimited': 'Sin límite',
+  'sub.viaPromo': 'Tienes {plan} con el código {code}',
+  'sub.viaSubscription': 'Suscripción activa',
+  'sub.until': 'Hasta el {date}',
+  'sub.forever': 'Sin fecha de caducidad',
+  'sub.renews': 'Se renueva el {date}',
+  'sub.notYet': 'Las compras todavía no están abiertas',
+  'sub.notYetHint': 'Estamos preparando la publicación en las tiendas. Si tienes un código, ya puedes usarlo.',
+  'sub.buy': 'Suscribirse',
+  'sub.restore': 'Restaurar compras',
+  'sub.purchasePending': 'Compra registrada. Puede tardar unos segundos en activarse.',
+  'sub.purchaseFailed': 'No se ha podido completar la compra.',
+  'sub.restored': 'Compras restauradas',
+
+  // Códigos promocionales
+  'promo.title': '¿Tienes un código?',
+  'promo.placeholder': 'TUCÓDIGO',
+  'promo.redeem': 'Canjear',
+  'promo.ok': 'Listo: ya tienes {plan}',
+  'promo.notFound': 'Ese código no existe.',
+  'promo.expired': 'Ese código ya ha caducado.',
+  'promo.exhausted': 'Ese código ya no tiene usos disponibles.',
+  'promo.alreadyUsed': 'Ya habías usado ese código.',
+
+  // Límites alcanzados
+  'limit.spaces': 'Has llegado al máximo de grupos de tu plan.',
+  'limit.members': 'Este grupo está completo.',
+  'limit.membersHint': 'Quien lo creó puede ampliarlo cambiando de plan.',
+  'limit.plans': 'Ya hay un plan en marcha en este grupo.',
+  'limit.plansHint': 'Cierra el que hay o amplía tu plan para llevar varios a la vez.',
+  'limit.seePlans': 'Ver planes',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -840,6 +883,49 @@ const en: Record<TranslationKey, string> = {
   'wrapped.share': 'Share',
   'wrapped.shared': 'Recap copied',
   'wrapped.tapToContinue': 'Tap to continue',
+
+  // Subscription (Phase 5)
+  'sub.open': 'Your plan',
+  'sub.title': 'Plans',
+  'sub.subtitle': 'Bigger groups and more plans at once.',
+  'sub.current': 'Your plan',
+  'sub.free': 'Free',
+  'sub.plus': 'Plus',
+  'sub.pro': 'Pro',
+  'sub.featSpaces': 'Groups',
+  'sub.featMembers': 'People per group',
+  'sub.featPlans': 'Plans at once',
+  'sub.unlimited': 'Unlimited',
+  'sub.viaPromo': 'You have {plan} from code {code}',
+  'sub.viaSubscription': 'Subscription active',
+  'sub.until': 'Until {date}',
+  'sub.forever': 'No expiry date',
+  'sub.renews': 'Renews on {date}',
+  'sub.notYet': 'Purchases are not open yet',
+  'sub.notYetHint': "We're getting ready to publish on the stores. If you have a code, you can use it now.",
+  'sub.buy': 'Subscribe',
+  'sub.restore': 'Restore purchases',
+  'sub.purchasePending': 'Purchase registered. It may take a few seconds to activate.',
+  'sub.purchaseFailed': "The purchase couldn't be completed.",
+  'sub.restored': 'Purchases restored',
+
+  // Promo codes
+  'promo.title': 'Got a code?',
+  'promo.placeholder': 'YOURCODE',
+  'promo.redeem': 'Redeem',
+  'promo.ok': "Done — you've got {plan}",
+  'promo.notFound': "That code doesn't exist.",
+  'promo.expired': 'That code has expired.',
+  'promo.exhausted': 'That code has no uses left.',
+  'promo.alreadyUsed': "You've already used that code.",
+
+  // Limits reached
+  'limit.spaces': "You've reached the group limit on your plan.",
+  'limit.members': 'This group is full.',
+  'limit.membersHint': 'Whoever created it can make room by changing plan.',
+  'limit.plans': "There's already a plan running in this group.",
+  'limit.plansHint': 'Close the current one, or upgrade to run several at once.',
+  'limit.seePlans': 'See plans',
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

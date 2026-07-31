@@ -3,6 +3,7 @@ import { storageKey } from '../lib/brand'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { setupPush, teardownPush } from '../lib/push'
+import { purchasesLogOut, setupPurchases } from '../lib/purchases'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
@@ -135,6 +136,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           void setupPush((route) => {
             window.location.hash = route
           })
+          // El id de RevenueCat tiene que ser el de Supabase: es lo que ata un
+          // cobro a una cuenta cuando llega el webhook. Sin claves configuradas
+          // esto no hace nada.
+          void setupPurchases(session.user.id)
         })
         .catch(() => {
           // Sesión válida pero sin perfil: algo se ha quedado a medias en el
@@ -202,6 +207,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // cuenta anterior, que en un dispositivo compartido significa enseñar los
     // planes de otra persona en la pantalla de bloqueo.
     await teardownPush()
+    // Y se desata la sesión de compras: sin esto, quien entre después en el
+    // mismo móvil heredaría la de la persona anterior, y una compra suya podría
+    // acabar atribuida a otra cuenta.
+    await purchasesLogOut()
     await supabase.auth.signOut()
     storeSpaceId(null)
   }, [])

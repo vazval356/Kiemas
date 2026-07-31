@@ -343,3 +343,40 @@ export interface ReportInput {
   reason: ReportReason
   details?: string
 }
+
+// ── Suscripción (Fase 5) ────────────────────────────────────────────────────
+
+export type Entitlement = 'free' | 'plus' | 'pro'
+
+/**
+ * El nivel actual y lo que permite.
+ *
+ * Los topes llegan del servidor en vez de estar escritos aquí porque viven en
+ * una tabla y se ajustan sin desplegar. Un `null` significa «sin tope», no
+ * cero: confundirlos deja la app inservible para quien paga.
+ */
+export interface MyEntitlement {
+  entitlement: Entitlement
+  /** De dónde sale el nivel: una compra, un código regalado, o nada. */
+  source: 'subscription' | 'promo' | null
+  promoCode: string | null
+  promoExpiresAt: string | null
+  currentPeriodEnd: string | null
+  maxSpaces: number | null
+  maxMembers: number | null
+  maxActivePlans: number | null
+  spacesUsed: number
+}
+
+export interface PromoRedemption {
+  entitlement: Entitlement
+  expiresAt: string | null
+}
+
+/** Una fila de `plan_limits`. La pantalla de planes pinta la tabla con esto. */
+export interface PlanLimits {
+  entitlement: Entitlement
+  maxSpaces: number | null
+  maxMembers: number | null
+  maxActivePlans: number | null
+}

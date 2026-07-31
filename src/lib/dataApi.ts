@@ -18,6 +18,9 @@ import type {
   CollectionShare,
   Comment,
   ActivityEntry,
+  MyEntitlement,
+  PlanLimits,
+  PromoRedemption,
   PublicList,
   FollowedList,
   YearInReview,
@@ -149,6 +152,26 @@ export interface DataApi {
   listFollowedLists(): Promise<FollowedList[]>
   /** Resumen del año para el espacio indicado. Se calcula al vuelo. */
   yearInReview(spaceId: string, year: number): Promise<YearInReview>
+
+  // ── Suscripción (Fase 5) ─────────────────────────────────────────────────
+  /**
+   * Nivel actual, de dónde viene y qué topes impone.
+   *
+   * La interfaz lo usa para avisar antes de que alguien rellene un formulario
+   * entero, pero no es la barrera: los límites se aplican en la base de datos,
+   * dentro de las RPC de creación. Esto es cortesía, no seguridad.
+   */
+  myEntitlement(): Promise<MyEntitlement>
+  /**
+   * Los topes de los tres niveles, para la tabla comparativa.
+   *
+   * Se leen del servidor en vez de escribirlos en la pantalla porque viven en
+   * una tabla y se ajustan sin desplegar. Una tabla de precios que miente es
+   * peor que no tenerla.
+   */
+  listPlanLimits(): Promise<PlanLimits[]>
+  /** Canjea un código regalado. Los errores empiezan por `promo_`. */
+  redeemPromoCode(code: string): Promise<PromoRedemption>
 
   // ── Cumplimiento ─────────────────────────────────────────────────────────
   blockUser(userId: string): Promise<void>

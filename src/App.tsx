@@ -21,6 +21,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { SetupPage } from './pages/SetupPage'
 import { SpaceDetailPage } from './pages/SpaceDetailPage'
 import { SpacesPage } from './pages/SpacesPage'
+import { SubscriptionPage } from './pages/SubscriptionPage'
 import { YearInReviewPage } from './pages/YearInReviewPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
@@ -41,6 +42,7 @@ const FULL_SCREEN = [
   '/activity',
   '/following',
   '/wrapped',
+  '/subscription',
 ]
 
 function Shell() {
@@ -78,6 +80,7 @@ function Shell() {
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/subscription" element={<SubscriptionPage />} />
         <Route path="/add" element={<PlaceFormPage />} />
         <Route path="/edit/:id" element={<PlaceFormPage />} />
         <Route path="/place/:id" element={<PlaceDetailPage />} />

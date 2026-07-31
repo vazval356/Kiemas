@@ -82,13 +82,24 @@ con la huella SHA-256 del certificado con el que firmes. La sacas así:
 keytool -list -v -keystore kedada.keystore
 ```
 
-El fichero sigue llamándose `kedada.keystore` aunque la app se llame ahora
-Kopasymas, y es intencionado: un keystore no es un nombre, es la identidad con
-la que Google Play reconoce que una actualización viene de ti. Su nombre y su
-alias dan igual; lo único que importa es que la huella no cambie, porque es la
-que está publicada en `assetlinks.json`. Renombrar el fichero es inofensivo,
-pero regenerarlo o cambiarle el alias no aporta nada y sí puede dejarte sin
-poder actualizar la app.
+El fichero sigue llamándose `kedada.keystore` y su alias sigue siendo `kedada`,
+aunque la app se llame ahora Kopasymas. Es intencionado: un keystore no es un
+nombre, es la identidad con la que Google Play reconoce que una actualización
+viene de ti. Lo único que importa es que la huella no cambie, porque es la que
+está publicada en `assetlinks.json`. Regenerarlo o cambiarle el alias no aporta
+nada y sí puede dejarte sin poder actualizar la app.
+
+Datos que hacen falta al configurar la firma de release:
+
+| | |
+|---|---|
+| Fichero | `kedada.keystore` |
+| Alias | `kedada` |
+| Huella SHA-256 | la publicada en `public/.well-known/assetlinks.json` |
+| Válido hasta | diciembre de 2053 (Play exige al menos octubre de 2033) |
+
+El certificado lleva `OU=Kedada` en el titular, del nombre anterior. No se puede
+cambiar y da igual: ese campo no aparece en Play Store ni lo ve ningún usuario.
 
 Mientras no exista, Android no verifica nada y los enlaces siguen abriéndose en
 el navegador: no rompe nada, simplemente no llega a activarse.
@@ -180,11 +191,64 @@ npx cap add ios
 npx cap open ios
 ```
 
+### Suscripciones (RevenueCat)
+
+Todo el código está escrito y no se puede probar todavía: los productos de
+suscripción se dan de alta en Google Play Console, y para eso la app tiene que
+estar subida al menos a un canal de prueba cerrada.
+
+Sin claves configuradas la app funciona con normalidad y la pantalla de planes
+dice que las compras no están abiertas. **Los códigos promocionales sí funcionan
+desde ya**, porque no pasan por RevenueCat.
+
+Cuando la app esté en Play Console:
+
+1. Crea los productos de suscripción en **Play Console → Monetización**.
+2. En [RevenueCat](https://app.revenuecat.com), crea el proyecto, conecta la app
+   de Google Play y define los *entitlements* con estos identificadores exactos:
+
+   ```
+   plus
+   pro
+   ```
+
+   Tienen que llamarse así: el webhook busca esos nombres en `entitlement_ids`
+   y descarta el aviso si no reconoce ninguno.
+
+3. Copia las claves públicas a `.env`:
+
+   ```
+   VITE_REVENUECAT_ANDROID_KEY=goog_...
+   VITE_REVENUECAT_IOS_KEY=appl_...
+   ```
+
+   Son claves de cliente, van dentro del binario y no son secretas.
+
+4. Despliega el webhook y dale un secreto:
+
+   ```bash
+   npx supabase functions deploy revenuecat-webhook --no-verify-jwt
+   npx supabase secrets set REVENUECAT_WEBHOOK_SECRET=<algo largo y aleatorio>
+   ```
+
+5. En RevenueCat, **Integrations → Webhooks**, apunta a
+   `https://TUPROYECTO.supabase.co/functions/v1/revenuecat-webhook` y pon ese
+   mismo secreto en el campo *Authorization*.
+
+**El detalle que se rompe en silencio**: `appUserID` tiene que ser el id de
+Supabase, y de eso se encarga `setupPurchases()` al iniciar sesión. Si por lo
+que sea acabara siendo otra cosa, los cobros llegarían al webhook sin poder
+asociarse a ninguna cuenta: se cobraría y el usuario se quedaría sin lo que
+pagó, sin que salte ningún error por el camino.
+
+Para comprobar que el circuito funciona, mira `subscriptions` después de una
+compra de prueba. Si está vacía, el webhook no está llegando; si tiene la fila
+pero el nivel no sube, mira `current_period_end` y `status`.
+
 ### Antes de publicar en las tiendas
 
-- **Pagos**: Apple y Google exigen su propio sistema de compra para las
-  suscripciones digitales. Está previsto resolverlo con RevenueCat en la Fase 5,
-  y el esquema de `subscriptions` ya se diseñó para ello.
+- **Pagos**: hecho el código, pendiente de que existan los productos en las
+  tiendas. Ver la sección anterior.
 - **Correo**: el servicio integrado de Supabase tiene un límite de 3 correos por
   hora y no es apto para producción. Hará falta SMTP propio (Resend, SendGrid).
 - **Geocodificación**: la búsqueda de direcciones usa Nominatim, cuya política de
