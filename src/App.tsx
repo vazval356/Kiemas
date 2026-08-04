@@ -1,4 +1,5 @@
-import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
@@ -11,6 +12,7 @@ import { CollectionsPage } from './pages/CollectionsPage'
 import { FollowedListsPage } from './pages/FollowedListsPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
+import { OnboardingPage } from './pages/OnboardingPage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
 import { PlaceFormPage } from './pages/PlaceFormPage'
 import { PlanDetailPage } from './pages/PlanDetailPage'
@@ -43,11 +45,45 @@ const FULL_SCREEN = [
   '/following',
   '/wrapped',
   '/subscription',
+  '/welcome',
 ]
 
+/**
+ * La bienvenida, con el marcado de «ya vista» resuelto en un solo sitio.
+ *
+ * Se marca y se continúa sin esperar a la respuesta. Si la red falla, lo peor
+ * que ocurre es que la presentación vuelva a salir la próxima vez; dejar a
+ * alguien mirando un botón girando en su primer minuto en la app sería bastante
+ * peor.
+ */
+function Welcome({ onDone }: { onDone: () => void }) {
+  const { api, refreshSpaces } = useApp()
+
+  return (
+    <OnboardingPage
+      onDone={() => {
+        void api
+          .completeOnboarding()
+          .then(() => refreshSpaces())
+          .catch(() => {})
+        onDone()
+      }}
+    />
+  )
+}
+
+/** La misma pantalla, alcanzable desde ajustes para volver a verla. */
+function WelcomeRoute() {
+  const navigate = useNavigate()
+  return <Welcome onDone={() => navigate('/profile')} />
+}
+
 function Shell() {
-  const { authStatus, t } = useApp()
+  const { authStatus, profile, t } = useApp()
   const location = useLocation()
+  // Al terminar se oculta al momento, sin esperar a que el perfil recargado
+  // llegue del servidor.
+  const [welcomeDone, setWelcomeDone] = useState(false)
 
   if (authStatus === 'loading') {
     return (
@@ -59,6 +95,17 @@ function Shell() {
   }
 
   if (authStatus === 'signedOut') return <AuthPage />
+
+  // Cuenta nueva: la bienvenida va antes que nada. Se salta si ya se está en la
+  // ruta que la enseña a propósito, para no montarla dos veces.
+  if (
+    profile !== null &&
+    !profile.onboardedAt &&
+    !welcomeDone &&
+    location.pathname !== '/welcome'
+  ) {
+    return <Welcome onDone={() => setWelcomeDone(true)} />
+  }
 
   const isFullScreen = FULL_SCREEN.some((prefix) => location.pathname.startsWith(prefix))
 
@@ -81,6 +128,7 @@ function Shell() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
+        <Route path="/welcome" element={<WelcomeRoute />} />
         <Route path="/add" element={<PlaceFormPage />} />
         <Route path="/edit/:id" element={<PlaceFormPage />} />
         <Route path="/place/:id" element={<PlaceDetailPage />} />

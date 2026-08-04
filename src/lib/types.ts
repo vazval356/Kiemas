@@ -25,6 +25,13 @@ export interface Profile {
   username: string
   avatarUrl: string
   locale: Locale
+  /**
+   * Cuándo terminó la presentación de bienvenida.
+   *
+   * `null` es una cuenta que todavía no la ha visto. Vive en el perfil y no en
+   * el navegador para que cambiar de móvil no la haga reaparecer.
+   */
+  onboardedAt: string | null
 }
 
 /**

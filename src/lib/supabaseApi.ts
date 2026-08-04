@@ -265,7 +265,7 @@ export const supabaseApi: DataApi = {
     const row = check(
       await supabase
         .from('profiles')
-        .select('id, display_name, username, avatar_url, locale')
+        .select('id, display_name, username, avatar_url, locale, onboarded_at')
         .eq('id', uid)
         .single()
     )
@@ -275,7 +275,14 @@ export const supabaseApi: DataApi = {
       username: row.username,
       avatarUrl: row.avatar_url,
       locale: row.locale as Locale,
+      onboardedAt: row.onboarded_at,
     }
+  },
+
+  async completeOnboarding(): Promise<string> {
+    const res = await supabase.rpc('complete_onboarding')
+    if (res.error) throw new Error(res.error.message)
+    return res.data as string
   },
 
   async updateProfile(patch) {

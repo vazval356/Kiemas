@@ -153,6 +153,13 @@ export interface DataApi {
   /** Resumen del año para el espacio indicado. Se calcula al vuelo. */
   yearInReview(spaceId: string, year: number): Promise<YearInReview>
 
+  /**
+   * Marca la bienvenida como vista. Devuelve cuándo se completó.
+   *
+   * Idempotente: volver a verla desde ajustes no mueve la fecha original.
+   */
+  completeOnboarding(): Promise<string>
+
   // ── Suscripción (Fase 5) ─────────────────────────────────────────────────
   /**
    * Nivel actual, de dónde viene y qué topes impone.

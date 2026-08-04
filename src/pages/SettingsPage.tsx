@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BackIcon } from '../components/icons'
 import { BRAND_KEY } from '../lib/brand'
 import type { Locale } from '../lib/types'
@@ -122,6 +122,16 @@ export function SettingsPage() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* ── Bienvenida ─────────────────────────────────────────────────── */}
+        <section className="mt-6">
+          <Link
+            to="/welcome"
+            className="block rounded-control border border-outline-variant px-4 py-3 text-center font-semibold text-on-surface squish"
+          >
+            {t('onb.replay')}
+          </Link>
         </section>
 
         {/* ── Personas bloqueadas ────────────────────────────────────────── */}
