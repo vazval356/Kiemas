@@ -239,19 +239,32 @@ export function SpaceDetailPage() {
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {/* El selector del sistema abre la rueda de color del móvil, que
-                  es la que la gente ya sabe usar. */}
+                  es la que la gente ya sabe usar.
+
+                  Se pinta con el arcoíris alrededor y el color actual dentro:
+                  antes era un cuadrado más de la fila y nada indicaba que
+                  abriera nada. */}
               <label
-                className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-control ring-2 ring-primary ring-offset-2 squish"
-                style={{ backgroundColor: color }}
+                className="relative flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full squish"
+                style={{
+                  background:
+                    'conic-gradient(#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)',
+                }}
                 aria-label={t('space.pickColor')}
               >
+                <span
+                  className="size-5 rounded-full border-2 border-surface-lowest"
+                  style={{ backgroundColor: color }}
+                  aria-hidden
+                />
                 <input
                   type="color"
                   value={color}
                   onChange={(e) => void saveLook(emoji, e.target.value)}
-                  className="size-0 opacity-0"
+                  className="absolute size-0 opacity-0"
                 />
               </label>
+              <span className="h-6 w-px shrink-0 bg-outline-variant" aria-hidden />
 
               {SPACE_COLOR_SUGGESTIONS.map((c) => (
                 <button

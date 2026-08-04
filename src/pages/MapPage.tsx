@@ -231,7 +231,11 @@ export function MapPage() {
         <button
           type="button"
           onClick={() => setRouletteOpen(true)}
-          className="flex size-14 items-center justify-center rounded-full bg-tertiary text-on-tertiary shadow-[var(--shadow-float)] squish"
+          // Blanco con el icono en ámbar, no relleno de marrón. Tres botones
+          // flotantes uno encima de otro con tres colores distintos compiten
+          // entre sí; con el mismo tratamiento que el de ubicación, el único
+          // que destaca es el de añadir, que es lo que se quiere.
+          className="flex size-14 items-center justify-center rounded-full bg-surface-lowest text-tertiary shadow-[var(--shadow-float)] squish"
           aria-label={t('roulette.title')}
         >
           <DiceIcon className="size-7" />

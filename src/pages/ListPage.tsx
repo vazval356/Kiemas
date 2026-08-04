@@ -18,6 +18,12 @@ export function ListPage() {
   const [onlyFavorites, setOnlyFavorites] = useState(false)
   const [tagFilter, setTagFilter] = useState<string[]>([])
   const [sort, setSort] = useState<SortKey>('recent')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+
+  // Cuántos filtros hay puestos de los que quedan escondidos. Sin este número,
+  // esconderlos significa que alguien entra, ve tres sitios de veinte y no
+  // entiende por qué.
+  const extraCount = (categoryFilter ? 1 : 0) + tagFilter.length
 
   // Las categorías son de cada espacio: un filtro heredado del anterior no
   // casaría con nada y la lista aparecería vacía sin explicación.
@@ -51,63 +57,107 @@ export function ListPage() {
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto max-w-md px-4 pb-32 pt-2">
-        <div className="flex gap-2 overflow-x-auto py-1 hide-scrollbar">
-          <FilterChip
-            label={t('list.all')}
-            active={statusFilter === 'all' && !onlyFavorites}
-            onClick={() => {
-              setStatusFilter('all')
-              setOnlyFavorites(false)
-            }}
-          />
-          <FilterChip
-            label={`📌 ${t('place.wantToGo')}`}
-            active={statusFilter === 'want_to_go'}
-            onClick={() => setStatusFilter(statusFilter === 'want_to_go' ? 'all' : 'want_to_go')}
-          />
-          <FilterChip
-            label={`✓ ${t('place.visited')}`}
-            active={statusFilter === 'visited'}
-            onClick={() => setStatusFilter(statusFilter === 'visited' ? 'all' : 'visited')}
-          />
-          <FilterChip
-            label={`❤️ ${t('place.favorite')}`}
-            active={onlyFavorites}
-            onClick={() => setOnlyFavorites(!onlyFavorites)}
-          />
+        {/* ── Filtros ────────────────────────────────────────────────────────
+            Tres filas siempre abiertas —estado, categorías y etiquetas— se
+            comían media pantalla antes del primer sitio, y las tres se
+            cortaban por la derecha. Ahora solo queda visible el estado, que es
+            lo que se toca a diario; lo demás se despliega.
+
+            El contador en el botón evita el problema clásico de esconder
+            filtros: entrar, no ver nada, y no entender que hay uno activo. */}
+        <div className="flex items-center gap-2 py-1">
+          <div className="flex flex-1 gap-2 overflow-x-auto hide-scrollbar">
+            <FilterChip
+              label={t('list.all')}
+              active={statusFilter === 'all' && !onlyFavorites}
+              onClick={() => {
+                setStatusFilter('all')
+                setOnlyFavorites(false)
+              }}
+            />
+            <FilterChip
+              label={`📌 ${t('place.wantToGo')}`}
+              active={statusFilter === 'want_to_go'}
+              onClick={() => setStatusFilter(statusFilter === 'want_to_go' ? 'all' : 'want_to_go')}
+            />
+            <FilterChip
+              label={`✓ ${t('place.visited')}`}
+              active={statusFilter === 'visited'}
+              onClick={() => setStatusFilter(statusFilter === 'visited' ? 'all' : 'visited')}
+            />
+            <FilterChip
+              label={`❤️ ${t('place.favorite')}`}
+              active={onlyFavorites}
+              onClick={() => setOnlyFavorites(!onlyFavorites)}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold squish ${
+              extraCount > 0 || filtersOpen
+                ? 'bg-primary text-on-primary'
+                : 'bg-surface-container text-on-surface-variant'
+            }`}
+          >
+            {t('list.filters')}
+            {extraCount > 0 && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-on-primary text-[11px] font-bold text-primary">
+                {extraCount}
+              </span>
+            )}
+          </button>
         </div>
 
-        <CategoryChips
-          categories={categories}
-          selected={categoryFilter}
-          onSelect={setCategoryFilter}
-          className="py-1"
-        />
+        {filtersOpen && (
+          <div className="mb-1 rounded-card bg-surface-container p-3 animate-pop">
+            <CategoryChips
+              categories={categories}
+              selected={categoryFilter}
+              onSelect={setCategoryFilter}
+            />
 
-        {tags.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto py-1 hide-scrollbar">
-            {tags.map((tag) => {
-              const on = tagFilter.includes(tag.id)
-              return (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() =>
-                    setTagFilter(
-                      on ? tagFilter.filter((x) => x !== tag.id) : [...tagFilter, tag.id]
-                    )
-                  }
-                  className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold squish"
-                  style={
-                    on
-                      ? { backgroundColor: tag.color, color: '#fff' }
-                      : { color: tag.color, boxShadow: `inset 0 0 0 1.5px ${tag.color}` }
-                  }
-                >
-                  {tag.name}
-                </button>
-              )
-            })}
+            {tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {tags.map((tag) => {
+                  const on = tagFilter.includes(tag.id)
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() =>
+                        setTagFilter(
+                          on ? tagFilter.filter((x) => x !== tag.id) : [...tagFilter, tag.id]
+                        )
+                      }
+                      className="rounded-full px-3 py-1.5 text-xs font-semibold squish"
+                      style={
+                        on
+                          ? { backgroundColor: tag.color, color: '#fff' }
+                          : { color: tag.color, boxShadow: `inset 0 0 0 1.5px ${tag.color}` }
+                      }
+                    >
+                      {tag.name}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            {extraCount > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCategoryFilter(null)
+                  setTagFilter([])
+                }}
+                className="mt-3 text-sm font-semibold text-primary squish"
+              >
+                {t('list.clearFilters')}
+              </button>
+            )}
           </div>
         )}
 

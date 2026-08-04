@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { spaceColors } from '../lib/spaceTheme'
 import { useApp } from '../state/appState'
 import { GroupIcon, UserIcon } from './icons'
 
@@ -29,6 +30,7 @@ export function TopBar() {
 
   const isPersonal = activeSpace.kind === 'personal'
   const memberCount = activeSpace.members.length
+  const cols = spaceColors(activeSpace.color)
 
   return (
     <div ref={boxRef} className="relative z-30 shrink-0">
@@ -39,8 +41,25 @@ export function TopBar() {
           className="flex min-w-0 flex-1 items-center gap-2.5 rounded-control px-2 py-1.5 text-left squish"
           aria-expanded={open}
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
-            {isPersonal ? <UserIcon className="size-5" /> : <GroupIcon className="size-5" />}
+          {/* El emoji y el color que el grupo ha elegido, no un icono genérico.
+              Si te tomas la molestia de poner 🍕 y rosa a tu grupo, la barra
+              que preside toda la app es el primer sitio donde tiene que verse.
+              El personal conserva su icono: no es un grupo y no se personaliza. */}
+          <span
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-lg"
+            style={
+              isPersonal
+                ? undefined
+                : { backgroundColor: cols.soft, color: cols.onSoft }
+            }
+          >
+            {isPersonal ? (
+              <span className="flex size-9 items-center justify-center rounded-full bg-primary-fixed text-primary">
+                <UserIcon className="size-5" />
+              </span>
+            ) : (
+              activeSpace.emoji || <GroupIcon className="size-5" />
+            )}
           </span>
           <span className="min-w-0 flex-1">
             <span className="block truncate font-display font-semibold leading-tight text-on-surface">
@@ -100,11 +119,23 @@ export function TopBar() {
                     space.id === activeSpace.id ? 'bg-surface-container' : ''
                   }`}
                 >
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
+                  <span
+                    className="flex size-8 shrink-0 items-center justify-center rounded-full text-base"
+                    style={
+                      space.kind === 'personal'
+                        ? undefined
+                        : {
+                            backgroundColor: spaceColors(space.color).soft,
+                            color: spaceColors(space.color).onSoft,
+                          }
+                    }
+                  >
                     {space.kind === 'personal' ? (
-                      <UserIcon className="size-4" />
+                      <span className="flex size-8 items-center justify-center rounded-full bg-primary-fixed text-primary">
+                        <UserIcon className="size-4" />
+                      </span>
                     ) : (
-                      <GroupIcon className="size-4" />
+                      space.emoji || <GroupIcon className="size-4" />
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
