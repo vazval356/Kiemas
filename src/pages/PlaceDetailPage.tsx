@@ -200,7 +200,11 @@ export function PlaceDetailPage() {
             value={myRating || 5}
             disabled={busy}
             onChange={(e) => void run(() => api.setRating(place.id, Number(e.target.value)))}
-            className="kd-range"
+            // Sin puntuación el control va atenuado. El valor tiene que ser
+            // alguno —un `range` no admite «vacío»— y con 5 el tirador queda
+            // justo en el centro, que se lee como un 5 puesto a propósito.
+            // Atenuarlo es lo que distingue «no has puntuado» de «has puesto un 5».
+            className={`kd-range ${myRating > 0 ? '' : 'opacity-40'}`}
           />
         </section>
 

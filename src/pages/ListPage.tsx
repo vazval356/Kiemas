@@ -56,7 +56,9 @@ export function ListPage() {
 
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-md px-4 pb-32 pt-2">
+      {/* pb-40 y no pb-32, igual que en el calendario: el botón flotante mide
+          56 px y arranca a 88 del borde, así que 128 de hueco no bastan. */}
+      <div className="mx-auto max-w-md px-4 pb-40 pt-2">
         {/* ── Filtros ────────────────────────────────────────────────────────
             Tres filas siempre abiertas —estado, categorías y etiquetas— se
             comían media pantalla antes del primer sitio, y las tres se
@@ -66,7 +68,16 @@ export function ListPage() {
             El contador en el botón evita el problema clásico de esconder
             filtros: entrar, no ver nada, y no entender que hay uno activo. */}
         <div className="flex items-center gap-2 py-1">
-          <div className="flex flex-1 gap-2 overflow-x-auto hide-scrollbar">
+          {/* La máscara desvanece el borde derecho: sin ella, el último chip
+              se corta a mitad de palabra y parece roto en vez de parecer que
+              hay más desplazando. */}
+          <div
+            className="flex flex-1 gap-2 overflow-x-auto pr-1 hide-scrollbar"
+            style={{
+              maskImage: 'linear-gradient(to right, #000 calc(100% - 24px), transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, #000 calc(100% - 24px), transparent)',
+            }}
+          >
             <FilterChip
               label={t('list.all')}
               active={statusFilter === 'all' && !onlyFavorites}

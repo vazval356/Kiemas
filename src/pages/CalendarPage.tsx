@@ -354,9 +354,18 @@ function PlanCard({
       className="block rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)] squish"
     >
       <div className="flex items-start justify-between gap-3">
+        {/* Solo si hay categoría de verdad. Antes caía en «Nuevo plan», que es
+            el texto del botón de crear y no describe nada: un plan sin sitio
+            aparecía etiquetado como «Nuevo plan» para siempre. */}
         <span className="flex min-w-0 items-center gap-1.5 text-sm font-bold text-primary">
-          <span aria-hidden>{category?.emoji ?? '📅'}</span>
-          <span className="truncate">{category?.name ?? t('plan.new')}</span>
+          {category ? (
+            <>
+              <span aria-hidden>{category.emoji}</span>
+              <span className="truncate">{category.name}</span>
+            </>
+          ) : (
+            <span aria-hidden>📅</span>
+          )}
         </span>
 
         {/* Una encuesta pide decidir; un plan confirmado solo informa. Se
@@ -378,12 +387,17 @@ function PlanCard({
 
       <p className="mt-1 flex items-center gap-1.5 text-sm text-on-surface-variant">
         <span aria-hidden>🕐</span>
+        {/* En una encuesta no se repite «Votando fechas», que ya lo dice el
+            distintivo de la esquina: se cuentan las fechas propuestas, que es
+            lo que de verdad falta saber para decidir si entrar a votar. */}
         {plan.startsAt
           ? `${formatTime(plan.startsAt, locale)} · ${formatDayLabel(plan.startsAt, locale, {
               today: t('calendar.today'),
               tomorrow: t('calendar.tomorrow'),
             })}`
-          : t('plan.isPoll')}
+          : plan.dateOptions.length === 1
+            ? t('plan.optionOne')
+            : t('plan.optionsCount', { count: plan.dateOptions.length })}
         {placeName ? ` · ${placeName}` : ''}
       </p>
 

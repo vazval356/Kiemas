@@ -294,10 +294,15 @@ export function PlanFormPage() {
           {busy ? t('plan.creating') : t('plan.create')}
         </button>
 
+        {/* Con la sigla suelta —«CEST»— nadie sabe a qué viene. Se dice para
+            qué está: las horas que acabas de escribir van en esa zona. */}
         <p className="mt-2 text-center text-xs text-on-surface-variant">
-          {new Intl.DateTimeFormat(locale, { timeZoneName: 'short' })
-            .formatToParts(new Date())
-            .find((p) => p.type === 'timeZoneName')?.value ?? ''}
+          {t('plan.timezone', {
+            tz:
+              new Intl.DateTimeFormat(locale, { timeZoneName: 'short' })
+                .formatToParts(new Date())
+                .find((p) => p.type === 'timeZoneName')?.value ?? '',
+          })}
         </p>
       </div>
     </div>
