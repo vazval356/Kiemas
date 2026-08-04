@@ -524,6 +524,7 @@ const es = {
   'profile.statGroups': 'Grupos',
   'profile.statPlans': 'Planes',
   'profile.changeAvatar': 'Cambiar foto',
+  'profile.viewAll': 'Ver todas',
   'profile.avatarTooBig': 'La imagen es demasiado grande.',
 
   'spaces.active': '{count} activos',
@@ -1046,6 +1047,7 @@ const en: Record<TranslationKey, string> = {
   'profile.statGroups': 'Groups',
   'profile.statPlans': 'Plans',
   'profile.changeAvatar': 'Change photo',
+  'profile.viewAll': 'View all',
   'profile.avatarTooBig': 'That image is too large.',
 
   'spaces.active': '{count} active',

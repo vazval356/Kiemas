@@ -169,6 +169,7 @@ export function ActivityPage() {
                   entry={entry}
                   actorName={actor(entry.actorId)?.displayName ?? t('activity.someone')}
                   actorColor={actor(entry.actorId)?.color ?? '#767586'}
+                  actorAvatar={actor(entry.actorId)?.avatarUrl || undefined}
                   place={entry.objectType === 'place' ? placeById.get(entry.objectId ?? '') : undefined}
                   plan={entry.objectType === 'plan' ? planById.get(entry.objectId ?? '') : undefined}
                   to={linkFor(entry)}
@@ -211,6 +212,7 @@ function Row({
   entry,
   actorName,
   actorColor,
+  actorAvatar,
   place,
   plan,
   to,
@@ -221,6 +223,7 @@ function Row({
   entry: ActivityEntry
   actorName: string
   actorColor: string
+  actorAvatar: string | undefined
   place: Place | undefined
   plan: Plan | undefined
   to: string | null
@@ -233,87 +236,118 @@ function Row({
   // sitio se borró, la frase sigue teniendo sentido.
   const text = t(VERB_KEY[entry.verb], { actor: actorName, object: entry.objectLabel })
 
-  const preview = place ? (
-    <div className="mt-2 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
-      {place.photos[0] ? (
-        <img
-          src={place.photos[0].url}
-          alt=""
-          loading="lazy"
-          className="size-20 shrink-0 object-cover"
-        />
-      ) : (
-        <span className="flex size-20 shrink-0 items-center justify-center bg-primary-fixed text-2xl">
-          📍
-        </span>
-      )}
-      <span className="min-w-0 flex-1 p-3">
-        <span className="block truncate font-semibold text-primary">{place.name}</span>
-        <span className="block truncate text-xs text-on-surface-variant">{place.address}</span>
-      </span>
-    </div>
-  ) : plan ? (
-    <div className="mt-2 flex items-center gap-3 rounded-card bg-primary p-3 text-on-primary shadow-[var(--shadow-float)]">
-      {plan.startsAt && (
+  /**
+   * La previsualización.
+   *
+   * Se pinta también cuando el objeto no está cargado, usando el nombre que
+   * quedó guardado en la entrada. La app solo tiene en memoria los planes desde
+   * ayer y los sitios del espacio activo, así que cualquier entrada de hace unos
+   * días se quedaba sin tarjeta — que es justo cuando más falta hace, porque ya
+   * nadie recuerda de qué iba.
+   */
+  const preview =
+    entry.objectType === 'plan' ? (
+      <div className="mt-2 flex items-center gap-3 rounded-card bg-primary p-3 text-on-primary shadow-[var(--shadow-float)]">
         <span className="flex size-14 shrink-0 flex-col items-center justify-center rounded-control bg-white/15">
-          <span className="text-[10px] font-bold uppercase">
-            {new Date(plan.startsAt).toLocaleDateString(locale, { month: 'short' })}
-          </span>
-          <span className="font-display text-xl font-bold leading-none">
-            {new Date(plan.startsAt).getDate()}
-          </span>
+          {plan?.startsAt ? (
+            <>
+              <span className="text-[10px] font-bold uppercase">
+                {new Date(plan.startsAt).toLocaleDateString(locale, { month: 'short' })}
+              </span>
+              <span className="font-display text-xl font-bold leading-none">
+                {new Date(plan.startsAt).getDate()}
+              </span>
+            </>
+          ) : (
+            <span className="text-xl">📅</span>
+          )}
         </span>
-      )}
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-semibold">{plan.title}</span>
-        {plan.startsAt && (
-          <span className="block truncate text-sm opacity-90">
-            {formatTime(plan.startsAt, locale)}
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold">{plan?.title ?? entry.objectLabel}</span>
+          {plan?.startsAt && (
+            <span className="block truncate text-sm opacity-90">
+              {formatTime(plan.startsAt, locale)}
+            </span>
+          )}
+        </span>
+      </div>
+    ) : entry.objectType === 'place' ? (
+      <div className="mt-2 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
+        {place?.photos[0] ? (
+          <img
+            src={place.photos[0].url}
+            alt=""
+            loading="lazy"
+            className="size-20 shrink-0 object-cover"
+          />
+        ) : (
+          <span className="flex size-20 shrink-0 items-center justify-center bg-primary-fixed text-2xl">
+            📍
           </span>
         )}
-      </span>
-    </div>
-  ) : null
+        <span className="min-w-0 flex-1 self-center p-3">
+          <span className="block truncate font-semibold text-primary">
+            {place?.name ?? entry.objectLabel}
+          </span>
+          {place?.address && (
+            <span className="block truncate text-xs text-on-surface-variant">{place.address}</span>
+          )}
+        </span>
+      </div>
+    ) : null
 
   return (
     <li className="flex gap-3">
-      {/* Columna del marcador, con la línea que une una entrada con la
+      {/* Columna del retrato, con la línea que une una entrada con la
           siguiente. La última la lleva TRANSPARENTE en vez de no llevarla: el
-          borde ocupa 2 px, así que quitarlo desplazaría ese marcador respecto
-          a los demás y la línea dejaría de pasar por el centro de los
-          círculos. */}
+          borde ocupa 2 px, así que quitarlo desplazaría ese retrato respecto a
+          los demás y la línea dejaría de pasar por su centro. */}
       <div
         className={`flex shrink-0 flex-col items-center border-l-2 ${
           isLast ? 'border-transparent' : 'border-outline-variant'
         }`}
-        style={{ marginLeft: 15 }}
+        style={{ marginLeft: 19 }}
       >
-        {/* El círculo se centra sobre la línea, no sobre el borde interior.
-            La línea son 2 px que empiezan donde empieza el contenedor, así que
-            su centro cae 1 px dentro; el contenido, en cambio, empieza pasados
-            los 2 px del borde. De ahí el -17 en vez del -16 que daría `-ml-4`:
-            medio círculo (16) más ese píxel de diferencia. */}
-        <span
-          className="flex size-8 shrink-0 items-center justify-center rounded-full text-sm text-white shadow-sm"
-          style={{ backgroundColor: mark.color, marginLeft: -17 }}
-          aria-hidden
-        >
-          {mark.emoji}
+        {/* Quien hizo la cosa, con su foto si la tiene. El diseño le da el
+            peso principal, y con razón: en un grupo, lo primero que se mira de
+            una entrada es quién.
+
+            Se centra sobre la línea y no sobre el borde interior: la línea son
+            2 px que empiezan donde empieza el contenedor, así que su centro cae
+            1 px dentro, mientras que el contenido empieza pasados los 2. De ahí
+            el -21: medio retrato (20) más ese píxel. */}
+        <span className="relative shrink-0" style={{ marginLeft: -21 }}>
+          {actorAvatar ? (
+            <img
+              src={actorAvatar}
+              alt=""
+              loading="lazy"
+              className="size-10 rounded-full object-cover"
+              style={{ border: `2px solid ${actorColor}` }}
+            />
+          ) : (
+            <span
+              className="flex size-10 items-center justify-center rounded-full text-sm font-bold text-white"
+              style={{ backgroundColor: actorColor }}
+            >
+              {actorName.slice(0, 1).toUpperCase()}
+            </span>
+          )}
+          {/* El verbo, como insignia pequeña sobre el retrato. Antes era un
+              círculo grande de color que pesaba más que la propia frase. */}
+          <span
+            className="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full border-2 border-surface text-[9px]"
+            style={{ backgroundColor: mark.color }}
+            aria-hidden
+          >
+            {mark.emoji}
+          </span>
         </span>
       </div>
 
       <div className="min-w-0 flex-1 pb-6">
         <div className="flex items-start justify-between gap-2">
-          <p className="min-w-0 text-sm text-on-surface">
-            <span
-              className="mr-1.5 inline-flex size-5 translate-y-1 items-center justify-center rounded-full text-[10px] font-bold text-white"
-              style={{ backgroundColor: actorColor }}
-              aria-hidden
-            >
-              {actorName.slice(0, 1).toUpperCase()}
-            </span>
-            {text}
-          </p>
+          <p className="min-w-0 text-sm leading-snug text-on-surface">{text}</p>
           <span className="shrink-0 whitespace-nowrap text-xs text-on-surface-variant">
             {relativeTime(entry.createdAt, locale)}
           </span>

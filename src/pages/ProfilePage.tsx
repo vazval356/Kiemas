@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { UsernameEditor } from '../components/UsernameEditor'
 import { GroupIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
-import type { MyStats } from '../lib/types'
+import type { Entitlement, FollowedList, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -19,15 +19,19 @@ export function ProfilePage() {
   const { profile, spaces, activeSpace, setActiveSpace, api, refreshSpaces, t, signOut } = useApp()
 
   const [stats, setStats] = useState<MyStats | null>(null)
+  const [entitlement, setEntitlement] = useState<Entitlement>('free')
+  const [followed, setFollowed] = useState<FollowedList[]>([])
   const [bio, setBio] = useState(profile?.bio ?? '')
   const [editingBio, setEditingBio] = useState(false)
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    api.myStats().then(setStats).catch(() => {
-      // Los contadores son adorno: si fallan, el resto del perfil sirve igual.
-    })
+    // Los tres son adorno de la cabecera: si alguno falla, el resto del perfil
+    // sirve igual, así que se piden por separado y se ignoran sus errores.
+    api.myStats().then(setStats).catch(() => {})
+    api.myEntitlement().then((e) => setEntitlement(e.entitlement)).catch(() => {})
+    api.listFollowedLists().then(setFollowed).catch(() => {})
   }, [api])
 
   // El perfil puede recargarse desde fuera (al canjear un código, por ejemplo),
@@ -87,6 +91,15 @@ export function ProfilePage() {
               </span>
             )}
           </button>
+          {/* Distintivo de nivel, montado sobre el retrato como en el diseño.
+              Solo si hay algo que enseñar: una insignia que pone «GRATIS» no
+              es un distintivo, es un recordatorio de lo que no tienes. */}
+          {entitlement !== 'free' && (
+            <span className="-mt-3 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-primary shadow-md">
+              {t(`sub.${entitlement}` as 'sub.plus')}
+            </span>
+          )}
+
           <input
             ref={fileRef}
             type="file"
@@ -223,37 +236,112 @@ export function ProfilePage() {
           </Link>
         </section>
 
-        <section className="mt-8 flex flex-col gap-2">
+        {/* ── Resumen del año ──────────────────────────────────────────────
+            El diseño lo enseña como un carrusel de años pasados. Aquí va solo
+            el que existe: la app se estrenó este año, así que un carrusel con
+            una tarjeta y huecos prometería un historial que nadie tiene
+            todavía. Cuando haya dos años de datos, se convierte en carrusel. */}
+        <section className="mt-8">
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            {t('wrapped.title', { year: new Date().getFullYear() })}
+          </h2>
           <Link
             to="/wrapped"
-            className="rounded-control bg-gradient-to-r from-primary to-primary-container px-4 py-3 font-semibold text-on-primary squish"
+            className="flex h-28 items-end rounded-card bg-gradient-to-br from-primary via-primary-container to-secondary p-4 shadow-[var(--shadow-float)] squish"
           >
-            ✨ {t('wrapped.open')}
+            <span>
+              <span className="block font-display text-2xl font-bold leading-none text-on-primary">
+                {new Date().getFullYear()}
+              </span>
+              <span className="mt-1 block text-sm font-medium text-on-primary/85">
+                {t('wrapped.open')}
+              </span>
+            </span>
           </Link>
-          <Link
-            to="/subscription"
-            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
-          >
-            {t('sub.open')}
-          </Link>
-          <Link
-            to="/following"
-            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
-          >
-            {t('followed.title')}
-          </Link>
-          <Link
-            to="/settings"
-            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
-          >
-            {t('settings.open')}
-          </Link>
+        </section>
+
+        {/* ── Listas guardadas ─────────────────────────────────────────── */}
+        <section className="mt-8">
+          <div className="mb-2 flex items-baseline justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              {t('followed.title')}
+            </h2>
+            {followed.length > 0 && (
+              <Link to="/following" className="text-sm font-semibold text-primary squish">
+                {t('profile.viewAll')}
+              </Link>
+            )}
+          </div>
+
+          {followed.length === 0 ? (
+            <Link
+              to="/following"
+              className="block rounded-card border-2 border-dashed border-outline-variant px-4 py-5 text-center text-sm text-on-surface-variant squish"
+            >
+              {t('followed.none')}
+            </Link>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {followed.slice(0, 2).map((list) => (
+                <li key={list.token}>
+                  <Link
+                    to={`/l/${list.token}`}
+                    className="flex items-center gap-3 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] squish"
+                  >
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-control bg-primary-fixed text-xl text-primary">
+                      🔖
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold text-on-surface">
+                        {list.name}
+                      </span>
+                      <span className="block truncate text-sm text-on-surface-variant">
+                        {list.places === 1
+                          ? t('collection.countOne')
+                          : t('collection.count', { count: list.places })}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* ── Ajustes ──────────────────────────────────────────────────────
+            Agrupados en una sola tarjeta con separadores, como en el diseño,
+            en vez de botones sueltos. Cuatro cajas con borde propio compiten
+            entre sí; una lista se recorre de un vistazo. */}
+        <section className="mt-8 overflow-hidden rounded-card bg-surface-container">
+          {(
+            [
+              ['/subscription', '💳', 'sub.open'],
+              ['/settings', '⚙️', 'settings.open'],
+            ] as const
+          ).map(([to, icon, key]) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex items-center gap-3 border-b border-outline-variant/40 px-4 py-3.5 squish"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-lg">
+                {icon}
+              </span>
+              <span className="flex-1 font-semibold text-on-surface">{t(key)}</span>
+              <span className="text-on-surface-variant" aria-hidden>
+                ›
+              </span>
+            </Link>
+          ))}
           <button
             type="button"
             onClick={() => void signOut()}
-            className="rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface-variant squish"
+            className="flex w-full items-center gap-3 px-4 py-3.5 text-left squish"
           >
-            {t('auth.signOut')}
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-lg">
+              🚪
+            </span>
+            <span className="flex-1 font-semibold text-error">{t('auth.signOut')}</span>
           </button>
         </section>
       </div>
