@@ -65,6 +65,10 @@ export function SpaceDetailPage() {
   }
 
   const isAdmin = space?.myRole === 'admin'
+  // El espacio personal llega aquí para poder ponerle nombre y aspecto, pero no
+  // admite invitaciones, ni salir, ni borrarlo: el servidor rechaza las tres, y
+  // enseñar botones que van a fallar es peor que no enseñarlos.
+  const isPersonal = space?.kind === 'personal'
 
   const loadInvites = useCallback(async () => {
     if (!id) return
@@ -337,7 +341,7 @@ export function SpaceDetailPage() {
         )}
 
         {/* ── Invitaciones ───────────────────────────────────────────────── */}
-        {isAdmin && (
+        {isAdmin && !isPersonal && (
           <section className="mt-8">
             <h2 className="mb-3 font-display font-semibold text-on-surface">{t('invite.title')}</h2>
 
@@ -514,6 +518,7 @@ export function SpaceDetailPage() {
         )}
 
         {/* ── Miembros ───────────────────────────────────────────────────── */}
+        {!isPersonal && (
         <section className="mt-8">
           <h2 className="mb-3 font-display font-semibold text-on-surface">
             {t('space.members')}{' '}
@@ -645,8 +650,10 @@ export function SpaceDetailPage() {
             })}
           </ul>
         </section>
+        )}
 
         {/* ── Salir / borrar ─────────────────────────────────────────────── */}
+        {!isPersonal && (
         <section className="mt-8 flex flex-col gap-2">
           <button
             type="button"
@@ -682,6 +689,7 @@ export function SpaceDetailPage() {
             </button>
           )}
         </section>
+        )}
       </div>
 
       {reporting && (

@@ -122,14 +122,25 @@ export function SpacesPage() {
               {t('space.soloTitle')}
             </h2>
             <p className="mt-1 text-sm text-on-surface-variant">{t('spaces.personalNote')}</p>
-            <button
-              type="button"
-              onClick={() => setActiveSpace(personal.id)}
-              disabled={personal.id === activeSpace?.id}
-              className="mt-4 w-full rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-40"
-            >
-              {personal.id === activeSpace?.id ? t('space.inUse') : t('space.useSolo')}
-            </button>
+            {/* «Gestionar» también aquí: el espacio personal se puede
+                renombrar y darle emoji y color igual que un grupo, pero no
+                había ninguna forma de llegar a esa pantalla. */}
+            <div className="mt-4 flex gap-2">
+              <Link
+                to={`/spaces/${personal.id}`}
+                className="shrink-0 rounded-full border border-outline-variant px-4 py-3 text-sm font-semibold text-on-surface-variant squish"
+              >
+                {t('spaces.manage')}
+              </Link>
+              <button
+                type="button"
+                onClick={() => setActiveSpace(personal.id)}
+                disabled={personal.id === activeSpace?.id}
+                className="flex-1 rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-40"
+              >
+                {personal.id === activeSpace?.id ? t('space.inUse') : t('space.useSolo')}
+              </button>
+            </div>
           </section>
         )}
 
