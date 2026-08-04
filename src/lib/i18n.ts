@@ -337,6 +337,11 @@ const es = {
 
   'calendar.today': 'Hoy',
   'calendar.tomorrow': 'Mañana',
+  'plan.confirmed': 'Confirmado',
+  'calendar.week': 'Semana',
+  'calendar.month': 'Mes',
+  'calendar.prevMonth': 'Mes anterior',
+  'calendar.nextMonth': 'Mes siguiente',
 
   // Etiquetas de ambiente (Fase 3)
   'tag.plural': 'Etiquetas',
@@ -517,6 +522,12 @@ const es = {
   'profile.statPlans': 'Planes',
   'profile.changeAvatar': 'Cambiar foto',
   'profile.avatarTooBig': 'La imagen es demasiado grande.',
+
+  'spaces.active': '{count} activos',
+  'spaces.activeOne': '1 activo',
+  'spaces.addNew': 'Añadir un grupo',
+  'space.useSolo': 'Usar el modo en solitario',
+  'space.personalJourney': 'Tu espacio',
 
   // Aspecto del espacio
   'space.look': 'Aspecto',
@@ -853,6 +864,11 @@ const en: Record<TranslationKey, string> = {
 
   'calendar.today': 'Today',
   'calendar.tomorrow': 'Tomorrow',
+  'plan.confirmed': 'Confirmed',
+  'calendar.week': 'Week',
+  'calendar.month': 'Month',
+  'calendar.prevMonth': 'Previous month',
+  'calendar.nextMonth': 'Next month',
 
   'tag.plural': 'Tags',
   'tag.hint': 'The category says what the place is; the tag says what it is like.',
@@ -1025,6 +1041,12 @@ const en: Record<TranslationKey, string> = {
   'profile.statPlans': 'Plans',
   'profile.changeAvatar': 'Change photo',
   'profile.avatarTooBig': 'That image is too large.',
+
+  'spaces.active': '{count} active',
+  'spaces.activeOne': '1 active',
+  'spaces.addNew': 'Add a group',
+  'space.useSolo': 'Use solo mode',
+  'space.personalJourney': 'Your space',
 
   // Space look
   'space.look': 'Look',
