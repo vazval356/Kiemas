@@ -72,3 +72,35 @@ export function nextRoundHour(): Date {
   d.setHours(d.getHours() + 1)
   return d
 }
+
+/**
+ * «hace 2 h», «ayer», «hace 3 días».
+ *
+ * Lo hace `Intl.RelativeTimeFormat`, que trae las reglas de cada idioma —
+ * plurales, si se dice «ayer» o «hace 1 día»— sin que haya que escribirlas. La
+ * alternativa, montarlo a mano, obliga a mantener esas reglas por idioma y se
+ * nota enseguida en cuál se puso menos cuidado.
+ *
+ * Se elige la unidad más grande que dé un número mayor que uno: «hace 90
+ * minutos» se lee peor que «hace 1 hora».
+ */
+export function relativeTime(iso: string, locale: Locale): string {
+  const seconds = (Date.now() - new Date(iso).getTime()) / 1000
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ['year', 31536000],
+    ['month', 2592000],
+    ['week', 604800],
+    ['day', 86400],
+    ['hour', 3600],
+    ['minute', 60],
+  ]
+
+  for (const [unit, size] of units) {
+    const value = Math.floor(Math.abs(seconds) / size)
+    if (value >= 1) return rtf.format(seconds < 0 ? value : -value, unit)
+  }
+  // Menos de un minuto: `numeric: 'auto'` lo convierte en «ahora».
+  return rtf.format(0, 'second')
+}

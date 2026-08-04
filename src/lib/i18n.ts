@@ -86,6 +86,7 @@ const es = {
   'invite.code': 'Código de entrada',
   'invite.copyCode': 'Copiar código',
   'invite.shareLink': 'Compartir enlace',
+  'invite.shareLinkHint': 'Manda el enlace y quien lo abra entra directo al espacio.',
   'invite.expiry': 'Caducidad del enlace',
   'invite.expiry30m': '30 minutos',
   'invite.expiry1h': '1 hora',
@@ -393,6 +394,8 @@ const es = {
 
   // Feed de actividad (Fase 3)
   'activity.title': 'Actividad',
+  'activity.subtitle': 'Lo que ha estado haciendo tu grupo.',
+  'activity.loadOlder': 'Ver actividad anterior',
   'activity.none': 'Todavía no ha pasado nada aquí.',
   'activity.saved_place': '{actor} guardó {object}',
   'activity.visited_place': '{actor} marcó {object} como visitado',
@@ -627,6 +630,7 @@ const en: Record<TranslationKey, string> = {
   'invite.code': 'Entry code',
   'invite.copyCode': 'Copy code',
   'invite.shareLink': 'Share link',
+  'invite.shareLinkHint': 'Send the link and whoever opens it joins the space straight away.',
   'invite.expiry': 'Link expiration',
   'invite.expiry30m': '30 minutes',
   'invite.expiry1h': '1 hour',
@@ -915,6 +919,8 @@ const en: Record<TranslationKey, string> = {
   'comment.edited': 'edited',
 
   'activity.title': 'Activity',
+  'activity.subtitle': "What your group has been up to lately.",
+  'activity.loadOlder': 'Load older activity',
   'activity.none': 'Nothing has happened here yet.',
   'activity.saved_place': '{actor} saved {object}',
   'activity.visited_place': '{actor} marked {object} as visited',

@@ -140,6 +140,9 @@ export function SpaceDetailPage() {
   }
 
   const liveInvites = invites.filter((i) => !i.revokedAt)
+  // La más reciente es la que se enseña en grande. El orden que devuelve el
+  // servidor no está garantizado, así que se ordena aquí en vez de confiar.
+  const featured = [...liveInvites].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
@@ -325,6 +328,52 @@ export function SpaceDetailPage() {
           <section className="mt-8">
             <h2 className="mb-3 font-display font-semibold text-on-surface">{t('invite.title')}</h2>
 
+            {/* ── El código vigente, en grande ─────────────────────────────
+                Una sola invitación manda: es la que se va a dictar en voz alta
+                o pegar en un grupo. Enseñar cinco códigos con el mismo peso
+                obliga a elegir entre ellos sin criterio, y las demás siguen
+                accesibles más abajo. */}
+            {featured && (
+              <div className="mb-5">
+                <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                  {t('invite.code')}
+                </p>
+                {/* Una casilla por carácter: así se dicta y se teclea sin
+                    perder la cuenta, que es como viaja de verdad un código. */}
+                <div className="flex justify-center gap-1.5">
+                  {featured.code.split('').map((ch, i) => (
+                    <span
+                      key={`${ch}-${i}`}
+                      className="flex size-11 items-center justify-center rounded-control bg-surface-container font-mono text-2xl font-bold text-primary"
+                    >
+                      {ch}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void copy(featured.code, `code-${featured.id}`)}
+                  className="mx-auto mt-3 flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary squish"
+                >
+                  <CopyIcon className="size-4" />
+                  {copied === `code-${featured.id}` ? t('common.copied') : t('invite.copyCode')}
+                </button>
+
+                <div className="mt-4 rounded-card bg-primary p-4 text-on-primary shadow-[var(--shadow-float)]">
+                  <h3 className="font-display text-lg font-bold">{t('invite.shareLink')}</h3>
+                  <p className="mt-0.5 text-sm opacity-90">{t('invite.shareLinkHint')}</p>
+                  <button
+                    type="button"
+                    onClick={() => void copy(inviteLink(featured.code), `link-${featured.id}`)}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-surface-lowest py-3 font-semibold text-primary squish"
+                  >
+                    <ShareIcon className="size-4" />
+                    {copied === `link-${featured.id}` ? t('invite.linkCopied') : t('invite.shareLink')}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               {t('invite.expiry')}
             </label>
@@ -453,24 +502,42 @@ export function SpaceDetailPage() {
 
         {/* ── Miembros ───────────────────────────────────────────────────── */}
         <section className="mt-8">
-          <h2 className="mb-3 font-display font-semibold text-on-surface">{t('space.members')}</h2>
+          <h2 className="mb-3 font-display font-semibold text-on-surface">
+            {t('space.members')}{' '}
+            <span className="font-normal text-on-surface-variant">({space.members.length})</span>
+          </h2>
           <ul className="flex flex-col gap-2">
             {space.members.map((member) => {
               const isMe = member.userId === profile?.id
               return (
                 <li
                   key={member.userId}
-                  className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+                  // Banda de color a la izquierda, como en el diseño. Es el
+                  // mismo color con el que esa persona aparece en el
+                  // calendario y en las tarjetas de plan: leerlo aquí es lo
+                  // que hace que allí se reconozca sin leer el nombre.
+                  className="overflow-hidden rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+                  style={{ borderLeft: `4px solid ${member.color}` }}
                 >
                   <div className="flex items-center gap-3">
-                    <span
-                      className="flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                      style={{ backgroundColor: member.color }}
-                    >
-                      {member.displayName.slice(0, 1).toUpperCase()}
-                    </span>
+                    {member.avatarUrl ? (
+                      <img
+                        src={member.avatarUrl}
+                        alt=""
+                        loading="lazy"
+                        className="size-11 shrink-0 rounded-full object-cover"
+                        style={{ border: `2px solid ${member.color}` }}
+                      />
+                    ) : (
+                      <span
+                        className="flex size-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+                        style={{ backgroundColor: member.color }}
+                      >
+                        {member.displayName.slice(0, 1).toUpperCase()}
+                      </span>
+                    )}
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium text-on-surface">
+                      <span className="block truncate font-semibold text-on-surface">
                         {member.displayName}
                         {isMe && (
                           <span className="ml-1 text-sm font-normal text-on-surface-variant">
@@ -478,13 +545,23 @@ export function SpaceDetailPage() {
                           </span>
                         )}
                       </span>
-                      <span className="block text-sm text-on-surface-variant">
-                        @{member.username}
+                      <span
+                        className={`block truncate text-sm font-medium ${
+                          member.role === 'admin' ? 'text-primary' : 'text-on-surface-variant'
+                        }`}
+                      >
+                        {member.role === 'admin' ? t('space.admin') : t('space.member')}
+                        <span className="font-normal text-on-surface-variant">
+                          {' · @'}
+                          {member.username}
+                        </span>
                       </span>
                     </span>
-                    <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-                      {member.role === 'admin' ? t('space.admin') : t('space.member')}
-                    </span>
+                    <span
+                      className="size-3.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: member.color }}
+                      aria-hidden
+                    />
                   </div>
 
                   {(isAdmin || isMe) && (
