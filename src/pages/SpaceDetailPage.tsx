@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
 import { inviteUrl } from '../lib/appUrl'
-import { SPACE_EMOJIS, SPACE_THEMES, spaceColors } from '../lib/spaceTheme'
+import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -42,21 +42,24 @@ export function SpaceDetailPage() {
   // El aspecto se pinta desde estado local para que el cambio se vea al
   // instante; la recarga del servidor llega después y confirma.
   const [emoji, setEmoji] = useState(space?.emoji ?? '👥')
-  const [theme, setTheme] = useState(space?.theme ?? 'indigo')
+  const [color, setColor] = useState(normalizeHex(space?.color))
+  const coverRef = useRef<HTMLInputElement>(null)
+  const cols = spaceColors(color)
 
-  async function saveLook(nextEmoji: string, nextTheme: string) {
+  async function saveLook(nextEmoji: string, nextColor: string) {
     if (!space) return
-    const prev = { emoji, theme }
+    const prev = { emoji, color }
+    const clean = normalizeHex(nextColor)
     setEmoji(nextEmoji)
-    setTheme(nextTheme)
+    setColor(clean)
     try {
-      await api.setSpaceLook(space.id, nextEmoji, nextTheme)
+      await api.setSpaceLook(space.id, nextEmoji, clean)
       await refreshSpaces()
     } catch (e) {
-      // Se deshace lo pintado: dejar el emoji nuevo en pantalla cuando el
+      // Se deshace lo pintado: dejar el color nuevo en pantalla cuando el
       // servidor lo ha rechazado haría creer que se guardó.
       setEmoji(prev.emoji)
-      setTheme(prev.theme)
+      setColor(prev.color)
       setError(errorMessage(e, t('common.error')))
     }
   }
@@ -217,26 +220,44 @@ export function SpaceDetailPage() {
             <h2 className="mb-1 font-display font-semibold text-on-surface">{t('space.look')}</h2>
             <p className="mb-3 text-sm text-on-surface-variant">{t('space.lookHint')}</p>
 
+            {/* Vista previa: la portada si la hay, y si no el color con el
+                emoji. Es lo mismo que verá el grupo en la lista. */}
             <div
-              className="flex h-20 items-center justify-center rounded-card"
+              className="relative flex h-28 items-center justify-center overflow-hidden rounded-card"
               style={{
-                background: `linear-gradient(135deg, ${spaceColors(theme).solid}, ${spaceColors(theme).soft})`,
+                background: `linear-gradient(135deg, ${cols.solid}, ${cols.soft})`,
               }}
             >
-              <span className="text-4xl drop-shadow-sm">{emoji}</span>
+              {space.coverUrl && (
+                <img src={space.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+              )}
+              <span className="relative text-4xl drop-shadow-md">{emoji}</span>
             </div>
 
-            <div className="mt-3 flex gap-2">
-              {SPACE_THEMES.map((th) => (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              {/* El selector del sistema abre la rueda de color del móvil, que
+                  es la que la gente ya sabe usar. */}
+              <label
+                className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-control ring-2 ring-primary ring-offset-2 squish"
+                style={{ backgroundColor: color }}
+                aria-label={t('space.pickColor')}
+              >
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => void saveLook(emoji, e.target.value)}
+                  className="size-0 opacity-0"
+                />
+              </label>
+
+              {SPACE_COLOR_SUGGESTIONS.map((c) => (
                 <button
-                  key={th}
+                  key={c}
                   type="button"
-                  onClick={() => void saveLook(emoji, th)}
-                  aria-label={t(`space.theme${th[0].toUpperCase()}${th.slice(1)}` as 'space.themeIndigo')}
-                  className={`h-9 flex-1 rounded-control squish ${
-                    theme === th ? 'ring-2 ring-offset-2 ring-primary' : ''
-                  }`}
-                  style={{ backgroundColor: spaceColors(th).solid }}
+                  onClick={() => void saveLook(emoji, c)}
+                  aria-label={c}
+                  className="size-9 rounded-control squish"
+                  style={{ backgroundColor: c }}
                 />
               ))}
             </div>
@@ -246,7 +267,7 @@ export function SpaceDetailPage() {
                 <button
                   key={e}
                   type="button"
-                  onClick={() => void saveLook(e, theme)}
+                  onClick={() => void saveLook(e, color)}
                   className={`aspect-square rounded-control text-xl squish ${
                     emoji === e ? 'bg-primary-fixed ring-2 ring-primary' : 'bg-surface-container'
                   }`}
@@ -254,6 +275,47 @@ export function SpaceDetailPage() {
                   {e}
                 </button>
               ))}
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => coverRef.current?.click()}
+                className="flex-1 rounded-control border border-outline-variant py-2.5 text-sm font-semibold text-on-surface squish"
+              >
+                {space.coverUrl ? t('space.changeCover') : t('space.addCover')}
+              </button>
+              {space.coverUrl && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    void run(async () => {
+                      // Cadena vacía y no null: null aquí significaría
+                      // «déjala como está».
+                      await api.setSpaceLook(space.id, null, null, '')
+                      await refreshSpaces()
+                    })
+                  }
+                  className="rounded-control border border-outline-variant px-4 text-sm font-semibold text-on-surface-variant squish"
+                >
+                  {t('common.delete')}
+                </button>
+              )}
+              <input
+                ref={coverRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    void run(async () => {
+                      await api.setSpaceCover(space.id, file)
+                      await refreshSpaces()
+                    })
+                  }
+                }}
+              />
             </div>
           </section>
         )}

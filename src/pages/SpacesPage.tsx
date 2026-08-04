@@ -146,7 +146,7 @@ export function SpacesPage() {
         <ul className="mt-3 flex flex-col gap-4">
           {groups.map((space) => {
             const isActive = space.id === activeSpace?.id
-            const c = spaceColors(space.theme)
+            const c = spaceColors(space.color)
             return (
               <li
                 key={space.id}
@@ -154,14 +154,22 @@ export function SpacesPage() {
                   isActive ? 'ring-2 ring-primary' : ''
                 }`}
               >
-                {/* La portada del diseño es una foto. Aquí es el color del
-                    grupo con su emoji: se reconoce igual de rápido en la lista,
-                    sin subida de imágenes ni contenido que moderar. */}
+                {/* La portada es la foto del grupo si la tiene; si no, su color
+                    con el emoji. El emoji se mantiene encima de la foto porque
+                    es lo que identifica al grupo en el resto de la app. */}
                 <div
-                  className="relative flex h-24 items-center justify-center"
+                  className="relative flex h-28 items-center justify-center"
                   style={{ background: `linear-gradient(135deg, ${c.solid}, ${c.soft})` }}
                 >
-                  <span className="text-5xl drop-shadow-sm">{space.emoji}</span>
+                  {space.coverUrl && (
+                    <img
+                      src={space.coverUrl}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 size-full object-cover"
+                    />
+                  )}
+                  <span className="relative text-5xl drop-shadow-md">{space.emoji}</span>
                   <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-surface-lowest/90 px-2.5 py-1 text-xs font-bold text-on-surface">
                     <GroupIcon className="size-3.5" />
                     {space.members.length}

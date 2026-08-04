@@ -533,9 +533,9 @@ const es = {
   'space.look': 'Aspecto',
   'space.lookHint': 'Con qué icono y color se reconoce este grupo.',
   'space.lookSaved': 'Aspecto guardado',
-  'space.themeIndigo': 'Índigo',
-  'space.themeRose': 'Frambuesa',
-  'space.themeAmber': 'Ámbar',
+  'space.pickColor': 'Elegir color',
+  'space.addCover': 'Añadir foto de portada',
+  'space.changeCover': 'Cambiar la portada',
 
   // Bienvenida
   'onb.skip': 'Saltar',
@@ -1052,9 +1052,9 @@ const en: Record<TranslationKey, string> = {
   'space.look': 'Look',
   'space.lookHint': 'The icon and colour this group is recognised by.',
   'space.lookSaved': 'Look saved',
-  'space.themeIndigo': 'Indigo',
-  'space.themeRose': 'Raspberry',
-  'space.themeAmber': 'Amber',
+  'space.pickColor': 'Pick a colour',
+  'space.addCover': 'Add a cover photo',
+  'space.changeCover': 'Change cover',
 
   // Onboarding
   'onb.skip': 'Skip',

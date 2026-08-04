@@ -169,7 +169,7 @@ export function ProfilePage() {
           </h2>
           <ul className="flex flex-col gap-2">
             {spaces.map((space) => {
-              const c = spaceColors(space.theme)
+              const c = spaceColors(space.color)
               return (
                 <li key={space.id}>
                   <button

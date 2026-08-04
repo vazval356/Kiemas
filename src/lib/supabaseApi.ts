@@ -343,7 +343,7 @@ export const supabaseApi: DataApi = {
     const [spacesRes, membersRes, profilesRes] = await Promise.all([
       supabase
         .from('spaces')
-        .select('id, name, description, kind, emoji, theme')
+        .select('id, name, description, kind, emoji, color, cover_path, theme')
         .order('kind')
         .order('name'),
       supabase.from('space_members').select('space_id, user_id, role, color, joined_at'),
@@ -378,6 +378,12 @@ export const supabaseApi: DataApi = {
         description: s.description,
         kind: s.kind as Space['kind'],
         emoji: s.emoji ?? '👥',
+        color: s.color ?? '#4648D4',
+        // Se guarda la ruta y se resuelve al leer: una URL absoluta en la base
+        // de datos deja de servir el día que cambie el dominio del almacén.
+        coverUrl: s.cover_path
+          ? supabase.storage.from('covers').getPublicUrl(s.cover_path).data.publicUrl
+          : null,
         theme: s.theme ?? 'indigo',
         members: list,
         myRole: (list.find((m) => m.userId === uid)?.role ?? 'member') as SpaceRole,
@@ -407,11 +413,36 @@ export const supabaseApi: DataApi = {
     ok(await supabase.from('spaces').update(row).eq('id', spaceId))
   },
 
-  async setSpaceLook(spaceId: string, emoji: string, theme: string) {
+  async setSpaceLook(spaceId: string, emoji: string, color: string, coverPath?: string | null) {
     const res = await supabase.rpc('set_space_look', {
       p_space_id: spaceId,
       p_emoji: emoji,
-      p_theme: theme,
+      p_color: color,
+      // `undefined` no viaja en JSON, así que se manda null explícito: es lo
+      // que el servidor lee como «no toques la portada». La cadena vacía, en
+      // cambio, significa «quítala».
+      p_cover_path: coverPath === undefined ? null : coverPath,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async setSpaceCover(spaceId: string, file: File): Promise<void> {
+    // 1024 px de ancho: es una portada de tarjeta, no un fondo de escritorio, y
+    // subir el original de una cámara moderna gastaría megas para nada.
+    const blob = await resizeImage(file, 1024, 0.85)
+    const path = `${spaceId}/${crypto.randomUUID()}.jpg`
+    const up = await supabase.storage.from('covers').upload(path, blob, {
+      contentType: 'image/jpeg',
+    })
+    if (up.error) throw new Error(up.error.message)
+
+    // La ruta la guarda la RPC, no un update directo: así la comprobación de
+    // administrador vive en un solo sitio.
+    const res = await supabase.rpc('set_space_look', {
+      p_space_id: spaceId,
+      p_emoji: null,
+      p_color: null,
+      p_cover_path: path,
     })
     if (res.error) throw new Error(res.error.message)
   },

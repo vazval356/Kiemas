@@ -76,11 +76,20 @@ export interface DataApi {
   createSpace(name: string, description?: string): Promise<Space>
   updateSpace(spaceId: string, patch: Partial<Pick<Space, 'name' | 'description' | 'theme'>>): Promise<void>
   /**
-   * Emoji y color del espacio. Va por su propia RPC y no por `updateSpace`
-   * porque el servidor valida el tema contra la lista cerrada y exige ser
-   * administrador.
+   * Emoji, color y portada del espacio. Va por su propia RPC y no por
+   * `updateSpace` porque el servidor valida el color y exige ser administrador.
+   *
+   * `null` en cualquiera de los tres significa «no lo toques». En `coverPath`,
+   * además, la cadena vacía la quita.
    */
-  setSpaceLook(spaceId: string, emoji: string, theme: string): Promise<void>
+  setSpaceLook(
+    spaceId: string,
+    emoji?: string | null,
+    color?: string | null,
+    coverPath?: string | null
+  ): Promise<void>
+  /** Sube la portada y la deja guardada. Solo administradores. */
+  setSpaceCover(spaceId: string, file: File): Promise<void>
   /** Solo espacios de grupo: el personal no se puede borrar. */
   deleteSpace(spaceId: string): Promise<void>
 

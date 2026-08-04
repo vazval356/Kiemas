@@ -79,7 +79,11 @@ export interface Space {
   kind: SpaceKind
   /** Emoji con el que se reconoce el espacio en una lista. */
   emoji: string
-  /** Nombre de tema del sistema de diseño. Ver `spaceTheme.ts`. */
+  /** Color libre en `#RRGGBB`. El texto de encima se calcula en `spaceTheme.ts`. */
+  color: string
+  /** Foto de portada ya resuelta a URL, o `null` si no tiene. */
+  coverUrl: string | null
+  /** @deprecated Lo sustituye `color`. Se conserva por compatibilidad. */
   theme: string
   members: SpaceMember[]
   /** Rol de la persona conectada dentro de este espacio. */
