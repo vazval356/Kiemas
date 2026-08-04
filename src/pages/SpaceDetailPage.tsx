@@ -4,6 +4,7 @@ import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
 import { inviteUrl } from '../lib/appUrl'
+import { SPACE_EMOJIS, SPACE_THEMES, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -38,6 +39,27 @@ export function SpaceDetailPage() {
   const [copied, setCopied] = useState<string | null>(null)
   const [reporting, setReporting] = useState<SpaceMember | null>(null)
   const [name, setName] = useState(space?.name ?? '')
+  // El aspecto se pinta desde estado local para que el cambio se vea al
+  // instante; la recarga del servidor llega después y confirma.
+  const [emoji, setEmoji] = useState(space?.emoji ?? '👥')
+  const [theme, setTheme] = useState(space?.theme ?? 'indigo')
+
+  async function saveLook(nextEmoji: string, nextTheme: string) {
+    if (!space) return
+    const prev = { emoji, theme }
+    setEmoji(nextEmoji)
+    setTheme(nextTheme)
+    try {
+      await api.setSpaceLook(space.id, nextEmoji, nextTheme)
+      await refreshSpaces()
+    } catch (e) {
+      // Se deshace lo pintado: dejar el emoji nuevo en pantalla cuando el
+      // servidor lo ha rechazado haría creer que se guardó.
+      setEmoji(prev.emoji)
+      setTheme(prev.theme)
+      setError(errorMessage(e, t('common.error')))
+    }
+  }
 
   const isAdmin = space?.myRole === 'admin'
 
@@ -182,6 +204,56 @@ export function SpaceDetailPage() {
               >
                 {t('common.save')}
               </button>
+            </div>
+          </section>
+        )}
+
+        {/* ── Aspecto ────────────────────────────────────────────────────────
+            Se guarda al tocar, sin botón de confirmar. Es una elección visual
+            con vista previa delante: obligar a pulsar «guardar» después de ver
+            el resultado sobra, y el coste de equivocarse es volver a tocar. */}
+        {isAdmin && (
+          <section className="mt-8">
+            <h2 className="mb-1 font-display font-semibold text-on-surface">{t('space.look')}</h2>
+            <p className="mb-3 text-sm text-on-surface-variant">{t('space.lookHint')}</p>
+
+            <div
+              className="flex h-20 items-center justify-center rounded-card"
+              style={{
+                background: `linear-gradient(135deg, ${spaceColors(theme).solid}, ${spaceColors(theme).soft})`,
+              }}
+            >
+              <span className="text-4xl drop-shadow-sm">{emoji}</span>
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              {SPACE_THEMES.map((th) => (
+                <button
+                  key={th}
+                  type="button"
+                  onClick={() => void saveLook(emoji, th)}
+                  aria-label={t(`space.theme${th[0].toUpperCase()}${th.slice(1)}` as 'space.themeIndigo')}
+                  className={`h-9 flex-1 rounded-control squish ${
+                    theme === th ? 'ring-2 ring-offset-2 ring-primary' : ''
+                  }`}
+                  style={{ backgroundColor: spaceColors(th).solid }}
+                />
+              ))}
+            </div>
+
+            <div className="mt-3 grid grid-cols-8 gap-1.5">
+              {SPACE_EMOJIS.map((e) => (
+                <button
+                  key={e}
+                  type="button"
+                  onClick={() => void saveLook(e, theme)}
+                  className={`aspect-square rounded-control text-xl squish ${
+                    emoji === e ? 'bg-primary-fixed ring-2 ring-primary' : 'bg-surface-container'
+                  }`}
+                >
+                  {e}
+                </button>
+              ))}
             </div>
           </section>
         )}
