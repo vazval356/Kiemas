@@ -509,6 +509,23 @@ const es = {
   // Widget de pantalla de inicio (Fase 4)
   'widget.empty': 'No tenéis ningún plan a la vista',
 
+  // Perfil
+  'profile.bioPlaceholder': 'Una frase sobre ti',
+  'profile.bioEmpty': 'Añade una frase sobre ti',
+  'profile.statPlaces': 'Sitios',
+  'profile.statGroups': 'Grupos',
+  'profile.statPlans': 'Planes',
+  'profile.changeAvatar': 'Cambiar foto',
+  'profile.avatarTooBig': 'La imagen es demasiado grande.',
+
+  // Aspecto del espacio
+  'space.look': 'Aspecto',
+  'space.lookHint': 'Con qué icono y color se reconoce este grupo.',
+  'space.lookSaved': 'Aspecto guardado',
+  'space.themeIndigo': 'Índigo',
+  'space.themeRose': 'Frambuesa',
+  'space.themeAmber': 'Ámbar',
+
   // Bienvenida
   'onb.skip': 'Saltar',
   'onb.next': 'Siguiente',
@@ -999,6 +1016,23 @@ const en: Record<TranslationKey, string> = {
 
   // Home screen widget (Phase 4)
   'widget.empty': 'No plans coming up',
+
+  // Profile
+  'profile.bioPlaceholder': 'A line about you',
+  'profile.bioEmpty': 'Add a line about you',
+  'profile.statPlaces': 'Places',
+  'profile.statGroups': 'Groups',
+  'profile.statPlans': 'Plans',
+  'profile.changeAvatar': 'Change photo',
+  'profile.avatarTooBig': 'That image is too large.',
+
+  // Space look
+  'space.look': 'Look',
+  'space.lookHint': 'The icon and colour this group is recognised by.',
+  'space.lookSaved': 'Look saved',
+  'space.themeIndigo': 'Indigo',
+  'space.themeRose': 'Raspberry',
+  'space.themeAmber': 'Amber',
 
   // Onboarding
   'onb.skip': 'Skip',

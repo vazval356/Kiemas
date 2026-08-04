@@ -29,6 +29,7 @@ import type {
   YearInReview,
   Entitlement,
   MyEntitlement,
+  MyStats,
   PlanLimits,
   PromoRedemption,
 } from './types'
@@ -265,7 +266,7 @@ export const supabaseApi: DataApi = {
     const row = check(
       await supabase
         .from('profiles')
-        .select('id, display_name, username, avatar_url, locale, onboarded_at')
+        .select('id, display_name, username, avatar_url, bio, locale, onboarded_at')
         .eq('id', uid)
         .single()
     )
@@ -274,8 +275,20 @@ export const supabaseApi: DataApi = {
       displayName: row.display_name,
       username: row.username,
       avatarUrl: row.avatar_url,
+      bio: row.bio ?? '',
       locale: row.locale as Locale,
       onboardedAt: row.onboarded_at,
+    }
+  },
+
+  async myStats(): Promise<MyStats> {
+    const res = await supabase.rpc('my_stats')
+    if (res.error) throw new Error(res.error.message)
+    const d = res.data as Record<string, unknown>
+    return {
+      places: Number(d.places ?? 0),
+      groups: Number(d.groups ?? 0),
+      plans: Number(d.plans ?? 0),
     }
   },
 
@@ -290,6 +303,9 @@ export const supabaseApi: DataApi = {
     const row: Record<string, unknown> = {}
     if (patch.displayName !== undefined) row.display_name = patch.displayName
     if (patch.locale !== undefined) row.locale = patch.locale
+    // Se recorta aquí además de en la restricción de la tabla: así el fallo es
+    // un texto acortado y no un error que interrumpe al que está escribiendo.
+    if (patch.bio !== undefined) row.bio = patch.bio.slice(0, 160)
     if (Object.keys(row).length === 0) return
     ok(await supabase.from('profiles').update(row).eq('id', uid))
   },
@@ -325,7 +341,11 @@ export const supabaseApi: DataApi = {
     const uid = await myId()
     // Las tres consultas ya vienen recortadas por RLS a lo que me corresponde.
     const [spacesRes, membersRes, profilesRes] = await Promise.all([
-      supabase.from('spaces').select('id, name, description, kind, theme').order('kind').order('name'),
+      supabase
+        .from('spaces')
+        .select('id, name, description, kind, emoji, theme')
+        .order('kind')
+        .order('name'),
       supabase.from('space_members').select('space_id, user_id, role, color, joined_at'),
       supabase.from('profiles').select('id, display_name, username, avatar_url'),
     ])
@@ -357,7 +377,8 @@ export const supabaseApi: DataApi = {
         name: s.name,
         description: s.description,
         kind: s.kind as Space['kind'],
-        theme: s.theme,
+        emoji: s.emoji ?? '👥',
+        theme: s.theme ?? 'indigo',
         members: list,
         myRole: (list.find((m) => m.userId === uid)?.role ?? 'member') as SpaceRole,
       }
@@ -384,6 +405,15 @@ export const supabaseApi: DataApi = {
     if (patch.theme !== undefined) row.theme = patch.theme
     if (Object.keys(row).length === 0) return
     ok(await supabase.from('spaces').update(row).eq('id', spaceId))
+  },
+
+  async setSpaceLook(spaceId: string, emoji: string, theme: string) {
+    const res = await supabase.rpc('set_space_look', {
+      p_space_id: spaceId,
+      p_emoji: emoji,
+      p_theme: theme,
+    })
+    if (res.error) throw new Error(res.error.message)
   },
 
   async deleteSpace(spaceId: string) {

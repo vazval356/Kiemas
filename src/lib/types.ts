@@ -24,6 +24,8 @@ export interface Profile {
   /** Handle público sin la arroba: `arivera`. Único, en minúsculas. */
   username: string
   avatarUrl: string
+  /** Frase corta bajo el nombre. Máximo 160 caracteres, como en el servidor. */
+  bio: string
   locale: Locale
   /**
    * Cuándo terminó la presentación de bienvenida.
@@ -75,6 +77,9 @@ export interface Space {
   name: string
   description: string
   kind: SpaceKind
+  /** Emoji con el que se reconoce el espacio en una lista. */
+  emoji: string
+  /** Nombre de tema del sistema de diseño. Ver `spaceTheme.ts`. */
   theme: string
   members: SpaceMember[]
   /** Rol de la persona conectada dentro de este espacio. */
@@ -386,4 +391,13 @@ export interface PlanLimits {
   maxSpaces: number | null
   maxMembers: number | null
   maxActivePlans: number | null
+}
+
+/** Los tres contadores de la cabecera del perfil. */
+export interface MyStats {
+  /** Sitios guardados por mí, no los de mis espacios. */
+  places: number
+  groups: number
+  /** Planes a los que dije que iba, no a los que me invitaron. */
+  plans: number
 }

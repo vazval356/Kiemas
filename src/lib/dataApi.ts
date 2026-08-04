@@ -19,6 +19,7 @@ import type {
   Comment,
   ActivityEntry,
   MyEntitlement,
+  MyStats,
   PlanLimits,
   PromoRedemption,
   PublicList,
@@ -45,8 +46,10 @@ import type {
 export interface DataApi {
   // ── Perfil ───────────────────────────────────────────────────────────────
   me(): Promise<Profile>
-  updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'locale'>>): Promise<void>
+  updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'locale' | 'bio'>>): Promise<void>
   setAvatar(file: File): Promise<string>
+  /** Los tres contadores de la cabecera del perfil. Se cuentan al vuelo. */
+  myStats(): Promise<MyStats>
 
   /**
    * El @usuario va por su propia vía y no por `updateProfile`, porque necesita
@@ -72,6 +75,12 @@ export interface DataApi {
   getSpace(spaceId: string): Promise<Space>
   createSpace(name: string, description?: string): Promise<Space>
   updateSpace(spaceId: string, patch: Partial<Pick<Space, 'name' | 'description' | 'theme'>>): Promise<void>
+  /**
+   * Emoji y color del espacio. Va por su propia RPC y no por `updateSpace`
+   * porque el servidor valida el tema contra la lista cerrada y exige ser
+   * administrador.
+   */
+  setSpaceLook(spaceId: string, emoji: string, theme: string): Promise<void>
   /** Solo espacios de grupo: el personal no se puede borrar. */
   deleteSpace(spaceId: string): Promise<void>
 
