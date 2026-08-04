@@ -81,7 +81,15 @@ export function AuthPage() {
     <div className="h-full overflow-y-auto">
       <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center gap-6 px-5 py-10">
         <header className="text-center">
-          <div className="text-5xl">🗺️</div>
+          {/* El logo de verdad, no un emoji de mapa. Es la primera pantalla que
+              ve alguien y la única donde la marca tiene que hacer su trabajo. */}
+          <img
+            src="/icons/icon-192.png"
+            alt=""
+            width={72}
+            height={72}
+            className="mx-auto size-18 rounded-card"
+          />
           <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-primary">
             {t('app.name')}
           </h1>

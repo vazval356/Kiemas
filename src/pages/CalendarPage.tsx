@@ -113,7 +113,9 @@ export function CalendarPage() {
 
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-md px-4 pb-32 pt-1">
+      {/* pb-40 y no pb-32: el botón flotante mide 56 px y arranca a 88 del
+          borde, así que con 128 de hueco se comía la última tarjeta. */}
+      <div className="mx-auto max-w-md px-4 pb-40 pt-1">
         {/* ── Cabecera: mes y selector de vista ──────────────────────────── */}
         <header className="flex items-center justify-between gap-2 py-2">
           <div className="flex min-w-0 items-center gap-1">
@@ -127,7 +129,9 @@ export function CalendarPage() {
                 ‹
               </button>
             )}
-            <h1 className="truncate font-display text-xl font-bold capitalize text-on-surface">
+            {/* `capitalize` pondría mayúscula a CADA palabra: «Agosto De 2026».
+                Solo la primera. */}
+            <h1 className="truncate font-display text-xl font-bold text-on-surface first-letter:uppercase">
               {headerMonth}
             </h1>
             {view === 'month' && (

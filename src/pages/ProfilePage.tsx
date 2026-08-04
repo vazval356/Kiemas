@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { UsernameEditor } from '../components/UsernameEditor'
-import { GroupIcon, UserIcon } from '../components/icons'
+import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, FollowedList, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -95,7 +95,9 @@ export function ProfilePage() {
               Solo si hay algo que enseñar: una insignia que pone «GRATIS» no
               es un distintivo, es un recordatorio de lo que no tienes. */}
           {entitlement !== 'free' && (
-            <span className="-mt-3 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-primary shadow-md">
+            // `relative z-10`: sin él, el retrato se pinta después y tapa la
+            // mitad de la insignia, que es lo que pasaba.
+            <span className="relative z-10 -mt-3 rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-primary shadow-md">
               {t(`sub.${entitlement}` as 'sub.plus')}
             </span>
           )}
@@ -313,19 +315,21 @@ export function ProfilePage() {
             en vez de botones sueltos. Cuatro cajas con borde propio compiten
             entre sí; una lista se recorre de un vistazo. */}
         <section className="mt-8 overflow-hidden rounded-card bg-surface-container">
+          {/* Iconos de trazo y no emojis: en iOS los emojis se pintan a todo
+              color y chocan con el resto de la app, que usa línea plana. */}
           {(
             [
-              ['/subscription', '💳', 'sub.open'],
-              ['/settings', '⚙️', 'settings.open'],
+              ['/subscription', CardIcon, 'sub.open'],
+              ['/settings', SettingsIcon, 'settings.open'],
             ] as const
-          ).map(([to, icon, key]) => (
+          ).map(([to, Icon, key]) => (
             <Link
               key={to}
               to={to}
               className="flex items-center gap-3 border-b border-outline-variant/40 px-4 py-3.5 squish"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-lg">
-                {icon}
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-primary">
+                <Icon className="size-5" />
               </span>
               <span className="flex-1 font-semibold text-on-surface">{t(key)}</span>
               <span className="text-on-surface-variant" aria-hidden>
@@ -338,8 +342,8 @@ export function ProfilePage() {
             onClick={() => void signOut()}
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left squish"
           >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-lg">
-              🚪
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-error">
+              <LogoutIcon className="size-5" />
             </span>
             <span className="flex-1 font-semibold text-error">{t('auth.signOut')}</span>
           </button>

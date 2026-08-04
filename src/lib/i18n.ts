@@ -531,6 +531,7 @@ const es = {
   'spaces.activeOne': '1 activo',
   'spaces.addNew': 'Añadir un grupo',
   'space.useSolo': 'Usar el modo en solitario',
+  'space.inUse': 'Lo estás usando',
   'space.personalJourney': 'Tu espacio',
 
   // Aspecto del espacio
@@ -1054,6 +1055,7 @@ const en: Record<TranslationKey, string> = {
   'spaces.activeOne': '1 active',
   'spaces.addNew': 'Add a group',
   'space.useSolo': 'Use solo mode',
+  'space.inUse': "You're using it",
   'space.personalJourney': 'Your space',
 
   // Space look

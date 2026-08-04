@@ -128,7 +128,7 @@ export function SpacesPage() {
               disabled={personal.id === activeSpace?.id}
               className="mt-4 w-full rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-40"
             >
-              {personal.id === activeSpace?.id ? t('sub.currentPlan') : t('space.useSolo')}
+              {personal.id === activeSpace?.id ? t('space.inUse') : t('space.useSolo')}
             </button>
           </section>
         )}
@@ -238,10 +238,10 @@ export function SpacesPage() {
           <span className="flex size-11 items-center justify-center rounded-full bg-primary-fixed text-2xl text-primary">
             +
           </span>
+          {/* Sin repetir aquí la descripción: la sección de crear, justo
+              debajo, dice exactamente lo mismo. Dos veces la misma frase en
+              media pantalla hace dudar de si son dos cosas distintas. */}
           <span className="mt-2 font-semibold text-primary">{t('spaces.addNew')}</span>
-          <span className="mt-0.5 px-6 text-center text-sm text-on-surface-variant">
-            {t('space.createHint')}
-          </span>
         </button>
 
         {error && (
