@@ -301,3 +301,32 @@ pero el nivel no sube, mira `current_period_end` y `status`.
 - **Política de privacidad**: ambas tiendas la exigen como URL pública. El
   borrado de cuenta desde dentro de la app ya está hecho (directriz 5.1.1(v) de
   Apple), que es el otro requisito que suele tumbar la revisión.
+
+#### Cómo nombrar los productos
+
+La pantalla de planes empareja cada paquete de RevenueCat con su nivel buscando
+`plus` o `pro` dentro del identificador del paquete o del producto, y el periodo
+por el tipo de paquete (`MONTHLY` / `ANNUAL`).
+
+Nombra los productos en consecuencia, por ejemplo:
+
+```
+kopasymas_plus_monthly
+kopasymas_plus_annual
+kopasymas_pro_monthly
+kopasymas_pro_annual
+```
+
+Un producto mal nombrado **no da error**: simplemente su tarjeta se queda sin
+botón de compra, que es la clase de fallo que cuesta media tarde encontrar.
+
+#### Dos pantallas del pack de diseño que no se implementan
+
+`finalizar_pago` es un formulario de tarjeta con Stripe. No puede existir dentro
+de la app: Apple y Google prohíben cobrar suscripciones digitales por otra vía, y
+recoger tarjetas en un formulario propio mete el proyecto en el alcance de PCI.
+Con RevenueCat, el pago lo enseña la hoja nativa de la tienda.
+
+`gestionar_suscripción` dibuja método de pago, historial de facturación y un
+botón de cancelar dentro de la app. Todo eso vive en la tienda y allí se manda,
+con un enlace. Reimplementarlo sería motivo de rechazo en revisión.

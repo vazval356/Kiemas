@@ -1,3 +1,4 @@
+import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
 import { LOG_LEVEL, Purchases } from '@revenuecat/purchases-capacitor'
 import type { PurchasesPackage } from '@revenuecat/purchases-capacitor'
@@ -115,6 +116,23 @@ export async function buyPackage(pkg: PurchasesPackage): Promise<boolean> {
  */
 export async function restorePurchases(): Promise<void> {
   await Purchases.restorePurchases()
+}
+
+/**
+ * Abre la pantalla de suscripciones de la tienda.
+ *
+ * Cambiar la tarjeta, pasarse al plan anual o cancelar **no se puede hacer
+ * dentro de la app**: Apple y Google lo prohíben expresamente, y una pantalla
+ * propia con «método de pago» y «cancelar suscripción» es motivo de rechazo en
+ * revisión. Lo único permitido es mandar a la tienda, que es además donde el
+ * usuario espera encontrarlo junto al resto de sus suscripciones.
+ */
+export async function openStoreSubscriptions(): Promise<void> {
+  const url =
+    Capacitor.getPlatform() === 'ios'
+      ? 'https://apps.apple.com/account/subscriptions'
+      : 'https://play.google.com/store/account/subscriptions'
+  await Browser.open({ url })
 }
 
 /** true si la persona canceló la compra, en vez de fallar de verdad. */
