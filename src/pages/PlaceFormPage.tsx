@@ -142,7 +142,38 @@ export function PlaceFormPage() {
       return
     }
 
-    if (parsed.name && !name.trim()) setName(parsed.name)
+    // Lo que Google llama `q` puede ser el nombre del sitio o su dirección
+    // postal. Como nombre, «C. de Bolivia, 21, Chamartín, 28016 Madrid» no
+    // sirve: se reconoce por el código postal de cinco cifras y se trata como
+    // lo que es, dejando el nombre libre para que lo escriba quien guarda.
+    const esDireccion = parsed.name !== null && /\b\d{5}\b/.test(parsed.name)
+
+    if (parsed.name && !esDireccion && !name.trim()) setName(parsed.name)
+    if (esDireccion && parsed.name && !address) setAddress(parsed.name)
+
+    // Sin coordenadas pero con texto: es lo que devuelve un enlace corto ya
+    // resuelto, que acaba en `?q=<dirección>` en vez de en coordenadas. Se
+    // geocodifica ese texto para dejar el sitio situado en el mapa; si no,
+    // habría que buscarlo a mano justo después de haberlo importado.
+    if (parsed.lat === null && parsed.name) {
+      const texto = parsed.name
+      setImportMessage({ kind: 'info', text: t('import.locating') })
+      void searchAddress(texto, position ?? undefined, locale)
+        .then((res) => {
+          if (res.length === 0) {
+            setImportMessage({ kind: 'warn', text: t('import.noLocation') })
+            return
+          }
+          setCoords({ lat: res[0].lat, lng: res[0].lng })
+          setAddress(res[0].address)
+          moveTo(res[0].lat, res[0].lng)
+          setImportMessage({ kind: 'ok', text: t('import.done') })
+        })
+        .catch(() => setImportMessage({ kind: 'warn', text: t('import.noLocation') }))
+      setImportUrl('')
+      return
+    }
+
     if (parsed.lat !== null && parsed.lng !== null) {
       setCoords({ lat: parsed.lat, lng: parsed.lng })
       moveTo(parsed.lat, parsed.lng)

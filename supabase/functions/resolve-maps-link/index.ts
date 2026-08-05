@@ -37,8 +37,19 @@ function destinoValido(host: string): boolean {
   )
 }
 
-/** Google encadena un par de saltos; cinco es holgado y acota el bucle. */
-const MAX_SALTOS = 5
+/**
+ * Cuántos saltos se siguen.
+ *
+ * Con cinco no bastaba: Google encadena `maps.app.goo.gl` → `maps.google.com`
+ * → `maps.google.com/maps` → `www.google.com/maps`, y sirve una cadena MÁS
+ * LARGA a quien no parece un navegador — cinco redirecciones enteras cuando la
+ * petición viene de un servidor. Con el límite justo, la función se quedaba a
+ * un salto del final y devolvía «demasiadas redirecciones».
+ *
+ * Diez deja margen para que Google alargue la cadena sin que haya que volver
+ * aquí, y sigue acotando el bucle.
+ */
+const MAX_SALTOS = 10
 
 Deno.serve(async (req: Request): Promise<Response> => {
   const cors = {

@@ -130,6 +130,8 @@ const es = {
   'import.body': 'Pega un enlace de Google Maps y rellenamos los datos solos.',
   'import.action': 'Importar',
   'import.resolving': 'Siguiendo el enlace…',
+  'import.locating': 'Situando el sitio en el mapa…',
+  'import.noLocation': 'Hemos sacado el nombre, pero no la ubicación. Búscala abajo.',
   'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps',
   'import.shortLink':
     'Los enlaces cortos de «Compartir» no se pueden leer desde el navegador. Abre el sitio en Google Maps y copia la dirección completa de la barra del navegador.',
@@ -680,6 +682,8 @@ const en: Record<TranslationKey, string> = {
   'import.body': "Paste a Google Maps link and we'll fill in the details.",
   'import.action': 'Import',
   'import.resolving': 'Following the link…',
+  'import.locating': 'Placing it on the map…',
+  'import.noLocation': "We got the name but not the location. Search for it below.",
   'import.notGoogleMaps': "That doesn't look like a Google Maps link",
   'import.shortLink':
     "Short 'Share' links can't be read from the browser. Open the place in Google Maps and copy the full address from the address bar.",
