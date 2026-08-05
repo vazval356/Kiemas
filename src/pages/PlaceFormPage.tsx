@@ -13,6 +13,7 @@ import {
   parseGoogleMapsUrl,
   priceLabel,
   searchAddress,
+  suggestAddress,
   type GeoResult,
 } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -193,12 +194,22 @@ export function PlaceFormPage() {
   }
 
   // ── Búsqueda de dirección con antirrebote ────────────────────────────────
+  /**
+   * `aFondo` decide a quién se pregunta.
+   *
+   * Al teclear se llama en falso: solo Photon, que es el que admite consultas
+   * parciales. Nominatim prohíbe el autocompletado en su política de uso y
+   * bloquea por IP a quien lo hace, así que solo entra cuando alguien pulsa
+   * Enter — una acción deliberada, no una consecuencia de escribir.
+   */
   const runSearch = useCallback(
-    async (q: string) => {
+    async (q: string, aFondo = false) => {
       setSearching(true)
       setNoResults(false)
       try {
-        const res = await searchAddress(q, position ?? undefined, locale)
+        const res = aFondo
+          ? await searchAddress(q, position ?? undefined, locale)
+          : await suggestAddress(q, position ?? undefined)
         setResults(res)
         setNoResults(res.length === 0)
       } catch {
@@ -364,7 +375,9 @@ export function PlaceFormPage() {
                 if (e.key === 'Enter' && query.trim().length >= 3) {
                   e.preventDefault()
                   window.clearTimeout(searchTimer.current)
-                  void runSearch(query)
+                  // A fondo: aquí sí entra Nominatim, que encuentra nombres de
+                  // negocios que Photon no.
+                  void runSearch(query, true)
                 }
               }}
               placeholder={t('form.searchAddress')}
@@ -374,6 +387,13 @@ export function PlaceFormPage() {
               <span className="shrink-0 text-xs text-on-surface-variant">{t('form.searching')}</span>
             )}
           </div>
+          {/* Al teclear solo responde Photon, que va de direcciones. Buscar un
+              negocio por su nombre necesita Nominatim, y ese solo entra al
+              pulsar Enter — su política prohíbe el autocompletado. Se dice,
+              porque si no nadie descubre que hay una segunda búsqueda. */}
+          {query.trim().length >= 3 && (
+            <p className="mt-1 text-xs text-on-surface-variant">{t('form.searchDeeper')}</p>
+          )}
           {results.length > 0 && (
             <ul className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-card border border-outline-variant/40 bg-surface-lowest shadow-[var(--shadow-float)]">
               {results.map((r, i) => (

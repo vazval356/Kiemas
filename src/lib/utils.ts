@@ -166,7 +166,46 @@ async function searchNominatim(query: string, lang = 'es'): Promise<GeoResult[]>
   return results
 }
 
-/** Busca en Photon y Nominatim a la vez y mezcla resultados únicos. */
+/**
+ * Sugerencias mientras se escribe. **Solo Photon.**
+ *
+ * Nominatim prohíbe expresamente el autocompletado en su política de uso, y no
+ * es una recomendación: bloquean por IP. El día que pasara, buscar direcciones
+ * dejaría de funcionar para todo el mundo a la vez y sin aviso previo.
+ *
+ * Photon existe precisamente para esto —está pensado para consultas parciales
+ * según se teclea— así que es el que se usa en cada pulsación.
+ */
+export async function suggestAddress(
+  query: string,
+  near?: { lat: number; lng: number }
+): Promise<GeoResult[]> {
+  return searchPhoton(query, near)
+}
+
+/**
+ * Cuándo se llamó por última vez a Nominatim.
+ *
+ * Su política pone un máximo absoluto de una petición por segundo. Aquí se
+ * espacian desde el cliente: no es una garantía global —cada dispositivo lleva
+ * su propia cuenta— pero evita que una sola persona se pase sola, que es el
+ * caso que de verdad ocurre al pulsar Enter varias veces seguidas.
+ */
+let ultimaNominatim = 0
+
+async function esperarTurnoNominatim(): Promise<void> {
+  const desde = Date.now() - ultimaNominatim
+  if (desde < 1000) await new Promise((r) => setTimeout(r, 1000 - desde))
+  ultimaNominatim = Date.now()
+}
+
+/**
+ * Búsqueda a fondo: Photon y Nominatim.
+ *
+ * Solo para acciones deliberadas —pulsar Enter, o resolver una dirección al
+ * importar un enlace— nunca al teclear. Nominatim encuentra nombres de negocios
+ * que Photon no, y por eso se conserva para estos casos contados.
+ */
 export async function searchAddress(
   query: string,
   near?: { lat: number; lng: number },
@@ -174,7 +213,7 @@ export async function searchAddress(
 ): Promise<GeoResult[]> {
   const [photon, nominatim] = await Promise.allSettled([
     searchPhoton(query, near),
-    searchNominatim(query, lang),
+    esperarTurnoNominatim().then(() => searchNominatim(query, lang)),
   ])
   const merged: GeoResult[] = []
   const seen = new Set<string>()

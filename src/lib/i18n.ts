@@ -218,6 +218,7 @@ const es = {
   'form.location': 'Ubicación',
   'form.searchAddress': 'Busca dirección o nombre del lugar…',
   'form.searching': 'Buscando…',
+  'form.searchDeeper': 'Pulsa Enter para buscar por nombre del negocio.',
   'form.noResults':
     'Sin resultados para «{query}». Prueba con la dirección («Calle Mayor 5, Madrid») o coloca el marcador a mano.',
   'form.mapHint': 'Toca el mapa o arrastra el marcador para afinar el punto exacto.',
@@ -788,6 +789,7 @@ const en: Record<TranslationKey, string> = {
   'form.location': 'Location',
   'form.searchAddress': 'Search address or place name…',
   'form.searching': 'Searching…',
+  'form.searchDeeper': 'Press Enter to search by business name.',
   'form.noResults':
     'No results for “{query}”. Try the street address (“5 Main St, Madrid”) or drop the marker by hand.',
   'form.mapHint': 'Tap the map or drag the marker to fine-tune the exact spot.',

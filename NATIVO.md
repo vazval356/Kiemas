@@ -295,9 +295,14 @@ pero el nivel no sube, mira `current_period_end` y `status`.
   tiendas. Ver la sección anterior.
 - **Correo**: el servicio integrado de Supabase tiene un límite de 3 correos por
   hora y no es apto para producción. Hará falta SMTP propio (Resend, SendGrid).
-- **Geocodificación**: la búsqueda de direcciones usa Nominatim, cuya política de
-  uso prohíbe expresamente las búsquedas según se teclea. Hay que pasar a Photon
-  autoalojado o a un geocodificador de pago.
+- **Geocodificación**: resuelto el incumplimiento. Nominatim prohíbe el
+  autocompletado en su política de uso, así que al teclear responde solo Photon
+  —que está pensado para eso— y Nominatim únicamente entra al pulsar Enter,
+  espaciado a una petición por segundo como exige su política.
+
+  Sigue siendo una dependencia de servicios públicos gratuitos: si la app crece,
+  lo correcto es un Photon autoalojado o un geocodificador de pago. Pero ya no
+  se está incumpliendo nada.
 - **Política de privacidad**: ambas tiendas la exigen como URL pública. El
   borrado de cuenta desde dentro de la app ya está hecho (directriz 5.1.1(v) de
   Apple), que es el otro requisito que suele tumbar la revisión.
