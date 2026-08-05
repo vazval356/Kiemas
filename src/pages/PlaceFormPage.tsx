@@ -142,11 +142,11 @@ export function PlaceFormPage() {
       return
     }
 
-    // Lo que Google llama `q` puede ser el nombre del sitio o su dirección
-    // postal. Como nombre, «C. de Bolivia, 21, Chamartín, 28016 Madrid» no
-    // sirve: se reconoce por el código postal de cinco cifras y se trata como
-    // lo que es, dejando el nombre libre para que lo escriba quien guarda.
-    const esDireccion = parsed.name !== null && /\b\d{5}\b/.test(parsed.name)
+    // El texto de `q=` es la dirección postal, no el nombre del sitio: es lo
+    // que queda al resolver un enlace corto. Se distingue por su procedencia y
+    // no por su forma — una regla que buscara códigos postales falla con las
+    // direcciones que no lo llevan, que fue justamente lo que pasó.
+    const esDireccion = parsed.nameSource === 'query'
 
     if (parsed.name && !esDireccion && !name.trim()) setName(parsed.name)
     if (esDireccion && parsed.name && !address) setAddress(parsed.name)

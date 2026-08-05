@@ -207,6 +207,18 @@ export interface GoogleMapsLink {
    * que resolver antes de poder leer nada de él.
    */
   needsResolving: boolean
+  /**
+   * De dónde salió `name`, que cambia por completo qué hacer con él.
+   *
+   * `/place/La+Trattoria` es el nombre del sitio y va al campo Nombre. El
+   * parámetro `q=`, en cambio, casi siempre trae la dirección postal —es lo que
+   * queda al resolver un enlace corto— y ponerla como nombre deja el sitio
+   * llamándose «C. de Bolivia, 21, Chamartín, 28016 Madrid».
+   *
+   * Se dice de dónde viene en vez de adivinarlo mirando el texto: una regla que
+   * buscara códigos postales falla con las direcciones que no lo llevan.
+   */
+  nameSource: 'place' | 'query' | null
 }
 
 /**
@@ -248,7 +260,7 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
   if (!isGoogleMaps) return null
 
   if (host === 'maps.app.goo.gl' || /(^|\.)goo\.gl$/.test(host)) {
-    return { name: null, lat: null, lng: null, needsResolving: true }
+    return { name: null, lat: null, lng: null, needsResolving: true, nameSource: null }
   }
 
   const full = url.href
@@ -287,18 +299,21 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
 
   // Nombre: el segmento que va detrás de `/place/`.
   let name: string | null = null
+  let nameSource: GoogleMapsLink['nameSource'] = null
   const placeSegment = url.pathname.match(/\/place\/([^/@]+)/)
   if (placeSegment) {
     const decoded = safeDecode(placeSegment[1]).replace(/\+/g, ' ').trim()
     // Google mete a veces las coordenadas como nombre cuando no hay ficha.
     if (decoded && !/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(decoded)) {
       name = decoded
+      nameSource = 'place'
     }
   }
   if (!name) {
     const q = url.searchParams.get('q') ?? url.searchParams.get('query')
     if (q && !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
       name = safeDecode(q).replace(/\+/g, ' ').trim() || null
+      if (name) nameSource = 'query'
     }
   }
 
@@ -312,7 +327,7 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
   }
 
   if (name === null && lat === null) return null
-  return { name, lat, lng, needsResolving: false }
+  return { name, lat, lng, needsResolving: false, nameSource }
 }
 
 function safeDecode(value: string): string {
