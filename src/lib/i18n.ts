@@ -454,6 +454,22 @@ const es = {
   'public.followHint': 'Guárdala para volver desde tu perfil.',
   'public.needAccount': 'Entra en Kopasymas para seguir esta lista.',
 
+  // Explorar (Fase 6)
+  'explore.title': 'Explorar listas',
+  'explore.subtitle': 'Listas que otros grupos han hecho públicas.',
+  'explore.search': 'Busca una lista o un @usuario…',
+  'explore.open': 'Explorar listas públicas',
+  'explore.followers': '{count} siguiendo',
+  'explore.followerOne': '1 siguiendo',
+  'explore.empty': 'Todavía no hay listas publicadas',
+  'explore.emptyHint': 'Publica una de las tuyas y será la primera.',
+  'explore.noResults': 'Nada con esa búsqueda',
+  'explore.listIt': 'Aparecer en Explorar',
+  'explore.listItHint':
+    'Compartir da un enlace para quien tú quieras. Aparecer aquí la hace pública y buscable para cualquiera con cuenta.',
+  'explore.listed': 'Aparece en Explorar',
+  'explore.needShare': 'Comparte la lista antes de publicarla en Explorar.',
+
   // Listas seguidas (Fase 4)
   'followed.title': 'Listas que sigues',
   'followed.none': 'Todavía no sigues ninguna lista',
@@ -1020,6 +1036,22 @@ const en: Record<TranslationKey, string> = {
   'public.following': 'Following',
   'public.followHint': 'Save it to come back from your profile.',
   'public.needAccount': 'Sign in to Kopasymas to follow this list.',
+
+  // Explore (Phase 6)
+  'explore.title': 'Explore lists',
+  'explore.subtitle': 'Lists other groups have made public.',
+  'explore.search': 'Search a list or a @username…',
+  'explore.open': 'Explore public lists',
+  'explore.followers': '{count} following',
+  'explore.followerOne': '1 following',
+  'explore.empty': 'No lists published yet',
+  'explore.emptyHint': 'Publish one of yours and it will be the first.',
+  'explore.noResults': 'Nothing matches that search',
+  'explore.listIt': 'Show in Explore',
+  'explore.listItHint':
+    'Sharing gives a link for whoever you choose. Showing it here makes it public and searchable for anyone with an account.',
+  'explore.listed': 'Shown in Explore',
+  'explore.needShare': 'Share the list before publishing it to Explore.',
 
   'followed.title': 'Lists you follow',
   'followed.none': "You don't follow any list yet",

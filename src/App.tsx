@@ -10,6 +10,7 @@ import { AuthPage } from './pages/AuthPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { CollectionDetailPage } from './pages/CollectionDetailPage'
 import { CollectionsPage } from './pages/CollectionsPage'
+import { ExplorePage } from './pages/ExplorePage'
 import { FollowedListsPage } from './pages/FollowedListsPage'
 import { LegalPage } from './pages/LegalPage'
 import { ListPage } from './pages/ListPage'
@@ -46,6 +47,7 @@ const FULL_SCREEN = [
   '/collections',
   '/activity',
   '/following',
+  '/explore',
   '/wrapped',
   '/subscription',
   '/welcome',
@@ -134,6 +136,7 @@ function Shell() {
         <Route path="/collections/:id" element={<CollectionDetailPage />} />
         <Route path="/activity" element={<ActivityPage />} />
         <Route path="/following" element={<FollowedListsPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
         <Route path="/wrapped" element={<YearInReviewPage />} />
         <Route path="/spaces" element={<SpacesPage />} />
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />

@@ -98,8 +98,14 @@ antes de la Fase 5.
 | 4 | Resumen anual y seguir listas | ✅ Hecha |
 | 4 | Widget de pantalla de inicio | Pendiente (Kotlin/SwiftUI) |
 | 5 | Suscripciones Free / Plus / Pro, códigos promocionales | ✅ Código listo ⚠️ |
-| 6 | Feed «Explorar» y recomendaciones | — |
+| 6 | Explorar listas públicas | ✅ Hecha |
+| 6 | Recomendaciones con IA, tiempo y reservas | ❌ Descartada |
 | 7 | Perfiles de negocio, patrocinios, afiliación, analítica | — |
+
+La pantalla «Recomendaciones Pro» del pack de diseño describe análisis del
+tiempo, disponibilidad de mesas en tiempo real, reserva integrada y rutas
+escritas por un equipo editorial. Son tres servicios externos y contenido que no
+existe: se descarta en vez de simularla con datos inventados.
 
 ⚠️ Los límites y los códigos promocionales funcionan desde ya. Las compras
 necesitan productos dados de alta en Play Console, y para eso hace falta subir

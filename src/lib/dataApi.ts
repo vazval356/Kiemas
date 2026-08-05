@@ -19,6 +19,7 @@ import type {
   Comment,
   ActivityEntry,
   MyEntitlement,
+  ExploreList,
   MyStats,
   PlanLimits,
   PromoRedemption,
@@ -180,6 +181,18 @@ export interface DataApi {
   followList(token: string): Promise<void>
   unfollowList(token: string): Promise<void>
   listFollowedLists(): Promise<FollowedList[]>
+  // ── Explorar (Fase 6) ────────────────────────────────────────────────────
+  /**
+   * Listas que la gente ha decidido publicar en el directorio.
+   *
+   * No son todas las compartidas: aparecer en Explorar se pide aparte. Quien
+   * mandó un enlace a cinco amigos no consintió salir en un directorio
+   * buscable.
+   */
+  exploreLists(search?: string, limit?: number, offset?: number): Promise<ExploreList[]>
+  /** Publica o retira una lista del directorio. Solo administradores. */
+  setListListed(collectionId: string, listed: boolean): Promise<void>
+
   /** Resumen del año para el espacio indicado. Se calcula al vuelo. */
   yearInReview(spaceId: string, year: number): Promise<YearInReview>
 

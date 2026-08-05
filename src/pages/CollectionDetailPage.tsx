@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect} from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import { publicListUrl } from '../lib/appUrl'
@@ -54,6 +54,13 @@ export function CollectionDetailPage() {
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
   const outside = places.filter((p) => !collection.placeIds.includes(p.id))
   const share = collection.share && !collection.share.revokedAt ? collection.share : null
+
+  // El interruptor de Explorar se pinta desde estado local para que responda al
+  // instante; la recarga del servidor llega después y confirma.
+  const [listed, setListed] = useState(Boolean(share?.listed))
+  useEffect(() => {
+    setListed(Boolean(share?.listed))
+  }, [share?.listed])
   // No se usa window.location.origin: dentro del contenedor nativo vale
   // http://localhost y el enlace compartido llegaría roto a quien lo recibe.
   const publicUrl = share ? publicListUrl(share.token) : ''
@@ -244,6 +251,42 @@ export function CollectionDetailPage() {
                     })}`
                   : ` · ${t('invite.neverExpires')}`}
               </p>
+              {/* ── Aparecer en Explorar ────────────────────────────────────
+                  Decisión aparte de compartir, y por eso está aquí dentro pero
+                  con su propio interruptor: quien manda el enlace a cinco
+                  amigos no ha consentido salir en un directorio buscable. El
+                  aviso lo dice sin rodeos antes de que nadie lo active. */}
+              <div className="mt-4 rounded-card bg-surface-container p-3">
+                <label className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={listed}
+                    disabled={busy}
+                    onChange={(e) => {
+                      const next = e.target.checked
+                      setListed(next)
+                      void run(async () => {
+                        try {
+                          await api.setListListed(collection.id, next)
+                        } catch (err) {
+                          setListed(!next)
+                          throw err
+                        }
+                      })
+                    }}
+                    className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+                  />
+                  <span>
+                    <span className="block font-semibold text-on-surface">
+                      {t('explore.listIt')}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-on-surface-variant">
+                      {t('explore.listItHint')}
+                    </span>
+                  </span>
+                </label>
+              </div>
+
               <button
                 type="button"
                 disabled={busy}

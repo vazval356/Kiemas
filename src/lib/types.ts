@@ -264,6 +264,13 @@ export interface CollectionShare {
   expiresAt: string | null
   revokedAt: string | null
   viewCount: number
+  /**
+   * Si además aparece en el directorio de Explorar (Fase 6).
+   *
+   * Distinto de estar compartida: compartir da un enlace para quien tú quieras,
+   * y esto la hace pública y buscable. Se pide aparte.
+   */
+  listed: boolean
 }
 
 export interface Comment {
@@ -404,4 +411,22 @@ export interface MyStats {
   groups: number
   /** Planes a los que dije que iba, no a los que me invitaron. */
   plans: number
+}
+
+/** Una lista pública tal y como aparece en Explorar (Fase 6). */
+export interface ExploreList {
+  token: string
+  name: string
+  description: string
+  /** El espacio del que salió, para dar contexto de quién la mantiene. */
+  spaceName: string
+  /** @usuario de quien la publicó. `null` si esa cuenta ya no existe. */
+  author: string | null
+  authorAvatarUrl: string | null
+  coverUrl: string | null
+  places: number
+  followers: number
+  views: number
+  /** Si la persona conectada ya la sigue. */
+  following: boolean
 }

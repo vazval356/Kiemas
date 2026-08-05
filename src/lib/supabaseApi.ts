@@ -28,6 +28,7 @@ import type {
   FollowedList,
   YearInReview,
   Entitlement,
+  ExploreList,
   MyEntitlement,
   MyStats,
   PlanLimits,
@@ -797,7 +798,7 @@ export const supabaseApi: DataApi = {
       supabase.from('collection_places').select('collection_id, place_id, position, added_at'),
       supabase
         .from('public_shares')
-        .select('collection_id, token, expires_at, revoked_at, view_count')
+        .select('collection_id, token, expires_at, revoked_at, view_count, listed')
         .eq('space_id', spaceId),
     ])
     const cols = check(colsRes)
@@ -825,6 +826,7 @@ export const supabaseApi: DataApi = {
               expiresAt: share.expires_at,
               revokedAt: share.revoked_at,
               viewCount: share.view_count,
+              listed: Boolean(share.listed),
             }
           : null,
       }
@@ -893,7 +895,7 @@ export const supabaseApi: DataApi = {
     })
     if (res.error) throw new Error(res.error.message)
     const d = res.data as { token: string; expires_at: string | null }
-    return { token: d.token, expiresAt: d.expires_at, revokedAt: null, viewCount: 0 }
+    return { token: d.token, expiresAt: d.expires_at, revokedAt: null, viewCount: 0, listed: false }
   },
 
   async revokeShare(collectionId: string) {
@@ -996,6 +998,39 @@ export const supabaseApi: DataApi = {
       followedAt: r.followed_at as string,
       available: r.available === true,
     }))
+  },
+
+  async exploreLists(search?: string, limit = 20, offset = 0): Promise<ExploreList[]> {
+    const res = await supabase.rpc('explore_lists', {
+      p_search: search?.trim() || null,
+      p_limit: limit,
+      p_offset: offset,
+    })
+    if (res.error) throw new Error(res.error.message)
+    return (res.data as Record<string, unknown>[]).map((r) => ({
+      token: r.token as string,
+      name: r.name as string,
+      description: (r.description as string) ?? '',
+      spaceName: (r.space_name as string) ?? '',
+      author: (r.author as string) ?? null,
+      authorAvatarUrl: (r.author_avatar as string) ?? null,
+      // Igual que en el resto: se guarda la ruta y se resuelve al leer.
+      coverUrl: r.cover_path
+        ? supabase.storage.from('photos').getPublicUrl(r.cover_path as string).data.publicUrl
+        : null,
+      places: Number(r.places ?? 0),
+      followers: Number(r.followers ?? 0),
+      views: Number(r.view_count ?? 0),
+      following: Boolean(r.following),
+    }))
+  },
+
+  async setListListed(collectionId: string, listed: boolean): Promise<void> {
+    const res = await supabase.rpc('set_list_listed', {
+      p_collection_id: collectionId,
+      p_listed: listed,
+    })
+    if (res.error) throw new Error(res.error.message)
   },
 
   async yearInReview(spaceId: string, year: number): Promise<YearInReview> {

@@ -268,11 +268,9 @@ export function ProfilePage() {
             <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
               {t('followed.title')}
             </h2>
-            {followed.length > 0 && (
-              <Link to="/following" className="text-sm font-semibold text-primary squish">
-                {t('profile.viewAll')}
-              </Link>
-            )}
+            <Link to="/explore" className="text-sm font-semibold text-primary squish">
+              {t('explore.open')}
+            </Link>
           </div>
 
           {followed.length === 0 ? (
