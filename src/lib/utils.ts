@@ -49,7 +49,7 @@ export function formatKm(km: number): string {
   return `${km.toFixed(1).replace('.', ',')} km`
 }
 
-/** Warm Hearth tenía 1..3; el formulario de Kopasymas muestra cuatro niveles. */
+/** Warm Hearth tenía 1..3; el formulario de Kiemas muestra cuatro niveles. */
 export function priceLabel(level: number | null): string {
   if (!level) return ''
   return '€'.repeat(Math.min(Math.max(level, 1), 4))

@@ -452,7 +452,7 @@ const es = {
   'public.follow': 'Seguir esta lista',
   'public.following': 'Siguiendo',
   'public.followHint': 'Guárdala para volver desde tu perfil.',
-  'public.needAccount': 'Entra en Kopasymas para seguir esta lista.',
+  'public.needAccount': 'Entra en Kiemas para seguir esta lista.',
 
   // Explorar (Fase 6)
   'explore.title': 'Explorar listas',
@@ -605,7 +605,7 @@ const es = {
   'onb.start': 'Empezar',
   'onb.replay': 'Ver la bienvenida otra vez',
 
-  'onb.1.title': 'Esto es Kopasymas',
+  'onb.1.title': 'Esto es Kiemas',
   'onb.1.body': 'El mapa y el calendario de tu grupo, en el mismo sitio. Para que «un día tenemos que ir» acabe teniendo fecha.',
 
   'onb.2.title': 'Guardad sitios juntos',
@@ -1035,7 +1035,7 @@ const en: Record<TranslationKey, string> = {
   'public.follow': 'Follow this list',
   'public.following': 'Following',
   'public.followHint': 'Save it to come back from your profile.',
-  'public.needAccount': 'Sign in to Kopasymas to follow this list.',
+  'public.needAccount': 'Sign in to Kiemas to follow this list.',
 
   // Explore (Phase 6)
   'explore.title': 'Explore lists',
@@ -1186,7 +1186,7 @@ const en: Record<TranslationKey, string> = {
   'onb.start': 'Get started',
   'onb.replay': 'See the welcome tour again',
 
-  'onb.1.title': 'This is Kopasymas',
+  'onb.1.title': 'This is Kiemas',
   'onb.1.body': "Your group's map and calendar in one place. So that “we should go someday” finally gets a date.",
 
   'onb.2.title': 'Save places together',

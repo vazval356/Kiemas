@@ -1,4 +1,4 @@
-# Llevar Kopasymas al móvil
+# Llevar Kiemas al móvil
 
 La app es la misma base de código web, envuelta con [Capacitor](https://capacitorjs.com).
 Este documento cubre lo que hay hecho, lo que tienes que hacer tú y lo que falta.
@@ -83,7 +83,7 @@ keytool -list -v -keystore kedada.keystore
 ```
 
 El fichero sigue llamándose `kedada.keystore` y su alias sigue siendo `kedada`,
-aunque la app se llame ahora Kopasymas. Es intencionado: un keystore no es un
+aunque la app se llame ahora Kiemas. Es intencionado: un keystore no es un
 nombre, es la identidad con la que Google Play reconoce que una actualización
 viene de ti. Lo único que importa es que la huella no cambie, porque es la que
 está publicada en `assetlinks.json`. Regenerarlo o cambiarle el alias no aporta
@@ -113,7 +113,7 @@ huella está publicada. El comando queda aquí solo por si algún día hubiera q
 empezar de cero con un proyecto nuevo.
 
 ```bash
-keytool -genkey -v -keystore kopasymas.keystore -alias kopasymas \
+keytool -genkey -v -keystore kiemas.keystore -alias kiemas \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
@@ -144,7 +144,7 @@ dispositivo registrado.
 **Pasos que te tocan:**
 
 1. Crea un proyecto en [Firebase](https://console.firebase.google.com), añade
-   una app Android con el paquete `com.kopasymas.app` y descarga
+   una app Android con el paquete `com.kiemas.app` y descarga
    `google-services.json`. Déjalo en `android/app/` — está en `.gitignore`
    porque identifica tu proyecto.
 
@@ -194,7 +194,7 @@ npx cap open ios
 ### Widget de pantalla de inicio
 
 Enseña el próximo plan del grupo. Se añade como cualquier otro widget: mantener
-pulsado en la pantalla de inicio → **Widgets** → Kopasymas.
+pulsado en la pantalla de inicio → **Widgets** → Kiemas.
 
 **El widget no habla con Supabase.** La app calcula cuál es el próximo plan —que
 ya lo tiene en pantalla— y se lo pasa hecho a `WidgetPlugin`, que lo guarda en
@@ -325,10 +325,10 @@ por el tipo de paquete (`MONTHLY` / `ANNUAL`).
 Nombra los productos en consecuencia, por ejemplo:
 
 ```
-kopasymas_plus_monthly
-kopasymas_plus_annual
-kopasymas_pro_monthly
-kopasymas_pro_annual
+kiemas_plus_monthly
+kiemas_plus_annual
+kiemas_pro_monthly
+kiemas_pro_annual
 ```
 
 Un producto mal nombrado **no da error**: simplemente su tarjeta se queda sin

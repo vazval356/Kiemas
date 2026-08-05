@@ -1,4 +1,4 @@
-package com.kopasymas.app;
+package com.kiemas.app;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -29,7 +29,7 @@ import android.widget.RemoteViews;
  */
 public class NextPlanWidget extends AppWidgetProvider {
 
-    static final String PREFS = "kopasymas_widget";
+    static final String PREFS = "kiemas_widget";
     static final String KEY_TITLE = "title";
     static final String KEY_WHEN = "when";
     static final String KEY_PLACE = "place";

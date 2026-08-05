@@ -31,8 +31,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Kopasymas — Mapa y calendario del grupo',
-        short_name: 'Kopasymas',
+        name: 'Kiemas — Mapa y calendario del grupo',
+        short_name: 'Kiemas',
         description: 'Mapa compartido de sitios y calendario de planes para tu grupo',
         lang: 'es',
         theme_color: '#4648d4',

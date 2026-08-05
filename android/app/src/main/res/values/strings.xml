@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Kopasymas</string>
-    <string name="title_activity_main">Kopasymas</string>
-    <string name="package_name">com.kopasymas.app</string>
-    <string name="custom_url_scheme">com.kopasymas.app</string>
+    <string name="app_name">Kiemas</string>
+    <string name="title_activity_main">Kiemas</string>
+    <string name="package_name">com.kiemas.app</string>
+    <string name="custom_url_scheme">com.kiemas.app</string>
 
     <!--
       Textos del widget.
@@ -13,6 +13,6 @@
       perfil. Duplicar aquí las traducciones significaría mantenerlas dos veces.
     -->
     <string name="widget_heading">PRÓXIMO PLAN</string>
-    <string name="widget_empty">Abre Kopasymas para ver vuestros planes</string>
+    <string name="widget_empty">Abre Kiemas para ver vuestros planes</string>
     <string name="widget_description">El próximo plan de tu grupo</string>
 </resources>

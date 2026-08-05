@@ -11,8 +11,8 @@ import type { CapacitorConfig } from '@capacitor/cli'
  * Nota: `cap add ios` requiere macOS con Xcode. Android sí funciona en Windows.
  */
 const config: CapacitorConfig = {
-  appId: 'com.kopasymas.app',
-  appName: 'Kopasymas',
+  appId: 'com.kiemas.app',
+  appName: 'Kiemas',
   webDir: 'dist',
   android: {
     // El mapa de MapLibre usa WebGL: sin esto el rendimiento en Android cae mucho.

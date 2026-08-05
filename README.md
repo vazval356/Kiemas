@@ -1,10 +1,10 @@
-# Kopasymas 🗺️📅
+# Kiemas 🗺️📅
 
 Mapa compartido de sitios y calendario de planes, para grupos de cualquier
 tamaño y también para quien lo usa en solitario.
 
 Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo para
-parejas. Kopasymas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
+parejas. Kiemas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
 **Estado: Fase 6 — explorar.** La app funciona de punta a punta en web y en

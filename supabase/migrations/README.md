@@ -1,4 +1,4 @@
-# Esquema de Kopasymas
+# Esquema de Kiemas
 
 ## Qué hay ahora (Fases 0–2)
 

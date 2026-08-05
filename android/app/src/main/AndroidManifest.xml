@@ -21,18 +21,25 @@
 
             <!--
               Enlaces profundos. Con esto, tocar un enlace de invitación o de
-              lista pública abre Kopasymas en vez del navegador.
+              lista pública abre Kiemas en vez del navegador.
 
               android:autoVerify exige publicar
-              https://kopasymas.vercel.app/.well-known/assetlinks.json con la huella SHA-256
-              del certificado de firma. Hasta que exista el dominio, Android
-              simplemente no verifica y el enlace sigue abriendo el navegador:
-              no rompe nada, solo no llega a activarse.
+              https://kiemas.com/.well-known/assetlinks.json con la huella SHA-256
+              del certificado de firma. Si la verificación falla, Android no rompe
+              nada: el enlace sigue abriendo el navegador, simplemente no llega a
+              activarse la apertura directa en la app.
+
+              El dominio viejo de Vercel se mantiene a propósito. Hay enlaces de
+              invitación y de listas ya repartidos por WhatsApp que lo llevan
+              dentro, y Vercel mantiene vivo el subdominio para siempre: quitarlo
+              de aquí solo serviría para que esos enlaces dejaran de abrir la app.
             -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="kiemas.com" />
+                <data android:scheme="https" android:host="www.kiemas.com" />
                 <data android:scheme="https" android:host="kopasymas.vercel.app" />
             </intent-filter>
         </activity>

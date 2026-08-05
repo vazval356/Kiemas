@@ -22,7 +22,7 @@ import { useApp } from '../state/appState'
  *
  * No es Google Maps por dos motivos que van más allá del coste: sus términos
  * prohíben almacenar de forma permanente las coordenadas y los datos de sitios
- * que devuelve su API, que es exactamente lo que hace Kopasymas, y prohíben
+ * que devuelve su API, que es exactamente lo que hace Kiemas, y prohíben
  * mostrar sus datos sobre un mapa que no sea suyo.
  *
  * El renderizador es MapLibre, así que el proveedor de teselas es esta línea:

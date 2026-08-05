@@ -28,7 +28,7 @@ import type { Locale } from './types'
  */
 export const LEGAL_CONTACT = {
   responsable: 'Adrián Vázquez Valbuena',
-  email: 'hola@kopasymas.app',
+  email: 'hola@kiemas.com',
   pais: 'España',
 }
 

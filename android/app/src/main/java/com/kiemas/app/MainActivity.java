@@ -1,4 +1,4 @@
-package com.kopasymas.app;
+package com.kiemas.app;
 
 import android.os.Bundle;
 
