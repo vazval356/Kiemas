@@ -204,8 +204,13 @@ export function SpacesPage() {
                 {/* La portada es la foto del grupo si la tiene; si no, su color
                     con el emoji. El emoji se mantiene encima de la foto porque
                     es lo que identifica al grupo en el resto de la app. */}
+                {/* Portada en 16:9, que es el formato al que se recorta la foto
+                    al subirla. Antes era una franja baja con la tarjeta blanca
+                    ocupando más que la imagen; ahora manda la portada y el
+                    nombre y los botones van encima, en una banda oscurecida.
+                    Menos blanco y más de lo que distingue a cada grupo. */}
                 <div
-                  className="relative flex h-28 items-center justify-center"
+                  className="relative aspect-video w-full"
                   style={{ background: `linear-gradient(135deg, ${c.solid}, ${c.soft})` }}
                 >
                   {space.coverUrl && (
@@ -216,58 +221,88 @@ export function SpacesPage() {
                       className="absolute inset-0 size-full object-cover"
                     />
                   )}
-                  <span className="relative text-5xl drop-shadow-md">{space.emoji}</span>
+
+                  {space.emoji && (
+                    <span className="absolute inset-0 flex items-center justify-center text-5xl drop-shadow-md">
+                      {space.emoji}
+                    </span>
+                  )}
+
                   <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-surface-lowest/90 px-2.5 py-1 text-xs font-bold text-on-surface">
                     <GroupIcon className="size-3.5" />
                     {space.members.length}
                   </span>
+
+                  {/* Degradado bajo el texto: sobre una foto clara, el blanco
+                      desaparece. Va solo en la mitad inferior para no ensuciar
+                      la imagen entera. */}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-3 pt-10">
+                    <h3 className="font-display text-lg font-bold text-white drop-shadow-sm">
+                      {space.name}
+                    </h3>
+                    {space.description && (
+                      <p className="line-clamp-1 text-sm text-white/85 drop-shadow-sm">
+                        {space.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="p-4">
-                  <h3 className="font-display text-lg font-bold text-on-surface">{space.name}</h3>
-                  {space.description && (
-                    <p className="mt-0.5 line-clamp-2 text-sm text-on-surface-variant">
-                      {space.description}
-                    </p>
-                  )}
-
-                  <div className="mt-3 flex items-center justify-between gap-3">
-                    {/* Los colores de miembro ya existen desde la Fase 1: aquí
-                        sirven para ver de un vistazo cuánta gente hay. */}
-                    <div className="flex items-center">
-                      {space.members.slice(0, 4).map((m, i) => (
+                <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                  {/* La foto de cada persona, y su color solo como borde. Un
+                      círculo de color no dice quién es; una cara, sí. */}
+                  <div className="flex items-center">
+                    {space.members.slice(0, 4).map((m, i) =>
+                      m.avatarUrl ? (
+                        <img
+                          key={m.userId}
+                          src={m.avatarUrl}
+                          alt=""
+                          title={m.displayName}
+                          loading="lazy"
+                          className="size-8 rounded-full object-cover"
+                          style={{
+                            border: `2px solid ${m.color}`,
+                            marginLeft: i === 0 ? 0 : -8,
+                          }}
+                        />
+                      ) : (
                         <span
                           key={m.userId}
                           title={m.displayName}
-                          className="size-7 rounded-full border-2 border-surface-lowest"
-                          style={{ backgroundColor: m.color, marginLeft: i === 0 ? 0 : -8 }}
-                        />
-                      ))}
-                      {space.members.length > 4 && (
-                        <span
-                          className="-ml-2 flex size-7 items-center justify-center rounded-full border-2 border-surface-lowest bg-outline text-[10px] font-bold text-white"
+                          className="flex size-8 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                          style={{
+                            backgroundColor: m.color,
+                            border: '2px solid var(--color-surface-lowest)',
+                            marginLeft: i === 0 ? 0 : -8,
+                          }}
                         >
-                          +{space.members.length - 4}
+                          {m.displayName.slice(0, 1).toUpperCase()}
                         </span>
-                      )}
-                    </div>
+                      )
+                    )}
+                    {space.members.length > 4 && (
+                      <span className="-ml-2 flex size-8 items-center justify-center rounded-full border-2 border-surface-lowest bg-outline text-[10px] font-bold text-white">
+                        +{space.members.length - 4}
+                      </span>
+                    )}
+                  </div>
 
-                    <div className="flex shrink-0 gap-2">
-                      <Link
-                        to={`/spaces/${space.id}`}
-                        className="rounded-full border border-outline-variant px-3 py-2 text-sm font-medium text-on-surface-variant squish"
-                      >
-                        {t('spaces.manage')}
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => setActiveSpace(space.id)}
-                        disabled={isActive}
-                        className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary squish disabled:opacity-40"
-                      >
-                        {t('space.enter')}
-                      </button>
-                    </div>
+                  <div className="flex shrink-0 gap-2">
+                    <Link
+                      to={`/spaces/${space.id}`}
+                      className="rounded-full border border-outline-variant px-3 py-2 text-sm font-medium text-on-surface-variant squish"
+                    >
+                      {t('spaces.manage')}
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setActiveSpace(space.id)}
+                      disabled={isActive}
+                      className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary squish disabled:opacity-40"
+                    >
+                      {t('space.enter')}
+                    </button>
                   </div>
                 </div>
               </li>

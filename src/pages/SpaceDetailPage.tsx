@@ -46,6 +46,27 @@ export function SpaceDetailPage() {
   const coverRef = useRef<HTMLInputElement>(null)
   const cols = spaceColors(color)
 
+  const [myColor, setMyColor] = useState(
+    normalizeHex(space?.members.find((m) => m.userId === profile?.id)?.color)
+  )
+
+  async function saveMyColor(next: string) {
+    if (!space) return
+    const previo = myColor
+    const clean = normalizeHex(next)
+    setMyColor(clean)
+    try {
+      // La columna guarda el hexadecimal en minúsculas; el servidor lo
+      // normaliza igualmente, pero mandarlo ya bien evita que la recarga
+      // devuelva algo distinto de lo que se acaba de pintar.
+      await api.setMyMemberColor(space.id, clean.toLowerCase())
+      await refreshSpaces()
+    } catch (e) {
+      setMyColor(previo)
+      setError(errorMessage(e, t('common.error')))
+    }
+  }
+
   async function saveLook(nextEmoji: string, nextColor: string) {
     if (!space) return
     const prev = { emoji, color }
@@ -229,8 +250,10 @@ export function SpaceDetailPage() {
 
             {/* Vista previa: la portada si la hay, y si no el color con el
                 emoji. Es lo mismo que verá el grupo en la lista. */}
+            {/* Misma proporción que la tarjeta de la lista y que el recorte al
+                subir: lo que se ve aquí es exactamente lo que se guarda. */}
             <div
-              className="relative flex h-28 items-center justify-center overflow-hidden rounded-card"
+              className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-card"
               style={{
                 background: `linear-gradient(135deg, ${cols.solid}, ${cols.soft})`,
               }}
@@ -238,7 +261,7 @@ export function SpaceDetailPage() {
               {space.coverUrl && (
                 <img src={space.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
               )}
-              <span className="relative text-4xl drop-shadow-md">{emoji}</span>
+              {emoji && <span className="relative text-4xl drop-shadow-md">{emoji}</span>}
             </div>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -283,6 +306,20 @@ export function SpaceDetailPage() {
             </div>
 
             <div className="mt-3 grid grid-cols-8 gap-1.5">
+              {/* Sin emoji: con una foto de portada, el emoji se planta en
+                  medio y tapa justo lo que se quería enseñar. */}
+              <button
+                type="button"
+                onClick={() => void saveLook('', color)}
+                aria-label={t('space.noEmoji')}
+                className={`flex aspect-square items-center justify-center rounded-control text-lg squish ${
+                  emoji === ''
+                    ? 'bg-primary-fixed text-primary ring-2 ring-primary'
+                    : 'bg-surface-container text-on-surface-variant'
+                }`}
+              >
+                ⊘
+              </button>
               {SPACE_EMOJIS.map((e) => (
                 <button
                   key={e}
@@ -296,6 +333,7 @@ export function SpaceDetailPage() {
                 </button>
               ))}
             </div>
+
 
             <div className="mt-3 flex gap-2">
               <button
@@ -336,6 +374,59 @@ export function SpaceDetailPage() {
                   }
                 }}
               />
+            </div>
+          </section>
+        )}
+
+        {/* ── Mi color ───────────────────────────────────────────────────────
+            Fuera del bloque de administración a propósito: el aspecto del grupo
+            lo decide quien administra, pero el color con el que se te reconoce
+            a ti en el calendario y en los planes es tuyo, seas quien seas.
+
+            En el espacio personal no aparece: no hay nadie de quien
+            distinguirse. */}
+        {!isPersonal && (
+          <section className="mt-8">
+            <h2 className="mb-1 font-display font-semibold text-on-surface">
+              {t('space.myColor')}
+            </h2>
+            <p className="mb-3 text-sm text-on-surface-variant">{t('space.myColorHint')}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label
+                className="relative flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full squish"
+                style={{
+                  background:
+                    'conic-gradient(#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000)',
+                }}
+                aria-label={t('space.pickColor')}
+              >
+                <span
+                  className="size-5 rounded-full border-2 border-surface-lowest"
+                  style={{ backgroundColor: myColor }}
+                  aria-hidden
+                />
+                <input
+                  type="color"
+                  value={myColor}
+                  onChange={(e) => void saveMyColor(e.target.value)}
+                  className="absolute size-0 opacity-0"
+                />
+              </label>
+              <span className="h-6 w-px shrink-0 bg-outline-variant" aria-hidden />
+              {SPACE_COLOR_SUGGESTIONS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => void saveMyColor(c)}
+                  aria-label={c}
+                  className={`size-9 rounded-full squish ${
+                    myColor.toLowerCase() === c.toLowerCase()
+                      ? 'ring-2 ring-primary ring-offset-2'
+                      : ''
+                  }`}
+                  style={{ backgroundColor: c }}
+                />
+              ))}
             </div>
           </section>
         )}

@@ -337,3 +337,69 @@ function safeDecode(value: string): string {
     return value
   }
 }
+
+/**
+ * Recorta una imagen al formato de la portada y la comprime a fondo.
+ *
+ * `resizeImage` conserva la proporción original, así que una foto de móvil
+ * —vertical y de 4000 px— llegaba entera y era el navegador quien la recortaba
+ * al pintarla. Eso significa descargar megas para enseñar una franja, y que el
+ * encuadre salga de dónde caiga el centro de la foto.
+ *
+ * Aquí se recorta antes de subir, centrado, al formato en el que se va a ver.
+ * Lo que se guarda es exactamente lo que se enseña.
+ *
+ * Se prefiere WebP, que a igual calidad pesa la mitad que JPEG. No lo admiten
+ * navegadores muy antiguos, y por eso se comprueba el resultado en vez de darlo
+ * por hecho: `toBlob` con un tipo desconocido devuelve PNG en silencio, que
+ * pesaría mucho más que el JPEG que queríamos evitar.
+ */
+export function cropToCover(
+  file: File,
+  width = 800,
+  aspect = 16 / 9,
+  quality = 0.62
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+
+      const height = Math.round(width / aspect)
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('canvas'))
+
+      // Se cubre el lienzo y se recorta lo que sobra, centrado: el mismo
+      // criterio que `object-cover`, para que el recorte coincida con lo que
+      // se veía en la vista previa.
+      const escala = Math.max(width / img.width, height / img.height)
+      const w = img.width * escala
+      const h = img.height * escala
+      ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h)
+
+      canvas.toBlob(
+        (blob) => {
+          if (blob && blob.type === 'image/webp') return resolve(blob)
+          // Sin WebP se cae a JPEG explícitamente, en vez de quedarse con el
+          // PNG que devuelve el navegador cuando no reconoce el tipo.
+          canvas.toBlob(
+            (jpeg) => (jpeg ? resolve(jpeg) : reject(new Error('toBlob'))),
+            'image/jpeg',
+            quality
+          )
+        },
+        'image/webp',
+        quality
+      )
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('No se pudo leer la imagen'))
+    }
+    img.src = url
+  })
+}

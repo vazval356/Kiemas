@@ -88,6 +88,13 @@ export interface DataApi {
     color?: string | null,
     coverPath?: string | null
   ): Promise<void>
+  /**
+   * El color con el que se te reconoce dentro de un espacio.
+   *
+   * Cada cual cambia el suyo y solo el suyo: ni quien administra puede
+   * repintar a los demás. Es identidad personal, no ajuste del grupo.
+   */
+  setMyMemberColor(spaceId: string, color: string): Promise<void>
   /** Sube la portada y la deja guardada. Solo administradores. */
   setSpaceCover(spaceId: string, file: File): Promise<void>
   /** Solo espacios de grupo: el personal no se puede borrar. */

@@ -34,7 +34,7 @@ import type {
   PromoRedemption,
 } from './types'
 import type { DataApi } from './dataApi'
-import { parseCoord, resizeImage } from './utils'
+import { cropToCover, parseCoord, resizeImage } from './utils'
 
 /**
  * Implementación de `DataApi` contra Supabase.
@@ -426,13 +426,24 @@ export const supabaseApi: DataApi = {
     if (res.error) throw new Error(res.error.message)
   },
 
+  async setMyMemberColor(spaceId: string, color: string): Promise<void> {
+    const res = await supabase.rpc('set_my_member_color', {
+      p_space_id: spaceId,
+      p_color: color,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
   async setSpaceCover(spaceId: string, file: File): Promise<void> {
-    // 1024 px de ancho: es una portada de tarjeta, no un fondo de escritorio, y
-    // subir el original de una cámara moderna gastaría megas para nada.
-    const blob = await resizeImage(file, 1024, 0.85)
-    const path = `${spaceId}/${crypto.randomUUID()}.jpg`
+    // Se recorta al formato en que se va a ver y se comprime a fondo: una foto
+    // de móvil son varios megas y de ella se enseña una franja. Lo que se sube
+    // pesa unas decenas de kilobytes, que es lo que hace que la lista de
+    // espacios cargue de golpe en vez de ir apareciendo.
+    const blob = await cropToCover(file, 800, 16 / 9, 0.62)
+    const ext = blob.type === 'image/webp' ? 'webp' : 'jpg'
+    const path = `${spaceId}/${crypto.randomUUID()}.${ext}`
     const up = await supabase.storage.from('covers').upload(path, blob, {
-      contentType: 'image/jpeg',
+      contentType: blob.type,
     })
     if (up.error) throw new Error(up.error.message)
 

@@ -547,6 +547,9 @@ const es = {
   'space.lookHint': 'Con qué icono y color se reconoce este grupo.',
   'space.lookSaved': 'Aspecto guardado',
   'space.pickColor': 'Elegir color',
+  'space.noEmoji': 'Sin icono',
+  'space.myColor': 'Mi color',
+  'space.myColorHint': 'Con este color se te reconoce en el calendario y en los planes.',
   'space.addCover': 'Añadir foto de portada',
   'space.changeCover': 'Cambiar la portada',
 
@@ -1079,6 +1082,9 @@ const en: Record<TranslationKey, string> = {
   'space.lookHint': 'The icon and colour this group is recognised by.',
   'space.lookSaved': 'Look saved',
   'space.pickColor': 'Pick a colour',
+  'space.noEmoji': 'No icon',
+  'space.myColor': 'My colour',
+  'space.myColorHint': "This is the colour you're recognised by in the calendar and in plans.",
   'space.addCover': 'Add a cover photo',
   'space.changeCover': 'Change cover',
 
