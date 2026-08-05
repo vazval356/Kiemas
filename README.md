@@ -7,9 +7,9 @@ Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo par
 parejas. Kopasymas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
-**Estado: Fase 5 — monetización.** La app funciona de punta a punta en web y en
-Android. Quedan el widget de pantalla de inicio, y probar compras y
-notificaciones, que necesitan la app publicada en Play Console.
+**Estado: Fase 6 — explorar.** La app funciona de punta a punta en web y en
+Android. Queda probar compras, notificaciones y el widget, que necesitan la app
+publicada en Play Console.
 
 ## Cómo está montado
 
@@ -110,4 +110,3 @@ existe: se descarta en vez de simularla con datos inventados.
 ⚠️ Los límites y los códigos promocionales funcionan desde ya. Las compras
 necesitan productos dados de alta en Play Console, y para eso hace falta subir
 la app a una prueba cerrada. Ver [NATIVO.md](NATIVO.md).
-# Kopasymas
