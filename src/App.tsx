@@ -3,6 +3,7 @@ import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'r
 import { BottomNav } from './components/BottomNav'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
+import { recoveryTokens } from './lib/recovery'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { ActivityPage } from './pages/ActivityPage'
 import { AuthPage } from './pages/AuthPage'
@@ -19,6 +20,7 @@ import { PlanDetailPage } from './pages/PlanDetailPage'
 import { PlanFormPage } from './pages/PlanFormPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { PublicListPage } from './pages/PublicListPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { SetupPage } from './pages/SetupPage'
 import { SpaceDetailPage } from './pages/SpaceDetailPage'
@@ -160,6 +162,11 @@ function Shell() {
 export default function App() {
   // Sin credenciales no hay nada que enseñar: mejor decir qué falta que fingir.
   if (!isSupabaseConfigured) return <SetupPage />
+
+  // Se ha llegado desde el correo de recuperación. Va antes del router y del
+  // proveedor: hay sesión, pero es de recuperación, y arrancar la app entera
+  // para una pantalla que solo pide una contraseña sobra.
+  if (recoveryTokens) return <ResetPasswordPage />
 
   return (
     <HashRouter>

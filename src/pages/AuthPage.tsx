@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { createTranslate, detectLocale } from '../lib/i18n'
+import { publicBaseUrl } from '../lib/appUrl'
 import { REMEMBER_KEY, supabase } from '../lib/supabaseClient'
 
 /**
@@ -14,7 +15,7 @@ export function AuthPage() {
   // El perfil todavía no existe, así que el idioma sale del navegador.
   const t = createTranslate(detectLocale())
 
-  const [mode, setMode] = useState<'signIn' | 'signUp'>('signIn')
+  const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgot'>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
@@ -37,6 +38,26 @@ export function AuthPage() {
     e.preventDefault()
     setError(null)
     setNotice(null)
+
+    // Recuperar contraseña solo necesita el correo, así que sale antes de las
+    // comprobaciones de contraseña y nombre.
+    if (mode === 'forgot') {
+      setBusy(true)
+      try {
+        // Se responde igual exista o no la cuenta. Decir «ese correo no está
+        // registrado» convierte el formulario en una forma de averiguar quién
+        // tiene cuenta en la app.
+        await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: publicBaseUrl(),
+        })
+        setNotice(t('auth.resetSent'))
+      } catch {
+        setNotice(t('auth.resetSent'))
+      } finally {
+        setBusy(false)
+      }
+      return
+    }
 
     if (password.length < 6) return setError(t('auth.passwordTooShort'))
     if (mode === 'signUp' && displayName.trim().length === 0) return setError(t('auth.nameRequired'))
@@ -127,29 +148,37 @@ export function AuthPage() {
             />
           </label>
 
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-              {t('auth.password')}
-            </span>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'}
-              className={inputClass}
-            />
-          </label>
+          {mode !== 'forgot' && (
+            <>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                  {t('auth.password')}
+                </span>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'}
+                  className={inputClass}
+                />
+              </label>
 
-          <label className="flex items-center gap-2.5 py-1 text-sm text-on-surface-variant">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(e) => setRemember(e.target.checked)}
-              className="size-4 accent-[var(--color-primary)]"
-            />
-            {t('auth.remember')}
-          </label>
+              <label className="flex items-center gap-2.5 py-1 text-sm text-on-surface-variant">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="size-4 accent-[var(--color-primary)]"
+                />
+                {t('auth.remember')}
+              </label>
+            </>
+          )}
+
+          {mode === 'forgot' && (
+            <p className="text-sm text-on-surface-variant">{t('auth.resetHint')}</p>
+          )}
 
           {error && (
             <p className="rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
@@ -168,21 +197,58 @@ export function AuthPage() {
             className="mt-1 rounded-control bg-primary px-5 py-3 font-semibold text-on-primary
                        transition active:scale-[0.99] disabled:opacity-60"
           >
-            {busy ? t('common.loading') : mode === 'signIn' ? t('auth.signIn') : t('auth.signUp')}
+            {busy
+              ? t('common.loading')
+              : mode === 'signIn'
+                ? t('auth.signIn')
+                : mode === 'signUp'
+                  ? t('auth.signUp')
+                  : t('auth.sendReset')}
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === 'signIn' ? 'signUp' : 'signIn')
-            setError(null)
-            setNotice(null)
-          }}
-          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-        >
-          {mode === 'signIn' ? t('auth.toSignUp') : t('auth.toSignIn')}
-        </button>
+        <div className="flex flex-col items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setMode(mode === 'signIn' ? 'signUp' : 'signIn')
+              setError(null)
+              setNotice(null)
+            }}
+            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            {mode === 'signIn' ? t('auth.toSignUp') : t('auth.toSignIn')}
+          </button>
+
+          {/* Solo al entrar: en el alta no hay contraseña que recuperar, y en
+              recuperar el enlace sería a la pantalla en la que ya estás. */}
+          {mode === 'signIn' && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('forgot')
+                setError(null)
+                setNotice(null)
+              }}
+              className="text-sm text-on-surface-variant underline-offset-4 hover:underline"
+            >
+              {t('auth.forgot')}
+            </button>
+          )}
+          {mode === 'forgot' && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('signIn')
+                setError(null)
+                setNotice(null)
+              }}
+              className="text-sm text-on-surface-variant underline-offset-4 hover:underline"
+            >
+              {t('auth.toSignIn')}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

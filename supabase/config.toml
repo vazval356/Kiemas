@@ -19,7 +19,19 @@ port = 54323
 [auth]
 enabled = true
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173", "capacitor://localhost", "kopasymas://auth"]
+additional_redirect_urls = [
+  "http://localhost:5173",
+  "capacitor://localhost",
+  "kopasymas://auth",
+  # Adonde vuelve el correo de recuperación de contraseña.
+  #
+  # OJO: este fichero solo configura el Supabase LOCAL. El proyecto alojado
+  # tiene su propia lista, en Authentication → URL Configuration del panel, y
+  # hay que añadirla también allí. Si falta, Supabase manda el enlace igual pero
+  # redirige al `site_url` por defecto, así que el correo llega y el enlace
+  # parece funcionar mientras el token acaba en otra parte.
+  "https://kopasymas.vercel.app",
+]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 enable_signup = true
