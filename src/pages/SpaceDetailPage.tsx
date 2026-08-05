@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { CoverCropper } from '../components/CoverCropper'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
@@ -44,6 +45,8 @@ export function SpaceDetailPage() {
   const [emoji, setEmoji] = useState(space?.emoji ?? '👥')
   const [color, setColor] = useState(normalizeHex(space?.color))
   const coverRef = useRef<HTMLInputElement>(null)
+  // Foto elegida esperando encuadre. Hasta confirmar, no se sube nada.
+  const [cropping, setCropping] = useState<File | null>(null)
   const cols = spaceColors(color)
 
   const [myColor, setMyColor] = useState(
@@ -359,6 +362,9 @@ export function SpaceDetailPage() {
                   {t('common.delete')}
                 </button>
               )}
+              {/* Elegir la foto abre el encuadrador; no se sube nada hasta que
+                  se confirma. El campo se limpia para que volver a elegir la
+                  MISMA foto dispare el evento otra vez. */}
               <input
                 ref={coverRef}
                 type="file"
@@ -366,12 +372,8 @@ export function SpaceDetailPage() {
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files?.[0]
-                  if (file) {
-                    void run(async () => {
-                      await api.setSpaceCover(space.id, file)
-                      await refreshSpaces()
-                    })
-                  }
+                  e.target.value = ''
+                  if (file) setCropping(file)
                 }}
               />
             </div>
@@ -782,6 +784,20 @@ export function SpaceDetailPage() {
         </section>
         )}
       </div>
+
+      {cropping && (
+        <CoverCropper
+          file={cropping}
+          onCancel={() => setCropping(null)}
+          onDone={(blob) => {
+            setCropping(null)
+            void run(async () => {
+              await api.setSpaceCover(space.id, blob)
+              await refreshSpaces()
+            })
+          }}
+        />
+      )}
 
       {reporting && (
         <ReportDialog

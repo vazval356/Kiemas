@@ -95,8 +95,13 @@ export interface DataApi {
    * repintar a los demás. Es identidad personal, no ajuste del grupo.
    */
   setMyMemberColor(spaceId: string, color: string): Promise<void>
-  /** Sube la portada y la deja guardada. Solo administradores. */
-  setSpaceCover(spaceId: string, file: File): Promise<void>
+  /**
+   * Sube la portada y la deja guardada. Solo administradores.
+   *
+   * Un `Blob` ya viene recortado por el encuadrador; un `File` se recorta
+   * automáticamente, centrado.
+   */
+  setSpaceCover(spaceId: string, source: File | Blob): Promise<void>
   /** Solo espacios de grupo: el personal no se puede borrar. */
   deleteSpace(spaceId: string): Promise<void>
 
