@@ -11,6 +11,7 @@ import { CalendarPage } from './pages/CalendarPage'
 import { CollectionDetailPage } from './pages/CollectionDetailPage'
 import { CollectionsPage } from './pages/CollectionsPage'
 import { FollowedListsPage } from './pages/FollowedListsPage'
+import { LegalPage } from './pages/LegalPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
 import { OnboardingPage } from './pages/OnboardingPage'
@@ -172,6 +173,8 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/l/:token" element={<PublicListPage />} />
+        <Route path="/legal/privacidad" element={<LegalPage kind="privacy" />} />
+        <Route path="/legal/terminos" element={<LegalPage kind="terms" />} />
         <Route
           path="*"
           element={

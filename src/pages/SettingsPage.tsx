@@ -127,6 +127,22 @@ export function SettingsPage() {
           </Link>
         </section>
 
+        {/* ── Legal ──────────────────────────────────────────────────────── */}
+        <section className="mt-6 flex flex-col gap-2">
+          {([['/legal/privacidad', 'legal.privacy'], ['/legal/terminos', 'legal.terms']] as const).map(
+            ([to, key]) => (
+              <Link
+                key={to}
+                to={to}
+                className="flex items-center rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
+              >
+                <span className="flex-1">{t(key)}</span>
+                <span className="text-on-surface-variant" aria-hidden>›</span>
+              </Link>
+            )
+          )}
+        </section>
+
         {/* ── Personas bloqueadas ────────────────────────────────────────── */}
         <section className="mt-8">
           <h2 className="mb-2 font-display font-semibold text-on-surface">

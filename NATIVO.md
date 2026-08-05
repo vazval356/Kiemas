@@ -303,9 +303,18 @@ pero el nivel no sube, mira `current_period_end` y `status`.
   Sigue siendo una dependencia de servicios públicos gratuitos: si la app crece,
   lo correcto es un Photon autoalojado o un geocodificador de pago. Pero ya no
   se está incumpliendo nada.
-- **Política de privacidad**: ambas tiendas la exigen como URL pública. El
-  borrado de cuenta desde dentro de la app ya está hecho (directriz 5.1.1(v) de
-  Apple), que es el otro requisito que suele tumbar la revisión.
+- **Política de privacidad y condiciones**: escritas, en `src/lib/legal.ts`, y
+  publicadas en `/#/legal/privacidad` y `/#/legal/terminos`. Se abren sin sesión
+  a propósito: quien revisa la app en las tiendas no tiene cuenta, y un enlace
+  que lleve a la pantalla de entrada es motivo de rechazo.
+
+  Faltan dos cosas antes de publicar: rellenar `LEGAL_CONTACT` con el correo de
+  contacto real —ahora hay uno de ejemplo que no existe— y que alguien con
+  criterio jurídico los revise. Describen fielmente lo que la app hace, pero no
+  los ha mirado un abogado.
+
+  El borrado de cuenta desde dentro de la app ya está hecho (directriz 5.1.1(v)
+  de Apple), que es el otro requisito que suele tumbar la revisión.
 
 #### Cómo nombrar los productos
 

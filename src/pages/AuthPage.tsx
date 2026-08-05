@@ -26,6 +26,7 @@ export function AuthPage() {
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [remember, setRemember] = useState(true)
+  const [accepted, setAccepted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -90,6 +91,7 @@ export function AuthPage() {
 
     if (password.length < 6) return setError(t('auth.passwordTooShort'))
     if (mode === 'signUp' && displayName.trim().length === 0) return setError(t('auth.nameRequired'))
+    if (mode === 'signUp' && !accepted) return setError(t('auth.mustAccept'))
 
     // Se escribe antes de autenticar: el almacenamiento de sesión lo consulta
     // en cuanto Supabase guarda el token.
@@ -221,6 +223,42 @@ export function AuthPage() {
                     />
                     {t('auth.remember')}
                   </label>
+
+                  {/* La casilla del diseño de alta, que hasta ahora no se podía
+                      poner porque enlazaba a dos páginas que no existían. Los
+                      enlaces abren en otra pestaña: si navegaran dentro, se
+                      perdería lo escrito en el formulario. */}
+                  {mode === 'signUp' && (
+                    <label className="flex items-start gap-2.5 text-sm text-on-surface-variant">
+                      <input
+                        type="checkbox"
+                        checked={accepted}
+                        onChange={(e) => setAccepted(e.target.checked)}
+                        className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+                      />
+                      <span>
+                        {t('auth.acceptPre')}{' '}
+                        <a
+                          href="#/legal/terminos"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-primary underline underline-offset-2"
+                        >
+                          {t('auth.acceptTerms')}
+                        </a>{' '}
+                        {t('auth.acceptMid')}{' '}
+                        <a
+                          href="#/legal/privacidad"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-primary underline underline-offset-2"
+                        >
+                          {t('auth.acceptPrivacy')}
+                        </a>
+                        .
+                      </span>
+                    </label>
+                  )}
                 </>
               )}
 
