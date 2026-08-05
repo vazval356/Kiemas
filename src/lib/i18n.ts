@@ -129,6 +129,7 @@ const es = {
   'import.title': 'Importación mágica',
   'import.body': 'Pega un enlace de Google Maps y rellenamos los datos solos.',
   'import.action': 'Importar',
+  'import.resolving': 'Siguiendo el enlace…',
   'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps',
   'import.shortLink':
     'Los enlaces cortos de «Compartir» no se pueden leer desde el navegador. Abre el sitio en Google Maps y copia la dirección completa de la barra del navegador.',
@@ -678,6 +679,7 @@ const en: Record<TranslationKey, string> = {
   'import.title': 'Magic import',
   'import.body': "Paste a Google Maps link and we'll fill in the details.",
   'import.action': 'Import',
+  'import.resolving': 'Following the link…',
   'import.notGoogleMaps': "That doesn't look like a Google Maps link",
   'import.shortLink':
     "Short 'Share' links can't be read from the browser. Open the place in Google Maps and copy the full address from the address bar.",

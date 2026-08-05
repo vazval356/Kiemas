@@ -88,7 +88,16 @@ function Shell() {
   if (authStatus === 'loading') {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3">
-        <div className="animate-pulse text-5xl">🗺️</div>
+        {/* El logo, no el emoji de mapa. Se cambió en la pantalla de entrada y
+            se quedó sin cambiar aquí, que además es lo primero que se ve al
+            abrir la app. */}
+        <img
+          src="/icons/icon-192.png"
+          alt=""
+          width={72}
+          height={72}
+          className="size-18 animate-pulse rounded-card"
+        />
         <p className="font-display font-semibold text-primary">{t('app.name')}</p>
       </div>
     )

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { TagPicker } from '../components/TagPicker'
 import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
 import type { PlaceStatus } from '../lib/types'
+import { resolveMapsLink } from '../lib/mapsLink'
 import {
   CATEGORY_EMOJIS,
   errorMessage,
@@ -45,7 +46,7 @@ export function PlaceFormPage() {
 
   // Importación desde Google Maps
   const [importUrl, setImportUrl] = useState('')
-  const [importMessage, setImportMessage] = useState<{ kind: 'ok' | 'warn'; text: string } | null>(
+  const [importMessage, setImportMessage] = useState<{ kind: 'ok' | 'warn' | 'info'; text: string } | null>(
     null
   )
 
@@ -109,20 +110,32 @@ export function PlaceFormPage() {
   }
 
   // ── Importar desde un enlace de Google Maps ──────────────────────────────
-  function runImport() {
+  async function runImport() {
     setImportMessage(null)
-    const parsed = parseGoogleMapsUrl(importUrl)
+    let parsed = parseGoogleMapsUrl(importUrl)
 
     if (!parsed) {
       setImportMessage({ kind: 'warn', text: t('import.notGoogleMaps') })
       return
     }
+
     // Los enlaces de «Compartir» son una redirección a otro dominio y CORS
-    // impide leer la respuesta desde el navegador. Resolverlos exigiría una
-    // función en servidor; de momento se pide el enlace largo.
+    // impide seguirla desde el navegador. Se pide al servidor que la siga por
+    // nosotros: es el caso normal, porque lo que llega por WhatsApp siempre es
+    // un enlace corto.
     if (parsed.needsResolving) {
-      setImportMessage({ kind: 'warn', text: t('import.shortLink') })
-      return
+      setImportMessage({ kind: 'info', text: t('import.resolving') })
+      try {
+        const largo = await resolveMapsLink(importUrl)
+        parsed = parseGoogleMapsUrl(largo)
+        if (!parsed || parsed.needsResolving) throw new Error('sigue sin resolver')
+      } catch {
+        // Si el servidor no puede, queda el camino de siempre: pedir el enlace
+        // largo. Es peor experiencia, pero funciona sin depender de nada.
+        setImportMessage({ kind: 'warn', text: t('import.shortLink') })
+        return
+      }
+      setImportMessage(null)
     }
     if (parsed.name === null && parsed.lat === null) {
       setImportMessage({ kind: 'warn', text: t('import.nothingFound') })
@@ -277,7 +290,7 @@ export function PlaceFormPage() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
-                    runImport()
+                    void runImport()
                   }
                 }}
                 placeholder="https://www.google.com/maps/place/…"

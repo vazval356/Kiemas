@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { GroupIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
@@ -23,6 +23,9 @@ export function SpacesPage() {
   const groups = spaces.filter((s) => s.kind === 'group')
 
   const nameRef = useRef<HTMLInputElement>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  // Evita reintentar el código del enlace en cada repintado.
+  const autoTried = useRef(false)
 
   const [newName, setNewName] = useState('')
   const [code, setCode] = useState('')
@@ -79,8 +82,41 @@ export function SpacesPage() {
     }
   }
 
+  /**
+   * Entrar con el código que viene en el enlace de invitación.
+   *
+   * `inviteUrl` genera `#/spaces?code=XXXXXX`, pero esta pantalla nunca leía
+   * ese parámetro: quien abría un enlace compartido aterrizaba aquí con el
+   * formulario vacío y sin ninguna pista de qué hacer. El enlace de invitación
+   * llevaba roto desde que existe.
+   *
+   * Se intenta entrar solo, sin esperar a que nadie pulse nada: quien abre un
+   * enlace de invitación ya ha manifestado que quiere entrar.
+   */
+  useEffect(() => {
+    const fromLink = searchParams.get('code')
+    if (!fromLink || autoTried.current) return
+
+    // Una sola vez: si el código está caducado, reintentar en cada repintado
+    // dejaría la pantalla parpadeando el mismo error.
+    autoTried.current = true
+    const clean = fromLink.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+    setCode(clean)
+
+    // Se limpia de la URL para que recargar no vuelva a intentarlo y para que
+    // el código no se quede en el historial del navegador.
+    searchParams.delete('code')
+    setSearchParams(searchParams, { replace: true })
+
+    if (clean.length === 6) void joinWith(clean)
+  }, [searchParams, setSearchParams])
+
   async function join() {
-    const clean = code.trim().toUpperCase()
+    await joinWith(code)
+  }
+
+  async function joinWith(raw: string) {
+    const clean = raw.trim().toUpperCase()
     if (!clean || busy) return
     setBusy(true)
     setError('')
