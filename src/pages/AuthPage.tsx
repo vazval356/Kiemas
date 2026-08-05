@@ -1,10 +1,16 @@
-import { useState, type FormEvent } from 'react'
-import { createTranslate, detectLocale } from '../lib/i18n'
+import { useState, type FormEvent, type ReactNode } from 'react'
+import { AppleIcon, GoogleIcon, LockIcon, MailIcon, UserIcon } from '../components/icons'
 import { publicBaseUrl } from '../lib/appUrl'
+import { createTranslate, detectLocale } from '../lib/i18n'
+import { oauthProviders, signInWith, type OAuthProvider } from '../lib/oauth'
 import { REMEMBER_KEY, supabase } from '../lib/supabaseClient'
 
 /**
- * Entrada y alta de cuenta.
+ * Entrada, alta de cuenta y recuperación de contraseña.
+ *
+ * Sigue el diseño de `iniciar_sesión`: una tarjeta elevada sobre el fondo, con
+ * los iconos dentro de los campos y el cambio entre entrar y registrarse en una
+ * banda al pie.
  *
  * Al registrarse, el disparador `handle_new_user` crea el perfil y el espacio
  * personal dentro de la misma transacción, así que cuando `signUp` devuelve ya
@@ -32,6 +38,23 @@ export function AuthPage() {
     }
     if (lower.includes('password')) return t('auth.passwordTooShort')
     return message
+  }
+
+  function cambiarModo(next: typeof mode) {
+    setMode(next)
+    setError(null)
+    setNotice(null)
+  }
+
+  async function conProveedor(provider: OAuthProvider) {
+    setError(null)
+    setBusy(true)
+    try {
+      await signInWith(provider)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
+      setBusy(false)
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -79,15 +102,16 @@ export function AuthPage() {
     setBusy(true)
     try {
       if (mode === 'signIn') {
-        const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+        const { error: err } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        })
         if (err) throw err
       } else {
         const { data, error: err } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: {
-            data: { display_name: displayName.trim(), locale: detectLocale() },
-          },
+          options: { data: { display_name: displayName.trim(), locale: detectLocale() } },
         })
         if (err) throw err
         // Con la confirmación por correo activada no hay sesión todavía.
@@ -100,167 +124,206 @@ export function AuthPage() {
     }
   }
 
-  const inputClass =
-    'w-full rounded-control border border-outline-variant bg-surface-lowest px-4 py-3 text-base ' +
-    'text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
+  const titulo =
+    mode === 'signIn' ? t('auth.welcomeBack') : mode === 'signUp' ? t('auth.joinTitle') : t('auth.forgot')
+
+  const accion =
+    mode === 'signIn' ? t('auth.signIn') : mode === 'signUp' ? t('auth.signUp') : t('auth.sendReset')
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center gap-6 px-5 py-10">
-        <header className="text-center">
-          {/* El logo de verdad, no un emoji de mapa. Es la primera pantalla que
-              ve alguien y la única donde la marca tiene que hacer su trabajo. */}
-          <img
-            src="/icons/icon-192.png"
-            alt=""
-            width={72}
-            height={72}
-            className="mx-auto size-18 rounded-card"
-          />
-          <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-primary">
-            {t('app.name')}
-          </h1>
-          <p className="mt-1 text-sm text-on-surface-variant">{t('auth.tagline')}</p>
-        </header>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          {mode === 'signUp' && (
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-                {t('auth.displayName')}
-              </span>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                autoComplete="name"
-                className={inputClass}
+    <div className="h-full overflow-y-auto bg-surface">
+      <div className="mx-auto flex min-h-full max-w-md flex-col justify-center px-4 py-8">
+        {/* La tarjeta del diseño: se levanta del fondo en vez de flotar suelta
+            sobre él, que es lo que hacía que la pantalla se viera vacía. */}
+        <div className="overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)]">
+          <div className="px-6 pb-6 pt-8">
+            <header className="text-center">
+              <img
+                src="/icons/icon-192.png"
+                alt=""
+                width={72}
+                height={72}
+                className="mx-auto size-18 rounded-card shadow-[var(--shadow-surface)]"
               />
-            </label>
-          )}
+              <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-primary">
+                {t('app.name')}
+              </h1>
+              <p className="mt-1 text-sm text-on-surface-variant">{t('auth.tagline')}</p>
+              <h2 className="mt-6 font-display text-xl font-bold text-on-surface">{titulo}</h2>
+              {mode === 'signUp' && (
+                <p className="mt-1 text-sm text-on-surface-variant">{t('auth.joinSubtitle')}</p>
+              )}
+              {mode === 'forgot' && (
+                <p className="mt-1 text-sm text-on-surface-variant">{t('auth.resetHint')}</p>
+              )}
+            </header>
 
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-              {t('auth.email')}
-            </span>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              inputMode="email"
-              className={inputClass}
-            />
-          </label>
+            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
+              {mode === 'signUp' && (
+                <Campo icon={<UserIcon className="size-5" />}>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder={t('auth.displayName')}
+                    autoComplete="name"
+                    className="w-full bg-transparent py-3.5 pr-4 text-base text-on-surface outline-none placeholder:text-outline"
+                  />
+                </Campo>
+              )}
 
-          {mode !== 'forgot' && (
-            <>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-                  {t('auth.password')}
-                </span>
+              <Campo icon={<MailIcon className="size-5" />}>
                 <input
-                  type="password"
+                  type="email"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'}
-                  className={inputClass}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t('auth.email')}
+                  autoComplete="email"
+                  inputMode="email"
+                  className="w-full bg-transparent py-3.5 pr-4 text-base text-on-surface outline-none placeholder:text-outline"
                 />
-              </label>
+              </Campo>
 
-              <label className="flex items-center gap-2.5 py-1 text-sm text-on-surface-variant">
-                <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
-                  className="size-4 accent-[var(--color-primary)]"
-                />
-                {t('auth.remember')}
-              </label>
-            </>
-          )}
+              {mode !== 'forgot' && (
+                <>
+                  <Campo icon={<LockIcon className="size-5" />}>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={t('auth.password')}
+                      autoComplete={mode === 'signIn' ? 'current-password' : 'new-password'}
+                      className="w-full bg-transparent py-3.5 pr-4 text-base text-on-surface outline-none placeholder:text-outline"
+                    />
+                  </Campo>
 
-          {mode === 'forgot' && (
-            <p className="text-sm text-on-surface-variant">{t('auth.resetHint')}</p>
-          )}
+                  {/* Alineado a la derecha bajo la contraseña, como en el
+                      diseño: es donde se mira justo después de fallar al
+                      escribirla. */}
+                  {mode === 'signIn' && (
+                    <button
+                      type="button"
+                      onClick={() => cambiarModo('forgot')}
+                      className="-mt-1 self-end text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      {t('auth.forgot')}
+                    </button>
+                  )}
 
-          {error && (
-            <p className="rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
-              {error}
-            </p>
-          )}
-          {notice && (
-            <p className="rounded-control bg-primary-fixed px-3 py-2 text-sm text-on-primary-fixed">
-              {notice}
-            </p>
-          )}
+                  <label className="flex items-center gap-2.5 text-sm text-on-surface-variant">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                      className="size-4 accent-[var(--color-primary)]"
+                    />
+                    {t('auth.remember')}
+                  </label>
+                </>
+              )}
 
-          <button
-            type="submit"
-            disabled={busy}
-            className="mt-1 rounded-control bg-primary px-5 py-3 font-semibold text-on-primary
-                       transition active:scale-[0.99] disabled:opacity-60"
-          >
-            {busy
-              ? t('common.loading')
-              : mode === 'signIn'
-                ? t('auth.signIn')
-                : mode === 'signUp'
-                  ? t('auth.signUp')
-                  : t('auth.sendReset')}
-          </button>
-        </form>
+              {error && (
+                <p className="rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
+                  {error}
+                </p>
+              )}
+              {notice && (
+                <p className="rounded-control bg-primary-fixed px-3 py-2 text-sm text-on-primary-fixed">
+                  {notice}
+                </p>
+              )}
 
-        <div className="flex flex-col items-center gap-2">
-          {/* Alternar alta/entrada no aplica al recuperar contraseña: allí el
-              enlace de abajo ya lleva a entrar, y este mostraba exactamente el
-              mismo texto, así que salía dos veces. */}
+              <button
+                type="submit"
+                disabled={busy}
+                className="mt-1 flex items-center justify-center gap-2 rounded-control bg-primary px-5 py-3.5 font-semibold text-on-primary transition active:scale-[0.99] disabled:opacity-60"
+              >
+                {busy ? t('common.loading') : accion}
+                {!busy && <span aria-hidden>→</span>}
+              </button>
+
+              {mode === 'forgot' && (
+                <button
+                  type="button"
+                  onClick={() => cambiarModo('signIn')}
+                  className="text-sm text-on-surface-variant underline-offset-4 hover:underline"
+                >
+                  {t('auth.toSignIn')}
+                </button>
+              )}
+            </form>
+
+            {/* Entrar con Google o Apple. Solo si el proveedor está configurado:
+                ver `oauth.ts`. Un botón que lleva a un error del proveedor es
+                peor que no ofrecerlo. */}
+            {mode !== 'forgot' && oauthProviders.length > 0 && (
+              <>
+                <div className="my-5 flex items-center gap-3">
+                  <span className="h-px flex-1 bg-outline-variant" aria-hidden />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                    {t('auth.or')}
+                  </span>
+                  <span className="h-px flex-1 bg-outline-variant" aria-hidden />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  {oauthProviders.includes('google') && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void conProveedor('google')}
+                      className="flex items-center justify-center gap-2.5 rounded-control border border-outline-variant py-3 font-medium text-on-surface squish disabled:opacity-60"
+                    >
+                      <GoogleIcon className="size-5" />
+                      {t('auth.withGoogle')}
+                    </button>
+                  )}
+                  {oauthProviders.includes('apple') && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void conProveedor('apple')}
+                      className="flex items-center justify-center gap-2.5 rounded-control bg-inverse-surface py-3 font-medium text-inverse-on-surface squish disabled:opacity-60"
+                    >
+                      <AppleIcon className="size-5" />
+                      {t('auth.withApple')}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Banda al pie, dentro de la tarjeta y con fondo propio: separa
+              «lo que estoy haciendo» de «quiero hacer otra cosa». */}
           {mode !== 'forgot' && (
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === 'signIn' ? 'signUp' : 'signIn')
-                setError(null)
-                setNotice(null)
-              }}
-              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              {mode === 'signIn' ? t('auth.toSignUp') : t('auth.toSignIn')}
-            </button>
-          )}
-
-          {/* Solo al entrar: en el alta no hay contraseña que recuperar, y en
-              recuperar el enlace sería a la pantalla en la que ya estás. */}
-          {mode === 'signIn' && (
-            <button
-              type="button"
-              onClick={() => {
-                setMode('forgot')
-                setError(null)
-                setNotice(null)
-              }}
-              className="text-sm text-on-surface-variant underline-offset-4 hover:underline"
-            >
-              {t('auth.forgot')}
-            </button>
-          )}
-          {mode === 'forgot' && (
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signIn')
-                setError(null)
-                setNotice(null)
-              }}
-              className="text-sm text-on-surface-variant underline-offset-4 hover:underline"
-            >
-              {t('auth.toSignIn')}
-            </button>
+            <div className="border-t border-outline-variant/60 bg-surface-container px-6 py-4 text-center text-sm text-on-surface-variant">
+              {mode === 'signIn' ? t('auth.noAccount') : t('auth.haveAccount')}{' '}
+              <button
+                type="button"
+                onClick={() => cambiarModo(mode === 'signIn' ? 'signUp' : 'signIn')}
+                className="font-semibold text-primary underline-offset-4 hover:underline"
+              >
+                {mode === 'signIn' ? t('auth.signUp') : t('auth.signIn')}
+              </button>
+            </div>
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+/** Campo con el icono dentro, como en el diseño. */
+function Campo({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <div className="flex items-center rounded-control border border-outline-variant bg-surface transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+      <span className="pl-4 pr-2.5 text-on-surface-variant" aria-hidden>
+        {icon}
+      </span>
+      {children}
     </div>
   )
 }
