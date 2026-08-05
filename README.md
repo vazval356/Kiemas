@@ -7,7 +7,7 @@ Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo par
 parejas. Kiemas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
-**Estado: Fase 6 — explorar.** La app funciona de punta a punta en web y en
+**Estado: Fase 7 — negocios.** La app funciona de punta a punta en web y en
 Android. Queda probar compras, notificaciones y el widget, que necesitan la app
 publicada en Play Console.
 
@@ -100,7 +100,13 @@ antes de la Fase 5.
 | 5 | Suscripciones Free / Plus / Pro, códigos promocionales | ✅ Código listo ⚠️ |
 | 6 | Explorar listas públicas | ✅ Hecha |
 | 6 | Recomendaciones con IA, tiempo y reservas | ❌ Descartada |
-| 7 | Perfiles de negocio, patrocinios, afiliación, analítica | — |
+| 7 | Perfiles de negocio y estadísticas del local | ✅ Hecha |
+| 7 | Patrocinios y afiliación | ❌ Descartada |
+
+La afiliación necesita programas de terceros —reservas, entradas— con los que
+no hay ningún acuerdo. Los patrocinios exigen etiquetar como publicidad, que en
+la UE no es opcional, facturar B2B fuera de las tiendas y alterar el orden de
+Explorar: eso es una decisión de negocio, no una tarea pendiente.
 
 La pantalla «Recomendaciones Pro» del pack de diseño describe análisis del
 tiempo, disponibilidad de mesas en tiempo real, reserva integrada y rutas
