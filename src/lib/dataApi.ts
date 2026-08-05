@@ -26,6 +26,9 @@ import type {
   PublicList,
   FollowedList,
   YearInReview,
+  BusinessProfile,
+  MyBusiness,
+  VenueStats,
 } from './types'
 
 /**
@@ -236,6 +239,18 @@ export interface DataApi {
   // ── Tiempo real ──────────────────────────────────────────────────────────
   /** Avisa cuando otro dispositivo cambia datos del espacio. Devuelve la limpieza. */
   subscribe(spaceId: string, onChange: () => void): () => void
+
+  // ── Fase 7 · Negocios ──────────────────────────────────────────────────
+  /** Los locales que administras, más las solicitudes en revisión. */
+  myBusinesses(): Promise<MyBusiness[]>
+  /** Ficha pública de un local. `null` si nadie lo ha reclamado. */
+  venueProfile(venueId: string): Promise<BusinessProfile | null>
+  /** Abre una solicitud para administrar un local. La aprueba una persona. */
+  requestBusinessClaim(venueId: string, evidence: string): Promise<void>
+  /** `null` en un campo significa dejarlo como está, no vaciarlo. */
+  updateBusinessProfile(venueId: string, patch: Partial<Omit<BusinessProfile, 'venueId' | 'verified'>>): Promise<void>
+  /** Recuentos agregados. Solo para quien administra el local. */
+  venueStats(venueId: string): Promise<VenueStats>
 }
 
 /**

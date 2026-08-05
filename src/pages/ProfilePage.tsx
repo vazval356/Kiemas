@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { UsernameEditor } from '../components/UsernameEditor'
-import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, UserIcon } from '../components/icons'
+import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, StoreIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, FollowedList, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -318,6 +318,7 @@ export function ProfilePage() {
           {(
             [
               ['/subscription', CardIcon, 'sub.open'],
+              ['/businesses', StoreIcon, 'biz.title'],
               ['/settings', SettingsIcon, 'settings.open'],
             ] as const
           ).map(([to, Icon, key]) => (

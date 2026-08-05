@@ -275,3 +275,15 @@ export function AppleIcon({ className = 'w-5 h-5' }: IconProps) {
     </svg>
   )
 }
+
+/** Un local: toldo y escaparate. Trazo plano, como el resto. */
+export function StoreIcon({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9.5 4.5 4h15L21 9.5" />
+      <path d="M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0" />
+      <path d="M4.5 12v8h15v-8" />
+      <path d="M9.5 20v-5h5v5" />
+    </svg>
+  )
+}

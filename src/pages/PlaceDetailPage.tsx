@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import type { BusinessProfile } from '../lib/types'
 import { CommentThread } from '../components/CommentThread'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { TagBadges } from '../components/TagPicker'
@@ -35,6 +36,8 @@ export function PlaceDetailPage() {
   const [notesDirty, setNotesDirty] = useState(false)
   const [notesSaved, setNotesSaved] = useState(false)
   const [busy, setBusy] = useState(false)
+  // Ficha del negocio, si alguien ha verificado este local (Fase 7).
+  const [negocio, setNegocio] = useState<BusinessProfile | null>(null)
   const [error, setError] = useState('')
 
   // Si otro dispositivo cambia las notas, se recogen — salvo que se estén
@@ -42,6 +45,28 @@ export function PlaceDetailPage() {
   useEffect(() => {
     if (!notesDirty) setNotes(place?.notes ?? '')
   }, [place?.notes, notesDirty])
+
+  // La ficha del negocio se pide aparte y sin bloquear: es un añadido a la
+  // pantalla, y si falla o tarda, el sitio se ve igual de bien sin ella.
+  const venueId = place?.venueId ?? null
+  useEffect(() => {
+    if (!venueId) {
+      setNegocio(null)
+      return
+    }
+    let vigente = true
+    void api
+      .venueProfile(venueId)
+      .then((p) => {
+        if (vigente) setNegocio(p)
+      })
+      .catch(() => {
+        if (vigente) setNegocio(null)
+      })
+    return () => {
+      vigente = false
+    }
+  }, [venueId, api])
 
   if (!place) {
     return (
@@ -167,6 +192,34 @@ export function PlaceDetailPage() {
             </a>
           )}
         </div>
+
+        {/* ── Ficha del negocio, si está verificada (Fase 7) ─────────────
+            Va debajo de los datos del grupo, no encima: lo que escribió tu
+            cuadrilla manda sobre lo que diga el local. */}
+        {negocio ? (
+          <section className="mt-5 rounded-card border border-primary/30 bg-primary-fixed/30 p-4">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">✅</span>
+              <h2 className="font-display font-semibold text-on-surface">{negocio.displayName}</h2>
+              <span className="text-xs font-semibold text-primary">{t('biz.verified')}</span>
+            </div>
+            {negocio.description && (
+              <p className="mt-1.5 text-sm text-on-surface-variant">{negocio.description}</p>
+            )}
+            {negocio.hours && (
+              <p className="mt-2 whitespace-pre-line text-sm text-on-surface-variant">{negocio.hours}</p>
+            )}
+          </section>
+        ) : (
+          place.venueId && (
+            <Link
+              to={`/claim/${place.venueId}`}
+              className="mt-4 block text-center text-xs font-semibold text-on-surface-variant underline decoration-outline-variant underline-offset-4 squish"
+            >
+              {t('claim.cta')}
+            </Link>
+          )
+        )}
 
         {/* Estado */}
         <button
