@@ -47,11 +47,17 @@ export function AuthPage() {
         // Se responde igual exista o no la cuenta. Decir «ese correo no está
         // registrado» convierte el formulario en una forma de averiguar quién
         // tiene cuenta en la app.
-        await supabase.auth.resetPasswordForEmail(email.trim(), {
+        const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
           redirectTo: publicBaseUrl(),
         })
+        // El mensaje al usuario es el mismo pase lo que pase, pero el fallo se
+        // deja en la consola. Sin esto, un correo que no sale por límite de
+        // envíos o por SMTP sin configurar es indistinguible de uno entregado,
+        // también para quien mantiene la app.
+        if (err) console.warn('No se pudo enviar el correo de recuperación:', err.message)
         setNotice(t('auth.resetSent'))
-      } catch {
+      } catch (err) {
+        console.warn('No se pudo enviar el correo de recuperación:', err)
         setNotice(t('auth.resetSent'))
       } finally {
         setBusy(false)
@@ -208,17 +214,22 @@ export function AuthPage() {
         </form>
 
         <div className="flex flex-col items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === 'signIn' ? 'signUp' : 'signIn')
-              setError(null)
-              setNotice(null)
-            }}
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            {mode === 'signIn' ? t('auth.toSignUp') : t('auth.toSignIn')}
-          </button>
+          {/* Alternar alta/entrada no aplica al recuperar contraseña: allí el
+              enlace de abajo ya lleva a entrar, y este mostraba exactamente el
+              mismo texto, así que salía dos veces. */}
+          {mode !== 'forgot' && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === 'signIn' ? 'signUp' : 'signIn')
+                setError(null)
+                setNotice(null)
+              }}
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {mode === 'signIn' ? t('auth.toSignUp') : t('auth.toSignIn')}
+            </button>
+          )}
 
           {/* Solo al entrar: en el alta no hay contraseña que recuperar, y en
               recuperar el enlace sería a la pantalla en la que ya estás. */}
