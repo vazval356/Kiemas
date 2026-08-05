@@ -33,13 +33,22 @@
               invitación y de listas ya repartidos por WhatsApp que lo llevan
               dentro, y Vercel mantiene vivo el subdominio para siempre: quitarlo
               de aquí solo serviría para que esos enlaces dejaran de abrir la app.
+
+              `www.kiemas.com` NO va aquí, y no es un olvido. En Vercel redirige
+              al dominio raíz con un 308, y la verificación de Android no sigue
+              redirecciones: pediría el assetlinks.json, recibiría el 308 y daría
+              ese host por fallido. A partir de Android 12 basta con que uno de
+              los hosts del filtro falle para que no se verifique NINGUNO, así
+              que dejarlo aquí tumbaría también a kiemas.com.
+
+              Regla para cuando se añada otro dominio: solo entra si sirve
+              /.well-known/assetlinks.json con un 200 directo.
             -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="kiemas.com" />
-                <data android:scheme="https" android:host="www.kiemas.com" />
                 <data android:scheme="https" android:host="kopasymas.vercel.app" />
             </intent-filter>
         </activity>
