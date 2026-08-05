@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { PurchasesPackage } from '@revenuecat/purchases-capacitor'
-import { BackIcon } from '../components/icons'
+
 import {
   buyPackage,
   isPurchaseCancelled,
@@ -13,6 +13,7 @@ import {
 import { rpcErrorCode } from '../lib/supabaseApi'
 import type { Entitlement, MyEntitlement, PlanLimits } from '../lib/types'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 /**
@@ -245,14 +246,7 @@ export function SubscriptionPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/profile')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/profile" />
 
         <h1 className="text-center font-display text-2xl font-bold text-on-surface">
           {t('sub.title')}

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { BackIcon } from '../components/icons'
+import { Link } from 'react-router-dom'
+
 import { BRAND_KEY } from '../lib/brand'
 import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 /**
@@ -15,7 +16,6 @@ import { useApp } from '../state/appState'
  * esto, la revisión de la App Store la rechaza.
  */
 export function SettingsPage() {
-  const navigate = useNavigate()
   const { profile, locale, setLocale, api, t } = useApp()
 
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
@@ -79,14 +79,7 @@ export function SettingsPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/profile')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/profile" />
 
         <h1 className="font-display text-2xl font-bold text-on-surface">{t('settings.title')}</h1>
 

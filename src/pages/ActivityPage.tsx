@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { BackIcon } from '../components/icons'
+import { Link } from 'react-router-dom'
+
 import { formatTime, relativeTime } from '../lib/dates'
 import { spaceColors } from '../lib/spaceTheme'
 import type { ActivityEntry, ActivityVerb, Locale, Place, Plan } from '../lib/types'
 import type { TranslationKey, Translate } from '../lib/i18n'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 const VERB_KEY: Record<ActivityVerb, TranslationKey> = {
@@ -51,7 +52,6 @@ const PAGE = 25
  * línea había que entrar.
  */
 export function ActivityPage() {
-  const navigate = useNavigate()
   const { activeSpace, places, plans, api, locale, t } = useApp()
 
   const [entries, setEntries] = useState<ActivityEntry[]>([])
@@ -103,14 +103,7 @@ export function ActivityPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton />
 
         {/* ── Cabecera ────────────────────────────────────────────────────
             Lleva el nombre del espacio porque el feed cambia al cambiar de

@@ -1,9 +1,10 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { BackIcon, TrashIcon } from '../components/icons'
+import { TrashIcon } from '../components/icons'
 import { nextRoundHour, toDateTimeLocalValue } from '../lib/dates'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 type Mode = 'fixed' | 'poll'
@@ -86,14 +87,7 @@ export function PlanFormPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-5 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton />
 
         <h1 className="mb-6 font-display text-3xl font-bold text-on-surface">{t('plan.new')}</h1>
 

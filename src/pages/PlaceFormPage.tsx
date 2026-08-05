@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TagPicker } from '../components/TagPicker'
-import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
+import { PinIcon, SparkleIcon } from '../components/icons'
 import type { PlaceStatus } from '../lib/types'
 import { resolveMapsLink } from '../lib/mapsLink'
 import {
@@ -15,6 +15,7 @@ import {
   searchAddress,
   type GeoResult,
 } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
@@ -290,14 +291,7 @@ export function PlaceFormPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-5 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton />
 
         <h1 className="font-display text-3xl font-bold text-on-surface">
           {existing ? t('form.editTitle') : t('form.newTitle')}

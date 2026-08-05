@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CoverCropper } from '../components/CoverCropper'
 import { ReportDialog } from '../components/ReportDialog'
-import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
 import { inviteUrl } from '../lib/appUrl'
 import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 const EXPIRY_OPTIONS: { value: InviteExpiry; labelKey: 'invite.expiry30m' | 'invite.expiry1h' | 'invite.expiry24h' | 'invite.expiryNever' }[] = [
@@ -175,14 +176,7 @@ export function SpaceDetailPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/spaces')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/spaces" />
 
         <h1 className="font-display text-2xl font-bold text-on-surface">{space.name}</h1>
         <p className="mt-0.5 text-sm text-on-surface-variant">
@@ -336,7 +330,6 @@ export function SpaceDetailPage() {
                 </button>
               ))}
             </div>
-
 
             <div className="mt-3 flex gap-2">
               <button

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { BackIcon, CollectionIcon } from '../components/icons'
+
+import { CollectionIcon } from '../components/icons'
 import type { FollowedList } from '../lib/types'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 /**
@@ -13,7 +14,6 @@ import { useApp } from '../state/appState'
  * anónimo. Aquí solo se guarda el token del enlace.
  */
 export function FollowedListsPage() {
-  const navigate = useNavigate()
   const { api, locale, t } = useApp()
 
   const [lists, setLists] = useState<FollowedList[]>([])
@@ -47,14 +47,7 @@ export function FollowedListsPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/profile')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/profile" />
 
         <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">
           {t('followed.title')}

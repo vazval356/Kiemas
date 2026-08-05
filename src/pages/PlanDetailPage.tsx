@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { BackIcon } from '../components/icons'
+
 import { formatDayLabel, formatTime } from '../lib/dates'
 import type { AttendeeResponse, DateVote } from '../lib/types'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 const RESPONSES: { value: AttendeeResponse; key: 'plan.going' | 'plan.maybe' | 'plan.notGoing' }[] = [
@@ -72,14 +73,7 @@ export function PlanDetailPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-5 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/calendar')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/calendar" />
 
         <div className="flex items-start gap-3">
           <span className="flex size-14 shrink-0 items-center justify-center rounded-card bg-primary-fixed text-2xl">

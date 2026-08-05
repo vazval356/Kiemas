@@ -13,6 +13,7 @@ import {
   TrashIcon,
 } from '../components/icons'
 import { averageRating, errorMessage, formatKm, formatRating, kmBetween, priceLabel } from '../lib/utils'
+import { RatingStars } from '../components/RatingStars'
 import { useApp } from '../state/appState'
 
 /**
@@ -192,19 +193,15 @@ export function PlaceDetailPage() {
               {myRating > 0 ? formatRating(myRating) : '—'}
             </span>
           </div>
-          <input
-            type="range"
-            min={1}
-            max={10}
-            step={0.5}
-            value={myRating || 5}
+          {/* Estrellas en lugar del deslizador. Puntuar pasa a ser un toque en
+              vez de un arrastre con puntería, y «sin puntuar» se ve de un
+              vistazo: ninguna encendida. El deslizador siempre tenía el tirador
+              en algún sitio, así que había que atenuarlo para que no pareciera
+              un cinco puesto a propósito. */}
+          <RatingStars
+            value={myRating}
             disabled={busy}
-            onChange={(e) => void run(() => api.setRating(place.id, Number(e.target.value)))}
-            // Sin puntuación el control va atenuado. El valor tiene que ser
-            // alguno —un `range` no admite «vacío»— y con 5 el tirador queda
-            // justo en el centro, que se lee como un 5 puesto a propósito.
-            // Atenuarlo es lo que distingue «no has puntuado» de «has puesto un 5».
-            className={`kd-range ${myRating > 0 ? '' : 'opacity-40'}`}
+            onChange={(next) => void run(() => api.setRating(place.id, next))}
           />
         </section>
 

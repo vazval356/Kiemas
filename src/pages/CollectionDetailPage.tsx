@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import { publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
 import { errorMessage } from '../lib/utils'
+import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 import type { TranslationKey } from '../lib/i18n'
 
@@ -83,14 +84,7 @@ export function CollectionDetailPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
-        <button
-          type="button"
-          onClick={() => navigate('/collections')}
-          className="-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
-        >
-          <BackIcon className="size-5" />
-          <span className="text-sm font-medium">{t('common.back')}</span>
-        </button>
+        <BackButton to="/collections" />
 
         <h1 className="font-display text-2xl font-bold text-on-surface">{collection.name}</h1>
         {collection.description && (
