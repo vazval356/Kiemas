@@ -7,9 +7,11 @@
     soportan flexbox ni grid, y una maqueta moderna se descuadra entera.
   · Estilos en línea. Gmail elimina el <style> del <head> en algunos contextos
     (sobre todo en su app de Android), así que lo que esté solo ahí desaparece.
-  · Sin imágenes externas. Casi todos los clientes bloquean las imágenes por
-    defecto, y un logotipo que no carga deja el correo descabezado. La K se
-    dibuja con una celda de tabla y color de fondo, así que siempre se ve.
+  · El logotipo es una imagen alojada en kiemas.com, y la maqueta no depende
+    de que cargue. Gmail y Apple Mail enseñan las imágenes por defecto, así que
+    se verá casi siempre; pero si alguien las tiene bloqueadas, queda el texto
+    alternativo «Kiemas» junto al nombre escrito al lado, y el correo se lee
+    perfectamente. Ninguna imagen carga contenido, solo la marca.
   · El enlace aparece también como texto. Si el botón no se pinta o el cliente
     lo estropea, la persona todavía puede copiar la dirección.
   · Ancho máximo 600px, el único ancho seguro en el panel de vista previa de
@@ -55,10 +57,15 @@
               <td align="center" style="padding-bottom:24px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td width="44" height="44" align="center" valign="middle"
-                        style="width:44px; height:44px; background:#4648d4; border-radius:12px;
-                               font-family:Georgia,'Times New Roman',serif; font-size:24px;
-                               font-weight:bold; color:#ffffff; line-height:44px;">K</td>
+                    <!-- El logotipo va sobre un cuadro blanco fijo, no transparente:
+                         el PNG lleva fondo claro y en un correo en modo oscuro
+                         flotaría como un parche. Así se ve igual en los dos temas. -->
+                    <td width="48" height="48" align="center" valign="middle"
+                        style="width:48px; height:48px; background:#ffffff; border-radius:14px;">
+                      <img src="https://kiemas.com/icons/icon-192.png"
+                           width="48" height="48" alt="Kiemas"
+                           style="display:block; width:48px; height:48px; border:0; border-radius:14px;" />
+                    </td>
                     <td style="padding-left:12px; font-family:Helvetica,Arial,sans-serif;
                                font-size:20px; font-weight:bold; color:#4648d4;">Kiemas</td>
                   </tr>

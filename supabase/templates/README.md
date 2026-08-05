@@ -18,8 +18,12 @@ Esa es la parte que se olvida. Las rutas de aquí abajo valen para
 
 ```toml
 [auth.email.template.recovery]
-content_path = "./templates/recuperacion.html"
+content_path = "./supabase/templates/recuperacion.html"
 ```
+
+⚠️ La ruta va desde la raíz del proyecto, **no** desde `supabase/`, aunque el
+fichero que la declara viva ahí dentro. Con `./templates/…` el CLI busca en
+`<raíz>/templates/` y `db push` falla entero antes de aplicar nada.
 
 **El proyecto alojado no lee este repositorio.** Para que estos correos salgan
 de verdad hay que pegarlos a mano en el panel:
@@ -38,15 +42,19 @@ Si se cambia algo aquí, hay que volver a pegarlo allí. No se sincroniza solo.
 
 ## Por qué el HTML está escrito «a la antigua»
 
-Tablas, estilos en línea y nada de imágenes externas. No es descuido:
+Tablas, estilos en línea y una maqueta que no depende de ninguna imagen. No es
+descuido:
 
 - **Tablas en vez de flexbox o grid.** Outlook usa el motor de Word para
   renderizar, y una maqueta moderna se descuadra entera.
 - **Estilos en línea.** Gmail elimina el `<style>` del `<head>` en varios
   contextos, sobre todo en su aplicación de Android.
-- **Sin imágenes externas.** Casi todos los clientes las bloquean por defecto;
-  un logotipo que no carga deja el correo descabezado. La K se dibuja con una
-  celda de tabla y color de fondo, así que aparece siempre.
+- **El logotipo es una imagen alojada**, en `https://kiemas.com/icons/icon-192.png`,
+  pero la maqueta no depende de que cargue. Gmail y Apple Mail enseñan las
+  imágenes por defecto, así que se verá casi siempre; si alguien las tiene
+  bloqueadas, queda el texto alternativo «Kiemas» junto al nombre escrito al
+  lado y el correo se lee igual. Va sobre un cuadro blanco fijo porque el PNG
+  lleva fondo claro y en modo oscuro flotaría como un parche.
 - **El enlace, también como texto.** Si el botón no se pinta o el cliente lo
   estropea, la dirección se puede copiar a mano.
 - **Ancho máximo 600 px**, el único seguro en el panel de vista previa de

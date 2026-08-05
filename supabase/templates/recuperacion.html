@@ -2,7 +2,7 @@
   Kiemas · Recuperación de contraseña
 
   Mismas reglas de maquetado que confirmacion.html: tablas, estilos en línea,
-  sin imágenes externas y el enlace también como texto.
+  el logotipo sin que la maqueta dependa de él, y el enlace también como texto.
 
   Lo que cambia respecto al de confirmación es el tono. Un correo de
   recuperación llega a veces a quien NO lo ha pedido, porque alguien se
@@ -52,10 +52,15 @@
               <td align="center" style="padding-bottom:24px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td width="44" height="44" align="center" valign="middle"
-                        style="width:44px; height:44px; background:#4648d4; border-radius:12px;
-                               font-family:Georgia,'Times New Roman',serif; font-size:24px;
-                               font-weight:bold; color:#ffffff; line-height:44px;">K</td>
+                    <!-- El logotipo va sobre un cuadro blanco fijo, no transparente:
+                         el PNG lleva fondo claro y en un correo en modo oscuro
+                         flotaría como un parche. Así se ve igual en los dos temas. -->
+                    <td width="48" height="48" align="center" valign="middle"
+                        style="width:48px; height:48px; background:#ffffff; border-radius:14px;">
+                      <img src="https://kiemas.com/icons/icon-192.png"
+                           width="48" height="48" alt="Kiemas"
+                           style="display:block; width:48px; height:48px; border:0; border-radius:14px;" />
+                    </td>
                     <td style="padding-left:12px; font-family:Helvetica,Arial,sans-serif;
                                font-size:20px; font-weight:bold; color:#4648d4;">Kiemas</td>
                   </tr>

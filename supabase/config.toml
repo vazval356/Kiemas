@@ -44,11 +44,11 @@ enable_confirmations = false
 
 [auth.email.template.confirmation]
 subject = "Confirma tu cuenta de Kiemas"
-content_path = "./templates/confirmacion.html"
+content_path = "./supabase/templates/confirmacion.html"
 
 [auth.email.template.recovery]
 subject = "Recupera tu contraseña de Kiemas"
-content_path = "./templates/recuperacion.html"
+content_path = "./supabase/templates/recuperacion.html"
 
 [functions.revenuecat-webhook]
 # Sin esto el webhook no llega a ejecutarse nunca.
