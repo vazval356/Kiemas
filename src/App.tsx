@@ -187,6 +187,7 @@ export default function App() {
         <Route path="/l/:token" element={<PublicListPage />} />
         <Route path="/legal/privacidad" element={<LegalPage kind="privacy" />} />
         <Route path="/legal/terminos" element={<LegalPage kind="terms" />} />
+        <Route path="/legal/aviso" element={<LegalPage kind="notice" />} />
         <Route
           path="*"
           element={

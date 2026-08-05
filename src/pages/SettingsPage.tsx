@@ -129,7 +129,13 @@ export function SettingsPage() {
 
         {/* ── Legal ──────────────────────────────────────────────────────── */}
         <section className="mt-6 flex flex-col gap-2">
-          {([['/legal/privacidad', 'legal.privacy'], ['/legal/terminos', 'legal.terms']] as const).map(
+          {(
+            [
+              ['/legal/privacidad', 'legal.privacy'],
+              ['/legal/terminos', 'legal.terms'],
+              ['/legal/aviso', 'legal.notice'],
+            ] as const
+          ).map(
             ([to, key]) => (
               <Link
                 key={to}
