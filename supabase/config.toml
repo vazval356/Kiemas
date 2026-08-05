@@ -1,4 +1,4 @@
-project_id = "kopasymas"
+project_id = "kiemas"
 
 [api]
 enabled = true
@@ -22,7 +22,7 @@ site_url = "http://localhost:5173"
 additional_redirect_urls = [
   "http://localhost:5173",
   "capacitor://localhost",
-  "kopasymas://auth",
+  "kiemas://auth",
   # Adonde vuelve el correo de recuperación de contraseña.
   #
   # OJO: este fichero solo configura el Supabase LOCAL. El proyecto alojado
@@ -30,6 +30,7 @@ additional_redirect_urls = [
   # hay que añadirla también allí. Si falta, Supabase manda el enlace igual pero
   # redirige al `site_url` por defecto, así que el correo llega y el enlace
   # parece funcionar mientras el token acaba en otra parte.
+  "https://kiemas.com",
   "https://kopasymas.vercel.app",
 ]
 jwt_expiry = 3600
@@ -40,6 +41,23 @@ enable_signup = true
 enable_signup = true
 # En desarrollo se salta la verificación; en producción debe estar en true.
 enable_confirmations = false
+
+[functions.revenuecat-webhook]
+# Sin esto el webhook no llega a ejecutarse nunca.
+#
+# La función usa la cabecera `Authorization` para su propio secreto compartido
+# con RevenueCat. Pero Supabase, por defecto, verifica esa MISMA cabecera como
+# JWT antes de invocar el código: recibiría el secreto, no lo reconocería como
+# token válido y devolvería 401 por su cuenta.
+#
+# El resultado sería un fallo silencioso de los peores: en el panel de
+# RevenueCat el webhook figura configurado, las compras se cobran de verdad en
+# la tienda, y las suscripciones no se activan nunca en la base.
+#
+# Que no verifique el JWT no lo deja abierto: la función rechaza toda petición
+# cuyo `Authorization` no coincida con REVENUECAT_WEBHOOK_SECRET, y si el
+# secreto no está puesto rechaza absolutamente todo.
+verify_jwt = false
 
 [storage]
 enabled = true
