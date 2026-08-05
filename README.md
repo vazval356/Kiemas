@@ -82,9 +82,9 @@ npx cap add android
 ```
 
 **iOS no se puede compilar ni firmar desde Windows**: Xcode es obligatorio para
-enviar a la App Store. Android sí sale de Windows sin problema. Para iOS hará
-falta un Mac o un servicio de construcción en la nube (Codemagic, EAS Build)
-antes de la Fase 5.
+enviar a la App Store. Android sí sale de Windows sin problema. El proceso
+completo desde un Mac —Xcode, firma, notificaciones, enlaces universales,
+compras y TestFlight— está en [IOS.md](IOS.md).
 
 ## Hoja de ruta
 

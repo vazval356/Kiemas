@@ -325,8 +325,22 @@ export function SubscriptionPage() {
                       {t(`sub.tag${tier[0].toUpperCase()}${tier.slice(1)}` as 'sub.tagFree')}
                     </p>
 
-                    <p className="mt-3 font-display text-3xl font-bold">
-                      {tier === 'free' ? t('sub.free0') : (pkg?.product.priceString ?? '—')}
+                    {/* El precio SIEMPRE lo dice la tienda, nunca el código: cada
+                        país tiene su moneda, sus impuestos y su precio, y una
+                        cifra escrita a mano aquí mentiría a medio mundo. Mientras
+                        no haya productos dados de alta no hay precio que enseñar,
+                        y un guion suelto parece un error en vez de un «todavía
+                        no». */}
+                    <p
+                      className={
+                        tier === 'free' || pkg
+                          ? 'mt-3 font-display text-3xl font-bold'
+                          : `mt-3 font-display text-lg font-semibold ${isHighlight ? 'text-on-primary/70' : 'text-on-surface-variant'}`
+                      }
+                    >
+                      {tier === 'free'
+                        ? t('sub.free0')
+                        : (pkg?.product.priceString ?? t('sub.priceSoon'))}
                     </p>
 
                     <ul className="mt-4 flex flex-col gap-2">
