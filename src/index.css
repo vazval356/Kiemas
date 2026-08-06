@@ -317,40 +317,41 @@ input[type='range'].kd-range::-moz-range-thumb {
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
-   Botón de «dónde estoy» del mapa
+   El punto de «dónde estoy» en el mapa
 
-   MapLibre lo pinta con su propio estilo, que en medio de esta interfaz canta:
-   cuadrado, borde gris y sombra plana. Se le da la forma de los botones
-   flotantes de la app.
-
-   Va levantado del borde inferior porque debajo están la navegación y el botón
-   de añadir sitio, y sin esto queda tapado justo en los móviles con barra de
-   gestos, que es donde más se usa.
+   Círculo azul con anillo blanco —el gesto universal, el mismo de Maps— y un
+   halo que late despacio. El halo no es adorno: distingue tu posición, que es
+   aproximada y va cambiando, de las chinchetas de los sitios, que son puntos
+   exactos y quietos.
    ─────────────────────────────────────────────────────────────────────────── */
-.maplibregl-ctrl-bottom-right {
-  margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
-  margin-right: 0.75rem;
-}
-
-.maplibregl-ctrl-group:has(.maplibregl-ctrl-geolocate) {
-  background: var(--color-surface-container-lowest);
+.kd-me {
+  width: 1.125rem;
+  height: 1.125rem;
   border-radius: 999px;
-  box-shadow: var(--shadow-float);
-  border: none;
-  overflow: hidden;
+  background: var(--color-primary);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15), 0 2px 6px rgb(0 0 0 / 0.3);
+  position: relative;
 }
 
-.maplibregl-ctrl-group button.maplibregl-ctrl-geolocate {
-  width: 2.75rem;
-  height: 2.75rem;
-  background: transparent;
+.kd-me::before {
+  content: '';
+  position: absolute;
+  inset: -0.6rem;
+  border-radius: 999px;
+  background: var(--color-primary);
+  opacity: 0.22;
+  animation: kd-me-latido 2.4s ease-out infinite;
 }
 
-/* El icono de MapLibre es una máscara: se tiñe con `background-color`. */
-.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon {
-  background-color: var(--color-on-surface-variant);
+@keyframes kd-me-latido {
+  0%   { transform: scale(0.65); opacity: 0.3; }
+  70%  { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
 }
-.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon,
-.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon {
-  background-color: var(--color-primary);
+
+/* Quien haya pedido menos movimiento no necesita un latido perpetuo en
+   pantalla; el punto se ve igual de bien quieto. */
+@media (prefers-reduced-motion: reduce) {
+  .kd-me::before { animation: none; opacity: 0.2; }
 }

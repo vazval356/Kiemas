@@ -39,7 +39,7 @@ export function MapPage() {
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map())
   const fittedSpaceRef = useRef<string | null>(null)
-  const geolocateRef = useRef<maplibregl.GeolocateControl | null>(null)
+  const meRef = useRef<maplibregl.Marker | null>(null)
 
   const [mapReady, setMapReady] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
@@ -84,42 +84,44 @@ export function MapPage() {
     map.on('load', () => setMapReady(true))
     map.on('click', () => setSelectedId(null))
 
-    // ── Dónde estás ────────────────────────────────────────────────────────
-    //
-    // Se usa el control de MapLibre en vez de pintar el punto a mano. No es
-    // pereza: además del punto trae el círculo de precisión, el permiso, el
-    // seguimiento mientras te mueves y la brújula, y todo eso hecho a mano son
-    // muchas líneas y muchos casos raros —permiso denegado, señal perdida,
-    // precisión pésima— que aquí ya están resueltos.
-    //
-    // La posición NO se guarda ni se manda a ningún sitio: solo mueve la cámara
-    // en tu propio dispositivo. Lo único que sale a la red son las teselas del
-    // mapa de esa zona, exactamente igual que si hubieras llegado ahí
-    // arrastrando el mapa con el dedo.
-    const geo = new maplibregl.GeolocateControl({
-      // Precisión aproximada, a juego con el permiso que declara Android
-      // (ACCESS_COARSE_LOCATION). Pedir alta precisión teniendo solo el permiso
-      // aproximado no da más exactitud: gasta más batería y tarda más para
-      // devolver lo mismo. Basta para centrar el mapa en tu barrio, que es
-      // para lo que está.
-      positionOptions: { enableHighAccuracy: false, timeout: 10000 },
-      // Sigue tu posición mientras andas, que es como se usa esto de verdad:
-      // buscando lo que tienes cerca mientras te mueves por la calle.
-      trackUserLocation: true,
-      showUserLocation: true,
-      showAccuracyCircle: true,
-    })
-    map.addControl(geo, 'bottom-right')
-
-    geolocateRef.current = geo
     mapRef.current = map
     return () => {
       map.remove()
       mapRef.current = null
-      geolocateRef.current = null
       markersRef.current.clear()
     }
   }, [])
+
+  // ── El punto de dónde estás ─────────────────────────────────────────────
+  //
+  // La app ya sabía tu posición y ya centraba el mapa en ella, pero no la
+  // dibujaba: pulsabas el botón, el mapa se movía y no había forma de saber
+  // cuál de todos esos puntos eras tú.
+  //
+  // Se pinta a mano y no con el control de MapLibre porque el botón ya existe
+  // aquí, con el aspecto del resto: meter el suyo añadía un cuarto botón
+  // flotante repetido y, encima, por debajo de los otros tres.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !mapReady) return
+
+    if (!position) {
+      meRef.current?.remove()
+      meRef.current = null
+      return
+    }
+
+    if (!meRef.current) {
+      const el = document.createElement('div')
+      el.className = 'kd-me'
+      el.setAttribute('aria-hidden', 'true')
+      meRef.current = new maplibregl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([position.lng, position.lat])
+        .addTo(map)
+    } else {
+      meRef.current.setLngLat([position.lng, position.lat])
+    }
+  }, [position, mapReady])
 
   // ── Encuadrar al entrar y al cambiar de espacio ──────────────────────────
   // Se recuerda qué espacio se encuadró: al cambiar de grupo hay que reencuadrar
@@ -243,7 +245,7 @@ export function MapPage() {
 
       {/* Acciones flotantes; se ocultan si hay tarjeta abierta para no taparla. */}
       <div
-        className={`absolute bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-4 z-10 flex flex-col gap-3 ${
+        className={`absolute bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-4 z-10 flex flex-col gap-2.5 ${
           selected ? 'hidden' : ''
         }`}
       >
@@ -254,10 +256,10 @@ export function MapPage() {
               if (p) mapRef.current?.easeTo({ center: [p.lng, p.lat], zoom: 14 })
             })
           }}
-          className="flex size-14 items-center justify-center rounded-full bg-surface-lowest text-primary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-primary shadow-[var(--shadow-float)] squish"
           aria-label={t('map.myLocation')}
         >
-          <PinIcon className="size-6" />
+          <PinIcon className="size-5" />
         </button>
         <button
           type="button"
@@ -266,17 +268,17 @@ export function MapPage() {
           // flotantes uno encima de otro con tres colores distintos compiten
           // entre sí; con el mismo tratamiento que el de ubicación, el único
           // que destaca es el de añadir, que es lo que se quiere.
-          className="flex size-14 items-center justify-center rounded-full bg-surface-lowest text-tertiary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-tertiary shadow-[var(--shadow-float)] squish"
           aria-label={t('roulette.title')}
         >
-          <DiceIcon className="size-7" />
+          <DiceIcon className="size-6" />
         </button>
         <Link
           to="/add"
-          className="flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
           aria-label={t('place.add')}
         >
-          <AddIcon className="size-7" />
+          <AddIcon className="size-6" />
         </Link>
       </div>
 
