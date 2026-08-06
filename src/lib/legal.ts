@@ -34,9 +34,9 @@ import type { Locale } from './types'
  * No se inventa a propósito: un dato falso es peor que uno ausente, porque
  * parece correcto y nadie lo revisa.
  *
- * El NIF está verificado: 54032074 mod 23 = 14, y la posición 14 de
- * «TRWAGMYFPDXBNJZSQVHLCKE» es la Z. Publicar un NIF con la letra mal es peor
- * que no publicarlo, porque señala a otra persona.
+ * Si algún día se rellena `nif`, verifica la letra antes: es `número mod 23`
+ * indexado en «TRWAGMYFPDXBNJZSQVHLCKE». Publicar un NIF con la letra mal es
+ * peor que no publicarlo, porque señala a otra persona.
  *
  * En cuanto haya facturación, revisa además si hace falta darse de alta como
  * autónomo y si el domicilio puede ser el fiscal o conviene otro: publicar el
@@ -47,9 +47,28 @@ export const LEGAL_CONTACT = {
   responsable: 'Adrián Vázquez Valbuena',
   email: 'hola@kiemas.com',
   pais: 'España',
-  /** NIF o CIF. Obligatorio para el aviso legal. */
-  nif: '54032074Z',
-  /** Domicilio a efectos de notificaciones. Obligatorio para el aviso legal. */
+  /**
+   * NIF o CIF. Vacío a propósito mientras no haya actividad económica.
+   *
+   * El artículo 10 de la LSSI lo exige a los PRESTADORES DE SERVICIOS de la
+   * sociedad de la información, y esa condición va unida a prestar el servicio
+   * a título oneroso. Hoy la app es gratuita: no hay productos dados de alta en
+   * ninguna tienda y nadie puede pagar nada, así que la obligación todavía no
+   * se ha activado y publicar el DNI del titular sería exponerlo sin necesidad.
+   *
+   * ⚠️ EN CUANTO SE ACTIVEN LAS SUSCRIPCIONES esto deja de valer. Ese día hay
+   * que rellenar `nif` y `direccion` —o haber constituido una sociedad y usar
+   * su CIF y su domicilio social—, porque a partir de ahí sí hay actividad
+   * económica y el artículo 10 se aplica de lleno.
+   */
+  nif: '',
+  /**
+   * Domicilio a efectos de notificaciones. Mismo criterio que `nif`.
+   *
+   * No tiene que ser el domicilio particular: vale cualquier dirección donde se
+   * puedan recibir notificaciones, como la de una gestoría o un espacio de
+   * trabajo. Conviene que no sea la de casa, porque queda pública y permanente.
+   */
   direccion: '',
 }
 
@@ -459,8 +478,12 @@ const identidadEs = (): string[] => {
     lineas.push(`Domicilio a efectos de notificaciones: ${LEGAL_CONTACT.direccion}.`)
   lineas.push(`Correo de contacto: ${LEGAL_CONTACT.email}.`)
   if (!legalIdentityComplete) {
+    // Mientras el servicio se presta de forma gratuita, esto es lo que hay que
+    // decir y no más. Anunciar en la propia página que faltan datos fiscales
+    // —como hacía antes— era peor que no decir nada: proclamaba un
+    // incumplimiento que a día de hoy no existe.
     lineas.push(
-      'Nota: falta por publicar el domicilio del titular. Hasta que se complete, este aviso legal no reúne todos los datos que exige el artículo 10 de la LSSI-CE.'
+      'El servicio se presta actualmente de forma gratuita y sin contraprestación económica. Cuando se activen las suscripciones de pago se publicarán aquí los datos fiscales del titular.'
     )
   }
   return lineas
@@ -473,7 +496,7 @@ const identidadEn = (): string[] => {
   lines.push(`Contact email: ${LEGAL_CONTACT.email}.`)
   if (!legalIdentityComplete) {
     lines.push(
-      'Note: the owner’s address is not yet published. Until it is, this legal notice does not carry every detail required by article 10 of the Spanish LSSI-CE.'
+      'The service is currently provided free of charge and without economic consideration. Once paid subscriptions are enabled, the owner’s tax details will be published here.'
     )
   }
   return lines
