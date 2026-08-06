@@ -642,6 +642,7 @@ const es = {
   'onb.skip': 'Saltar',
   'onb.next': 'Siguiente',
   'onb.start': 'Empezar',
+  'onb.go': '¡Vamos allá!',
   'onb.replay': 'Ver la bienvenida otra vez',
 
   'onb.1.title': 'Esto es Kiemas',
@@ -1262,6 +1263,7 @@ const en: Record<TranslationKey, string> = {
   'onb.skip': 'Skip',
   'onb.next': 'Next',
   'onb.start': 'Get started',
+  'onb.go': 'Let’s go!',
   'onb.replay': 'See the welcome tour again',
 
   'onb.1.title': 'This is Kiemas',
