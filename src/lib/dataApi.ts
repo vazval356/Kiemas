@@ -160,6 +160,12 @@ export interface DataApi {
   ): Promise<void>
   deleteCollection(collectionId: string): Promise<void>
   addPlaceToCollection(collectionId: string, placeId: string): Promise<void>
+  /** Portada propia de una lista. `null` la quita. */
+  setCollectionCover(
+    collectionId: string,
+    spaceId: string,
+    source: File | Blob | null
+  ): Promise<void>
   removePlaceFromCollection(collectionId: string, placeId: string): Promise<void>
 
   /**

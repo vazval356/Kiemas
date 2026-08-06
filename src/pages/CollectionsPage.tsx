@@ -58,37 +58,50 @@ export function CollectionsPage() {
             <p className="mt-1 text-sm text-on-surface-variant">{t('collection.noneHint')}</p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-2">
+          /* Rejilla de dos columnas con portada. Una lista se reconoce por su
+             foto mucho antes que por su nombre, y en una fila de texto todas
+             se parecen. Dos por fila entran de sobra en un móvil y dejan la
+             portada con altura suficiente para que se vea algo. */
+          <ul className="grid grid-cols-2 gap-3">
             {collections.map((collection) => {
               const shared = collection.share && !collection.share.revokedAt
               return (
                 <li key={collection.id}>
                   <Link
                     to={`/collections/${collection.id}`}
-                    className="flex items-center gap-3 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] squish"
+                    className="block overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)] squish"
                   >
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
-                      <CollectionIcon className="size-5" />
+                    <span className="relative flex aspect-[4/3] items-center justify-center bg-primary-fixed">
+                      {collection.coverUrl ? (
+                        <img
+                          src={collection.coverUrl}
+                          alt=""
+                          loading="lazy"
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      ) : (
+                        <CollectionIcon className="size-8 text-primary/70" />
+                      )}
+                      {shared && (
+                        <span
+                          className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-surface-lowest/90 text-primary"
+                          title={t('share.title')}
+                          aria-label={t('share.title')}
+                        >
+                          <ShareIcon className="size-4" />
+                        </span>
+                      )}
                     </span>
-                    <span className="min-w-0 flex-1">
+                    <span className="block p-3">
                       <span className="block truncate font-semibold text-on-surface">
                         {collection.name}
                       </span>
-                      <span className="block text-sm text-on-surface-variant">
+                      <span className="block text-xs text-on-surface-variant">
                         {collection.placeIds.length === 1
                           ? t('collection.countOne')
                           : t('collection.count', { count: collection.placeIds.length })}
                       </span>
                     </span>
-                    {shared && (
-                      <span
-                        className="shrink-0 text-primary"
-                        title={t('share.title')}
-                        aria-label={t('share.title')}
-                      >
-                        <ShareIcon className="size-5" />
-                      </span>
-                    )}
                   </Link>
                 </li>
               )

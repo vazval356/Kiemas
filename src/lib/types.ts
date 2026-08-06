@@ -260,6 +260,14 @@ export interface Collection {
   name: string
   description: string
   coverPlaceId: string | null
+  /**
+   * Portada propia de la lista, ya resuelta a URL.
+   *
+   * Cuando no la hay, la interfaz cae a la foto del sitio de portada. Se
+   * separan porque son cosas distintas: `coverPlaceId` dice qué sitio
+   * representa la lista, y esto es una imagen elegida para ella.
+   */
+  coverUrl: string | null
   placeIds: string[]
   createdBy: string | null
   createdAt: string

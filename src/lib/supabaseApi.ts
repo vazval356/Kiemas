@@ -464,6 +464,40 @@ export const supabaseApi: DataApi = {
     if (res.error) throw new Error(res.error.message)
   },
 
+  async setCollectionCover(
+    collectionId: string,
+    spaceId: string,
+    source: File | Blob | null
+  ): Promise<void> {
+    // `null` borra la portada. Se manda cadena vacía porque en la función
+    // `null` significa «déjala como está».
+    if (source === null) {
+      const res = await supabase.rpc('set_collection_cover', {
+        p_collection_id: collectionId,
+        p_cover_path: '',
+      })
+      if (res.error) throw new Error(res.error.message)
+      return
+    }
+
+    // Un Blob ya viene recortado por el encuadrador; un File es la foto cruda.
+    const blob = source instanceof File ? await cropToCover(source, 800, 16 / 9, 0.62) : source
+    const ext = blob.type === 'image/webp' ? 'webp' : 'jpg'
+    // La carpeta `collections` no es decorativa: la política de storage exige
+    // ese segundo tramo para dejar escribir a un miembro que no administra.
+    const path = `${spaceId}/collections/${crypto.randomUUID()}.${ext}`
+    const up = await supabase.storage.from('covers').upload(path, blob, {
+      contentType: blob.type,
+    })
+    if (up.error) throw new Error(up.error.message)
+
+    const res = await supabase.rpc('set_collection_cover', {
+      p_collection_id: collectionId,
+      p_cover_path: path,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
   async deleteSpace(spaceId: string) {
     ok(await supabase.from('spaces').delete().eq('id', spaceId))
   },
@@ -797,7 +831,7 @@ export const supabaseApi: DataApi = {
     const [colsRes, itemsRes, sharesRes] = await Promise.all([
       supabase
         .from('collections')
-        .select('id, name, description, cover_place_id, created_by, created_at')
+        .select('id, name, description, cover_place_id, cover_path, created_by, created_at')
         .eq('space_id', spaceId)
         .order('created_at', { ascending: false }),
       supabase.from('collection_places').select('collection_id, place_id, position, added_at'),
@@ -819,6 +853,9 @@ export const supabaseApi: DataApi = {
         name: c.name,
         description: c.description,
         coverPlaceId: c.cover_place_id,
+        coverUrl: c.cover_path
+          ? supabase.storage.from('covers').getPublicUrl(c.cover_path).data.publicUrl
+          : null,
         placeIds: items
           .filter((i) => i.collection_id === c.id)
           .sort((a, b) => a.position - b.position || a.added_at.localeCompare(b.added_at))
@@ -852,6 +889,7 @@ export const supabaseApi: DataApi = {
       name: row.name,
       description: row.description,
       coverPlaceId: row.cover_place_id,
+      coverUrl: null,
       placeIds: [],
       createdBy: row.created_by,
       createdAt: row.created_at,
@@ -1020,8 +1058,14 @@ export const supabaseApi: DataApi = {
       author: (r.author as string) ?? null,
       authorAvatarUrl: (r.author_avatar as string) ?? null,
       // Igual que en el resto: se guarda la ruta y se resuelve al leer.
+      //
+      // El bucket lo dice la propia función, y hay que hacerle caso: la portada
+      // propia de la lista vive en `covers` y la foto de un sitio en `photos`.
+      // Dar por hecho uno de los dos devolvía una URL que no existe.
       coverUrl: r.cover_path
-        ? supabase.storage.from('photos').getPublicUrl(r.cover_path as string).data.publicUrl
+        ? supabase.storage
+            .from((r.cover_bucket as string) === 'covers' ? 'covers' : 'photos')
+            .getPublicUrl(r.cover_path as string).data.publicUrl
         : null,
       places: Number(r.places ?? 0),
       followers: Number(r.followers ?? 0),

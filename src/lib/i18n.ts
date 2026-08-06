@@ -391,6 +391,7 @@ const es = {
   'tag.deleteConfirm': '¿Borrar la etiqueta «{name}» de todos los sitios?',
 
   // Colecciones (Fase 3)
+  'collection.cover': 'Cambiar portada',
   'collection.plural': 'Colecciones',
   'collection.new': 'Nueva colección',
   'collection.namePlaceholder': 'Nombre (p. ej. Mejores brunch)',
@@ -1018,6 +1019,7 @@ const en: Record<TranslationKey, string> = {
   'tag.none': 'No tags yet.',
   'tag.deleteConfirm': 'Delete the tag “{name}” from every place?',
 
+  'collection.cover': 'Change cover',
   'collection.plural': 'Collections',
   'collection.new': 'New collection',
   'collection.namePlaceholder': 'Name (e.g. Best brunch)',

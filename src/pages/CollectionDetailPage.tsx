@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect} from 'react'
+import { useMemo, useRef, useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { CopyIcon, CollectionIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { CoverCropper } from '../components/CoverCropper'
 import { publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -24,13 +25,15 @@ const EXPIRY_OPTIONS: { value: InviteExpiry; labelKey: TranslationKey }[] = [
 export function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { collections, places, categories, api, refresh, locale, t } = useApp()
+  const { collections, places, categories, activeSpace, api, refresh, locale, t } = useApp()
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
   const [expiry, setExpiry] = useState<InviteExpiry>(null)
   const [adding, setAdding] = useState(false)
+  const [cropping, setCropping] = useState<File | null>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const collection = collections.find((c) => c.id === id)
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
@@ -103,6 +106,52 @@ export function CollectionDetailPage() {
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
         <BackButton to="/collections" />
+
+        {/* Portada. Ocupa el ancho completo porque es lo que identifica la
+            lista de un vistazo, y el botón de cambiarla va encima en vez de
+            en un ajuste aparte: es donde se mira cuando se quiere cambiar. */}
+        <div className="relative mb-4 flex aspect-[16/9] items-center justify-center overflow-hidden rounded-card bg-primary-fixed">
+          {collection.coverUrl ? (
+            <img src={collection.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+          ) : (
+            <CollectionIcon className="size-10 text-primary/70" />
+          )}
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              if (f) setCropping(f)
+              // Se limpia para que elegir la MISMA foto otra vez vuelva a
+              // disparar el evento; si no, `change` no salta y no pasa nada.
+              e.target.value = ''
+            }}
+          />
+
+          <div className="absolute bottom-2 right-2 flex gap-1.5">
+            {collection.coverUrl && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void run(() => api.setCollectionCover(collection.id, activeSpace?.id ?? '', null))}
+                className="rounded-full bg-surface-lowest/90 px-3 py-1.5 text-xs font-semibold text-error squish disabled:opacity-50"
+              >
+                {t('common.delete')}
+              </button>
+            )}
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => fileRef.current?.click()}
+              className="rounded-full bg-surface-lowest/90 px-3 py-1.5 text-xs font-semibold text-on-surface squish disabled:opacity-50"
+            >
+              {t('collection.cover')}
+            </button>
+          </div>
+        </div>
 
         <h1 className="font-display text-2xl font-bold text-on-surface">{collection.name}</h1>
         {collection.description && (
@@ -325,6 +374,17 @@ export function CollectionDetailPage() {
           {t('common.delete')}
         </button>
       </div>
+
+      {cropping && (
+        <CoverCropper
+          file={cropping}
+          onCancel={() => setCropping(null)}
+          onDone={(blob) => {
+            setCropping(null)
+            void run(() => api.setCollectionCover(collection.id, activeSpace?.id ?? '', blob))
+          }}
+        />
+      )}
     </div>
   )
 }
