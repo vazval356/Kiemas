@@ -134,6 +134,28 @@ El `.p8` es una credencial: **no lo metas en el repositorio.**
 
 ---
 
+## 5.b · Ubicación en el mapa
+
+El botón de «mi ubicación» usa la geolocalización del navegador dentro de la
+vista web. En iOS eso **no funciona si falta el texto que se le enseña a la
+persona al pedir el permiso**, y el fallo es mudo: el botón simplemente no hace
+nada, sin error ni aviso.
+
+En Xcode, abre `ios/App/App/Info.plist` y añade:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Para centrar el mapa en dónde estás y ver los sitios que tienes cerca.</string>
+```
+
+Solo *When In Use*. La app no necesita la ubicación en segundo plano, y pedirla
+es motivo habitual de rechazo en la revisión de Apple si no se justifica con una
+función que la use de verdad.
+
+Ese texto lo lee la persona en el diálogo del sistema, así que escríbelo en
+castellano y que diga para qué es. «Esta app necesita tu ubicación» es de los
+que hacen que la gente diga que no.
+
 ## 6 · Enlaces profundos (Universal Links)
 
 El equivalente de Android para iOS. Android usa `assetlinks.json`; Apple usa un

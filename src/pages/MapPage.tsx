@@ -39,6 +39,7 @@ export function MapPage() {
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<Map<string, maplibregl.Marker>>(new Map())
   const fittedSpaceRef = useRef<string | null>(null)
+  const geolocateRef = useRef<maplibregl.GeolocateControl | null>(null)
 
   const [mapReady, setMapReady] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
@@ -82,10 +83,40 @@ export function MapPage() {
     })
     map.on('load', () => setMapReady(true))
     map.on('click', () => setSelectedId(null))
+
+    // ── Dónde estás ────────────────────────────────────────────────────────
+    //
+    // Se usa el control de MapLibre en vez de pintar el punto a mano. No es
+    // pereza: además del punto trae el círculo de precisión, el permiso, el
+    // seguimiento mientras te mueves y la brújula, y todo eso hecho a mano son
+    // muchas líneas y muchos casos raros —permiso denegado, señal perdida,
+    // precisión pésima— que aquí ya están resueltos.
+    //
+    // La posición NO se guarda ni se manda a ningún sitio: solo mueve la cámara
+    // en tu propio dispositivo. Lo único que sale a la red son las teselas del
+    // mapa de esa zona, exactamente igual que si hubieras llegado ahí
+    // arrastrando el mapa con el dedo.
+    const geo = new maplibregl.GeolocateControl({
+      // Precisión aproximada, a juego con el permiso que declara Android
+      // (ACCESS_COARSE_LOCATION). Pedir alta precisión teniendo solo el permiso
+      // aproximado no da más exactitud: gasta más batería y tarda más para
+      // devolver lo mismo. Basta para centrar el mapa en tu barrio, que es
+      // para lo que está.
+      positionOptions: { enableHighAccuracy: false, timeout: 10000 },
+      // Sigue tu posición mientras andas, que es como se usa esto de verdad:
+      // buscando lo que tienes cerca mientras te mueves por la calle.
+      trackUserLocation: true,
+      showUserLocation: true,
+      showAccuracyCircle: true,
+    })
+    map.addControl(geo, 'bottom-right')
+
+    geolocateRef.current = geo
     mapRef.current = map
     return () => {
       map.remove()
       mapRef.current = null
+      geolocateRef.current = null
       markersRef.current.clear()
     }
   }, [])

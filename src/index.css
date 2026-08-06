@@ -315,3 +315,42 @@ input[type='range'].kd-range::-moz-range-thumb {
   box-shadow: 0 2px 6px rgb(17 28 45 / 0.3);
   cursor: pointer;
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Botón de «dónde estoy» del mapa
+
+   MapLibre lo pinta con su propio estilo, que en medio de esta interfaz canta:
+   cuadrado, borde gris y sombra plana. Se le da la forma de los botones
+   flotantes de la app.
+
+   Va levantado del borde inferior porque debajo están la navegación y el botón
+   de añadir sitio, y sin esto queda tapado justo en los móviles con barra de
+   gestos, que es donde más se usa.
+   ─────────────────────────────────────────────────────────────────────────── */
+.maplibregl-ctrl-bottom-right {
+  margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+  margin-right: 0.75rem;
+}
+
+.maplibregl-ctrl-group:has(.maplibregl-ctrl-geolocate) {
+  background: var(--color-surface-container-lowest);
+  border-radius: 999px;
+  box-shadow: var(--shadow-float);
+  border: none;
+  overflow: hidden;
+}
+
+.maplibregl-ctrl-group button.maplibregl-ctrl-geolocate {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: transparent;
+}
+
+/* El icono de MapLibre es una máscara: se tiñe con `background-color`. */
+.maplibregl-ctrl-geolocate .maplibregl-ctrl-icon {
+  background-color: var(--color-on-surface-variant);
+}
+.maplibregl-ctrl-geolocate-active .maplibregl-ctrl-icon,
+.maplibregl-ctrl-geolocate-background .maplibregl-ctrl-icon {
+  background-color: var(--color-primary);
+}
