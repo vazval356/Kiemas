@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { getPublicList, rpcErrorCode, supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
-import type { PublicList } from '../lib/types'
-import { priceLabel } from '../lib/utils'
+import type { PublicList, Space } from '../lib/types'
+import { errorMessage, priceLabel } from '../lib/utils'
+import { BackIcon } from '../components/icons'
 
 /**
  * Lista pública, visible sin cuenta.
@@ -20,7 +21,23 @@ import { priceLabel } from '../lib/utils'
  */
 export function PublicListPage() {
   const { token } = useParams<{ token: string }>()
+  const navigate = useNavigate()
+  const location = useLocation()
   const t = createTranslate(detectLocale())
+
+  // Con HashRouter no vale mirar el historial del navegador: puede haber
+  // entradas de antes de abrir la app. React Router marca como `default` la
+  // clave de la primera entrada, así que cualquier otra cosa significa que se
+  // ha llegado navegando por dentro y hay adonde volver.
+  const seLlegoDesdeDentro = location.key !== 'default'
+
+  // Añadir un sitio al mapa propio. Esta pantalla vive fuera de AppProvider,
+  // así que los espacios se piden aquí y solo cuando hacen falta.
+  const [espacios, setEspacios] = useState<Space[] | null>(null)
+  const [eligiendo, setEligiendo] = useState<PublicList['places'][number] | null>(null)
+  const [guardando, setGuardando] = useState(false)
+  const [guardados, setGuardados] = useState<Record<string, string>>({})
+  const [avisoGuardar, setAvisoGuardar] = useState('')
 
   const [list, setList] = useState<PublicList | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -68,6 +85,47 @@ export function PublicListPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])
 
+  async function abrirSelector(place: PublicList['places'][number]) {
+    setAvisoGuardar('')
+    setEligiendo(place)
+    if (espacios) return
+    try {
+      setEspacios(await supabaseApi.listSpaces())
+    } catch (e) {
+      setAvisoGuardar(errorMessage(e, t('common.error')))
+      setEligiendo(null)
+    }
+  }
+
+  async function guardarEn(space: Space) {
+    if (!eligiendo) return
+    setGuardando(true)
+    try {
+      // Se copia con lo que la lista pública expone y nada más. Las notas y las
+      // puntuaciones del grupo de origen no salen de ahí, así que el sitio
+      // llega limpio: es tuyo desde el primer momento, no una copia con las
+      // opiniones de otra gente pegadas.
+      await supabaseApi.addPlace(space.id, {
+        name: eligiendo.name,
+        address: eligiendo.address,
+        lat: eligiendo.lat,
+        lng: eligiendo.lng,
+        categoryId: null,
+        status: 'want_to_go',
+        priceLevel: eligiendo.priceLevel,
+        phone: '',
+        website: '',
+        notes: '',
+      })
+      setGuardados((g) => ({ ...g, [eligiendo.id]: space.name }))
+      setEligiendo(null)
+    } catch (e) {
+      setAvisoGuardar(errorMessage(e, t('common.error')))
+    } finally {
+      setGuardando(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3">
@@ -94,7 +152,21 @@ export function PublicListPage() {
 
   return (
     <div className="h-full overflow-y-auto bg-surface">
-      <div className="mx-auto max-w-md px-4 pb-12 pt-8">
+      <div className="mx-auto max-w-md px-4 pb-12 pt-3">
+        {/* Solo si se ha llegado navegando por dentro. Quien abre el enlace
+            desde fuera no tiene adonde volver, y un botón que lleva a una
+            pantalla en blanco es peor que no tenerlo. */}
+        {seLlegoDesdeDentro && (
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="-ml-2 mb-2 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
+          >
+            <BackIcon className="size-5" />
+            <span className="text-sm font-medium">{t('common.back')}</span>
+          </button>
+        )}
+
         <header className="text-center">
           <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface">
             {list.name}
@@ -154,14 +226,34 @@ export function PublicListPage() {
                     <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>
                   )}
 
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 inline-block rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary squish"
-                  >
-                    {t('public.openInMaps')}
-                  </a>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-block rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary squish"
+                    >
+                      {t('public.openInMaps')}
+                    </a>
+
+                    {/* Solo con sesión: sin cuenta no hay mapa al que añadirlo,
+                        y un botón que lleva a «inicia sesión» desde una lista
+                        que se abrió sin cuenta es una promesa a medias. */}
+                    {signedIn &&
+                      (guardados[place.id] ? (
+                        <span className="text-sm font-semibold text-tertiary">
+                          {t('public.saved', { space: guardados[place.id] })}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void abrirSelector(place)}
+                          className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
+                        >
+                          {t('public.saveToMap')}
+                        </button>
+                      ))}
+                  </div>
                 </div>
               </li>
             ))}
@@ -203,6 +295,57 @@ export function PublicListPage() {
           </a>
         </footer>
       </div>
+
+      {/* Selector de espacio. Se pregunta siempre, aunque haya uno solo: quien
+          está en varios grupos casi nunca quiere el mismo por defecto, y
+          adivinar mal significa un sitio en el mapa equivocado que hay que
+          borrar a mano. */}
+      {eligiendo && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-float)]">
+            <h2 className="font-display text-lg font-bold text-on-surface">
+              {t('public.saveWhere')}
+            </h2>
+            <p className="mt-0.5 truncate text-sm text-on-surface-variant">{eligiendo.name}</p>
+
+            {avisoGuardar && (
+              <p className="mt-3 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
+                {avisoGuardar}
+              </p>
+            )}
+
+            {espacios === null ? (
+              <p className="mt-4 text-sm text-on-surface-variant">{t('common.loading')}</p>
+            ) : (
+              <ul className="mt-3 flex max-h-64 flex-col gap-1.5 overflow-y-auto">
+                {espacios.map((space) => (
+                  <li key={space.id}>
+                    <button
+                      type="button"
+                      disabled={guardando}
+                      onClick={() => void guardarEn(space)}
+                      className="flex w-full items-center gap-2.5 rounded-control bg-surface-container p-3 text-left squish disabled:opacity-50"
+                    >
+                      <span className="text-lg">{space.emoji || '📍'}</span>
+                      <span className="min-w-0 flex-1 truncate font-semibold text-on-surface">
+                        {space.name}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setEligiendo(null)}
+              className="mt-3 w-full rounded-full border border-outline-variant py-2.5 text-sm font-semibold text-on-surface-variant squish"
+            >
+              {t('common.cancel')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
