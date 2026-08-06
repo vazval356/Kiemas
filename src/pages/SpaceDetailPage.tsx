@@ -71,6 +71,16 @@ export function SpaceDetailPage() {
     }
   }
 
+  // Solo para ti. No toca el color del espacio, que sigue siendo el que
+  // decidió el grupo; esto se pinta encima en tu pantalla y no lo ve nadie más.
+  async function guardarMiColor(color: string | null) {
+    if (!space) return
+    await run(async () => {
+      await api.setMySpaceColor(space.id, color ? normalizeHex(color).toLowerCase() : null)
+      await refreshSpaces()
+    })
+  }
+
   async function saveLook(nextEmoji: string, nextColor: string) {
     if (!space) return
     const prev = { emoji, color }
@@ -300,6 +310,60 @@ export function SpaceDetailPage() {
                   style={{ backgroundColor: c }}
                 />
               ))}
+            </div>
+
+            {/* ── Mi color para este espacio ──────────────────────────────
+                Va justo debajo del del grupo porque es la misma idea vista
+                desde el otro lado, y separarlo en otra pantalla haría que nadie
+                lo encontrara. La diferencia queda dicha en el propio texto: el
+                de arriba lo ven todos, este solo tú. */}
+            <div className="mt-4 rounded-card bg-surface-container p-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                {t('space.mySpaceColor')}
+              </p>
+              <p className="mt-0.5 text-xs text-on-surface-variant">{t('space.mySpaceColorHint')}</p>
+
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                <label className="relative flex size-9 cursor-pointer items-center justify-center rounded-control bg-surface-lowest squish">
+                  <span
+                    className="size-5 rounded-full border-2 border-surface-lowest"
+                    style={{ backgroundColor: space.myColor ?? space.color }}
+                    aria-hidden
+                  />
+                  <input
+                    type="color"
+                    value={space.myColor ?? space.color}
+                    onChange={(e) => void guardarMiColor(e.target.value)}
+                    className="absolute size-0 opacity-0"
+                  />
+                </label>
+                <span className="h-6 w-px shrink-0 bg-outline-variant" aria-hidden />
+
+                {SPACE_COLOR_SUGGESTIONS.map((c) => (
+                  <button
+                    key={`mio-${c}`}
+                    type="button"
+                    onClick={() => void guardarMiColor(c)}
+                    aria-label={c}
+                    className={`size-8 rounded-control squish ${
+                      (space.myColor ?? '').toLowerCase() === c.toLowerCase()
+                        ? 'ring-2 ring-on-surface'
+                        : ''
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+
+              {space.myColor && (
+                <button
+                  type="button"
+                  onClick={() => void guardarMiColor(null)}
+                  className="mt-2.5 text-xs font-semibold text-primary squish"
+                >
+                  {t('space.mySpaceColorReset')}
+                </button>
+              )}
             </div>
 
             <div className="mt-3 grid grid-cols-8 gap-1.5">

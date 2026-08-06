@@ -76,6 +76,7 @@ interface PlaceRow {
   website: string
   photos: string[]
   venue_id: string | null
+  origin_space_id: string | null
   visibility: 'space' | 'public'
   created_by: string | null
   created_at: string
@@ -143,6 +144,7 @@ function mapPlace(row: PlaceRow): Place {
     ratings: (row.ratings ?? []).map((r) => ({ userId: r.user_id, score: Number(r.score) })),
     tagIds: (row.place_tags ?? []).map((t) => t.tag_id),
     venueId: row.venue_id ?? null,
+    originSpaceId: row.origin_space_id ?? null,
     visibility: row.visibility,
     createdBy: row.created_by,
     createdAt: row.created_at,
@@ -347,13 +349,14 @@ export const supabaseApi: DataApi = {
   async listSpaces(): Promise<Space[]> {
     const uid = await myId()
     // Las tres consultas ya vienen recortadas por RLS a lo que me corresponde.
-    const [spacesRes, membersRes, profilesRes] = await Promise.all([
+    const [spacesRes, membersRes, prefsRes, profilesRes] = await Promise.all([
       supabase
         .from('spaces')
         .select('id, name, description, kind, emoji, color, cover_path, theme')
         .order('kind')
         .order('name'),
       supabase.from('space_members').select('space_id, user_id, role, color, joined_at'),
+      supabase.from('space_color_prefs').select('space_id, color'),
       supabase.from('profiles').select('id, display_name, username, avatar_url'),
     ])
     const spaces = check(spacesRes)
@@ -377,6 +380,11 @@ export const supabaseApi: DataApi = {
       membersBySpace.set(m.space_id, list)
     }
 
+    // La RLS ya deja aquí solo las mías, así que no hace falta filtrar por uid.
+    const misColores = new Map(
+      (check(prefsRes) as { space_id: string; color: string }[]).map((r) => [r.space_id, r.color])
+    )
+
     return spaces.map((s) => {
       const list = (membersBySpace.get(s.id) ?? []).sort((a, b) => a.joinedAt.localeCompare(b.joinedAt))
       return {
@@ -386,6 +394,7 @@ export const supabaseApi: DataApi = {
         kind: s.kind as Space['kind'],
         emoji: s.emoji ?? '👥',
         color: s.color ?? '#4648D4',
+        myColor: misColores.get(s.id) ?? null,
         // Se guarda la ruta y se resuelve al leer: una URL absoluta en la base
         // de datos deja de servir el día que cambie el dominio del almacén.
         coverUrl: s.cover_path
@@ -461,6 +470,16 @@ export const supabaseApi: DataApi = {
       p_emoji: null,
       p_color: null,
       p_cover_path: path,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async setMySpaceColor(spaceId: string, color: string | null): Promise<void> {
+    const res = await supabase.rpc('set_my_space_color', {
+      p_space_id: spaceId,
+      // Cadena vacía = devolverlo al color del grupo. Es la única forma de
+      // deshacerlo, así que `null` se traduce a eso y no se omite.
+      p_color: color ?? '',
     })
     if (res.error) throw new Error(res.error.message)
   },

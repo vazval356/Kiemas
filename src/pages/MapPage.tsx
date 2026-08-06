@@ -34,7 +34,7 @@ const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168] // Madrid
 
 export function MapPage() {
-  const { places, categories, position, requestPosition, activeSpace, api, refresh, t } = useApp()
+  const { places, categories, position, requestPosition, spaces, activeSpace, api, refresh, t } = useApp()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
@@ -170,11 +170,21 @@ export function MapPage() {
       }
     }
 
-    // El color del espacio activo. Todos los sitios que se ven pertenecen a él
-    // —el mapa carga los de un espacio cada vez—, así que el mapa entero toma
-    // el color del grupo y cambia al cambiar de espacio. Es lo que hace que se
-    // note de un vistazo en cuál estás, sin tener que mirar la cabecera.
-    const tema = spaceColors(activeSpace?.color)
+    // El color de cada sitio sale del espacio al que pertenece.
+    //
+    // En un grupo son todos el mismo, y el mapa entero toma su color: se nota
+    // de un vistazo en cuál estás sin mirar la cabecera.
+    //
+    // En el mapa personal no. Ahí conviven copias traídas de varias cuadrillas,
+    // y cada una se pinta del color de la suya: es lo único que permite ver de
+    // un golpe qué trajo el grupo del pueblo y qué el del trabajo.
+    //
+    // Manda siempre tu color si le has puesto uno. El del espacio sigue siendo
+    // el que decidió el grupo; esto solo se pinta encima, y solo en tu pantalla.
+    const colorDe = (spaceId: string | null | undefined) => {
+      const sp = spaces.find((x) => x.id === spaceId) ?? activeSpace
+      return spaceColors(sp?.myColor ?? sp?.color)
+    }
 
     for (const place of visiblePlaces) {
       const emoji = categories.find((c) => c.id === place.categoryId)?.emoji ?? '📍'
@@ -205,13 +215,14 @@ export function MapPage() {
       // Los ya visitados conservan su gris: distinguir «pendiente» de «ya
       // fuimos» es más útil sobre el mapa que repetir el color del grupo en
       // todos los pines por igual. El color se aplica solo a los pendientes.
+      const tema = colorDe(place.originSpaceId ?? place.spaceId)
       inner.style.background = place.status === 'visited' ? '' : tema.solid
       // El halo del seleccionado, también del color del espacio.
       inner.style.setProperty('--kd-marker-halo', `${tema.solid}40`)
       inner.textContent = emoji
       marker.setLngLat([place.lng, place.lat])
     }
-  }, [visiblePlaces, categories, selectedId, activeSpace?.color])
+  }, [visiblePlaces, categories, selectedId, spaces, activeSpace])
 
   async function toggleFavorite(place: Place) {
     await api.updatePlace(place.id, { favorite: !place.favorite })

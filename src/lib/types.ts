@@ -87,6 +87,13 @@ export interface Space {
   emoji: string
   /** Color libre en `#RRGGBB`. El texto de encima se calcula en `spaceTheme.ts`. */
   color: string
+  /**
+   * Tu color para este espacio, si le has puesto uno.
+   *
+   * Es una preferencia tuya y solo tuya: se pinta encima en tu pantalla y no la
+   * ve nadie más. `color` sigue siendo el que decidió el grupo.
+   */
+  myColor: string | null
   /** Foto de portada ya resuelta a URL, o `null` si no tiene. */
   coverUrl: string | null
   /** @deprecated Lo sustituye `color`. Se conserva por compatibilidad. */
@@ -158,6 +165,14 @@ export interface Place {
   ratings: PlaceRating[]
   /** Etiquetas de ambiente aplicadas a este sitio (Fase 3). */
   tagIds: string[]
+  /**
+   * De qué espacio llegó esta copia, si llegó de otro.
+   *
+   * `null` es un sitio que nació donde está. Solo lo rellenan las copias
+   * automáticas al mapa personal, y sirve para pintarlas del color del grupo
+   * del que vinieron.
+   */
+  originSpaceId: string | null
   /**
    * El local del mundo real al que corresponde esta copia (Fase 7).
    *

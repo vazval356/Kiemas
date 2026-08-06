@@ -60,6 +60,13 @@ export interface DataApi {
    * sitios sin avisar, y deshacerlo sería borrarlos uno a uno.
    */
   setMirrorToPersonal(on: boolean): Promise<void>
+  /**
+   * Tu color para un espacio. `null` lo devuelve al que eligió el grupo.
+   *
+   * No cambia el color del espacio: es una preferencia personal que se pinta
+   * encima en tu pantalla y que no ve nadie más.
+   */
+  setMySpaceColor(spaceId: string, color: string | null): Promise<void>
   /** Los tres contadores de la cabecera del perfil. Se cuentan al vuelo. */
   myStats(): Promise<MyStats>
 
