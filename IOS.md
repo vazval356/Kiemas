@@ -57,15 +57,33 @@ xcode-select --install
 Después, **Xcode desde la App Store** (son varios gigas) y ábrelo una vez para
 que acepte su licencia e instale componentes.
 
-```bash
-sudo gem install cocoapods
-```
+### CocoaPods, con Homebrew
 
-En los Mac con Apple Silicon, si CocoaPods da problemas de arquitectura:
+Homebrew **no viene con macOS**. Se instala así:
 
 ```bash
-sudo arch -x86_64 gem install ffi
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+⚠️ En los Mac con Apple Silicon, el instalador **no deja `brew` en el PATH**: lo
+pone en `/opt/homebrew` y al terminar imprime unas «Next steps» que casi todo el
+mundo pasa por alto. Sin ejecutarlas, la terminal sigue diciendo
+`command not found: brew`. Son estas:
+
+```bash
+echo >> ~/.zprofile
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+Y entonces ya:
+
+```bash
+brew install cocoapods
+```
+
+Evita `sudo gem install cocoapods` en un Mac reciente: usa el Ruby del sistema y
+da problemas de permisos y de arquitectura en Apple Silicon.
 
 ---
 
