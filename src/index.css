@@ -172,7 +172,10 @@ textarea {
 }
 .kd-marker.selected {
   transform: scale(1.25);
-  box-shadow: 0 0 0 6px rgb(70 72 212 / 0.25), 0 6px 14px rgb(17 28 45 / 0.4);
+  /* El halo toma el color del espacio; el índigo es el respaldo por si el
+     marcador se pinta antes de que el color esté disponible. */
+  box-shadow: 0 0 0 6px var(--kd-marker-halo, rgb(70 72 212 / 0.25)),
+    0 6px 14px rgb(17 28 45 / 0.4);
 }
 
 /* ── Campos de formulario ─────────────────────────────────────────────────

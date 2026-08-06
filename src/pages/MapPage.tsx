@@ -1,6 +1,7 @@
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { spaceColors } from '../lib/spaceTheme'
 import { Link } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
@@ -169,6 +170,12 @@ export function MapPage() {
       }
     }
 
+    // El color del espacio activo. Todos los sitios que se ven pertenecen a él
+    // —el mapa carga los de un espacio cada vez—, así que el mapa entero toma
+    // el color del grupo y cambia al cambiar de espacio. Es lo que hace que se
+    // note de un vistazo en cuál estás, sin tener que mirar la cabecera.
+    const tema = spaceColors(activeSpace?.color)
+
     for (const place of visiblePlaces) {
       const emoji = categories.find((c) => c.id === place.categoryId)?.emoji ?? '📍'
       let marker = markers.get(place.id)
@@ -195,10 +202,16 @@ export function MapPage() {
       inner.className = `kd-marker ${place.status === 'visited' ? 'visited' : ''} ${
         selectedId === place.id ? 'selected' : ''
       }`
+      // Los ya visitados conservan su gris: distinguir «pendiente» de «ya
+      // fuimos» es más útil sobre el mapa que repetir el color del grupo en
+      // todos los pines por igual. El color se aplica solo a los pendientes.
+      inner.style.background = place.status === 'visited' ? '' : tema.solid
+      // El halo del seleccionado, también del color del espacio.
+      inner.style.setProperty('--kd-marker-halo', `${tema.solid}40`)
       inner.textContent = emoji
       marker.setLngLat([place.lng, place.lat])
     }
-  }, [visiblePlaces, categories, selectedId])
+  }, [visiblePlaces, categories, selectedId, activeSpace?.color])
 
   async function toggleFavorite(place: Place) {
     await api.updatePlace(place.id, { favorite: !place.favorite })
