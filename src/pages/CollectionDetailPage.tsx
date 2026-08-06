@@ -34,6 +34,24 @@ export function CollectionDetailPage() {
 
   const collection = collections.find((c) => c.id === id)
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
+  const share = collection?.share && !collection.share.revokedAt ? collection.share : null
+
+  // Estos dos hooks van AQUÍ, por encima del `return` de abajo, y no junto al
+  // interruptor que gobiernan.
+  //
+  // Estaban después, y eso rompía las reglas de los hooks: cuando la colección
+  // todavía no había cargado, el componente salía antes de llegar a ellos y
+  // ejecutaba seis; en cuanto cargaba, ejecutaba ocho. React no lo tolera y
+  // tumba el componente entero con «Rendered more hooks than during the
+  // previous render». Pasaba al abrir una colección por enlace directo o al
+  // recargar la página estando dentro.
+  //
+  // El interruptor de Explorar se pinta desde estado local para que responda al
+  // instante; la recarga del servidor llega después y confirma.
+  const [listed, setListed] = useState(Boolean(share?.listed))
+  useEffect(() => {
+    setListed(Boolean(share?.listed))
+  }, [share?.listed])
 
   if (!collection) {
     return (
@@ -53,14 +71,7 @@ export function CollectionDetailPage() {
     .map((pid) => places.find((p) => p.id === pid))
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
   const outside = places.filter((p) => !collection.placeIds.includes(p.id))
-  const share = collection.share && !collection.share.revokedAt ? collection.share : null
 
-  // El interruptor de Explorar se pinta desde estado local para que responda al
-  // instante; la recarga del servidor llega después y confirma.
-  const [listed, setListed] = useState(Boolean(share?.listed))
-  useEffect(() => {
-    setListed(Boolean(share?.listed))
-  }, [share?.listed])
   // No se usa window.location.origin: dentro del contenedor nativo vale
   // http://localhost y el enlace compartido llegaría roto a quien lo recibe.
   const publicUrl = share ? publicListUrl(share.token) : ''
