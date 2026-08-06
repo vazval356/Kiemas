@@ -186,32 +186,21 @@ Domains**, y añade:
 applinks:kiemas.com
 ```
 
-**En el repositorio**, crea `public/.well-known/apple-app-site-association`
-(sin extensión) con este contenido, sustituyendo `TEAMID` por tu Team ID real
-—lo ves arriba a la derecha en developer.apple.com—:
+**Ya está en el repositorio**, en `public/.well-known/apple-app-site-association`,
+con el Team ID `G65Z9AK5GX`. Solo hay que desplegarlo con `git push`.
 
-```json
-{
-  "applinks": {
-    "details": [
-      {
-        "appID": "TEAMID.com.kiemas.app",
-        "paths": ["*"]
-      }
-    ]
-  }
-}
-```
+⚠️ **Tres trampas, dos de ellas las mismas que ya costaron un rato en Android:**
 
-Luego `git push`, para que Vercel lo despliegue.
-
-⚠️ **Dos trampas, las mismas que ya nos costaron un rato en Android:**
-
-1. El fichero **no lleva extensión `.json`**, pero debe servirse como
-   `application/json`. Vercel lo hace bien con los ficheros de `.well-known`,
-   pero compruébalo.
+1. El fichero **no lleva extensión**, así que Vercel lo serviría como
+   `application/octet-stream` y Apple lo rechazaría. Por eso existe el
+   `vercel.json` de la raíz: fuerza `Content-Type: application/json` solo para
+   esa ruta. Si se borra ese fichero, los enlaces dejan de funcionar en iOS sin
+   que nada más se rompa, que es la peor clase de avería.
 2. Debe responder con un **200 directo, sin redirecciones**. Por eso
    `kiemas.com` es la canónica y `www` redirige a ella, y no al revés.
+3. Se usa el formato moderno —`appIDs` y `components`— y no el antiguo de
+   `appID` y `paths`. El destino mínimo del proyecto es iOS 14, así que no hace
+   falta arrastrar el viejo.
 
 Comprobación desde el Mac:
 

@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["G65Z9AK5GX.com.kiemas.app"],
+        "components": [{ "/": "*" }]
+      }
+    ]
+  }
+}
