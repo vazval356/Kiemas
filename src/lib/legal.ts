@@ -30,10 +30,13 @@ import type { Locale } from './types'
  *     nombre, su NIF y un domicilio, de forma «permanente, fácil, directa y
  *     gratuita». Una app con suscripciones de pago entra de lleno ahí.
  *
- * ⚠️ `nif` y `direccion` están vacíos, y mientras lo estén el aviso legal NO
- * cumple. No se han inventado a propósito: un dato fiscal falso es peor que
- * uno ausente, porque parece correcto. Rellénalos antes de publicar en las
- * tiendas.
+ * ⚠️ Falta `direccion`, y mientras falte el aviso legal NO cumple del todo.
+ * No se inventa a propósito: un dato falso es peor que uno ausente, porque
+ * parece correcto y nadie lo revisa.
+ *
+ * El NIF está verificado: 54032074 mod 23 = 14, y la posición 14 de
+ * «TRWAGMYFPDXBNJZSQVHLCKE» es la Z. Publicar un NIF con la letra mal es peor
+ * que no publicarlo, porque señala a otra persona.
  *
  * En cuanto haya facturación, revisa además si hace falta darse de alta como
  * autónomo y si el domicilio puede ser el fiscal o conviene otro: publicar el
@@ -45,7 +48,7 @@ export const LEGAL_CONTACT = {
   email: 'hola@kiemas.com',
   pais: 'España',
   /** NIF o CIF. Obligatorio para el aviso legal. */
-  nif: '',
+  nif: '54032074Z',
   /** Domicilio a efectos de notificaciones. Obligatorio para el aviso legal. */
   direccion: '',
 }
@@ -457,7 +460,7 @@ const identidadEs = (): string[] => {
   lineas.push(`Correo de contacto: ${LEGAL_CONTACT.email}.`)
   if (!legalIdentityComplete) {
     lineas.push(
-      'Nota: faltan por publicar el NIF y el domicilio del titular. Hasta que se completen, este aviso legal no reúne todos los datos que exige el artículo 10 de la LSSI-CE.'
+      'Nota: falta por publicar el domicilio del titular. Hasta que se complete, este aviso legal no reúne todos los datos que exige el artículo 10 de la LSSI-CE.'
     )
   }
   return lineas
@@ -470,7 +473,7 @@ const identidadEn = (): string[] => {
   lines.push(`Contact email: ${LEGAL_CONTACT.email}.`)
   if (!legalIdentityComplete) {
     lines.push(
-      'Note: the owner’s tax ID and address are not yet published. Until they are, this legal notice does not carry every detail required by article 10 of the Spanish LSSI-CE.'
+      'Note: the owner’s address is not yet published. Until it is, this legal notice does not carry every detail required by article 10 of the Spanish LSSI-CE.'
     )
   }
   return lines
