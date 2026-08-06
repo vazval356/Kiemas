@@ -7,7 +7,7 @@ Sucesor de [Warm Hearth](../maparestaurantes), que hacía lo mismo pero solo par
 parejas. Kiemas hereda su interfaz y sus decisiones técnicas, y rehace el modelo
 de datos para admitir espacios de N personas con roles.
 
-**Estado: Fase 7 — negocios.** La app funciona de punta a punta en web y en
+**Estado: Fase 7 hecha.** Falta publicar en las tiendas. La app funciona de punta a punta en web y en
 Android. Queda probar compras, notificaciones y el widget, que necesitan la app
 publicada en Play Console.
 
@@ -96,7 +96,8 @@ compras y TestFlight— está en [IOS.md](IOS.md).
 | 3 | Etiquetas, colecciones, comentarios, feed, listas públicas | ✅ Hecha |
 | — | Contenedor nativo: Capacitor, Android, enlaces profundos | ✅ Hecho |
 | 4 | Resumen anual y seguir listas | ✅ Hecha |
-| 4 | Widget de pantalla de inicio | Pendiente (Kotlin/SwiftUI) |
+| 4 | Widget de pantalla de inicio (Android) | ✅ Hecho ⚠️ sin probar |
+| 4 | Widget de pantalla de inicio (iOS) | — |
 | 5 | Suscripciones Free / Plus / Pro, códigos promocionales | ✅ Código listo ⚠️ |
 | 6 | Explorar listas públicas | ✅ Hecha |
 | 6 | Recomendaciones con IA, tiempo y reservas | ❌ Descartada |
