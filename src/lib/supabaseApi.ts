@@ -272,7 +272,7 @@ export const supabaseApi: DataApi = {
     const row = check(
       await supabase
         .from('profiles')
-        .select('id, display_name, username, avatar_url, bio, locale, onboarded_at')
+        .select('id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal')
         .eq('id', uid)
         .single()
     )
@@ -283,6 +283,7 @@ export const supabaseApi: DataApi = {
       avatarUrl: row.avatar_url,
       bio: row.bio ?? '',
       locale: row.locale as Locale,
+      mirrorToPersonal: Boolean(row.mirror_to_personal),
       onboardedAt: row.onboarded_at,
     }
   },
@@ -461,6 +462,11 @@ export const supabaseApi: DataApi = {
       p_color: null,
       p_cover_path: path,
     })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async setMirrorToPersonal(on: boolean): Promise<void> {
+    const res = await supabase.rpc('set_mirror_to_personal', { p_on: on })
     if (res.error) throw new Error(res.error.message)
   },
 

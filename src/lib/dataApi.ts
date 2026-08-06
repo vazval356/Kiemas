@@ -52,6 +52,14 @@ export interface DataApi {
   me(): Promise<Profile>
   updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'locale' | 'bio'>>): Promise<void>
   setAvatar(file: File): Promise<string>
+  /**
+   * Copiar al mapa personal los sitios que se guardan en los grupos.
+   *
+   * Afecta a lo que se añada A PARTIR de encenderlo: no va hacia atrás. Traer
+   * de golpe el histórico de todos los grupos llenaría el mapa de cientos de
+   * sitios sin avisar, y deshacerlo sería borrarlos uno a uno.
+   */
+  setMirrorToPersonal(on: boolean): Promise<void>
   /** Los tres contadores de la cabecera del perfil. Se cuentan al vuelo. */
   myStats(): Promise<MyStats>
 

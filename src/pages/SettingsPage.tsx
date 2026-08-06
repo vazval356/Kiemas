@@ -16,10 +16,11 @@ import { useApp } from '../state/appState'
  * esto, la revisión de la App Store la rechaza.
  */
 export function SettingsPage() {
-  const { profile, locale, setLocale, api, t } = useApp()
+  const { profile, locale, setLocale, refreshSpaces, api, t } = useApp()
 
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
   const [busy, setBusy] = useState(false)
+  const [mirrorBusy, setMirrorBusy] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
@@ -115,6 +116,36 @@ export function SettingsPage() {
               </button>
             ))}
           </div>
+        </section>
+
+        {/* ── Copiar a mi mapa ───────────────────────────────────────────
+            Apagado por defecto y hacia delante solamente. Traer de golpe el
+            histórico de todos los grupos llenaría el mapa de cientos de sitios
+            sin avisar, y deshacerlo sería borrarlos uno a uno. */}
+        <section className="mt-6">
+          <label className="flex items-start gap-3 rounded-card bg-surface-container p-4">
+            <input
+              type="checkbox"
+              checked={profile?.mirrorToPersonal ?? false}
+              disabled={mirrorBusy}
+              onChange={(e) => {
+                const on = e.target.checked
+                setMirrorBusy(true)
+                void api
+                  .setMirrorToPersonal(on)
+                  .then(refreshSpaces)
+                  .catch((err) => setError(errorMessage(err, t('common.error'))))
+                  .finally(() => setMirrorBusy(false))
+              }}
+              className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+            />
+            <span>
+              <span className="block font-semibold text-on-surface">{t('settings.mirror')}</span>
+              <span className="mt-0.5 block text-sm text-on-surface-variant">
+                {t('settings.mirrorHint')}
+              </span>
+            </span>
+          </label>
         </section>
 
         {/* ── Bienvenida ─────────────────────────────────────────────────── */}

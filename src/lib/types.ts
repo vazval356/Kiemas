@@ -28,6 +28,12 @@ export interface Profile {
   bio: string
   locale: Locale
   /**
+   * Si los sitios que se guardan en los grupos se copian también a tu mapa
+   * personal. Viene apagado: encenderlo por defecto llenaría el mapa de alguien
+   * con sitios que no ha elegido.
+   */
+  mirrorToPersonal: boolean
+  /**
    * Cuándo terminó la presentación de bienvenida.
    *
    * `null` es una cuenta que todavía no la ha visto. Vive en el perfil y no en

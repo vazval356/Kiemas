@@ -300,6 +300,8 @@ const es = {
   'invite.joinedTo': 'Te has unido a {name}',
 
   // Ajustes y privacidad (Fase 1d)
+  'settings.mirror': 'Copiar a mi mapa personal',
+  'settings.mirrorHint': 'Los sitios que se guarden en tus grupos aparecerán también en tu mapa personal. Solo los nuevos: lo que ya está no se trae.',
   'settings.open': 'Ajustes y privacidad',
   'settings.exporting': 'Preparando la descarga…',
   'settings.exported': 'Datos descargados',
@@ -934,6 +936,8 @@ const en: Record<TranslationKey, string> = {
   'invite.linkCopied': 'Link copied',
   'invite.joinedTo': 'You joined {name}',
 
+  'settings.mirror': 'Copy to my personal map',
+  'settings.mirrorHint': 'Places saved in your groups will also appear on your personal map. New ones only: what is already there is not brought over.',
   'settings.open': 'Settings and privacy',
   'settings.exporting': 'Preparing the download…',
   'settings.exported': 'Data downloaded',
