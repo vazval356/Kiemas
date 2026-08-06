@@ -61,7 +61,7 @@ export function ResetPasswordPage() {
     'text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20'
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="pt-safe h-full overflow-y-auto">
       <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center gap-6 px-5 py-10">
         <header className="text-center">
           <img

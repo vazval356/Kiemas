@@ -151,7 +151,7 @@ export function PublicListPage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-surface">
+    <div className="pt-safe h-full overflow-y-auto bg-surface">
       <div className="mx-auto max-w-md px-4 pb-12 pt-3">
         {/* Solo si se ha llegado navegando por dentro. Quien abre el enlace
             desde fuera no tiene adonde volver, y un botón que lleva a una

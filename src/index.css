@@ -147,6 +147,22 @@ textarea {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* ── La zona segura de ARRIBA ─────────────────────────────────────────────
+   La vista web ocupa la pantalla entera —`viewport-fit=cover` en el HTML y
+   `contentInset: 'never'` en Capacitor—, así que el contenido empieza en el
+   píxel cero: debajo de la hora, la cobertura y la batería.
+
+   En un navegador de escritorio `env(safe-area-inset-top)` vale 0 y esto no
+   hace nada. Por eso el fallo no se ve al desarrollar y solo aparece en el
+   móvil, con la cabecera pisada por la barra de estado.
+
+   Va en el contenedor del shell y no en cada pantalla: así lo heredan también
+   las de pantalla completa, que no dibujan la barra superior y empezarían
+   pegadas al borde igual. */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
 /* ── Marcadores del mapa ──────────────────────────────────────────────────
    Forma de gota, como pide el sistema de diseño. La transición vive aquí, en
    el hijo, y no en el elemento que MapLibre mueve: MapLibre reescribe el

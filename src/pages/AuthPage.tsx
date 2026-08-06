@@ -133,7 +133,7 @@ export function AuthPage() {
     mode === 'signIn' ? t('auth.signIn') : mode === 'signUp' ? t('auth.signUp') : t('auth.sendReset')
 
   return (
-    <div className="h-full overflow-y-auto bg-surface">
+    <div className="pt-safe h-full overflow-y-auto bg-surface">
       <div className="mx-auto flex min-h-full max-w-md flex-col justify-center px-4 py-8">
         {/* La tarjeta del diseño: se levanta del fondo en vez de flotar suelta
             sobre él, que es lo que hacía que la pantalla se viera vacía. */}

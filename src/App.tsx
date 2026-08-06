@@ -130,7 +130,7 @@ function Shell() {
   const isFullScreen = FULL_SCREEN.some((prefix) => location.pathname.startsWith(prefix))
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="pt-safe flex h-full flex-col">
       {!isFullScreen && <TopBar />}
       <Routes>
         <Route path="/" element={<MapPage />} />

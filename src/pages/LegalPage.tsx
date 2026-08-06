@@ -52,7 +52,7 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
   const otros = (Object.keys(RUTAS) as LegalKind[]).filter((k) => k !== kind)
 
   return (
-    <div className="h-full overflow-y-auto bg-surface">
+    <div className="pt-safe h-full overflow-y-auto bg-surface">
       {/* Cabecera con la marca: estas páginas se abren desde un enlace suelto,
           a veces desde la ficha de la tienda, y sin ella no hay forma de saber
           de qué aplicación son. */}

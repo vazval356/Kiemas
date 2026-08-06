@@ -284,7 +284,7 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
   // ── Bienvenida ───────────────────────────────────────────────────────────
   if (!empezado) {
     return (
-      <div className="relative flex h-full items-center justify-center overflow-hidden bg-surface px-6">
+      <div className="pt-safe relative flex h-full items-center justify-center overflow-hidden bg-surface px-6">
         <div
           aria-hidden
           className="absolute inset-0"
@@ -320,7 +320,7 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
 
   // ── Recorrido ────────────────────────────────────────────────────────────
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-surface">
+    <div className="pt-safe relative flex h-full flex-col overflow-hidden bg-surface">
       <Trama />
 
       <button
