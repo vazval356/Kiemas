@@ -23,14 +23,14 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant/40 bg-surface-low/95 backdrop-blur pb-safe">
-      <div className="mx-auto flex max-w-md items-stretch justify-around px-2 py-1.5">
+      <div className="mx-auto flex max-w-md items-stretch justify-around px-2 py-1">
         {tabs.map(({ to, labelKey, icon: Icon }) => {
           // `/` casa con todo si se usa startsWith, así que la raíz se compara exacta.
           const active = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to)
           return (
-            <NavLink key={to} to={to} className="flex flex-col items-center gap-0.5 py-1 squish">
+            <NavLink key={to} to={to} className="flex flex-col items-center gap-0.5 py-0.5 squish">
               <span
-                className={`rounded-full px-3 py-1.5 transition-colors ${
+                className={`rounded-full px-3 py-1 transition-colors ${
                   active ? 'bg-primary-fixed text-primary' : 'text-on-surface-variant'
                 }`}
               >

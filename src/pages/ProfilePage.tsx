@@ -67,7 +67,7 @@ export function ProfilePage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-md px-4 pb-32 pt-4">
+      <div className="mx-auto max-w-md px-4 pb-32 pt-1">
         {/* ── Retrato ──────────────────────────────────────────────────── */}
         <header className="flex flex-col items-center text-center">
           <button
@@ -149,7 +149,7 @@ export function ProfilePage() {
         )}
 
         {/* ── Contadores ───────────────────────────────────────────────── */}
-        <section className="mt-6 grid grid-cols-3 gap-2">
+        <section className="mt-4 grid grid-cols-3 gap-2">
           {(
             [
               ['profile.statPlaces', stats?.places],

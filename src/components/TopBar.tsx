@@ -34,7 +34,7 @@ export function TopBar() {
 
   return (
     <div ref={boxRef} className="relative z-30 shrink-0">
-      <div className="flex items-center gap-2 px-3 py-2">
+      <div className="flex items-center gap-2 px-3 pb-1.5 pt-0.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
