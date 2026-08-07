@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { UsernameEditor } from '../components/UsernameEditor'
 import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, StoreIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, FollowedList, MyStats } from '../lib/types'
@@ -21,10 +20,7 @@ export function ProfilePage() {
   const [stats, setStats] = useState<MyStats | null>(null)
   const [entitlement, setEntitlement] = useState<Entitlement>('free')
   const [followed, setFollowed] = useState<FollowedList[]>([])
-  const [bio, setBio] = useState(profile?.bio ?? '')
-  const [editingBio, setEditingBio] = useState(false)
   const [error, setError] = useState('')
-  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     // Los tres son adorno de la cabecera: si alguno falla, el resto del perfil
@@ -34,35 +30,6 @@ export function ProfilePage() {
     api.listFollowedLists().then(setFollowed).catch(() => {})
   }, [api])
 
-  // El perfil puede recargarse desde fuera (al canjear un código, por ejemplo),
-  // y entonces la frase en edición debe seguir a la que llega.
-  useEffect(() => {
-    if (!editingBio) setBio(profile?.bio ?? '')
-  }, [profile?.bio, editingBio])
-
-  async function saveBio() {
-    setEditingBio(false)
-    if (bio === profile?.bio) return
-    try {
-      await api.updateProfile({ bio })
-      await refreshSpaces()
-    } catch (e) {
-      setError(errorMessage(e, t('common.error')))
-      setBio(profile?.bio ?? '')
-    }
-  }
-
-  async function pickAvatar(file: File | undefined) {
-    if (!file) return
-    setError('')
-    try {
-      await api.setAvatar(file)
-      await refreshSpaces()
-    } catch (e) {
-      setError(errorMessage(e, t('common.error')))
-    }
-  }
-
   const initial = (profile?.displayName ?? '?').slice(0, 1).toUpperCase()
 
   return (
@@ -70,10 +37,9 @@ export function ProfilePage() {
       <div className="mx-auto max-w-md px-4 pb-32 pt-1">
         {/* ── Retrato ──────────────────────────────────────────────────── */}
         <header className="flex flex-col items-center text-center">
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            aria-label={t('profile.changeAvatar')}
+          <Link
+            to="/profile/edit"
+            aria-label={t('profile.edit')}
             className="relative rounded-full p-1 squish"
             // El anillo del diseño: un degradado que rodea el retrato. Va como
             // fondo del contenedor y el retrato deja ver un borde blanco.
@@ -90,7 +56,7 @@ export function ProfilePage() {
                 {initial}
               </span>
             )}
-          </button>
+          </Link>
           {/* Distintivo de nivel, montado sobre el retrato como en el diseño.
               Solo si hay algo que enseñar: una insignia que pone «GRATIS» no
               es un distintivo, es un recordatorio de lo que no tienes. */}
@@ -102,44 +68,25 @@ export function ProfilePage() {
             </span>
           )}
 
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => void pickAvatar(e.target.files?.[0])}
-          />
-
           <h1 className="mt-3 font-display text-2xl font-bold text-on-surface">
             {profile?.displayName ?? '—'}
           </h1>
-          <UsernameEditor />
+          <p className="text-sm text-on-surface-variant">@{profile?.username ?? '—'}</p>
 
-          {/* La frase se edita en el sitio, sin abrir otra pantalla: son 160
-              caracteres, y mandar a alguien a un formulario aparte para eso
-              hace que no la rellene nadie. */}
-          {editingBio ? (
-            <textarea
-              autoFocus
-              value={bio}
-              maxLength={160}
-              rows={2}
-              onChange={(e) => setBio(e.target.value)}
-              onBlur={() => void saveBio()}
-              placeholder={t('profile.bioPlaceholder')}
-              className="kd-input mt-2 resize-none text-center text-sm"
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => setEditingBio(true)}
-              className={`mt-2 max-w-full rounded-control px-3 py-1 text-sm squish ${
-                profile?.bio ? 'text-on-surface-variant' : 'text-outline italic'
-              }`}
-            >
-              {profile?.bio || t('profile.bioEmpty')}
-            </button>
+          {profile?.bio && (
+            <p className="mt-2 max-w-xs text-sm text-on-surface-variant">{profile.bio}</p>
           )}
+
+          {/* Un botón, y no edición en el sitio. Antes la foto se cambiaba
+              tocando el retrato y la frase tocando el texto gris, sin nada que
+              lo anunciara: quien no lo probaba por casualidad no llegaba a
+              saber que se podía. */}
+          <Link
+            to="/profile/edit"
+            className="mt-3 rounded-full border border-outline-variant px-4 py-1.5 text-sm font-semibold text-on-surface squish"
+          >
+            {t('profile.edit')}
+          </Link>
         </header>
 
         {error && (

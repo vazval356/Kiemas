@@ -19,6 +19,7 @@ import { LegalPage } from './pages/LegalPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
 import { OnboardingPage } from './pages/OnboardingPage'
+import { EditProfilePage } from './pages/EditProfilePage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
 import { PlaceFormPage } from './pages/PlaceFormPage'
 import { PlanDetailPage } from './pages/PlanDetailPage'
@@ -45,6 +46,7 @@ const FULL_SCREEN = [
   '/edit/',
   '/place/',
   '/settings',
+  '/profile/edit',
   '/spaces/',
   '/plan/',
   '/collections',
@@ -69,6 +71,20 @@ const FULL_SCREEN = [
  */
 function Welcome({ onDone }: { onDone: () => void }) {
   const { api, refreshSpaces } = useApp()
+  // Primero el perfil, después el recorrido.
+  //
+  // El orden importa: cuando termina la presentación, la persona entra en un
+  // grupo y aparece ante los demás con el @usuario que le generó el sistema a
+  // partir de su correo. Pedirlo antes, cuando todavía no la ha visto nadie, es
+  // el único momento en que cambiarlo no cuesta nada.
+  //
+  // No hace falta una columna nueva para saber si ya pasó por aquí: se apoya en
+  // el mismo `onboardedAt` que ya gobierna la bienvenida.
+  const [perfilHecho, setPerfilHecho] = useState(false)
+
+  if (!perfilHecho) {
+    return <EditProfilePage mode="setup" onDone={() => setPerfilHecho(true)} />
+  }
 
   return (
     <OnboardingPage
@@ -150,6 +166,7 @@ function Shell() {
         <Route path="/spaces" element={<SpacesPage />} />
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/edit" element={<EditProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
         <Route path="/welcome" element={<WelcomeRoute />} />
