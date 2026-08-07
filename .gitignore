@@ -43,3 +43,5 @@ supabase/.temp
 supabase/.branches
 
 serviceAccount.json
+# Contraseñas del almacén de claves de Android.
+android/keystore.properties

@@ -68,12 +68,13 @@ que el fallo pase desapercibido.
 
 ### 2. Enlaces profundos (cuando tengas dominio)
 
-El `AndroidManifest.xml` ya declara el filtro para `https://kopasymas.vercel.app`. Para
+El `AndroidManifest.xml` ya declara el filtro para `https://kiemas.com` y para el
+dominio antiguo de Vercel, que se mantiene por los enlaces ya repartidos. Para
 que Android lo verifique y abra la app en vez del navegador, hay que publicar en
 el dominio:
 
 ```
-https://kopasymas.vercel.app/.well-known/assetlinks.json
+https://kiemas.com/.well-known/assetlinks.json
 ```
 
 con la huella SHA-256 del certificado con el que firmes. La sacas así:
@@ -88,6 +89,72 @@ nombre, es la identidad con la que Google Play reconoce que una actualización
 viene de ti. Lo único que importa es que la huella no cambie, porque es la que
 está publicada en `assetlinks.json`. Regenerarlo o cambiarle el alias no aporta
 nada y sí puede dejarte sin poder actualizar la app.
+
+### ⚠️ La huella que va en `assetlinks.json` NO es la de tu almacén
+
+Esto es lo que rompe los enlaces profundos **después** de publicar, cuando ya
+funcionaban en las pruebas locales.
+
+Al subir la app, Google activa por defecto **Play App Signing**: se queda con
+una clave propia y **vuelve a firmar** la app con ella antes de entregarla. Tu
+`kedada.keystore` pasa a ser solo la *clave de subida*, la que demuestra que el
+paquete lo mandas tú.
+
+Consecuencia: la app que instala la gente desde Play está firmada por Google, no
+por ti. Si en `assetlinks.json` está la huella de tu almacén, Android compara y
+no coincide, así que **los enlaces dejan de abrir la app para todo el mundo**
+mientras siguen funcionando en el APK que compilas en casa.
+
+La huella buena la da Play Console, después de crear la app:
+
+**Play Console → tu app → Test and release → Setup → App integrity →
+App signing key certificate → SHA-256 certificate fingerprint**
+
+Esa es la que tiene que estar en `public/.well-known/assetlinks.json`.
+
+Lo más cómodo es publicar **las dos**, la de Google y la tuya de subida: así
+funciona tanto lo instalado desde Play como lo que compiles en local para
+probar. El fichero admite varias:
+
+```json
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kiemas.app",
+      "sha256_cert_fingerprints": [
+        "HUELLA_DE_GOOGLE_PLAY",
+        "HUELLA_DE_TU_ALMACEN"
+      ]
+    }
+  }
+]
+```
+
+Play Console tiene además, en esa misma pantalla, un botón para comprobar si el
+`assetlinks.json` publicado es correcto. Úsalo antes de dar nada por bueno.
+
+### Configurar la firma
+
+Las contraseñas van en `android/keystore.properties`, que **no está en el
+repositorio**. Cópialo de la plantilla y rellénalo:
+
+```bash
+cp android/keystore.properties.example android/keystore.properties
+```
+
+Si ese fichero no existe, la compilación de release sale sin firmar en lugar de
+fallar: así quien clone el proyecto puede compilar en depuración sin tener el
+almacén.
+
+Para generar el paquete que se sube a Play:
+
+```bash
+npm run build && npx cap sync android && cd android && ./gradlew bundleRelease
+```
+
+El `.aab` queda en `android/app/build/outputs/bundle/release/`.
 
 Datos que hacen falta al configurar la firma de release:
 
