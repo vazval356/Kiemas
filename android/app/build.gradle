@@ -34,7 +34,11 @@ android {
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
-                storeFile file(keystoreProperties['storeFile'])
+                // `rootProject.file` y no `file`: dentro de app/build.gradle,
+                // `file()` resuelve desde `android/app/`, así que `../algo`
+                // apuntaría a `android/algo` y no a la raíz del proyecto, que
+                // es donde vive el almacén y lo que dice la plantilla.
+                storeFile rootProject.file(keystoreProperties['storeFile'])
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
