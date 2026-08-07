@@ -160,13 +160,19 @@ Datos que hacen falta al configurar la firma de release:
 
 | | |
 |---|---|
-| Fichero | `kedada.keystore` |
-| Alias | `kedada` |
+| Fichero | `kiemas.keystore` |
+| Alias | `kiemas` |
 | Huella SHA-256 | la publicada en `public/.well-known/assetlinks.json` |
 | Válido hasta | diciembre de 2053 (Play exige al menos octubre de 2033) |
 
-El certificado lleva `OU=Kedada` en el titular, del nombre anterior. No se puede
-cambiar y da igual: ese campo no aparece en Play Store ni lo ve ningún usuario.
+El almacén anterior, `kedada.keystore`, quedó inservible al perderse su
+contraseña. No tuvo consecuencias porque la app no se había publicado todavía:
+un almacén solo es irreemplazable a partir de la primera subida a Play. Se
+generó uno nuevo, ya con el nombre correcto en el titular.
+
+⚠️ **A partir de la primera subida esto deja de ser recuperable.** Perder
+`kiemas.keystore` o su contraseña significa no poder actualizar nunca más la
+app publicada. Ni Google puede arreglarlo.
 
 Mientras no exista, Android no verifica nada y los enlaces siguen abriéndose en
 el navegador: no rompe nada, simplemente no llega a activarse.
@@ -175,7 +181,7 @@ el navegador: no rompe nada, simplemente no llega a activarse.
 
 Google Play exige un APK firmado con un certificado propio.
 
-Este paso **ya está hecho**: el certificado existe en `kedada.keystore` y su
+Este paso **ya está hecho**: el certificado existe en `kiemas.keystore` y su
 huella está publicada. El comando queda aquí solo por si algún día hubiera que
 empezar de cero con un proyecto nuevo.
 

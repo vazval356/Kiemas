@@ -1,11 +1,13 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.kiemas.app",
       "sha256_cert_fingerprints": [
-        "C0:C5:1A:32:56:78:16:1A:6D:F7:D2:03:9A:C3:BF:A9:21:45:26:77:78:83:21:FC:D4:84:51:46:E7:57:87:D2"
+        "5F:17:95:AF:C7:32:5A:A9:CF:F1:0A:DD:30:29:17:AE:2F:9C:66:7E:F6:F9:74:C9:A3:D5:14:A3:3E:79:14:C5"
       ]
     }
   }
