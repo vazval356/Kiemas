@@ -319,6 +319,7 @@ const privacidadEs: LegalDoc = {
         '· RevenueCat: gestión del estado de las suscripciones, solo si te suscribes.',
         '· Resend: envío de correos transaccionales de la cuenta, como el restablecimiento de contraseña.',
         'Algunos de estos proveedores tratan datos fuera del Espacio Económico Europeo. Esas transferencias se amparan en las cláusulas contractuales tipo aprobadas por la Comisión Europea.',
+        'Las fotos merecen una explicación aparte. Se guardan en un almacén de archivos donde cada fichero tiene una dirección con un identificador aleatorio: no existe forma de listar el contenido ni de adivinar direcciones, pero quien tenga el enlace exacto puede abrir la imagen sin necesidad de cuenta. Es una decisión consciente y no un descuido: las direcciones que caducan romperían las fotos ya cargadas en el mapa y harían imposibles las listas públicas, que existen precisamente para verse sin cuenta. Si una foto te resulta delicada, tenlo en cuenta antes de subirla.',
         'Al usar el mapa y el buscador de direcciones, tu dispositivo consulta directamente a OpenFreeMap, Photon (Komoot) y Nominatim (OpenStreetMap). Reciben la búsqueda o la zona que estás viendo, pero no tu identidad ni tus datos de cuenta. Si centras el mapa en tu ubicación, esa zona pasa a ser la que se pide, igual que si hubieras llegado hasta ahí arrastrando el mapa con el dedo.',
       ],
     },
@@ -367,6 +368,7 @@ const privacidadEs: LegalDoc = {
       body: [
         'Aplicamos medidas de seguridad técnicas y organizativas para proteger la información frente a accesos no autorizados o pérdidas.',
         'La comunicación entre tu dispositivo y la base de datos viaja siempre cifrada mediante protocolos seguros (HTTPS/TLS). Los datos almacenados cuentan con cifrado en reposo y las contraseñas se procesan mediante algoritmos de cifrado unidireccional (hashing), por lo que nunca son accesibles en texto plano.',
+        'No se usa cifrado de extremo a extremo. Eso significa que el contenido que guardas —sitios, notas, fotos— se almacena de forma que la infraestructura puede procesarlo, y no cifrado con una clave que solo tengas tú. Se dice aquí para que no haya equívoco: si lo que buscas es que nadie salvo tú pueda leerlo bajo ninguna circunstancia, esta aplicación no ofrece esa garantía.',
       ],
     },
     {
@@ -422,6 +424,7 @@ const privacidadEn: LegalDoc = {
         '· RevenueCat: subscription status management, only if you subscribe.',
         '· Resend: transactional account emails, such as password recovery.',
         'Some of these providers process data outside the European Economic Area. Those transfers rely on the standard contractual clauses approved by the European Commission.',
+        'Photos deserve a separate explanation. They are kept in a file store where every file has an address containing a random identifier: there is no way to list the contents or guess addresses, but anyone holding the exact link can open the image without needing an account. This is a deliberate choice, not an oversight: expiring addresses would break photos already loaded on the map and would make public lists impossible, and those exist precisely to be seen without an account. If a photo feels sensitive to you, bear that in mind before uploading it.',
         'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested — exactly as if you had panned there with your finger.',
       ],
     },
@@ -470,6 +473,7 @@ const privacidadEn: LegalDoc = {
       body: [
         'We apply technical and organisational security measures to protect information against unauthorised access or loss.',
         'Communication between your device and the database always travels encrypted over secure protocols (HTTPS/TLS). Stored data is encrypted at rest, and passwords are processed with one-way hashing algorithms, so they are never accessible in plain text.',
+        'End-to-end encryption is not used. That means the content you save — places, notes, photos — is stored in a way the infrastructure can process, not encrypted with a key only you hold. It is stated here so there is no misunderstanding: if what you need is that nobody but you can read it under any circumstances, this app does not offer that guarantee.',
       ],
     },
     {
