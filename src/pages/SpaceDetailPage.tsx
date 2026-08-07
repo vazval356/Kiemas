@@ -48,6 +48,9 @@ export function SpaceDetailPage() {
   const coverRef = useRef<HTMLInputElement>(null)
   // Foto elegida esperando encuadre. Hasta confirmar, no se sube nada.
   const [cropping, setCropping] = useState<File | null>(null)
+  // El ajuste personal del color del grupo empieza plegado: lo usa poca
+  // gente y, abierto, competía con los otros dos selectores de la pantalla.
+  const [ajustarColor, setAjustarColor] = useState(false)
   const cols = spaceColors(color)
 
   const [myColor, setMyColor] = useState(
@@ -312,16 +315,25 @@ export function SpaceDetailPage() {
               ))}
             </div>
 
-            {/* ── Mi color para este espacio ──────────────────────────────
-                Va justo debajo del del grupo porque es la misma idea vista
-                desde el otro lado, y separarlo en otra pantalla haría que nadie
-                lo encontrara. La diferencia queda dicha en el propio texto: el
-                de arriba lo ven todos, este solo tú. */}
-            <div className="mt-4 rounded-card bg-surface-container p-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-                {t('space.mySpaceColor')}
-              </p>
-              <p className="mt-0.5 text-xs text-on-surface-variant">{t('space.mySpaceColorHint')}</p>
+            {/* ── Ajustar el color solo para mí ───────────────────────────
+                Plegado, y detrás de una pregunta en vez de un título.
+                Desplegado competía con los otros dos selectores de colores de
+                la pantalla, y sus nombres —«Mi color para este espacio» junto a
+                «Mi color»— eran indistinguibles de un vistazo.
+                Planteado como pregunta se entiende para qué sirve: es un
+                arreglo para cuando el grupo eligió un color que no distingues,
+                no una preferencia más que rellenar. */}
+            <button
+              type="button"
+              onClick={() => setAjustarColor((v) => !v)}
+              className="mt-3 text-xs font-semibold text-primary squish"
+            >
+              {ajustarColor ? t('common.close') : t('space.mySpaceColorOpen')}
+            </button>
+
+            {ajustarColor && (
+            <div className="mt-2 rounded-card bg-surface-container p-3 animate-pop">
+              <p className="text-xs text-on-surface-variant">{t('space.mySpaceColorHint')}</p>
 
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
                 <label className="relative flex size-9 cursor-pointer items-center justify-center rounded-control bg-surface-lowest squish">
@@ -365,6 +377,7 @@ export function SpaceDetailPage() {
                 </button>
               )}
             </div>
+            )}
 
             <div className="mt-3 grid grid-cols-8 gap-1.5">
               {/* Sin emoji: con una foto de portada, el emoji se planta en
