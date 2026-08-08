@@ -47,6 +47,19 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        // Páginas que NO debe secuestrar el service worker.
+        //
+        // Su regla de respaldo devuelve el armazón de la app ante cualquier
+        // navegación, que es lo que hace funcionar las rutas del cliente. El
+        // efecto secundario es que se traga también las páginas estáticas: a
+        // quien ya tuviera la app en caché, `/eliminar-cuenta.html` le abría el
+        // mapa, mientras que a quien llegaba de nuevo le salía bien. Un fallo
+        // que solo le ocurre a quien ya usa la app es de los que no se
+        // reproducen cuando vas a comprobarlos.
+        //
+        // Esa página la exige Google Play y la enlaza desde la ficha de la
+        // tienda, así que tiene que abrirse siempre.
+        navigateFallbackDenylist: [/^\/eliminar-cuenta\.html$/, /^\/\.well-known\//],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
