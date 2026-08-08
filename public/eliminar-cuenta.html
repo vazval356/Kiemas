@@ -1,0 +1,169 @@
+<!doctype html>
+<!--
+  Página de eliminación de cuenta · Kiemas
+
+  Google Play la exige a toda app que permita crear cuentas, y la enlaza desde
+  la ficha de la tienda. Tiene tres requisitos: nombrar la app, explicar los
+  pasos, y decir qué se borra y qué se conserva.
+
+  Es HTML ESTÁTICO y no una ruta de la aplicación, y eso es lo importante. La
+  app es de una sola página con rutas de fragmento (`/#/…`), así que su
+  contenido solo existe después de ejecutar JavaScript: quien la pida sin
+  navegador —los revisores automáticos de Google, entre otros— recibe una página
+  vacía. Comprobado. Una URL así habría hecho fallar la revisión sin decir por
+  qué.
+
+  Si cambia lo que se borra al eliminar una cuenta, hay que actualizar esto Y la
+  política de privacidad. Son dos sitios y se desincronizan solos.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Eliminar tu cuenta de Kiemas</title>
+    <link rel="icon" href="/icons/icon-192.png" />
+    <style>
+      :root {
+        --fondo: #f7f9fb;
+        --tarjeta: #ffffff;
+        --texto: #191c1e;
+        --suave: #464554;
+        --linea: #c7c4d7;
+        --marca: #4648d4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fondo: #12121a;
+          --tarjeta: #1c1c26;
+          --texto: #e6e5f0;
+          --suave: #a09fb0;
+          --linea: #2e2e3d;
+          --marca: #c0c1ff;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--fondo);
+        color: var(--texto);
+        font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .marco { max-width: 42rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+      header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
+      header img { width: 2.25rem; height: 2.25rem; border-radius: 0.6rem; }
+      header span { font-weight: 700; font-size: 1.125rem; }
+      h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 0.75rem; }
+      h2 { font-size: 1.125rem; margin: 2.25rem 0 0.5rem; }
+      p, li { color: var(--suave); }
+      ol, ul { padding-left: 1.25rem; }
+      li { margin: 0.35rem 0; }
+      .tarjeta {
+        background: var(--tarjeta);
+        border: 1px solid var(--linea);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin-top: 1rem;
+      }
+      a { color: var(--marca); }
+      strong { color: var(--texto); }
+      footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--linea); font-size: 0.875rem; }
+      .en { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--linea); }
+    </style>
+  </head>
+  <body>
+    <div class="marco">
+      <header>
+        <img src="/icons/icon-192.png" alt="" />
+        <span>Kiemas</span>
+      </header>
+
+      <h1>Eliminar tu cuenta de Kiemas</h1>
+      <p>
+        Puedes borrar tu cuenta de <strong>Kiemas</strong> tú mismo, desde la propia aplicación,
+        sin pedírnoslo y sin esperar a que nadie lo apruebe.
+      </p>
+
+      <h2>Cómo se hace</h2>
+      <div class="tarjeta">
+        <ol>
+          <li>Abre Kiemas e inicia sesión.</li>
+          <li>Ve a la pestaña <strong>Perfil</strong>.</li>
+          <li>Entra en <strong>Ajustes y privacidad</strong>.</li>
+          <li>Baja hasta <strong>Borrar mi cuenta</strong> y confirma.</li>
+        </ol>
+        <p style="margin-bottom: 0">
+          El borrado es inmediato. No hay periodo de gracia ni forma de deshacerlo, así que si
+          quieres conservar lo que has guardado, usa antes <strong>Descargar mis datos</strong>,
+          en esa misma pantalla.
+        </p>
+      </div>
+
+      <h2>Qué se borra</h2>
+      <ul>
+        <li>Tu perfil: nombre, @usuario, foto y descripción.</li>
+        <li>Tu correo electrónico y tus credenciales de acceso.</li>
+        <li>Tu espacio personal y todo lo que contiene: sitios, fotos, notas y planes.</li>
+        <li>Tus puntuaciones y tus respuestas a los planes.</li>
+        <li>El identificador de tu dispositivo para notificaciones.</li>
+        <li>Tu suscripción dentro de Kiemas, si la tenías.</li>
+      </ul>
+
+      <h2>Qué se conserva, y por qué</h2>
+      <p>
+        Lo que hayas aportado a un <strong>espacio de grupo</strong> —sitios, comentarios o
+        planes— permanece con ese grupo, pero <strong>deja de estar asociado a tu nombre</strong>.
+      </p>
+      <p>
+        No es una excepción cómoda: borrar tu cuenta no puede vaciarle el mapa a las otras
+        personas del grupo, que no han pedido nada. Lo que se elimina es el vínculo contigo, que
+        es lo que hace que ese contenido siga siendo un dato personal tuyo.
+      </p>
+      <p>
+        Si tu suscripción se contrató a través de Google Play o la App Store, cancélala también
+        allí: el cobro lo gestiona la tienda y borrar la cuenta de Kiemas no la detiene.
+      </p>
+
+      <h2>Plazos</h2>
+      <p>
+        La eliminación se aplica de inmediato en la base de datos. Las copias de seguridad de la
+        infraestructura pueden conservar restos hasta <strong>30 días</strong>, tras los cuales se
+        sobrescriben automáticamente. Esas copias no son accesibles ni consultables.
+      </p>
+
+      <h2>Si no puedes entrar en la aplicación</h2>
+      <p>
+        Escribe a <a href="mailto:hola@kiemas.com">hola@kiemas.com</a> desde la dirección de
+        correo de tu cuenta y la eliminaremos por ti.
+      </p>
+
+      <div class="en">
+        <h2 style="margin-top: 0">English</h2>
+        <p>
+          You can delete your <strong>Kiemas</strong> account yourself: open the app, go to
+          <strong>Profile → Settings and privacy → Delete my account</strong>, and confirm.
+          Deletion is immediate and cannot be undone; use <strong>Download my data</strong> first
+          if you want to keep anything.
+        </p>
+        <p>
+          Deleted: your profile, email and credentials, your personal space and everything in it,
+          your ratings and plan responses, your notification device identifier and your Kiemas
+          subscription record. Kept: what you contributed to group spaces, no longer linked to
+          your name — deleting your account cannot empty other people’s maps. Infrastructure
+          backups may retain traces for up to 30 days before being overwritten.
+        </p>
+        <p>
+          If you cannot sign in, write to <a href="mailto:hola@kiemas.com">hola@kiemas.com</a>
+          from your account’s email address.
+        </p>
+      </div>
+
+      <footer>
+        <p style="margin: 0">
+          Kiemas · <a href="https://kiemas.com">kiemas.com</a> ·
+          <a href="https://kiemas.com/#/legal/privacidad">Política de privacidad</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
