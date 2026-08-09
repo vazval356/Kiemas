@@ -187,7 +187,11 @@ export function MapPage() {
     }
 
     for (const place of visiblePlaces) {
-      const emoji = categories.find((c) => c.id === place.categoryId)?.emoji ?? '📍'
+      // Sin categoría no va nada dentro. El respaldo era 📍, y una chincheta
+      // dibujada dentro de una chincheta no añade información: repite la forma
+      // que ya tiene el marcador y ensucia justo la parte que sí dice algo, que
+      // es el color del espacio.
+      const emoji = categories.find((c) => c.id === place.categoryId)?.emoji ?? ''
       let marker = markers.get(place.id)
       if (!marker) {
         // El pin visual va DENTRO de un envoltorio sin transform propio.

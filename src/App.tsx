@@ -52,7 +52,6 @@ const FULL_SCREEN = [
   '/collections',
   '/activity',
   '/following',
-  '/explore',
   '/businesses',
   '/business/',
   '/claim/',
@@ -145,9 +144,16 @@ function Shell() {
 
   const isFullScreen = FULL_SCREEN.some((prefix) => location.pathname.startsWith(prefix))
 
+  // La cabecera dice de qué grupo es lo que estás viendo, así que solo tiene
+  // sentido donde lo que ves ES de un grupo. En el perfil salía «Grupo 3 · 2
+  // miembros» encima de TU perfil, que no es de nadie, y en Explorar encima de
+  // listas públicas que tampoco. Setenta píxeles y una pregunta de más en cada
+  // pantalla donde no significaba nada.
+  const conCabecera = ['/', '/list', '/calendar'].includes(location.pathname)
+
   return (
     <div className="pt-safe flex h-full flex-col">
-      {!isFullScreen && <TopBar />}
+      {!isFullScreen && conCabecera && <TopBar />}
       <Routes>
         <Route path="/" element={<MapPage />} />
         <Route path="/list" element={<ListPage />} />

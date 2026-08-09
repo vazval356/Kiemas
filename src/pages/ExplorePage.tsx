@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BackButton } from '../components/BackButton'
+
 import { CollectionIcon, SearchIcon } from '../components/icons'
 import type { ExploreList } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -71,9 +71,10 @@ export function ExplorePage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
-      <div className="mx-auto max-w-md px-4 pt-2">
-        <BackButton to="/profile" />
-
+      {/* Sin botón de volver: esto dejó de ser una pantalla de pila colgada del
+          perfil y pasó a ser una pestaña. Un «volver» en un destino de la barra
+          inferior no tiene a dónde ir. */}
+      <div className="mx-auto max-w-md px-4 pt-4">
         <h1 className="font-display text-2xl font-bold text-on-surface">{t('explore.title')}</h1>
         <p className="mt-0.5 text-sm text-on-surface-variant">{t('explore.subtitle')}</p>
 

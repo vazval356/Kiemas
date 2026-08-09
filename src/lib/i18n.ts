@@ -88,6 +88,7 @@ const es = {
   'nav.map': 'Mapa',
   'nav.calendar': 'Calendario',
   'nav.spaces': 'Espacios',
+  'nav.explore': 'Explorar',
   'nav.profile': 'Perfil',
   'nav.list': 'Lista',
 
@@ -105,7 +106,7 @@ const es = {
   'space.leave': 'Salir del espacio',
   'space.admin': 'Administrador',
   'space.member': 'Miembro',
-  'space.soloTitle': 'Modo en solitario',
+  'space.soloTitle': 'Solo tú',
   'space.soloBody':
     'Tus sitios privados, sin compartir con nadie. Siempre está aquí, no hace falta unirse a ningún grupo.',
   'space.lastAdmin': 'Nombra a otro administrador antes de salir.',
@@ -657,7 +658,7 @@ const es = {
   'spaces.active': '{count} activos',
   'spaces.activeOne': '1 activo',
   'spaces.addNew': 'Añadir un grupo',
-  'space.useSolo': 'Usar el modo en solitario',
+  'space.useSolo': 'Usar mi espacio personal',
   'space.inUse': 'Lo estás usando',
   'space.personalJourney': 'Tu espacio',
 
@@ -773,6 +774,7 @@ const en: Record<TranslationKey, string> = {
   'nav.map': 'Map',
   'nav.calendar': 'Calendar',
   'nav.spaces': 'Spaces',
+  'nav.explore': 'Explore',
   'nav.profile': 'Profile',
   'nav.list': 'List',
 
@@ -789,7 +791,7 @@ const en: Record<TranslationKey, string> = {
   'space.leave': 'Leave space',
   'space.admin': 'Admin',
   'space.member': 'Member',
-  'space.soloTitle': 'Solo mode',
+  'space.soloTitle': 'Just you',
   'space.soloBody':
     "Your private places, shared with nobody. It's always here — you don't need to join a group.",
   'space.lastAdmin': 'Name another admin before you leave.',
@@ -1314,7 +1316,7 @@ const en: Record<TranslationKey, string> = {
   'spaces.active': '{count} active',
   'spaces.activeOne': '1 active',
   'spaces.addNew': 'Add a group',
-  'space.useSolo': 'Use solo mode',
+  'space.useSolo': 'Use my personal space',
   'space.inUse': "You're using it",
   'space.personalJourney': 'Your space',
 

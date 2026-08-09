@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { BackButton } from '../components/BackButton'
 import { GroupIcon, UserIcon } from '../components/icons'
 import { spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
@@ -142,6 +143,11 @@ export function SpacesPage() {
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto max-w-md px-4 pb-32 pt-2">
+        {/* Esta pantalla dejó de ser una pestaña y ahora se llega desde el
+            perfil. Sin este botón, la única salida sería la barra de abajo, que
+            no lleva de vuelta a donde estabas. */}
+        <BackButton to="/profile" />
+
         <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">{t('spaces.title')}</h1>
 
         {/* ── Modo en solitario ──────────────────────────────────────────────

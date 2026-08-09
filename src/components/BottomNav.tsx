@@ -1,19 +1,28 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { useApp } from '../state/appState'
-import { CalendarIcon, GroupIcon, ListIcon, MapIcon, UserIcon } from './icons'
+import { CalendarIcon, ListIcon, MapIcon, SearchIcon, UserIcon } from './icons'
 import type { TranslationKey } from '../lib/i18n'
 
 /**
  * El sistema de diseño pide barra inferior con efecto vidrio sobre el mapa.
  *
  * Cinco destinos es el límite razonable en móvil: por encima, los rótulos
- * dejan de leerse.
+ * dejan de leerse. Y por eso ninguno puede estar de más.
+ *
+ * Aquí había una pestaña «Espacios» que hacía el mismo trabajo que el Perfil:
+ * los dos listaban tus grupos, y el Perfil además traía los botones de crear y
+ * unirse. Cambiar de grupo tampoco la necesitaba, porque el selector vive en la
+ * cabecera desde siempre.
+ *
+ * En su hueco entra Explorar, que estaba escondido detrás de un enlace de texto
+ * al final del Perfil. Es lo único de la app que puede traer a alguien que no
+ * conozca a nadie que ya la use, así que era justo lo que no podía estar ahí.
  */
 const tabs: { to: string; labelKey: TranslationKey; icon: typeof MapIcon }[] = [
   { to: '/', labelKey: 'nav.map', icon: MapIcon },
   { to: '/list', labelKey: 'nav.list', icon: ListIcon },
   { to: '/calendar', labelKey: 'nav.calendar', icon: CalendarIcon },
-  { to: '/spaces', labelKey: 'nav.spaces', icon: GroupIcon },
+  { to: '/explore', labelKey: 'nav.explore', icon: SearchIcon },
   { to: '/profile', labelKey: 'nav.profile', icon: UserIcon },
 ]
 
