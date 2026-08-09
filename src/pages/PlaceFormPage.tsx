@@ -282,18 +282,25 @@ export function PlaceFormPage() {
         phone,
         website,
       }
+      // Al terminar se vuelve al MAPA, no a la ficha del sitio, con el pin
+      // recién guardado seleccionado y la cámara encima. La ficha dejaba a la
+      // persona mirando otra vez lo que acababa de escribir, sin ver dónde ha
+      // caído, y para seguir usando la app había que dar dos pasos atrás.
+      //
+      // `replace` para que el botón de volver del móvil no devuelva al
+      // formulario ya enviado.
       if (existing) {
         await api.updatePlace(existing.id, input)
         await api.setPlaceTags(existing.id, tagIds)
         if (photoFiles.length > 0) await api.addPhotos(existing.id, photoFiles)
         await refresh()
-        navigate(`/place/${existing.id}`)
+        navigate(`/?place=${existing.id}`, { replace: true })
       } else {
         const created = await api.addPlace(activeSpace.id, input)
         if (tagIds.length > 0) await api.setPlaceTags(created.id, tagIds)
         if (photoFiles.length > 0) await api.addPhotos(created.id, photoFiles)
         await refresh()
-        navigate(`/place/${created.id}`)
+        navigate(`/?place=${created.id}`, { replace: true })
       }
     } catch (e) {
       // El tope de sitios se explica en vez de soltar el código del servidor, y

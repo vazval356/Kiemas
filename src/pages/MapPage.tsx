@@ -2,7 +2,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { spaceColors } from '../lib/spaceTheme'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { RouletteModal } from '../components/RouletteModal'
@@ -42,6 +42,7 @@ export function MapPage() {
   const fittedSpaceRef = useRef<string | null>(null)
   const meRef = useRef<maplibregl.Marker | null>(null)
 
+  const [searchParams, setSearchParams] = useSearchParams()
   const [mapReady, setMapReady] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -149,6 +150,36 @@ export function MapPage() {
       console.warn('No se pudo encuadrar el mapa:', e)
     }
   }, [mappablePlaces, position, mapReady, activeSpace])
+
+  // ── Llegar al mapa señalando un sitio concreto ───────────────────────────
+  //
+  // Al guardar un sitio se vuelve aquí con `?place=<id>`. El identificador va
+  // en la URL y no en el estado de la navegación para que aguante una recarga:
+  // en el móvil la app se reinicia sola cuando el sistema necesita memoria, y
+  // volver del formulario a un mapa centrado en cualquier parte es exactamente
+  // la sensación de que no se ha guardado nada.
+  //
+  // Se marca el espacio como ya encuadrado antes de mover la cámara: si no, el
+  // ajuste automático que mete todos los sitios en pantalla se dispararía justo
+  // después y desharía el acercamiento.
+  useEffect(() => {
+    const id = searchParams.get('place')
+    if (!id) return
+    const map = mapRef.current
+    if (!map || !mapReady) return
+
+    const sitio = places.find((p) => p.id === id)
+    if (!sitio || !hasValidCoords(sitio)) return
+
+    if (activeSpace) fittedSpaceRef.current = activeSpace.id
+    setSelectedId(id)
+    map.easeTo({ center: [sitio.lng, sitio.lat], zoom: 16, duration: 600 })
+
+    // Se limpia para que al recargar o al volver atrás no se repita el salto.
+    const resto = new URLSearchParams(searchParams)
+    resto.delete('place')
+    setSearchParams(resto, { replace: true })
+  }, [searchParams, setSearchParams, places, mapReady, activeSpace])
 
   // Al cambiar de espacio, lo seleccionado ya no pertenece a lo que se ve.
   useEffect(() => {

@@ -1099,6 +1099,14 @@ export const supabaseApi: DataApi = {
       followers: Number(r.followers ?? 0),
       views: Number(r.view_count ?? 0),
       following: Boolean(r.following),
+      preview: Array.isArray(r.preview) ? (r.preview as string[]) : [],
+      // Postgres devuelve las medias como `numeric`, y supabase-js las entrega
+      // en texto para no perder precisión. Sin el Number() la resta de la
+      // distancia concatenaría cadenas.
+      center:
+        r.center_lat === null || r.center_lat === undefined
+          ? null
+          : { lat: Number(r.center_lat), lng: Number(r.center_lng) },
     }))
   },
 

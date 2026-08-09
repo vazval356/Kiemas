@@ -490,6 +490,22 @@ export interface ExploreList {
   views: number
   /** Si la persona conectada ya la sigue. */
   following: boolean
+  /**
+   * Los tres primeros sitios, por nombre.
+   *
+   * Es lo que de verdad decide si alguien sigue una lista. El título y la
+   * descripción los escribe quien la publica y acaban sonando todos igual;
+   * «Casa Dani, Bar Tomate, La Tasquita» se entiende sin leer nada más.
+   */
+  preview: string[]
+  /**
+   * El centro de la lista, para calcular a qué distancia cae de quien mira.
+   *
+   * El cálculo se hace en el dispositivo con la posición que ya tiene: el
+   * servidor no llega a saber dónde está nadie. `null` si la lista no tiene
+   * sitios con coordenadas.
+   */
+  center: { lat: number; lng: number } | null
 }
 
 /**
