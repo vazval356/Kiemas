@@ -8,11 +8,12 @@ import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
-const RESPONSES: { value: AttendeeResponse; key: 'plan.going' | 'plan.maybe' | 'plan.notGoing' }[] = [
-  { value: 'going', key: 'plan.going' },
-  { value: 'maybe', key: 'plan.maybe' },
-  { value: 'not_going', key: 'plan.notGoing' },
-]
+const RESPONSES: { value: AttendeeResponse; key: 'plan.going' | 'plan.maybe' | 'plan.notGoing' }[] =
+  [
+    { value: 'going', key: 'plan.going' },
+    { value: 'maybe', key: 'plan.maybe' },
+    { value: 'not_going', key: 'plan.notGoing' },
+  ]
 
 const VOTES: { value: DateVote; key: 'plan.voteYes' | 'plan.voteMaybe' | 'plan.voteNo' }[] = [
   { value: 'yes', key: 'plan.voteYes' },

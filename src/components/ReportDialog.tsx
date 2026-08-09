@@ -62,7 +62,9 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
           <CloseIcon />
         </button>
 
-        <h2 className="font-display text-xl font-bold text-on-surface">{t('settings.reportTitle')}</h2>
+        <h2 className="font-display text-xl font-bold text-on-surface">
+          {t('settings.reportTitle')}
+        </h2>
         <p className="mt-0.5 text-sm text-on-surface-variant">{targetName}</p>
 
         {sent ? (

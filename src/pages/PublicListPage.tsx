@@ -140,10 +140,7 @@ export function PublicListPage() {
       <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
         <div className="text-4xl">🔗</div>
         <p className="max-w-sm text-on-surface-variant">{error}</p>
-        <a
-          href="/"
-          className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary"
-        >
+        <a href="/" className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary">
           {t('app.name')}
         </a>
       </div>
@@ -171,9 +168,7 @@ export function PublicListPage() {
           <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface">
             {list.name}
           </h1>
-          {list.description && (
-            <p className="mt-1.5 text-on-surface-variant">{list.description}</p>
-          )}
+          {list.description && <p className="mt-1.5 text-on-surface-variant">{list.description}</p>}
           <p className="mt-2 text-sm text-on-surface-variant">
             {t('public.by', { space: list.spaceName })}
           </p>
@@ -189,7 +184,11 @@ export function PublicListPage() {
                 className="overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]"
               >
                 {place.photos.length > 0 ? (
-                  <img src={place.photos[0]} alt={place.name} className="h-40 w-full object-cover" />
+                  <img
+                    src={place.photos[0]}
+                    alt={place.name}
+                    className="h-40 w-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-24 items-center justify-center bg-gradient-to-br from-primary-fixed to-surface-highest text-4xl">
                     {place.emoji ?? '📍'}

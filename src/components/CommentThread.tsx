@@ -55,9 +55,7 @@ export function CommentThread({ placeId }: { placeId: string }) {
     } catch (e) {
       const code = rpcErrorCode(e)
       setError(
-        code === 'comment_too_deep'
-          ? t('comment.plural')
-          : errorMessage(e, t('common.error'))
+        code === 'comment_too_deep' ? t('comment.plural') : errorMessage(e, t('common.error'))
       )
     } finally {
       setBusy(false)
@@ -83,7 +81,9 @@ export function CommentThread({ placeId }: { placeId: string }) {
   function Bubble({ comment, isReply = false }: { comment: Comment; isReply?: boolean }) {
     const mine = comment.userId === profile?.id
     return (
-      <div className={`rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] ${isReply ? 'ml-8' : ''}`}>
+      <div
+        className={`rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] ${isReply ? 'ml-8' : ''}`}
+      >
         <div className="flex items-center gap-2">
           <span
             className="flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"

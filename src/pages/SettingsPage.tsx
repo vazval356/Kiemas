@@ -166,18 +166,18 @@ export function SettingsPage() {
               ['/legal/terminos', 'legal.terms'],
               ['/legal/aviso', 'legal.notice'],
             ] as const
-          ).map(
-            ([to, key]) => (
-              <Link
-                key={to}
-                to={to}
-                className="flex items-center rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
-              >
-                <span className="flex-1">{t(key)}</span>
-                <span className="text-on-surface-variant" aria-hidden>›</span>
-              </Link>
-            )
-          )}
+          ).map(([to, key]) => (
+            <Link
+              key={to}
+              to={to}
+              className="flex items-center rounded-control border border-outline-variant px-4 py-3 font-semibold text-on-surface squish"
+            >
+              <span className="flex-1">{t(key)}</span>
+              <span className="text-on-surface-variant" aria-hidden>
+                ›
+              </span>
+            </Link>
+          ))}
         </section>
 
         {/* ── Personas bloqueadas ────────────────────────────────────────── */}
@@ -232,7 +232,9 @@ export function SettingsPage() {
             className="w-full rounded-control border border-outline-variant px-4 py-3 text-left squish disabled:opacity-50"
           >
             <span className="block font-semibold text-on-surface">{t('settings.exportData')}</span>
-            <span className="block text-sm text-on-surface-variant">{t('settings.exportHint')}</span>
+            <span className="block text-sm text-on-surface-variant">
+              {t('settings.exportHint')}
+            </span>
           </button>
 
           <div className="mt-3 rounded-control border border-error/40 px-4 py-3">

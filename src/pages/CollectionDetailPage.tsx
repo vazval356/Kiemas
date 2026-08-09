@@ -112,7 +112,11 @@ export function CollectionDetailPage() {
             en un ajuste aparte: es donde se mira cuando se quiere cambiar. */}
         <div className="relative mb-4 flex aspect-[16/9] items-center justify-center overflow-hidden rounded-card bg-primary-fixed">
           {collection.coverUrl ? (
-            <img src={collection.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+            <img
+              src={collection.coverUrl}
+              alt=""
+              className="absolute inset-0 size-full object-cover"
+            />
           ) : (
             <CollectionIcon className="size-10 text-primary/70" />
           )}
@@ -136,7 +140,9 @@ export function CollectionDetailPage() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void run(() => api.setCollectionCover(collection.id, activeSpace?.id ?? '', null))}
+                onClick={() =>
+                  void run(() => api.setCollectionCover(collection.id, activeSpace?.id ?? '', null))
+                }
                 className="rounded-full bg-surface-lowest/90 px-3 py-1.5 text-xs font-semibold text-error squish disabled:opacity-50"
               >
                 {t('common.delete')}
@@ -223,7 +229,9 @@ export function CollectionDetailPage() {
                     <button
                       type="button"
                       disabled={busy}
-                      onClick={() => void run(() => api.addPlaceToCollection(collection.id, place.id))}
+                      onClick={() =>
+                        void run(() => api.addPlaceToCollection(collection.id, place.id))
+                      }
                       className="flex w-full items-center gap-2.5 rounded-control bg-surface-lowest p-2.5 text-left squish disabled:opacity-50"
                     >
                       <span>{categoryById.get(place.categoryId ?? '')?.emoji ?? '📍'}</span>
@@ -278,7 +286,9 @@ export function CollectionDetailPage() {
               <button
                 type="button"
                 disabled={busy || inside.length === 0}
-                onClick={() => void run(() => api.shareCollection(collection.id, expiry).then(() => {}))}
+                onClick={() =>
+                  void run(() => api.shareCollection(collection.id, expiry).then(() => {}))
+                }
                 className="mt-3 w-full rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-40"
               >
                 {t('share.create')}
@@ -299,7 +309,9 @@ export function CollectionDetailPage() {
                   <CopyIcon className="size-4" />
                 </button>
               </div>
-              {copied && <p className="mt-1.5 text-xs font-medium text-primary">{t('share.copied')}</p>}
+              {copied && (
+                <p className="mt-1.5 text-xs font-medium text-primary">{t('share.copied')}</p>
+              )}
               <p className="mt-1.5 text-xs text-on-surface-variant">
                 {t('share.views', { count: share.viewCount })}
                 {share.expiresAt

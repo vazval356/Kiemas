@@ -163,8 +163,12 @@ export function ActivityPage() {
                   actorName={actor(entry.actorId)?.displayName ?? t('activity.someone')}
                   actorColor={actor(entry.actorId)?.color ?? '#767586'}
                   actorAvatar={actor(entry.actorId)?.avatarUrl || undefined}
-                  place={entry.objectType === 'place' ? placeById.get(entry.objectId ?? '') : undefined}
-                  plan={entry.objectType === 'plan' ? planById.get(entry.objectId ?? '') : undefined}
+                  place={
+                    entry.objectType === 'place' ? placeById.get(entry.objectId ?? '') : undefined
+                  }
+                  plan={
+                    entry.objectType === 'plan' ? planById.get(entry.objectId ?? '') : undefined
+                  }
                   to={linkFor(entry)}
                   isLast={i === entries.length - 1}
                   locale={locale}
@@ -346,7 +350,14 @@ function Row({
           </span>
         </div>
 
-        {preview && (to ? <Link to={to} className="block squish">{preview}</Link> : preview)}
+        {preview &&
+          (to ? (
+            <Link to={to} className="block squish">
+              {preview}
+            </Link>
+          ) : (
+            preview
+          ))}
       </div>
     </li>
   )

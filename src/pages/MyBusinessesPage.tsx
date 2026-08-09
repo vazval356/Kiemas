@@ -71,7 +71,9 @@ export function MyBusinessesPage() {
                     >
                       <span className="text-2xl">🏪</span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold text-on-surface">{b.name}</span>
+                        <span className="block truncate font-semibold text-on-surface">
+                          {b.name}
+                        </span>
                         <span className="block text-xs font-medium text-primary">
                           {t('biz.verified')}
                         </span>
@@ -96,7 +98,9 @@ export function MyBusinessesPage() {
                     >
                       <span className="text-2xl opacity-60">🏪</span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold text-on-surface">{b.name}</span>
+                        <span className="block truncate font-semibold text-on-surface">
+                          {b.name}
+                        </span>
                         <span className="block text-xs text-on-surface-variant">
                           {t('biz.pendingHint')}
                         </span>

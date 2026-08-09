@@ -185,8 +185,7 @@ const es = {
   'settings.deleteAccount': 'Borrar mi cuenta',
   'settings.deleteHint':
     'Se borra tu cuenta y tus espacios personales. Lo que hayas aportado a un grupo se queda con el grupo.',
-  'settings.deleteConfirm':
-    'Esto no se puede deshacer. Escribe BORRAR para confirmar.',
+  'settings.deleteConfirm': 'Esto no se puede deshacer. Escribe BORRAR para confirmar.',
   'settings.deleteKeyword': 'BORRAR',
   'settings.blocked': 'Personas bloqueadas',
   'settings.block': 'Bloquear',
@@ -303,7 +302,8 @@ const es = {
 
   // Ajustes y privacidad (Fase 1d)
   'settings.mirror': 'Copiar a mi mapa personal',
-  'settings.mirrorHint': 'Los sitios que se guarden en tus grupos aparecerán también en tu mapa personal. Solo los nuevos: lo que ya está no se trae.',
+  'settings.mirrorHint':
+    'Los sitios que se guarden en tus grupos aparecerán también en tu mapa personal. Solo los nuevos: lo que ya está no se trae.',
   'settings.open': 'Ajustes y privacidad',
   'settings.exporting': 'Preparando la descarga…',
   'settings.exported': 'Datos descargados',
@@ -474,14 +474,17 @@ const es = {
   'biz.title': 'Mis negocios',
   'biz.subtitle': 'Los locales que administras en Kiemas.',
   'biz.empty': 'Todavía no administras ningún local',
-  'biz.emptyHint': 'Si llevas un bar o un restaurante que está en el mapa, ábrelo y pulsa «¿Trabajas aquí?».',
+  'biz.emptyHint':
+    'Si llevas un bar o un restaurante que está en el mapa, ábrelo y pulsa «¿Trabajas aquí?».',
   'biz.verified': 'Verificado',
   'biz.pendingTitle': 'En revisión',
   'biz.pendingHint': 'Estamos comprobando tu solicitud.',
   'biz.notFound': 'Este local no existe o no lo administras.',
   'biz.statsTitle': 'Cuánta gente lo tiene guardado',
-  'biz.statsNotEnough': 'Todavía no hay suficientes datos. Los números aparecen a partir de {min} personas, para que ningún recuento pueda señalar a alguien concreto.',
-  'biz.statsPrivacy': 'Solo recuentos. Nunca vas a ver quién ha guardado tu local, de qué grupo es, ni qué ha escrito.',
+  'biz.statsNotEnough':
+    'Todavía no hay suficientes datos. Los números aparecen a partir de {min} personas, para que ningún recuento pueda señalar a alguien concreto.',
+  'biz.statsPrivacy':
+    'Solo recuentos. Nunca vas a ver quién ha guardado tu local, de qué grupo es, ni qué ha escrito.',
   'biz.saves': 'lo tienen guardado',
   'biz.visited': 'ya han venido',
   'biz.lists': 'listas lo incluyen',
@@ -495,14 +498,18 @@ const es = {
   'biz.saved': 'Guardado',
 
   'claim.title': '¿Trabajas aquí?',
-  'claim.body': 'Si llevas este local puedes administrar su ficha en Kiemas: corregir el nombre, el horario y el teléfono, y ver cuánta gente lo tiene guardado.',
+  'claim.body':
+    'Si llevas este local puedes administrar su ficha en Kiemas: corregir el nombre, el horario y el teléfono, y ver cuánta gente lo tiene guardado.',
   'claim.evidenceLabel': 'Cuéntanos quién eres',
-  'claim.evidencePlaceholder': 'Tu cargo y el teléfono fijo del local, o cualquier cosa que nos permita comprobarlo.',
-  'claim.reviewNotice': 'Esto lo revisa una persona, no es automático. Comprobamos cada solicitud para que nadie pueda quedarse con un local que no es suyo, así que puede tardar unos días.',
+  'claim.evidencePlaceholder':
+    'Tu cargo y el teléfono fijo del local, o cualquier cosa que nos permita comprobarlo.',
+  'claim.reviewNotice':
+    'Esto lo revisa una persona, no es automático. Comprobamos cada solicitud para que nadie pueda quedarse con un local que no es suyo, así que puede tardar unos días.',
   'claim.send': 'Enviar solicitud',
   'claim.sentTitle': 'Solicitud enviada',
   'claim.sentBody': 'La revisaremos y te avisaremos. Puedes ver su estado en «Mis negocios».',
-  'claim.alreadyClaimed': 'Este local ya lo administra alguien. Si crees que hay un error, escríbenos.',
+  'claim.alreadyClaimed':
+    'Este local ya lo administra alguien. Si crees que hay un error, escríbenos.',
   'claim.alreadyPending': 'Ya tienes una solicitud en revisión para este local.',
   'claim.cta': '¿Trabajas aquí?',
   'explore.followers': '{count} siguiendo',
@@ -519,7 +526,8 @@ const es = {
   // Listas seguidas (Fase 4)
   'followed.title': 'Listas que sigues',
   'followed.none': 'Todavía no sigues ninguna lista',
-  'followed.noneHint': 'Cuando alguien te pase el enlace de una lista pública, podrás guardarla aquí.',
+  'followed.noneHint':
+    'Cuando alguien te pase el enlace de una lista pública, podrás guardarla aquí.',
   'followed.unavailable': 'Ya no disponible',
   'followed.unfollow': 'Dejar de seguir',
   'followed.bySpace': 'de {space}',
@@ -559,14 +567,16 @@ const es = {
   'sub.unlimited': 'Sin límite',
   'sub.viaPromo': 'Tienes {plan} con el código {code}',
   'sub.viaSubscription': 'Suscripción activa',
-  'sub.viaLifetime': 'Tienes Kiemas para siempre. Un pago único, sin renovaciones y sin nada que cancelar.',
+  'sub.viaLifetime':
+    'Tienes Kiemas para siempre. Un pago único, sin renovaciones y sin nada que cancelar.',
   'sub.usageTitle': 'Lo que llevas usado',
   'sub.usageHint': 'Se cuenta lo que has creado tú, sumando todos tus grupos.',
   'sub.until': 'Hasta el {date}',
   'sub.forever': 'Sin fecha de caducidad',
   'sub.renews': 'Se renueva el {date}',
   'sub.notYet': 'Las compras todavía no están abiertas',
-  'sub.notYetHint': 'Estamos preparando la publicación en las tiendas. Si tienes un código, ya puedes usarlo.',
+  'sub.notYetHint':
+    'Estamos preparando la publicación en las tiendas. Si tienes un código, ya puedes usarlo.',
   'sub.buy': 'Comprar',
   'sub.restore': 'Restaurar compras',
   'sub.popular': 'El más elegido',
@@ -648,7 +658,8 @@ const es = {
   'profile.displayName': 'Nombre',
   'profile.displayNamePlaceholder': 'Cómo quieres que te llamen',
   'profile.username': 'Tu @usuario',
-  'profile.usernameHint': 'Es único y sirve para que te encuentren. Solo letras, números y guion bajo.',
+  'profile.usernameHint':
+    'Es único y sirve para que te encuentren. Solo letras, números y guion bajo.',
   'profile.bio': 'Sobre ti',
   'profile.saved': 'Guardado',
   'profile.changeAvatar': 'Cambiar foto',
@@ -668,7 +679,8 @@ const es = {
   'space.lookSaved': 'Aspecto guardado',
   'space.pickColor': 'Elegir color',
   'space.mySpaceColorOpen': '¿No distingues bien este color?',
-  'space.mySpaceColorHint': 'Elige otro solo para tu pantalla. El del grupo no cambia para nadie más.',
+  'space.mySpaceColorHint':
+    'Elige otro solo para tu pantalla. El del grupo no cambia para nadie más.',
   'space.mySpaceColorReset': 'Volver al color del grupo',
   'space.noEmoji': 'Sin icono',
   'cover.hint': 'Arrastra para mover y pellizca para acercar',
@@ -687,19 +699,24 @@ const es = {
   'onb.replay': 'Ver la bienvenida otra vez',
 
   'onb.1.title': 'Esto es Kiemas',
-  'onb.1.body': 'El mapa y el calendario de tu grupo, en el mismo sitio. Para que «un día tenemos que ir» acabe teniendo fecha.',
+  'onb.1.body':
+    'El mapa y el calendario de tu grupo, en el mismo sitio. Para que «un día tenemos que ir» acabe teniendo fecha.',
 
   'onb.2.title': 'Guardad sitios juntos',
-  'onb.2.body': 'Ese bar que os gustó, el restaurante que os recomendaron. Con categoría, notas, fotos y precio. Todos veis el mismo mapa.',
+  'onb.2.body':
+    'Ese bar que os gustó, el restaurante que os recomendaron. Con categoría, notas, fotos y precio. Todos veis el mismo mapa.',
 
   'onb.3.title': 'Poned fecha sin veinte mensajes',
-  'onb.3.body': 'Propón varias fechas y que cada uno vote la que le venga bien. Cuando cierras la encuesta, el plan se confirma con la más votada.',
+  'onb.3.body':
+    'Propón varias fechas y que cada uno vote la que le venga bien. Cuando cierras la encuesta, el plan se confirma con la más votada.',
 
   'onb.4.title': 'Un espacio por grupo',
-  'onb.4.body': 'La cuadrilla, la familia, el viaje de verano. Cada grupo con su mapa y su calendario. Se entra con un código, y nadie ve lo de los demás.',
+  'onb.4.body':
+    'La cuadrilla, la familia, el viaje de verano. Cada grupo con su mapa y su calendario. Se entra con un código, y nadie ve lo de los demás.',
 
   'onb.5.title': 'Y cuando acabe el año',
-  'onb.5.body': 'Comparte listas con quien no tenga la app, y en diciembre mira vuestro resumen: dónde estuvisteis, cuántos planes y con quién.',
+  'onb.5.body':
+    'Comparte listas con quien no tenga la app, y en diciembre mira vuestro resumen: dónde estuvisteis, cuántos planes y con quién.',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -763,7 +780,8 @@ const en: Record<TranslationKey, string> = {
   'auth.withApple': 'Continue with Apple',
   'auth.sendReset': 'Send me the link',
   'auth.resetHint': "We'll send you a link to choose a new password.",
-  'auth.resetSent': 'If there is an account with that email, the link is on its way. Check spam too.',
+  'auth.resetSent':
+    'If there is an account with that email, the link is on its way. Check spam too.',
   'reset.title': 'Choose a new password',
   'reset.body': 'Type the one you want to use from now on.',
   'reset.newPassword': 'New password',
@@ -843,7 +861,7 @@ const en: Record<TranslationKey, string> = {
   'import.action': 'Import',
   'import.resolving': 'Following the link…',
   'import.locating': 'Placing it on the map…',
-  'import.noLocation': "We got the name but not the location. Search for it below.",
+  'import.noLocation': 'We got the name but not the location. Search for it below.',
   'import.notGoogleMaps': "That doesn't look like a Google Maps link",
   'import.shortLink':
     "Short 'Share' links can't be read from the browser. Open the place in Google Maps and copy the full address from the address bar.",
@@ -974,7 +992,8 @@ const en: Record<TranslationKey, string> = {
   'invite.joinedTo': 'You joined {name}',
 
   'settings.mirror': 'Copy to my personal map',
-  'settings.mirrorHint': 'Places saved in your groups will also appear on your personal map. New ones only: what is already there is not brought over.',
+  'settings.mirrorHint':
+    'Places saved in your groups will also appear on your personal map. New ones only: what is already there is not brought over.',
   'settings.open': 'Settings and privacy',
   'settings.exporting': 'Preparing the download…',
   'settings.exported': 'Data downloaded',
@@ -1101,7 +1120,7 @@ const en: Record<TranslationKey, string> = {
   'comment.edited': 'edited',
 
   'activity.title': 'Activity',
-  'activity.subtitle': "What your group has been up to lately.",
+  'activity.subtitle': 'What your group has been up to lately.',
   'activity.loadOlder': 'Load older activity',
   'activity.none': 'Nothing has happened here yet.',
   'activity.saved_place': '{actor} saved {object}',
@@ -1138,14 +1157,17 @@ const en: Record<TranslationKey, string> = {
   'biz.title': 'My businesses',
   'biz.subtitle': 'The venues you manage on Kiemas.',
   'biz.empty': 'You don’t manage any venue yet',
-  'biz.emptyHint': 'If you run a bar or restaurant that’s on the map, open it and tap “Do you work here?”.',
+  'biz.emptyHint':
+    'If you run a bar or restaurant that’s on the map, open it and tap “Do you work here?”.',
   'biz.verified': 'Verified',
   'biz.pendingTitle': 'Under review',
   'biz.pendingHint': 'We’re checking your request.',
   'biz.notFound': 'This venue doesn’t exist, or you don’t manage it.',
   'biz.statsTitle': 'How many people saved it',
-  'biz.statsNotEnough': 'Not enough data yet. Numbers appear from {min} people onwards, so no count can point at anyone in particular.',
-  'biz.statsPrivacy': 'Counts only. You will never see who saved your venue, which group they belong to, or what they wrote.',
+  'biz.statsNotEnough':
+    'Not enough data yet. Numbers appear from {min} people onwards, so no count can point at anyone in particular.',
+  'biz.statsPrivacy':
+    'Counts only. You will never see who saved your venue, which group they belong to, or what they wrote.',
   'biz.saves': 'have it saved',
   'biz.visited': 'have been',
   'biz.lists': 'lists include it',
@@ -1159,14 +1181,19 @@ const en: Record<TranslationKey, string> = {
   'biz.saved': 'Saved',
 
   'claim.title': 'Do you work here?',
-  'claim.body': 'If you run this venue you can manage its page on Kiemas: fix the name, hours and phone number, and see how many people have it saved.',
+  'claim.body':
+    'If you run this venue you can manage its page on Kiemas: fix the name, hours and phone number, and see how many people have it saved.',
   'claim.evidenceLabel': 'Tell us who you are',
-  'claim.evidencePlaceholder': 'Your role and the venue’s landline, or anything that lets us check it.',
-  'claim.reviewNotice': 'A person reviews this — it isn’t automatic. We check every request so nobody can take over a venue that isn’t theirs, so it may take a few days.',
+  'claim.evidencePlaceholder':
+    'Your role and the venue’s landline, or anything that lets us check it.',
+  'claim.reviewNotice':
+    'A person reviews this — it isn’t automatic. We check every request so nobody can take over a venue that isn’t theirs, so it may take a few days.',
   'claim.send': 'Send request',
   'claim.sentTitle': 'Request sent',
-  'claim.sentBody': 'We’ll review it and let you know. You can check its status under “My businesses”.',
-  'claim.alreadyClaimed': 'Someone already manages this venue. If you think that’s a mistake, get in touch.',
+  'claim.sentBody':
+    'We’ll review it and let you know. You can check its status under “My businesses”.',
+  'claim.alreadyClaimed':
+    'Someone already manages this venue. If you think that’s a mistake, get in touch.',
   'claim.alreadyPending': 'You already have a request under review for this venue.',
   'claim.cta': 'Do you work here?',
   'explore.followers': '{count} following',
@@ -1202,7 +1229,8 @@ const en: Record<TranslationKey, string> = {
   'wrapped.companion': 'Your companion of the year',
   'wrapped.avgRating': 'Your average score',
   'wrapped.empty': 'Not enough history in {year} yet',
-  'wrapped.emptyHint': 'Save places and make plans, and in a few months this will have a story to tell.',
+  'wrapped.emptyHint':
+    'Save places and make plans, and in a few months this will have a story to tell.',
   'wrapped.share': 'Share',
   'wrapped.shared': 'Recap copied',
   'wrapped.tapToContinue': 'Tap to continue',
@@ -1221,14 +1249,16 @@ const en: Record<TranslationKey, string> = {
   'sub.unlimited': 'Unlimited',
   'sub.viaPromo': 'You have {plan} from code {code}',
   'sub.viaSubscription': 'Subscription active',
-  'sub.viaLifetime': 'You have Kiemas for life. A single payment, no renewals and nothing to cancel.',
+  'sub.viaLifetime':
+    'You have Kiemas for life. A single payment, no renewals and nothing to cancel.',
   'sub.usageTitle': 'What you have used',
   'sub.usageHint': 'It counts what you created, across all your groups.',
   'sub.until': 'Until {date}',
   'sub.forever': 'No expiry date',
   'sub.renews': 'Renews on {date}',
   'sub.notYet': 'Purchases are not open yet',
-  'sub.notYetHint': "We're getting ready to publish on the stores. If you have a code, you can use it now.",
+  'sub.notYetHint':
+    "We're getting ready to publish on the stores. If you have a code, you can use it now.",
   'sub.buy': 'Buy',
   'sub.restore': 'Restore purchases',
   'sub.popular': 'Most popular',
@@ -1299,14 +1329,16 @@ const en: Record<TranslationKey, string> = {
   'profile.editTitle': 'Edit profile',
   'profile.editHint': 'This is how the rest of your group sees you.',
   'profile.setupTitle': 'Set up your profile',
-  'profile.setupHint': 'Put a face and a name to it before you start. You can change all of this later.',
+  'profile.setupHint':
+    'Put a face and a name to it before you start. You can change all of this later.',
   'profile.edit': 'Edit profile',
   'profile.addAvatar': 'Add a photo',
   'profile.avatarOptional': 'The photo is optional',
   'profile.displayName': 'Name',
   'profile.displayNamePlaceholder': 'What you want to be called',
   'profile.username': 'Your @username',
-  'profile.usernameHint': 'It is unique and lets people find you. Letters, numbers and underscore only.',
+  'profile.usernameHint':
+    'It is unique and lets people find you. Letters, numbers and underscore only.',
   'profile.bio': 'About you',
   'profile.saved': 'Saved',
   'profile.changeAvatar': 'Change photo',
@@ -1326,7 +1358,8 @@ const en: Record<TranslationKey, string> = {
   'space.lookSaved': 'Look saved',
   'space.pickColor': 'Pick a colour',
   'space.mySpaceColorOpen': 'Can’t tell this colour apart?',
-  'space.mySpaceColorHint': 'Pick another one just for your screen. The group’s stays the same for everyone else.',
+  'space.mySpaceColorHint':
+    'Pick another one just for your screen. The group’s stays the same for everyone else.',
   'space.mySpaceColorReset': 'Back to the group colour',
   'space.noEmoji': 'No icon',
   'cover.hint': 'Drag to move, pinch to zoom',
@@ -1345,19 +1378,24 @@ const en: Record<TranslationKey, string> = {
   'onb.replay': 'See the welcome tour again',
 
   'onb.1.title': 'This is Kiemas',
-  'onb.1.body': "Your group's map and calendar in one place. So that “we should go someday” finally gets a date.",
+  'onb.1.body':
+    "Your group's map and calendar in one place. So that “we should go someday” finally gets a date.",
 
   'onb.2.title': 'Save places together',
-  'onb.2.body': 'That bar you liked, the restaurant someone recommended. With category, notes, photos and price. Everyone sees the same map.',
+  'onb.2.body':
+    'That bar you liked, the restaurant someone recommended. With category, notes, photos and price. Everyone sees the same map.',
 
   'onb.3.title': 'Pick a date without twenty messages',
-  'onb.3.body': 'Suggest a few dates and let everyone vote for what suits them. Close the poll and the plan is confirmed with the winner.',
+  'onb.3.body':
+    'Suggest a few dates and let everyone vote for what suits them. Close the poll and the plan is confirmed with the winner.',
 
   'onb.4.title': 'One space per group',
-  'onb.4.body': 'Your mates, your family, the summer trip. Each with its own map and calendar. People join with a code, and no group sees another.',
+  'onb.4.body':
+    'Your mates, your family, the summer trip. Each with its own map and calendar. People join with a code, and no group sees another.',
 
   'onb.5.title': 'And when the year ends',
-  'onb.5.body': "Share lists with people who don't have the app, and in December look back: where you went, how many plans, and who with.",
+  'onb.5.body':
+    "Share lists with people who don't have the app, and in December look back: where you went, how many plans, and who with.",
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

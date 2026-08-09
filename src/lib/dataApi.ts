@@ -93,7 +93,10 @@ export interface DataApi {
   listSpaces(): Promise<Space[]>
   getSpace(spaceId: string): Promise<Space>
   createSpace(name: string, description?: string): Promise<Space>
-  updateSpace(spaceId: string, patch: Partial<Pick<Space, 'name' | 'description' | 'theme'>>): Promise<void>
+  updateSpace(
+    spaceId: string,
+    patch: Partial<Pick<Space, 'name' | 'description' | 'theme'>>
+  ): Promise<void>
   /**
    * Emoji, color y portada del espacio. Va por su propia RPC y no por
    * `updateSpace` porque el servidor valida el color y exige ser administrador.
@@ -269,7 +272,10 @@ export interface DataApi {
   /** Abre una solicitud para administrar un local. La aprueba una persona. */
   requestBusinessClaim(venueId: string, evidence: string): Promise<void>
   /** `null` en un campo significa dejarlo como está, no vaciarlo. */
-  updateBusinessProfile(venueId: string, patch: Partial<Omit<BusinessProfile, 'venueId' | 'verified'>>): Promise<void>
+  updateBusinessProfile(
+    venueId: string,
+    patch: Partial<Omit<BusinessProfile, 'venueId' | 'verified'>>
+  ): Promise<void>
   /** Recuentos agregados. Solo para quien administra el local. */
   venueStats(venueId: string): Promise<VenueStats>
 }

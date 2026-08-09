@@ -31,9 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-4 p-6 text-center">
         <div className="text-4xl">🧭</div>
-        <h1 className="font-display text-xl font-semibold text-on-surface">
-          Algo se ha torcido
-        </h1>
+        <h1 className="font-display text-xl font-semibold text-on-surface">Algo se ha torcido</h1>
         <p className="max-w-sm text-sm text-on-surface-variant">{error.message}</p>
         <button
           type="button"

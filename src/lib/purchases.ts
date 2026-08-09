@@ -58,7 +58,9 @@ export async function setupPurchases(userId: string): Promise<void> {
 
   try {
     if (!configured) {
-      await Purchases.setLogLevel({ level: import.meta.env.DEV ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR })
+      await Purchases.setLogLevel({
+        level: import.meta.env.DEV ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR,
+      })
       await Purchases.configure({ apiKey: key, appUserID: userId })
       configured = true
     } else {
@@ -138,6 +140,9 @@ export async function openStoreSubscriptions(): Promise<void> {
 /** true si la persona canceló la compra, en vez de fallar de verdad. */
 export function isPurchaseCancelled(e: unknown): boolean {
   return Boolean(
-    e && typeof e === 'object' && 'userCancelled' in e && (e as { userCancelled?: boolean }).userCancelled
+    e &&
+    typeof e === 'object' &&
+    'userCancelled' in e &&
+    (e as { userCancelled?: boolean }).userCancelled
   )
 }

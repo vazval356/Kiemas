@@ -2,7 +2,16 @@ import { useState } from 'react'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
-const PALETTE = ['#4648d4', '#b90538', '#825100', '#0f766e', '#7c3aed', '#c2410c', '#0369a1', '#4d7c0f']
+const PALETTE = [
+  '#4648d4',
+  '#b90538',
+  '#825100',
+  '#0f766e',
+  '#7c3aed',
+  '#c2410c',
+  '#0369a1',
+  '#4d7c0f',
+]
 
 interface Props {
   selected: string[]

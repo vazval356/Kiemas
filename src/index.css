@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /*
  * Tokens de kedada_diseño.zip > kedada_narrative/DESIGN.md
@@ -9,8 +9,8 @@
  * usa el proyecto.
  */
 @theme {
-  --font-display: "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
 
   /* Superficies — azul muy desaturado, para que el mapa siga siendo lo que destaca */
   --color-surface: #f9f9ff;
@@ -181,7 +181,9 @@ textarea {
   justify-content: center;
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .kd-marker.visited {
   background: var(--color-outline);
@@ -190,7 +192,8 @@ textarea {
   transform: scale(1.25);
   /* El halo toma el color del espacio; el índigo es el respaldo por si el
      marcador se pinta antes de que el color esté disponible. */
-  box-shadow: 0 0 0 6px var(--kd-marker-halo, rgb(70 72 212 / 0.25)),
+  box-shadow:
+    0 0 0 6px var(--kd-marker-halo, rgb(70 72 212 / 0.25)),
     0 6px 14px rgb(17 28 45 / 0.4);
 }
 
@@ -205,7 +208,9 @@ textarea {
   font-size: 1rem;
   color: var(--color-on-surface);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .kd-input:focus {
   border-color: var(--color-primary);
@@ -349,7 +354,9 @@ input[type='range'].kd-range::-moz-range-thumb {
   border-radius: 999px;
   background: var(--color-primary);
   border: 3px solid #fff;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15), 0 2px 6px rgb(0 0 0 / 0.3);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.15),
+    0 2px 6px rgb(0 0 0 / 0.3);
   position: relative;
 }
 
@@ -364,13 +371,25 @@ input[type='range'].kd-range::-moz-range-thumb {
 }
 
 @keyframes kd-me-latido {
-  0%   { transform: scale(0.65); opacity: 0.3; }
-  70%  { transform: scale(1.25); opacity: 0; }
-  100% { transform: scale(1.25); opacity: 0; }
+  0% {
+    transform: scale(0.65);
+    opacity: 0.3;
+  }
+  70% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
 }
 
 /* Quien haya pedido menos movimiento no necesita un latido perpetuo en
    pantalla; el punto se ve igual de bien quieto. */
 @media (prefers-reduced-motion: reduce) {
-  .kd-me::before { animation: none; opacity: 0.2; }
+  .kd-me::before {
+    animation: none;
+    opacity: 0.2;
+  }
 }

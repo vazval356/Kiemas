@@ -182,7 +182,10 @@ export function UsernameEditor() {
           'text-xs ' +
           (status.kind === 'available'
             ? 'text-primary'
-            : status.kind === 'taken' || status.kind === 'reserved' || status.kind === 'invalid' || status.kind === 'error'
+            : status.kind === 'taken' ||
+                status.kind === 'reserved' ||
+                status.kind === 'invalid' ||
+                status.kind === 'error'
               ? 'text-error'
               : 'text-on-surface-variant')
         }

@@ -131,9 +131,7 @@ export function YearInReviewPage() {
     }
 
     if (data.companion) {
-      out.push(
-        <Companion key="companion" name={data.companion} label={t('wrapped.companion')} />
-      )
+      out.push(<Companion key="companion" name={data.companion} label={t('wrapped.companion')} />)
     }
 
     return out
@@ -233,8 +231,7 @@ export function YearInReviewPage() {
                   transitionTimingFunction: 'linear',
                   // El relleno del panel actual se anima durante su duración;
                   // los ya vistos aparecen llenos sin animar.
-                  transitionDuration:
-                    i === index && !reduced && !paused ? `${SLIDE_MS}ms` : '0ms',
+                  transitionDuration: i === index && !reduced && !paused ? `${SLIDE_MS}ms` : '0ms',
                 }}
               />
             </div>
@@ -416,13 +413,7 @@ function Kilometres({
   )
 }
 
-function Highlight({
-  emoji,
-  rows,
-}: {
-  emoji: string
-  rows: { label: string; value: string }[]
-}) {
+function Highlight({ emoji, rows }: { emoji: string; rows: { label: string; value: string }[] }) {
   return (
     <div className="text-white">
       <div className="mb-6 text-center text-6xl kd-float">{emoji}</div>

@@ -26,7 +26,9 @@ export function PhotoOrPlaceholder({
   className: string
 }) {
   if (place.photos.length > 0) {
-    return <img src={place.photos[0].url} alt={place.name} className={`${className} object-cover`} />
+    return (
+      <img src={place.photos[0].url} alt={place.name} className={`${className} object-cover`} />
+    )
   }
   return (
     <div

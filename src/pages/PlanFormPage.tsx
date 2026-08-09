@@ -193,7 +193,9 @@ export function PlanFormPage() {
               onClick={() =>
                 setOptions([
                   ...options,
-                  toDateTimeLocalValue(new Date(nextRoundHour().getTime() + 86400000 * (options.length + 1))),
+                  toDateTimeLocalValue(
+                    new Date(nextRoundHour().getTime() + 86400000 * (options.length + 1))
+                  ),
                 ])
               }
               className="rounded-control border-2 border-dashed border-outline-variant py-2.5 text-sm font-semibold text-on-surface-variant squish"

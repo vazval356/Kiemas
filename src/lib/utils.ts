@@ -66,8 +66,26 @@ export function formatRating(score: number): string {
 }
 
 export const CATEGORY_EMOJIS = [
-  '🍽️', '☕', '🍕', '🍣', '🍔', '🍦', '🍹', '🍷', '🌅', '🏛️',
-  '🎨', '🎬', '🎡', '🌿', '🏖️', '⛰️', '🛍️', '🎳', '💃', '📍',
+  '🍽️',
+  '☕',
+  '🍕',
+  '🍣',
+  '🍔',
+  '🍦',
+  '🍹',
+  '🍷',
+  '🌅',
+  '🏛️',
+  '🎨',
+  '🎬',
+  '🎡',
+  '🌿',
+  '🏖️',
+  '⛰️',
+  '🛍️',
+  '🎳',
+  '💃',
+  '📍',
 ]
 
 /** Redimensiona una imagen a un JPEG razonable para subir/guardar. */
@@ -110,7 +128,10 @@ export interface GeoResult {
 }
 
 /** Photon (OpenStreetMap). OJO: no soporta lang=es — devuelve 400 si se envía. */
-async function searchPhoton(query: string, near?: { lat: number; lng: number }): Promise<GeoResult[]> {
+async function searchPhoton(
+  query: string,
+  near?: { lat: number; lng: number }
+): Promise<GeoResult[]> {
   const params = new URLSearchParams({ q: query, limit: '5' })
   if (near) {
     params.set('lat', String(near.lat))

@@ -95,10 +95,7 @@ export function SubscriptionPage() {
 
   const highlight = useMemo(() => nivelDestacado(limits), [limits])
 
-  const hasAnnual = useMemo(
-    () => packages.some((p) => p.packageType === 'ANNUAL'),
-    [packages]
-  )
+  const hasAnnual = useMemo(() => packages.some((p) => p.packageType === 'ANNUAL'), [packages])
 
   /**
    * Qué paquete corresponde a cada nivel y periodo.
@@ -394,7 +391,9 @@ export function SubscriptionPage() {
                         <li key={b} className="flex items-center gap-2.5 text-sm">
                           <span
                             className={`flex size-5 shrink-0 items-center justify-center rounded-full text-xs ${
-                              isHighlight ? 'bg-white/20 text-white' : 'bg-primary-fixed text-primary'
+                              isHighlight
+                                ? 'bg-white/20 text-white'
+                                : 'bg-primary-fixed text-primary'
                             }`}
                           >
                             ✓
@@ -557,7 +556,11 @@ export function SubscriptionPage() {
             {canBuy && (
               <button
                 type="button"
-                onClick={() => void restorePurchases().then(load).catch(() => {})}
+                onClick={() =>
+                  void restorePurchases()
+                    .then(load)
+                    .catch(() => {})
+                }
                 className="mt-6 w-full py-2 text-sm font-semibold text-on-surface-variant underline underline-offset-2 squish"
               >
                 {t('sub.restore')}

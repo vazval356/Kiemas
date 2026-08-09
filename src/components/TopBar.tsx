@@ -47,11 +47,7 @@ export function TopBar() {
               El personal conserva su icono: no es un grupo y no se personaliza. */}
           <span
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-lg"
-            style={
-              isPersonal
-                ? undefined
-                : { backgroundColor: cols.soft, color: cols.onSoft }
-            }
+            style={isPersonal ? undefined : { backgroundColor: cols.soft, color: cols.onSoft }}
           >
             {isPersonal ? (
               <span className="flex size-9 items-center justify-center rounded-full bg-primary-fixed text-primary">

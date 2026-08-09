@@ -136,7 +136,9 @@ export function EditProfilePage({
           >
             {profile?.avatarUrl ? t('profile.changeAvatar') : t('profile.addAvatar')}
           </button>
-          {setup && <p className="mt-1 text-xs text-on-surface-variant">{t('profile.avatarOptional')}</p>}
+          {setup && (
+            <p className="mt-1 text-xs text-on-surface-variant">{t('profile.avatarOptional')}</p>
+          )}
         </div>
 
         {error && (
@@ -187,7 +189,9 @@ export function EditProfilePage({
             placeholder={t('profile.bioPlaceholder')}
             className="kd-input resize-none"
           />
-          <span className="mt-1 block text-right text-xs text-on-surface-variant">{bio.length}/160</span>
+          <span className="mt-1 block text-right text-xs text-on-surface-variant">
+            {bio.length}/160
+          </span>
         </label>
 
         {notice && <p className="mt-3 text-sm font-medium text-primary">{notice}</p>}

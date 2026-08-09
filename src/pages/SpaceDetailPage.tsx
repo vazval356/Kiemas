@@ -11,7 +11,10 @@ import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
-const EXPIRY_OPTIONS: { value: InviteExpiry; labelKey: 'invite.expiry30m' | 'invite.expiry1h' | 'invite.expiry24h' | 'invite.expiryNever' }[] = [
+const EXPIRY_OPTIONS: {
+  value: InviteExpiry
+  labelKey: 'invite.expiry30m' | 'invite.expiry1h' | 'invite.expiry24h' | 'invite.expiryNever'
+}[] = [
   { value: '30 minutes', labelKey: 'invite.expiry30m' },
   { value: '1 hour', labelKey: 'invite.expiry1h' },
   { value: '24 hours', labelKey: 'invite.expiry24h' },
@@ -177,7 +180,8 @@ export function SpaceDetailPage() {
   function inviteState(invite: Invite): string {
     if (invite.revokedAt) return t('invite.revoke')
     if (invite.expiresAt && new Date(invite.expiresAt) <= new Date()) return t('invite.isExpired')
-    if (invite.maxUses !== null && invite.usesCount >= invite.maxUses) return t('invite.isExhausted')
+    if (invite.maxUses !== null && invite.usesCount >= invite.maxUses)
+      return t('invite.isExhausted')
     return ''
   }
 
@@ -269,7 +273,11 @@ export function SpaceDetailPage() {
               }}
             >
               {space.coverUrl && (
-                <img src={space.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+                <img
+                  src={space.coverUrl}
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                />
               )}
               {emoji && <span className="relative text-4xl drop-shadow-md">{emoji}</span>}
             </div>
@@ -332,51 +340,51 @@ export function SpaceDetailPage() {
             </button>
 
             {ajustarColor && (
-            <div className="mt-2 rounded-card bg-surface-container p-3 animate-pop">
-              <p className="text-xs text-on-surface-variant">{t('space.mySpaceColorHint')}</p>
+              <div className="mt-2 rounded-card bg-surface-container p-3 animate-pop">
+                <p className="text-xs text-on-surface-variant">{t('space.mySpaceColorHint')}</p>
 
-              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                <label className="relative flex size-9 cursor-pointer items-center justify-center rounded-control bg-surface-lowest squish">
-                  <span
-                    className="size-5 rounded-full border-2 border-surface-lowest"
-                    style={{ backgroundColor: space.myColor ?? space.color }}
-                    aria-hidden
-                  />
-                  <input
-                    type="color"
-                    value={space.myColor ?? space.color}
-                    onChange={(e) => void guardarMiColor(e.target.value)}
-                    className="absolute size-0 opacity-0"
-                  />
-                </label>
-                <span className="h-6 w-px shrink-0 bg-outline-variant" aria-hidden />
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                  <label className="relative flex size-9 cursor-pointer items-center justify-center rounded-control bg-surface-lowest squish">
+                    <span
+                      className="size-5 rounded-full border-2 border-surface-lowest"
+                      style={{ backgroundColor: space.myColor ?? space.color }}
+                      aria-hidden
+                    />
+                    <input
+                      type="color"
+                      value={space.myColor ?? space.color}
+                      onChange={(e) => void guardarMiColor(e.target.value)}
+                      className="absolute size-0 opacity-0"
+                    />
+                  </label>
+                  <span className="h-6 w-px shrink-0 bg-outline-variant" aria-hidden />
 
-                {SPACE_COLOR_SUGGESTIONS.map((c) => (
+                  {SPACE_COLOR_SUGGESTIONS.map((c) => (
+                    <button
+                      key={`mio-${c}`}
+                      type="button"
+                      onClick={() => void guardarMiColor(c)}
+                      aria-label={c}
+                      className={`size-8 rounded-control squish ${
+                        (space.myColor ?? '').toLowerCase() === c.toLowerCase()
+                          ? 'ring-2 ring-on-surface'
+                          : ''
+                      }`}
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                </div>
+
+                {space.myColor && (
                   <button
-                    key={`mio-${c}`}
                     type="button"
-                    onClick={() => void guardarMiColor(c)}
-                    aria-label={c}
-                    className={`size-8 rounded-control squish ${
-                      (space.myColor ?? '').toLowerCase() === c.toLowerCase()
-                        ? 'ring-2 ring-on-surface'
-                        : ''
-                    }`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
+                    onClick={() => void guardarMiColor(null)}
+                    className="mt-2.5 text-xs font-semibold text-primary squish"
+                  >
+                    {t('space.mySpaceColorReset')}
+                  </button>
+                )}
               </div>
-
-              {space.myColor && (
-                <button
-                  type="button"
-                  onClick={() => void guardarMiColor(null)}
-                  className="mt-2.5 text-xs font-semibold text-primary squish"
-                >
-                  {t('space.mySpaceColorReset')}
-                </button>
-              )}
-            </div>
             )}
 
             <div className="mt-3 grid grid-cols-8 gap-1.5">
@@ -548,7 +556,9 @@ export function SpaceDetailPage() {
                     className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-surface-lowest py-3 font-semibold text-primary squish"
                   >
                     <ShareIcon className="size-4" />
-                    {copied === `link-${featured.id}` ? t('invite.linkCopied') : t('invite.shareLink')}
+                    {copied === `link-${featured.id}`
+                      ? t('invite.linkCopied')
+                      : t('invite.shareLink')}
                   </button>
                 </div>
               </div>
@@ -669,7 +679,9 @@ export function SpaceDetailPage() {
                       </p>
                       {(copied === `code-${invite.id}` || copied === `link-${invite.id}`) && (
                         <p className="mt-1 text-xs font-medium text-primary">
-                          {copied === `code-${invite.id}` ? t('common.copied') : t('invite.linkCopied')}
+                          {copied === `code-${invite.id}`
+                            ? t('common.copied')
+                            : t('invite.linkCopied')}
                         </p>
                       )}
                     </li>
@@ -682,176 +694,186 @@ export function SpaceDetailPage() {
 
         {/* ── Miembros ───────────────────────────────────────────────────── */}
         {!isPersonal && (
-        <section className="mt-8">
-          <h2 className="mb-3 font-display font-semibold text-on-surface">
-            {t('space.members')}{' '}
-            <span className="font-normal text-on-surface-variant">({space.members.length})</span>
-          </h2>
-          <ul className="flex flex-col gap-2">
-            {space.members.map((member) => {
-              const isMe = member.userId === profile?.id
-              return (
-                <li
-                  key={member.userId}
-                  // Banda de color a la izquierda, como en el diseño. Es el
-                  // mismo color con el que esa persona aparece en el
-                  // calendario y en las tarjetas de plan: leerlo aquí es lo
-                  // que hace que allí se reconozca sin leer el nombre.
-                  className="overflow-hidden rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
-                  style={{ borderLeft: `4px solid ${member.color}` }}
-                >
-                  <div className="flex items-center gap-3">
-                    {member.avatarUrl ? (
-                      <img
-                        src={member.avatarUrl}
-                        alt=""
-                        loading="lazy"
-                        className="size-11 shrink-0 rounded-full object-cover"
-                        style={{ border: `2px solid ${member.color}` }}
-                      />
-                    ) : (
-                      <span
-                        className="flex size-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
-                        style={{ backgroundColor: member.color }}
-                      >
-                        {member.displayName.slice(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold text-on-surface">
-                        {member.displayName}
-                        {isMe && (
-                          <span className="ml-1 text-sm font-normal text-on-surface-variant">
-                            ({t('spaces.you')})
+          <section className="mt-8">
+            <h2 className="mb-3 font-display font-semibold text-on-surface">
+              {t('space.members')}{' '}
+              <span className="font-normal text-on-surface-variant">({space.members.length})</span>
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {space.members.map((member) => {
+                const isMe = member.userId === profile?.id
+                return (
+                  <li
+                    key={member.userId}
+                    // Banda de color a la izquierda, como en el diseño. Es el
+                    // mismo color con el que esa persona aparece en el
+                    // calendario y en las tarjetas de plan: leerlo aquí es lo
+                    // que hace que allí se reconozca sin leer el nombre.
+                    className="overflow-hidden rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+                    style={{ borderLeft: `4px solid ${member.color}` }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {member.avatarUrl ? (
+                        <img
+                          src={member.avatarUrl}
+                          alt=""
+                          loading="lazy"
+                          className="size-11 shrink-0 rounded-full object-cover"
+                          style={{ border: `2px solid ${member.color}` }}
+                        />
+                      ) : (
+                        <span
+                          className="flex size-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white"
+                          style={{ backgroundColor: member.color }}
+                        >
+                          {member.displayName.slice(0, 1).toUpperCase()}
+                        </span>
+                      )}
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold text-on-surface">
+                          {member.displayName}
+                          {isMe && (
+                            <span className="ml-1 text-sm font-normal text-on-surface-variant">
+                              ({t('spaces.you')})
+                            </span>
+                          )}
+                        </span>
+                        <span
+                          className={`block truncate text-sm font-medium ${
+                            member.role === 'admin' ? 'text-primary' : 'text-on-surface-variant'
+                          }`}
+                        >
+                          {member.role === 'admin' ? t('space.admin') : t('space.member')}
+                          <span className="font-normal text-on-surface-variant">
+                            {' · @'}
+                            {member.username}
                           </span>
-                        )}
-                      </span>
-                      <span
-                        className={`block truncate text-sm font-medium ${
-                          member.role === 'admin' ? 'text-primary' : 'text-on-surface-variant'
-                        }`}
-                      >
-                        {member.role === 'admin' ? t('space.admin') : t('space.member')}
-                        <span className="font-normal text-on-surface-variant">
-                          {' · @'}
-                          {member.username}
                         </span>
                       </span>
-                    </span>
-                    <span
-                      className="size-3.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: member.color }}
-                      aria-hidden
-                    />
-                  </div>
+                      <span
+                        className="size-3.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: member.color }}
+                        aria-hidden
+                      />
+                    </div>
 
-                  {(isAdmin || isMe) && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {isAdmin && !isMe && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() =>
-                            void run(async () => {
-                              await api.setMemberRole(
-                                space.id,
-                                member.userId,
-                                member.role === 'admin' ? 'member' : 'admin'
-                              )
-                              await refreshSpaces()
-                            })
-                          }
-                          className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
-                        >
-                          {member.role === 'admin' ? t('spaces.makeMember') : t('spaces.makeAdmin')}
-                        </button>
-                      )}
-                      {isAdmin && !isMe && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => {
-                            if (!window.confirm(t('spaces.removeConfirm', { name: member.displayName })))
-                              return
-                            void run(async () => {
-                              await api.removeMember(space.id, member.userId)
-                              await refreshSpaces()
-                            })
-                          }}
-                          className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-error squish"
-                        >
-                          {t('spaces.removeMember')}
-                        </button>
-                      )}
-                      {!isMe && (
-                        <>
+                    {(isAdmin || isMe) && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {isAdmin && !isMe && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() =>
+                              void run(async () => {
+                                await api.setMemberRole(
+                                  space.id,
+                                  member.userId,
+                                  member.role === 'admin' ? 'member' : 'admin'
+                                )
+                                await refreshSpaces()
+                              })
+                            }
+                            className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
+                          >
+                            {member.role === 'admin'
+                              ? t('spaces.makeMember')
+                              : t('spaces.makeAdmin')}
+                          </button>
+                        )}
+                        {isAdmin && !isMe && (
                           <button
                             type="button"
                             disabled={busy}
                             onClick={() => {
-                              if (!window.confirm(t('settings.blockConfirm', { name: member.displayName })))
+                              if (
+                                !window.confirm(
+                                  t('spaces.removeConfirm', { name: member.displayName })
+                                )
+                              )
                                 return
-                              void run(() => api.blockUser(member.userId))
+                              void run(async () => {
+                                await api.removeMember(space.id, member.userId)
+                                await refreshSpaces()
+                              })
                             }}
-                            className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
+                            className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-error squish"
                           >
-                            {t('settings.block')}
+                            {t('spaces.removeMember')}
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => setReporting(member)}
-                            className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
-                          >
-                            {t('settings.report')}
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
-        </section>
+                        )}
+                        {!isMe && (
+                          <>
+                            <button
+                              type="button"
+                              disabled={busy}
+                              onClick={() => {
+                                if (
+                                  !window.confirm(
+                                    t('settings.blockConfirm', { name: member.displayName })
+                                  )
+                                )
+                                  return
+                                void run(() => api.blockUser(member.userId))
+                              }}
+                              className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
+                            >
+                              {t('settings.block')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setReporting(member)}
+                              className="rounded-full bg-surface-container px-3 py-1.5 text-xs font-semibold text-on-surface-variant squish"
+                            >
+                              {t('settings.report')}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
         )}
 
         {/* ── Salir / borrar ─────────────────────────────────────────────── */}
         {!isPersonal && (
-        <section className="mt-8 flex flex-col gap-2">
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              if (!window.confirm(t('spaces.leaveConfirm'))) return
-              void run(async () => {
-                await api.leaveSpace(space.id)
-                await refreshSpaces()
-                navigate('/spaces')
-              })
-            }}
-            className="w-full rounded-full border border-outline-variant py-3 font-semibold text-on-surface-variant squish disabled:opacity-50"
-          >
-            {t('space.leave')}
-          </button>
-
-          {isAdmin && (
+          <section className="mt-8 flex flex-col gap-2">
             <button
               type="button"
               disabled={busy}
               onClick={() => {
-                if (!window.confirm(t('spaces.deleteConfirm'))) return
+                if (!window.confirm(t('spaces.leaveConfirm'))) return
                 void run(async () => {
-                  await api.deleteSpace(space.id)
+                  await api.leaveSpace(space.id)
                   await refreshSpaces()
                   navigate('/spaces')
                 })
               }}
-              className="w-full rounded-full border border-error/40 py-3 font-semibold text-error squish disabled:opacity-50"
+              className="w-full rounded-full border border-outline-variant py-3 font-semibold text-on-surface-variant squish disabled:opacity-50"
             >
-              {t('spaces.delete')}
+              {t('space.leave')}
             </button>
-          )}
-        </section>
+
+            {isAdmin && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  if (!window.confirm(t('spaces.deleteConfirm'))) return
+                  void run(async () => {
+                    await api.deleteSpace(space.id)
+                    await refreshSpaces()
+                    navigate('/spaces')
+                  })
+                }}
+                className="w-full rounded-full border border-error/40 py-3 font-semibold text-error squish disabled:opacity-50"
+              >
+                {t('spaces.delete')}
+              </button>
+            )}
+          </section>
         )}
       </div>
 

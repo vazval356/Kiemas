@@ -47,7 +47,11 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
   const t = createTranslate(locale)
 
   const doc: LegalDoc =
-    kind === 'privacy' ? privacyDoc(locale) : kind === 'terms' ? termsDoc(locale) : noticeDoc(locale)
+    kind === 'privacy'
+      ? privacyDoc(locale)
+      : kind === 'terms'
+        ? termsDoc(locale)
+        : noticeDoc(locale)
 
   const otros = (Object.keys(RUTAS) as LegalKind[]).filter((k) => k !== kind)
 
@@ -72,7 +76,9 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
       </header>
 
       <div className="mx-auto max-w-2xl px-5 pb-16 pt-7">
-        <h1 className="font-display text-3xl font-bold leading-tight text-on-surface">{doc.title}</h1>
+        <h1 className="font-display text-3xl font-bold leading-tight text-on-surface">
+          {doc.title}
+        </h1>
         <p className="mt-3 leading-relaxed text-on-surface-variant">{doc.intro}</p>
 
         {/* Índice */}
@@ -94,12 +100,16 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
                 <button
                   type="button"
                   onClick={() =>
-                    document.getElementById(anclaDe(s.heading, i))?.scrollIntoView({ block: 'start' })
+                    document
+                      .getElementById(anclaDe(s.heading, i))
+                      ?.scrollIntoView({ block: 'start' })
                   }
                   className="flex gap-2 text-left text-sm text-primary squish"
                 >
                   <span className="tabular-nums opacity-60">{i + 1}.</span>
-                  <span className="underline decoration-primary/30 underline-offset-4">{s.heading}</span>
+                  <span className="underline decoration-primary/30 underline-offset-4">
+                    {s.heading}
+                  </span>
                 </button>
               </li>
             ))}

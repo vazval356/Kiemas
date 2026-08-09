@@ -76,12 +76,32 @@ export function spaceColors(color: string | null | undefined): SpaceColors {
  * es un atajo, no una restricción.
  */
 export const SPACE_COLOR_SUGGESTIONS = [
-  '#4648D4', '#B90538', '#825100', '#0F766E',
-  '#7C3AED', '#DB2777', '#0369A1', '#15803D',
+  '#4648D4',
+  '#B90538',
+  '#825100',
+  '#0F766E',
+  '#7C3AED',
+  '#DB2777',
+  '#0369A1',
+  '#15803D',
 ]
 
 /** Emojis sugeridos al elegir el aspecto de un espacio. */
 export const SPACE_EMOJIS = [
-  '👥', '🍻', '🏠', '✈️', '⚽', '🎬', '🍕', '🎉',
-  '🏔️', '🎸', '📚', '🐶', '☕', '🌊', '🎮', '💼',
+  '👥',
+  '🍻',
+  '🏠',
+  '✈️',
+  '⚽',
+  '🎬',
+  '🍕',
+  '🎉',
+  '🏔️',
+  '🎸',
+  '📚',
+  '🐶',
+  '☕',
+  '🌊',
+  '🎮',
+  '💼',
 ]

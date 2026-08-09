@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, StoreIcon, UserIcon } from '../components/icons'
+import {
+  CardIcon,
+  GroupIcon,
+  LogoutIcon,
+  SettingsIcon,
+  StoreIcon,
+  UserIcon,
+} from '../components/icons'
 import { QuotaMeter } from '../components/QuotaMeter'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, FollowedList, MyEntitlement, MyStats } from '../lib/types'
@@ -29,9 +36,18 @@ export function ProfilePage() {
   useEffect(() => {
     // Los tres son adorno de la cabecera: si alguno falla, el resto del perfil
     // sirve igual, así que se piden por separado y se ignoran sus errores.
-    api.myStats().then(setStats).catch(() => {})
-    api.myEntitlement().then(setNivel).catch(() => {})
-    api.listFollowedLists().then(setFollowed).catch(() => {})
+    api
+      .myStats()
+      .then(setStats)
+      .catch(() => {})
+    api
+      .myEntitlement()
+      .then(setNivel)
+      .catch(() => {})
+    api
+      .listFollowedLists()
+      .then(setFollowed)
+      .catch(() => {})
   }, [api])
 
   const initial = (profile?.displayName ?? '?').slice(0, 1).toUpperCase()

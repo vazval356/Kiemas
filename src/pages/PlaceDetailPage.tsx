@@ -13,7 +13,14 @@ import {
   StarIcon,
   TrashIcon,
 } from '../components/icons'
-import { averageRating, errorMessage, formatKm, formatRating, kmBetween, priceLabel } from '../lib/utils'
+import {
+  averageRating,
+  errorMessage,
+  formatKm,
+  formatRating,
+  kmBetween,
+  priceLabel,
+} from '../lib/utils'
 import { RatingStars } from '../components/RatingStars'
 import { useApp } from '../state/appState'
 
@@ -82,7 +89,7 @@ export function PlaceDetailPage() {
   const category = categories.find((c) => c.id === place.categoryId)
   const avg = averageRating(place)
   const distance = position ? kmBetween(position.lat, position.lng, place.lat, place.lng) : null
-  const myRating = profile ? place.ratings.find((r) => r.userId === profile.id)?.score ?? 0 : 0
+  const myRating = profile ? (place.ratings.find((r) => r.userId === profile.id)?.score ?? 0) : 0
   const members = activeSpace?.members ?? []
   const creator = members.find((m) => m.userId === place.createdBy)
 
@@ -156,7 +163,9 @@ export function PlaceDetailPage() {
 
         <TagBadges tagIds={place.tagIds} className="mt-2" />
 
-        {place.address && <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>}
+        {place.address && (
+          <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>
+        )}
         {creator && (
           <p className="mt-1 text-xs text-on-surface-variant">
             {t('detail.addedBy', { name: creator.displayName })}
@@ -207,7 +216,9 @@ export function PlaceDetailPage() {
               <p className="mt-1.5 text-sm text-on-surface-variant">{negocio.description}</p>
             )}
             {negocio.hours && (
-              <p className="mt-2 whitespace-pre-line text-sm text-on-surface-variant">{negocio.hours}</p>
+              <p className="mt-2 whitespace-pre-line text-sm text-on-surface-variant">
+                {negocio.hours}
+              </p>
             )}
           </section>
         ) : (

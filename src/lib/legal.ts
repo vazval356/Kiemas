@@ -507,10 +507,7 @@ const identidadEs = (): string[] => {
 }
 
 const identidadEn = (): string[] => {
-  const lines = [
-    `· Owner: ${LEGAL_CONTACT.responsable}`,
-    `· Contact email: ${LEGAL_CONTACT.email}`,
-  ]
+  const lines = [`· Owner: ${LEGAL_CONTACT.responsable}`, `· Contact email: ${LEGAL_CONTACT.email}`]
   if (LEGAL_CONTACT.nif) lines.push(`· Tax ID: ${LEGAL_CONTACT.nif}`)
   if (LEGAL_CONTACT.direccion) lines.push(`· Address for notices: ${LEGAL_CONTACT.direccion}`)
   lines.push('· Location: Spain')

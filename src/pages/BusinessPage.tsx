@@ -25,7 +25,13 @@ export function BusinessPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
 
-  const [form, setForm] = useState({ displayName: '', description: '', phone: '', website: '', hours: '' })
+  const [form, setForm] = useState({
+    displayName: '',
+    description: '',
+    phone: '',
+    website: '',
+    hours: '',
+  })
 
   const load = useCallback(async () => {
     if (!venueId) return
@@ -118,7 +124,9 @@ export function BusinessPage() {
           <p className="mt-6 text-sm text-on-surface-variant">{t('biz.notFound')}</p>
         ) : (
           <>
-            <h1 className="font-display text-2xl font-bold text-on-surface">{profile.displayName}</h1>
+            <h1 className="font-display text-2xl font-bold text-on-surface">
+              {profile.displayName}
+            </h1>
             <p className="mt-0.5 text-sm font-medium text-primary">{t('biz.verified')}</p>
 
             {error && (

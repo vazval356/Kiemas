@@ -73,9 +73,7 @@ export function SpacesPage() {
       setNewName('')
     } catch (e) {
       setError(
-        rpcErrorCode(e) === 'limit_spaces'
-          ? t('limit.spaces')
-          : errorMessage(e, t('common.error'))
+        rpcErrorCode(e) === 'limit_spaces' ? t('limit.spaces') : errorMessage(e, t('common.error'))
       )
       setAtLimit(rpcErrorCode(e) === 'limit_spaces')
     } finally {
@@ -101,7 +99,10 @@ export function SpacesPage() {
     // Una sola vez: si el código está caducado, reintentar en cada repintado
     // dejaría la pantalla parpadeando el mismo error.
     autoTried.current = true
-    const clean = fromLink.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')
+    const clean = fromLink
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
     setCode(clean)
 
     // Se limpia de la URL para que recargar no vuelva a intentarlo y para que
@@ -148,7 +149,9 @@ export function SpacesPage() {
             no lleva de vuelta a donde estabas. */}
         <BackButton to="/profile" />
 
-        <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">{t('spaces.title')}</h1>
+        <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">
+          {t('spaces.title')}
+        </h1>
 
         {/* ── Modo en solitario ──────────────────────────────────────────────
             El espacio personal va aparte y arriba, como en el diseño. No es un

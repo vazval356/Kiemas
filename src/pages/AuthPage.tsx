@@ -90,7 +90,8 @@ export function AuthPage() {
     }
 
     if (password.length < 6) return setError(t('auth.passwordTooShort'))
-    if (mode === 'signUp' && displayName.trim().length === 0) return setError(t('auth.nameRequired'))
+    if (mode === 'signUp' && displayName.trim().length === 0)
+      return setError(t('auth.nameRequired'))
     if (mode === 'signUp' && !accepted) return setError(t('auth.mustAccept'))
 
     // Se escribe antes de autenticar: el almacenamiento de sesión lo consulta
@@ -127,10 +128,18 @@ export function AuthPage() {
   }
 
   const titulo =
-    mode === 'signIn' ? t('auth.welcomeBack') : mode === 'signUp' ? t('auth.joinTitle') : t('auth.forgot')
+    mode === 'signIn'
+      ? t('auth.welcomeBack')
+      : mode === 'signUp'
+        ? t('auth.joinTitle')
+        : t('auth.forgot')
 
   const accion =
-    mode === 'signIn' ? t('auth.signIn') : mode === 'signUp' ? t('auth.signUp') : t('auth.sendReset')
+    mode === 'signIn'
+      ? t('auth.signIn')
+      : mode === 'signUp'
+        ? t('auth.signUp')
+        : t('auth.sendReset')
 
   return (
     <div className="pt-safe h-full overflow-y-auto bg-surface">

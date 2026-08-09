@@ -98,7 +98,8 @@ interface PlanRow {
   recurrence_until: string | null
   created_by: string | null
   created_at: string
-  plan_attendees: { user_id: string; response: AttendeeResponse; responded_at: string | null }[] | null
+  plan_attendees:
+    { user_id: string; response: AttendeeResponse; responded_at: string | null }[] | null
   plan_date_options:
     | {
         id: string
@@ -277,7 +278,9 @@ export const supabaseApi: DataApi = {
     const row = check(
       await supabase
         .from('profiles')
-        .select('id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal')
+        .select(
+          'id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal'
+        )
         .eq('id', uid)
         .single()
     )
@@ -340,7 +343,9 @@ export const supabaseApi: DataApi = {
     const uid = await myId()
     const blob = await resizeImage(file, 512, 0.85)
     const path = `${uid}/${crypto.randomUUID()}.jpg`
-    const up = await supabase.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg' })
+    const up = await supabase.storage
+      .from('avatars')
+      .upload(path, blob, { contentType: 'image/jpeg' })
     if (up.error) throw new Error(up.error.message)
     const { data } = supabase.storage.from('avatars').getPublicUrl(path)
     ok(await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', uid))
@@ -389,7 +394,9 @@ export const supabaseApi: DataApi = {
     )
 
     return spaces.map((s) => {
-      const list = (membersBySpace.get(s.id) ?? []).sort((a, b) => a.joinedAt.localeCompare(b.joinedAt))
+      const list = (membersBySpace.get(s.id) ?? []).sort((a, b) =>
+        a.joinedAt.localeCompare(b.joinedAt)
+      )
       return {
         id: s.id,
         name: s.name,
@@ -457,8 +464,7 @@ export const supabaseApi: DataApi = {
     // Si llega un Blob ya viene recortado y comprimido por el encuadrador, que
     // es el camino normal. Un File es una foto sin pasar por ahí —el recorte
     // automático— y se procesa aquí.
-    const blob =
-      source instanceof File ? await cropToCover(source, 800, 16 / 9, 0.62) : source
+    const blob = source instanceof File ? await cropToCover(source, 800, 16 / 9, 0.62) : source
     const ext = blob.type === 'image/webp' ? 'webp' : 'jpg'
     const path = `${spaceId}/${crypto.randomUUID()}.${ext}`
     const up = await supabase.storage.from('covers').upload(path, blob, {
@@ -541,7 +547,11 @@ export const supabaseApi: DataApi = {
 
   async setMemberRole(spaceId: string, userId: string, role: SpaceRole) {
     ok(
-      await supabase.from('space_members').update({ role }).eq('space_id', spaceId).eq('user_id', userId)
+      await supabase
+        .from('space_members')
+        .update({ role })
+        .eq('space_id', spaceId)
+        .eq('user_id', userId)
     )
   },
 
@@ -566,14 +576,23 @@ export const supabaseApi: DataApi = {
     }))
   },
 
-  async createInvite(spaceId: string, expiry: InviteExpiry, maxUses: number | null): Promise<Invite> {
+  async createInvite(
+    spaceId: string,
+    expiry: InviteExpiry,
+    maxUses: number | null
+  ): Promise<Invite> {
     const res = await supabase.rpc('create_invite', {
       p_space_id: spaceId,
       p_expires_in: expiry ? EXPIRY_TO_INTERVAL[expiry] : null,
       p_max_uses: maxUses,
     })
     if (res.error) throw new Error(res.error.message)
-    const d = res.data as { id: string; code: string; expires_at: string | null; max_uses: number | null }
+    const d = res.data as {
+      id: string
+      code: string
+      expires_at: string | null
+      max_uses: number | null
+    }
     return {
       id: d.id,
       code: d.code,
@@ -586,7 +605,12 @@ export const supabaseApi: DataApi = {
   },
 
   async revokeInvite(inviteId: string) {
-    ok(await supabase.from('invites').update({ revoked_at: new Date().toISOString() }).eq('id', inviteId))
+    ok(
+      await supabase
+        .from('invites')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('id', inviteId)
+    )
   },
 
   async joinWithCode(code: string) {
@@ -609,7 +633,12 @@ export const supabaseApi: DataApi = {
     return rows.map((r) => ({ id: r.id, name: r.name, emoji: r.emoji, icon: r.icon }))
   },
 
-  async addCategory(spaceId: string, name: string, emoji: string, icon = 'place'): Promise<Category> {
+  async addCategory(
+    spaceId: string,
+    name: string,
+    emoji: string,
+    icon = 'place'
+  ): Promise<Category> {
     const row = check(
       await supabase
         .from('categories')
@@ -685,7 +714,9 @@ export const supabaseApi: DataApi = {
 
   async deletePlace(placeId: string) {
     // Las fotos del sitio quedarían huérfanas en el cubo, así que se borran antes.
-    const place = check(await supabase.from('places').select('space_id, photos').eq('id', placeId).single())
+    const place = check(
+      await supabase.from('places').select('space_id, photos').eq('id', placeId).single()
+    )
     const paths = (place.photos ?? []) as string[]
     if (paths.length > 0) await supabase.storage.from('photos').remove(paths)
     ok(await supabase.from('places').delete().eq('id', placeId))
@@ -704,7 +735,9 @@ export const supabaseApi: DataApi = {
   },
 
   async addPhotos(placeId: string, files: File[]) {
-    const place = check(await supabase.from('places').select('space_id, photos').eq('id', placeId).single())
+    const place = check(
+      await supabase.from('places').select('space_id, photos').eq('id', placeId).single()
+    )
     const existing = (place.photos ?? []) as string[]
     const added: string[] = []
 
@@ -712,12 +745,19 @@ export const supabaseApi: DataApi = {
       const blob = await resizeImage(file)
       // La ruta empieza por el espacio: es lo que consulta la política de storage.
       const path = `${place.space_id}/${placeId}/${crypto.randomUUID()}.jpg`
-      const up = await supabase.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg' })
+      const up = await supabase.storage
+        .from('photos')
+        .upload(path, blob, { contentType: 'image/jpeg' })
       if (up.error) throw new Error(up.error.message)
       added.push(path)
     }
 
-    ok(await supabase.from('places').update({ photos: [...existing, ...added] }).eq('id', placeId))
+    ok(
+      await supabase
+        .from('places')
+        .update({ photos: [...existing, ...added] })
+        .eq('id', placeId)
+    )
   },
 
   async removePhoto(placeId: string, photoId: string) {
@@ -795,7 +835,11 @@ export const supabaseApi: DataApi = {
   async respondToPlan(planId: string, response: AttendeeResponse) {
     const uid = await myId()
     ok(
-      await supabase.from('plan_attendees').update({ response }).eq('plan_id', planId).eq('user_id', uid)
+      await supabase
+        .from('plan_attendees')
+        .update({ response })
+        .eq('plan_id', planId)
+        .eq('user_id', uid)
     )
   },
 
@@ -1175,18 +1219,20 @@ export const supabaseApi: DataApi = {
         .eq('visible', true)
     )
     const order: Entitlement[] = ['free', 'plus', 'pro']
-    return rows
-      .map((r) => ({
-        entitlement: r.entitlement as Entitlement,
-        maxSpaces: r.max_spaces,
-        maxMembers: r.max_members,
-        maxActivePlans: r.max_active_plans,
-        maxPlaces: r.max_places,
-      }))
-      // La tabla no garantiza orden, y el alfabético deja «free, plus, pro»
-      // por pura casualidad: bastaría renombrar un nivel para que la tabla de
-      // precios saliera desordenada. Se ordena a propósito.
-      .sort((a, b) => order.indexOf(a.entitlement) - order.indexOf(b.entitlement))
+    return (
+      rows
+        .map((r) => ({
+          entitlement: r.entitlement as Entitlement,
+          maxSpaces: r.max_spaces,
+          maxMembers: r.max_members,
+          maxActivePlans: r.max_active_plans,
+          maxPlaces: r.max_places,
+        }))
+        // La tabla no garantiza orden, y el alfabético deja «free, plus, pro»
+        // por pura casualidad: bastaría renombrar un nivel para que la tabla de
+        // precios saliera desordenada. Se ordena a propósito.
+        .sort((a, b) => order.indexOf(a.entitlement) - order.indexOf(b.entitlement))
+    )
   },
 
   async redeemPromoCode(code: string): Promise<PromoRedemption> {
@@ -1215,7 +1261,9 @@ export const supabaseApi: DataApi = {
 
   async listBlockedUsers(): Promise<string[]> {
     const uid = await myId()
-    const rows = check(await supabase.from('blocked_users').select('blocked_id').eq('blocker_id', uid))
+    const rows = check(
+      await supabase.from('blocked_users').select('blocked_id').eq('blocker_id', uid)
+    )
     return rows.map((r) => r.blocked_id)
   },
 
@@ -1383,7 +1431,9 @@ export async function getPublicList(token: string): Promise<PublicList> {
       lng: parseCoord(p.lng),
       priceLevel: p.price_level,
       // Las rutas llegan sin resolver, igual que en `places.photos`.
-      photos: (p.photos ?? []).map((path) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl),
+      photos: (p.photos ?? []).map(
+        (path) => supabase.storage.from('photos').getPublicUrl(path).data.publicUrl
+      ),
       category: p.category,
       emoji: p.emoji,
       tags: p.tags ?? [],

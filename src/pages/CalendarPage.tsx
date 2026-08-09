@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AddIcon } from '../components/icons'
-import { addDays, daysBetween, formatDayLabel, formatTime, isSameDay, startOfDay } from '../lib/dates'
+import {
+  addDays,
+  daysBetween,
+  formatDayLabel,
+  formatTime,
+  isSameDay,
+  startOfDay,
+} from '../lib/dates'
 import type { Category, Locale, Plan, SpaceMember } from '../lib/types'
 import type { Translate } from '../lib/i18n'
 import { useApp } from '../state/appState'
@@ -52,7 +59,10 @@ export function CalendarPage() {
     const total = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()
     return [
       ...Array.from({ length: blanks }, () => null),
-      ...Array.from({ length: total }, (_, i) => new Date(first.getFullYear(), first.getMonth(), i + 1)),
+      ...Array.from(
+        { length: total },
+        (_, i) => new Date(first.getFullYear(), first.getMonth(), i + 1)
+      ),
     ]
   }, [monthAnchor])
 
@@ -85,10 +95,9 @@ export function CalendarPage() {
     return plan.attendees.find((a) => a.userId === profile?.id)?.response ?? 'pending'
   }
 
-  const headerMonth = (selectedDay ?? (view === 'month' ? monthAnchor : new Date())).toLocaleDateString(
-    locale,
-    { month: 'long', year: 'numeric' }
-  )
+  const headerMonth = (
+    selectedDay ?? (view === 'month' ? monthAnchor : new Date())
+  ).toLocaleDateString(locale, { month: 'long', year: 'numeric' })
 
   function shiftMonth(delta: number) {
     setMonthAnchor((m) => new Date(m.getFullYear(), m.getMonth() + delta, 1))
@@ -153,7 +162,9 @@ export function CalendarPage() {
                 type="button"
                 onClick={() => setView(v)}
                 className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${
-                  view === v ? 'bg-surface-lowest text-primary shadow-sm' : 'text-on-surface-variant'
+                  view === v
+                    ? 'bg-surface-lowest text-primary shadow-sm'
+                    : 'text-on-surface-variant'
                 }`}
               >
                 {t(v === 'week' ? 'calendar.week' : 'calendar.month')}
@@ -214,7 +225,9 @@ export function CalendarPage() {
                   traduzca el navegador, en vez de escribirlos en cada idioma. */}
               {Array.from({ length: 7 }, (_, i) => (
                 <span key={i}>
-                  {addDays(new Date(2024, 0, 1), i).toLocaleDateString(locale, { weekday: 'narrow' })}
+                  {addDays(new Date(2024, 0, 1), i).toLocaleDateString(locale, {
+                    weekday: 'narrow',
+                  })}
                 </span>
               ))}
             </div>

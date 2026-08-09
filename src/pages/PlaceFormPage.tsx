@@ -50,9 +50,10 @@ export function PlaceFormPage() {
 
   // Importación desde Google Maps
   const [importUrl, setImportUrl] = useState('')
-  const [importMessage, setImportMessage] = useState<{ kind: 'ok' | 'warn' | 'info'; text: string } | null>(
-    null
-  )
+  const [importMessage, setImportMessage] = useState<{
+    kind: 'ok' | 'warn' | 'info'
+    text: string
+  } | null>(null)
 
   // Búsqueda de dirección
   const [query, setQuery] = useState('')
@@ -365,7 +366,9 @@ export function PlaceFormPage() {
             {importMessage && (
               <p
                 className={`mt-2 text-sm ${
-                  importMessage.kind === 'ok' ? 'font-medium text-primary' : 'text-on-surface-variant'
+                  importMessage.kind === 'ok'
+                    ? 'font-medium text-primary'
+                    : 'text-on-surface-variant'
                 }`}
               >
                 {importMessage.text}
@@ -402,7 +405,9 @@ export function PlaceFormPage() {
               className="flex-1 bg-transparent py-3.5 outline-none"
             />
             {searching && (
-              <span className="shrink-0 text-xs text-on-surface-variant">{t('form.searching')}</span>
+              <span className="shrink-0 text-xs text-on-surface-variant">
+                {t('form.searching')}
+              </span>
             )}
           </div>
           {/* Al teclear solo responde Photon, que va de direcciones. Buscar un
@@ -502,7 +507,9 @@ export function PlaceFormPage() {
             type="button"
             onClick={() => setStatus('want_to_go')}
             className={`rounded-full py-2.5 text-sm font-semibold squish ${
-              status === 'want_to_go' ? 'bg-primary text-on-primary shadow' : 'text-on-surface-variant'
+              status === 'want_to_go'
+                ? 'bg-primary text-on-primary shadow'
+                : 'text-on-surface-variant'
             }`}
           >
             📌 {t('place.wantToGo')}

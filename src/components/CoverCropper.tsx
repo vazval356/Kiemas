@@ -108,7 +108,10 @@ export function CoverCropper({
         pinchStart.current = { dist, zoom }
         return
       }
-      const z = Math.min(ZOOM_MAX, Math.max(1, (pinchStart.current.zoom * dist) / pinchStart.current.dist))
+      const z = Math.min(
+        ZOOM_MAX,
+        Math.max(1, (pinchStart.current.zoom * dist) / pinchStart.current.dist)
+      )
       setZoom(z)
       setOffset((o) => clamp(o, z))
       return

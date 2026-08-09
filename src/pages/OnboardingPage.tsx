@@ -60,7 +60,15 @@ function ArteMapa() {
               <path d="M60 190 L240 40" />
               <path d="M-10 60 L300 96" />
             </g>
-            <rect x="150" y="20" width="70" height="34" rx="6" fill="var(--color-tertiary-container)" opacity=".25" />
+            <rect
+              x="150"
+              y="20"
+              width="70"
+              height="34"
+              rx="6"
+              fill="var(--color-tertiary-container)"
+              opacity=".25"
+            />
             {/* El recorrido entre dos sitios guardados */}
             <path
               d="M78 74 C120 92, 150 96, 196 112"
@@ -74,7 +82,13 @@ function ArteMapa() {
 
           {/* Sitio guardado */}
           <div className="absolute left-[52px] top-[48px] flex size-11 items-center justify-center rounded-2xl bg-primary text-on-primary shadow-[var(--shadow-float)]">
-            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
               <circle cx="12" cy="10" r="2.5" />
             </svg>
@@ -82,7 +96,13 @@ function ArteMapa() {
 
           {/* Favorito del grupo */}
           <div className="absolute left-[176px] top-[92px] flex size-9 items-center justify-center rounded-full bg-surface-container-lowest text-primary shadow-[var(--shadow-surface)]">
-            <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              viewBox="0 0 24 24"
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="m12 3 2.6 5.6 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.4l6-.8z" />
             </svg>
           </div>
@@ -130,7 +150,13 @@ function ArteCalendario() {
       {/* Encuesta a medias */}
       <div className="-mt-3 ml-[-10px] w-[86%] rounded-card bg-surface-container-lowest p-3 shadow-[var(--shadow-float)]">
         <div className="flex items-center gap-2">
-          <svg viewBox="0 0 24 24" className="size-4 text-on-surface-variant" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            viewBox="0 0 24 24"
+            className="size-4 text-on-surface-variant"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M4 20h16M6 20V9l6-4 6 4v11" />
           </svg>
           <span className="text-xs font-semibold text-on-surface">Votación abierta</span>
@@ -188,17 +214,36 @@ const ESPACIOS = [
 function ArteEspacios() {
   return (
     <div className="relative h-56 w-full max-w-[280px]">
-      <span className="absolute right-[16%] top-[14%] size-3 rounded-full bg-tertiary/70" aria-hidden />
-      <span className="absolute left-[8%] bottom-[22%] size-2.5 rounded-full bg-primary/50" aria-hidden />
-      <span className="absolute right-[4%] top-[42%] size-4 rotate-12 rounded bg-outline-variant/70" aria-hidden />
+      <span
+        className="absolute right-[16%] top-[14%] size-3 rounded-full bg-tertiary/70"
+        aria-hidden
+      />
+      <span
+        className="absolute left-[8%] bottom-[22%] size-2.5 rounded-full bg-primary/50"
+        aria-hidden
+      />
+      <span
+        className="absolute right-[4%] top-[42%] size-4 rotate-12 rounded bg-outline-variant/70"
+        aria-hidden
+      />
 
       {ESPACIOS.map((e) => (
         <div
           key={e.nombre}
           className={`absolute ${e.pos} rounded-card bg-surface-container-lowest p-2 shadow-[var(--shadow-float)]`}
         >
-          <div className={`flex size-[74px] flex-col items-center justify-center gap-1 rounded-xl ${e.clase}`}>
-            <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <div
+            className={`flex size-[74px] flex-col items-center justify-center gap-1 rounded-xl ${e.clase}`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="size-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               {e.icono}
             </svg>
             <span className="text-[11px] font-semibold">{e.nombre}</span>
@@ -230,7 +275,11 @@ function ArteResumen() {
       </div>
       <div className="mt-3 flex items-end gap-1">
         {[30, 55, 40, 72, 48, 90, 64].map((h, i) => (
-          <span key={i} className="flex-1 rounded-t bg-primary-fixed-dim" style={{ height: h / 2 }} />
+          <span
+            key={i}
+            className="flex-1 rounded-t bg-primary-fixed-dim"
+            style={{ height: h / 2 }}
+          />
         ))}
       </div>
     </div>
@@ -385,7 +434,15 @@ export function OnboardingPage({ onDone }: { onDone: () => void }) {
           className="flex w-full items-center justify-center gap-2 rounded-control bg-primary py-4 font-semibold text-on-primary squish"
         >
           {isLast ? t('onb.go') : t('onb.next')}
-          <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            viewBox="0 0 24 24"
+            className="size-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </button>

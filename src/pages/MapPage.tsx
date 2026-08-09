@@ -34,7 +34,8 @@ const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168] // Madrid
 
 export function MapPage() {
-  const { places, categories, position, requestPosition, spaces, activeSpace, api, refresh, t } = useApp()
+  const { places, categories, position, requestPosition, spaces, activeSpace, api, refresh, t } =
+    useApp()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
@@ -66,7 +67,8 @@ export function MapPage() {
     const q = query.trim().toLowerCase()
     return mappablePlaces.filter((p) => {
       if (categoryFilter && p.categoryId !== categoryFilter) return false
-      if (q && !p.name.toLowerCase().includes(q) && !p.address.toLowerCase().includes(q)) return false
+      if (q && !p.name.toLowerCase().includes(q) && !p.address.toLowerCase().includes(q))
+        return false
       return true
     })
   }, [mappablePlaces, categoryFilter, query])
@@ -299,7 +301,11 @@ export function MapPage() {
             </button>
           )}
         </div>
-        <CategoryChips categories={categories} selected={categoryFilter} onSelect={setCategoryFilter} />
+        <CategoryChips
+          categories={categories}
+          selected={categoryFilter}
+          onSelect={setCategoryFilter}
+        />
       </div>
 
       {/* Acciones flotantes; se ocultan si hay tarjeta abierta para no taparla. */}
