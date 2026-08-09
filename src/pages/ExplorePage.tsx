@@ -152,7 +152,9 @@ export function ExplorePage() {
 
                   <div className="p-4">
                     <Link to={`/l/${list.token}`} className="block">
-                      <h2 className="font-display text-lg font-bold text-on-surface">{list.name}</h2>
+                      <h2 className="font-display text-lg font-bold text-on-surface">
+                        {list.name}
+                      </h2>
                     </Link>
                     {/* Quien la publicó, ahora con su cara y con lo lejos que
                         cae. Un directorio de títulos no deja decidir nada: todas
@@ -177,7 +179,9 @@ export function ExplorePage() {
                       {lejos && (
                         <>
                           <span className="text-on-surface-variant/50">·</span>
-                          <span className="shrink-0 text-sm font-semibold text-primary">{lejos}</span>
+                          <span className="shrink-0 text-sm font-semibold text-primary">
+                            {lejos}
+                          </span>
                         </>
                       )}
                     </div>
