@@ -1160,6 +1160,11 @@ export const supabaseApi: DataApi = {
       await supabase
         .from('plan_limits')
         .select('entitlement, max_spaces, max_members, max_active_plans, max_places')
+        // Los niveles que no se ofrecen siguen existiendo —hay códigos
+        // promocionales que conceden Plus— pero no se pintan en la pantalla de
+        // precios. Se filtra aquí y no en el componente para que volver a
+        // ofrecer uno sea un UPDATE en la tabla, sin desplegar la app.
+        .eq('visible', true)
     )
     const order: Entitlement[] = ['free', 'plus', 'pro']
     return rows

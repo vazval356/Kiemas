@@ -96,12 +96,20 @@ export function SubscriptionPage() {
    */
   const packageFor = useCallback(
     (tier: Entitlement): PurchasesPackage | undefined => {
+      const suyo = (p: PurchasesPackage) =>
+        `${p.identifier} ${p.product.identifier}`.toLowerCase().includes(tier)
+
+      // El pago único gana siempre que exista. Llega de RevenueCat como
+      // `LIFETIME`, no como MONTHLY ni ANNUAL, y antes esta función solo miraba
+      // esos dos: la tarjeta se quedaba sin botón de compra y sin dar ningún
+      // error, que es justo el fallo contra el que avisaba el comentario que
+      // había aquí. No hay ambigüedad posible — comprarlo una vez lo compra
+      // para siempre, así que no depende del selector de periodo.
+      const siempre = packages.find((p) => p.packageType === 'LIFETIME' && suyo(p))
+      if (siempre) return siempre
+
       const wanted = period === 'annual' ? 'ANNUAL' : 'MONTHLY'
-      return packages.find(
-        (p) =>
-          p.packageType === wanted &&
-          `${p.identifier} ${p.product.identifier}`.toLowerCase().includes(tier)
-      )
+      return packages.find((p) => p.packageType === wanted && suyo(p))
     },
     [packages, period]
   )
