@@ -30,44 +30,39 @@ import type { Locale } from './types'
  *     nombre, su NIF y un domicilio, de forma «permanente, fácil, directa y
  *     gratuita».
  *
- * Si algún día se rellena `nif`, verifica la letra antes: es `número mod 23`
- * indexado en «TRWAGMYFPDXBNJZSQVHLCKE». Publicar un NIF con la letra mal es
- * peor que no publicarlo, porque señala a otra persona.
+ * La letra del NIF es `número mod 23` indexado en «TRWAGMYFPDXBNJZSQVHLCKE».
+ * Publicar un NIF con la letra mal es peor que no publicarlo, porque señala a
+ * otra persona. La de aquí está comprobada: 54032074 mod 23 = 14 → Z.
  */
 export const LEGAL_CONTACT = {
   responsable: 'Adrián Vázquez Valbuena',
   email: 'hola@kiemas.com',
   pais: 'España',
   /**
-   * NIF o CIF. Vacío a propósito mientras no haya actividad económica.
+   * NIF del titular, exigido por el artículo 10 de la LSSI a los prestadores de
+   * servicios de la sociedad de la información con actividad económica.
    *
-   * El artículo 10 de la LSSI lo exige a los PRESTADORES DE SERVICIOS de la
-   * sociedad de la información, y esa condición va unida a prestar el servicio
-   * a título oneroso. Hoy la app es gratuita: no hay productos dados de alta en
-   * ninguna tienda y nadie puede pagar nada, así que la obligación todavía no
-   * se ha activado y publicar el DNI del titular sería exponerlo sin necesidad.
-   *
-   * ⚠️ EN CUANTO SE ACTIVEN LAS SUSCRIPCIONES esto deja de valer. Ese día hay
-   * que rellenar `nif` y `direccion` —o haber constituido una sociedad y usar
-   * su CIF y su domicilio social—, porque a partir de ahí sí hay actividad
-   * económica y el artículo 10 se aplica de lleno.
+   * Estuvo vacío mientras la app fue gratuita: sin nadie que pudiera pagar, la
+   * obligación no se había activado y publicar el DNI era exponerlo sin
+   * necesidad. Se rellena ahora de cara a las suscripciones.
    */
-  nif: '',
+  nif: '54032074Z',
   /**
-   * Domicilio a efectos de notificaciones. Mismo criterio que `nif`.
+   * Domicilio a efectos de notificaciones, también del artículo 10.
    *
-   * No tiene que ser el domicilio particular: vale cualquier dirección donde se
-   * puedan recibir notificaciones, como la de una gestoría o un espacio de
-   * trabajo. Conviene que no sea la de casa, porque queda pública y permanente.
+   * No tiene por qué ser el domicilio particular: sirve cualquier dirección
+   * donde se puedan recibir notificaciones, como la de una gestoría. Si algún
+   * día se constituye una sociedad, aquí va su domicilio social y este dato
+   * deja de ser personal, que es la razón para hacerlo.
    */
-  direccion: '',
+  direccion: 'Avenida María Guerrero 49, 28919 Leganés (Madrid)',
 }
 
 /** `true` cuando el aviso legal tiene los datos que la LSSI exige. */
 export const legalIdentityComplete = Boolean(LEGAL_CONTACT.nif && LEGAL_CONTACT.direccion)
 
 /** Cuándo se revisaron por última vez. Se enseña al pie del documento. */
-export const LEGAL_UPDATED = '2026-08-06'
+export const LEGAL_UPDATED = '2026-08-09'
 
 export interface LegalSection {
   heading: string
@@ -282,7 +277,7 @@ const privacidadEs: LegalDoc = {
     {
       heading: 'Quién responde',
       body: [
-        `El responsable del tratamiento es ${LEGAL_CONTACT.responsable}, en ${LEGAL_CONTACT.pais}.`,
+        `El responsable del tratamiento es ${LEGAL_CONTACT.responsable}, con NIF ${LEGAL_CONTACT.nif} y domicilio en ${LEGAL_CONTACT.direccion}, ${LEGAL_CONTACT.pais}.`,
         `Para cualquier cuestión sobre tus datos, incluido el ejercicio de tus derechos, puedes escribir a ${LEGAL_CONTACT.email}.`,
       ],
     },
@@ -387,7 +382,7 @@ const privacidadEn: LegalDoc = {
     {
       heading: 'Who is responsible',
       body: [
-        `The data controller is ${LEGAL_CONTACT.responsable}, in Spain.`,
+        `The data controller is ${LEGAL_CONTACT.responsable}, tax ID ${LEGAL_CONTACT.nif}, of ${LEGAL_CONTACT.direccion}, Spain.`,
         `For anything about your data, including exercising your rights, you can write to ${LEGAL_CONTACT.email}.`,
       ],
     },
