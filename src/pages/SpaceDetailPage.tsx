@@ -2,13 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CoverCropper } from '../components/CoverCropper'
 import { ReportDialog } from '../components/ReportDialog'
-import { CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
+import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
 import { inviteUrl } from '../lib/appUrl'
 import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
-import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
 
 const EXPIRY_OPTIONS: {
@@ -134,7 +133,7 @@ export function SpaceDetailPage() {
         <p className="text-on-surface-variant">{t('common.error')}</p>
         <button
           type="button"
-          onClick={() => navigate('/spaces')}
+          onClick={() => navigate('/profile')}
           className="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary"
         >
           {t('common.back')}
@@ -192,16 +191,53 @@ export function SpaceDetailPage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
-      <div className="mx-auto max-w-md px-4 pt-2">
-        <BackButton to="/spaces" />
+      {/* ── La cara del grupo ────────────────────────────────────────────────
+          Esta pantalla abría con un titular pelado y la portada quedaba
+          enterrada entre los ajustes, así que un grupo no tenía ningún sitio
+          donde pareciera él mismo. Ahora entra por aquí: su foto, su emoji, su
+          color y quién está dentro.
 
-        <h1 className="font-display text-2xl font-bold text-on-surface">{space.name}</h1>
-        <p className="mt-0.5 text-sm text-on-surface-variant">
-          {space.members.length === 1
-            ? t('space.memberCount_one')
-            : t('space.membersCount', { count: space.members.length })}
-        </p>
+          Sin portada se usa el color del grupo, no un hueco gris: el color ya
+          lo eligió alguien y es identidad igual. */}
+      <div className="relative h-48 w-full" style={{ backgroundColor: cols.solid }}>
+        {space.coverUrl && (
+          <img src={space.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+        )}
+        {/* Velo de abajo arriba: el nombre va sobre la foto y sin él es
+            ilegible en cuanto la portada tiene una zona clara. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 
+        {/* Botón suelto y no `BackButton`: ese trae la palabra «Volver» al
+            lado, que sobre una foto y dentro de un círculo no cabe. Mismo
+            patrón que la ficha de un sitio sobre su portada. */}
+        <button
+          type="button"
+          onClick={() => navigate('/profile')}
+          aria-label={t('common.back')}
+          className="absolute left-3 top-3 z-10 flex size-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur squish"
+        >
+          <BackIcon className="size-5" />
+        </button>
+
+        <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 p-4">
+          <span
+            className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/90 text-2xl shadow"
+            aria-hidden
+          >
+            {space.emoji || '👥'}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate font-display text-2xl font-bold text-white">{space.name}</h1>
+            <p className="text-sm text-white/85">
+              {space.members.length === 1
+                ? t('space.memberCount_one')
+                : t('space.membersCount', { count: space.members.length })}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-md px-4 pt-4">
         <Link
           to="/activity"
           className="mt-4 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
@@ -848,7 +884,7 @@ export function SpaceDetailPage() {
                 void run(async () => {
                   await api.leaveSpace(space.id)
                   await refreshSpaces()
-                  navigate('/spaces')
+                  navigate('/profile')
                 })
               }}
               className="w-full rounded-full border border-outline-variant py-3 font-semibold text-on-surface-variant squish disabled:opacity-50"
@@ -865,7 +901,7 @@ export function SpaceDetailPage() {
                   void run(async () => {
                     await api.deleteSpace(space.id)
                     await refreshSpaces()
-                    navigate('/spaces')
+                    navigate('/profile')
                   })
                 }}
                 className="w-full rounded-full border border-error/40 py-3 font-semibold text-error squish disabled:opacity-50"

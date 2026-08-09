@@ -192,22 +192,43 @@ export function ProfilePage() {
                     onClick={() => setActiveSpace(space.id)}
                     className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left squish"
                   >
+                    {/* Si el grupo tiene portada, se ve la portada. El emoji
+                        sobre un círculo de color identifica, pero una foto que
+                        alguien eligió identifica muchísimo más, y era lo que se
+                        perdió al quitar las tarjetas grandes de la lista de
+                        espacios. */}
                     <span
-                      className="flex size-10 shrink-0 items-center justify-center rounded-full text-lg"
+                      className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl text-lg"
                       style={
                         space.kind === 'personal'
                           ? undefined
                           : { backgroundColor: c.soft, color: c.onSoft }
                       }
                     >
+                      {space.coverUrl && space.kind !== 'personal' && (
+                        <img
+                          src={space.coverUrl}
+                          alt=""
+                          loading="lazy"
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      )}
                       {space.kind === 'personal' ? (
-                        <span className="flex size-10 items-center justify-center rounded-full bg-primary-fixed text-primary">
+                        <span className="flex size-11 items-center justify-center rounded-xl bg-primary-fixed text-primary">
                           <UserIcon className="size-5" />
                         </span>
                       ) : space.emoji ? (
-                        space.emoji
+                        // Sobre la foto, el emoji necesita su propia sombra
+                        // para no perderse en una portada clara.
+                        <span
+                          className={
+                            space.coverUrl ? 'relative drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]' : ''
+                          }
+                        >
+                          {space.emoji}
+                        </span>
                       ) : (
-                        <GroupIcon className="size-5" />
+                        !space.coverUrl && <GroupIcon className="size-5" />
                       )}
                     </span>
                     <span className="min-w-0 flex-1">

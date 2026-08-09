@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
@@ -19,6 +19,7 @@ import { useApp } from '../state/appState'
  * enlace no hace nada» sin ninguna pista de por qué.
  */
 export function SpacesPage() {
+  const navigate = useNavigate()
   const { setActiveSpace, api, refreshSpaces, t } = useApp()
 
   const nameRef = useRef<HTMLInputElement>(null)
@@ -65,10 +66,12 @@ export function SpacesPage() {
     try {
       const space = await api.createSpace(name)
       await refreshSpaces()
-      // Entrar directamente en lo que se acaba de crear es lo que se espera;
-      // dejarlo en la lista obligaría a un segundo toque sin motivo.
+      // Al mapa del grupo recién creado. Quedarse aquí con un aviso tenía
+      // sentido cuando debajo estaba la lista de espacios; ahora deja a la
+      // persona mirando un formulario vacío después de haber creado algo.
       setActiveSpace(space.id)
       setNewName('')
+      navigate('/')
     } catch (e) {
       setError(
         rpcErrorCode(e) === 'limit_spaces' ? t('limit.spaces') : errorMessage(e, t('common.error'))
@@ -127,11 +130,9 @@ export function SpacesPage() {
       await refreshSpaces()
       setActiveSpace(result.spaceId)
       setCode('')
-      setNotice(
-        result.alreadyMember
-          ? t('invite.alreadyMember')
-          : t('invite.joinedTo', { name: result.name })
-      )
+      // Igual que al crear: se entra en el grupo, no se anuncia que se ha
+      // entrado. El nombre del grupo ya sale en la cabecera del mapa.
+      navigate('/')
     } catch (e) {
       setError(translateJoinError(e))
     } finally {
