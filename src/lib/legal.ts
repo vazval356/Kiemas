@@ -116,14 +116,14 @@ const terminosEs: LegalDoc = {
     {
       heading: `Propiedad de ${BRAND_NAME}`,
       body: [
-        `Todo lo que forma parte de ${BRAND_NAME} —el diseño de la aplicación y la web, el código fuente, la estructura, el logotipo, el nombre comercial y la marca— es propiedad exclusiva de su titular o cuenta con las licencias correspondientes.`,
+        `Todo lo que forma parte de ${BRAND_NAME} (el diseño de la aplicación y la web, el código fuente, la estructura, el logotipo, el nombre comercial y la marca) es propiedad exclusiva de su titular o cuenta con las licencias correspondientes.`,
         'Te concedemos un permiso limitado para usar la aplicación según estas condiciones, pero esto no te da derecho a copiarla, modificarla, distribuirla, revenderla ni intentar extraer su código fuente.',
       ],
     },
     {
       heading: 'Suscripciones',
       body: [
-        'Los niveles de pago se contratan a través de la tienda de tu dispositivo —App Store o Google Play— y se renuevan automáticamente por el mismo periodo salvo que los canceles antes de que termine.',
+        'Los niveles de pago se contratan a través de la tienda de tu dispositivo (App Store o Google Play) y se renuevan automáticamente por el mismo periodo salvo que los canceles antes de que termine.',
         'El precio que se te muestra es el que fija la tienda para tu país, con los impuestos que correspondan. Si el precio cambiara, se te avisaría con antelación y, cuando la ley lo exige, la subida no se aplicaría sin tu aceptación expresa.',
         'La cancelación, el cobro y las devoluciones se gestionan en la tienda y no aquí, porque el contrato de compra lo cierras con ella y es allí donde se realiza el pago. Cancelar mantiene el acceso hasta el final del periodo ya pagado; no hay devolución proporcional de la parte no consumida salvo que la tienda la conceda.',
         'También puedes acceder a un nivel de pago con un código promocional. Un código no es una compra: no se renueva, no se cobra nada y caduca en la fecha que tuviera.',
@@ -134,7 +134,7 @@ const terminosEs: LegalDoc = {
       body: [
         'Si eres consumidor en la Unión Europea, dispones de catorce días naturales para desistir de una compra a distancia sin justificar el motivo.',
         'Como el contrato de compra lo cierras con App Store o con Google Play, ese derecho se ejerce ante ellas y siguiendo su procedimiento, que encontrarás en el apartado de compras y suscripciones de tu cuenta de la tienda.',
-        'Ten en cuenta una excepción que fija la propia ley: cuando aceptas que el servicio digital empiece a prestarse de inmediato —que es lo que ocurre al suscribirte, porque el nivel se activa en el acto— reconoces perder el derecho de desistimiento una vez ejecutado por completo. Aun así, las tiendas suelen conceder devoluciones por encima de lo que la ley les obliga.',
+        'Ten en cuenta una excepción que fija la propia ley: cuando aceptas que el servicio digital empiece a prestarse de inmediato (que es lo que ocurre al suscribirte, porque el nivel se activa en el acto), reconoces perder el derecho de desistimiento una vez ejecutado por completo. Aun así, las tiendas suelen conceder devoluciones por encima de lo que la ley les obliga.',
         `Si crees que no se han respetado tus derechos como consumidor, puedes escribir a ${LEGAL_CONTACT.email} antes de acudir a ninguna otra vía.`,
       ],
     },
@@ -151,7 +151,7 @@ const terminosEs: LegalDoc = {
     {
       heading: 'Disponibilidad y responsabilidad',
       body: [
-        'El servicio se ofrece sin garantía de estar disponible de forma ininterrumpida. Puede haber cortes técnicos, mantenimiento o incidencias derivadas de proveedores de infraestructura —como bases de datos o servidores de alojamiento— ajenos a nuestro control.',
+        'El servicio se ofrece sin garantía de estar disponible de forma ininterrumpida. Puede haber cortes técnicos, mantenimiento o incidencias derivadas de proveedores de infraestructura (como bases de datos o servidores de alojamiento) ajenos a nuestro control.',
         `${BRAND_NAME} aloja contenidos aportados por los usuarios. No revisamos previamente todo el contenido publicado. Si detectas contenido ilícito o que vulnere tus derechos, escríbenos a ${LEGAL_CONTACT.email} para que podamos reaccionar y retirarlo a la mayor brevedad.`,
         'No se responde de los daños derivados de un uso incorrecto de la aplicación, de la pérdida fortuita de datos por causas ajenas ni de lo que ocurra en los encuentros que organices a través de ella. Nada de esto limita la responsabilidad que la ley no permita excluir.',
         'Descarga tus datos periódicamente desde Ajustes si te importa conservarlos.',
@@ -209,14 +209,14 @@ const terminosEn: LegalDoc = {
     {
       heading: `${BRAND_NAME} ownership`,
       body: [
-        `Everything that makes up ${BRAND_NAME} — the app and web design, the source code, the structure, the logo, the trade name and the brand — belongs exclusively to its owner or is used under the corresponding licences.`,
+        `Everything that makes up ${BRAND_NAME} (the app and web design, the source code, the structure, the logo, the trade name and the brand) belongs exclusively to its owner or is used under the corresponding licences.`,
         'We grant you a limited permission to use the app under these terms, but that does not give you the right to copy, modify, distribute or resell it, nor to attempt to extract its source code.',
       ],
     },
     {
       heading: 'Subscriptions',
       body: [
-        'Paid tiers are purchased through your device store — App Store or Google Play — and renew automatically for the same period unless you cancel before it ends.',
+        'Paid tiers are purchased through your device store (App Store or Google Play) and renew automatically for the same period unless you cancel before it ends.',
         'The price shown is the one the store sets for your country, including any applicable taxes. If the price changes you will be told in advance and, where the law requires it, an increase will not apply without your express acceptance.',
         'Cancellation, billing and refunds are handled by the store and not here, because the purchase contract is with them and that is where payment happens. Cancelling keeps your access until the end of the period already paid for; there is no pro-rata refund of the unused part unless the store grants one.',
         'You can also unlock a paid tier with a promotional code. A code is not a purchase: it does not renew, nothing is charged, and it expires on whatever date it carries.',
@@ -227,7 +227,7 @@ const terminosEn: LegalDoc = {
       body: [
         'If you are a consumer in the European Union, you have fourteen calendar days to withdraw from a distance purchase without giving a reason.',
         'Because the purchase contract is concluded with the App Store or Google Play, that right is exercised with them and through their procedure, which you will find in the purchases and subscriptions section of your store account.',
-        'Note an exception set by the law itself: when you agree that a digital service should begin immediately — which is what happens when you subscribe, since the tier activates at once — you acknowledge losing the right of withdrawal once it has been fully performed. Even so, the stores usually grant refunds beyond what the law obliges them to.',
+        'Note an exception set by the law itself: when you agree that a digital service should begin immediately (which is what happens when you subscribe, since the tier activates at once), you acknowledge losing the right of withdrawal once it has been fully performed. Even so, the stores usually grant refunds beyond what the law obliges them to.',
         `If you believe your consumer rights have not been respected, please write to ${LEGAL_CONTACT.email} before pursuing any other route.`,
       ],
     },
@@ -244,7 +244,7 @@ const terminosEn: LegalDoc = {
     {
       heading: 'Availability and liability',
       body: [
-        'The service is offered without any guarantee of uninterrupted availability. There may be technical outages, maintenance, or incidents caused by infrastructure providers — such as databases or hosting servers — outside our control.',
+        'The service is offered without any guarantee of uninterrupted availability. There may be technical outages, maintenance, or incidents caused by infrastructure providers (such as databases or hosting servers) outside our control.',
         `${BRAND_NAME} hosts content contributed by its users. We do not review all published content in advance. If you spot unlawful content, or content that infringes your rights, write to us at ${LEGAL_CONTACT.email} so we can react and remove it as soon as possible.`,
         'We are not liable for damage arising from misuse of the app, from accidental data loss due to external causes, or from what happens at the meet-ups you organise through it. None of this limits liability that the law does not allow to be excluded.',
         'Download your data periodically from Settings if keeping it matters to you.',
@@ -286,9 +286,9 @@ const privacidadEs: LegalDoc = {
       body: [
         '· Al crear una cuenta: tu correo electrónico, tu nombre visible y un identificador de usuario. El correo lo gestiona el sistema de autenticación; la contraseña no se guarda nunca en claro ni es accesible para nosotros.',
         '· Si los añades tú: una foto de perfil, una frase de presentación y el idioma que prefieres.',
-        '· Lo que aportas a la aplicación: los sitios que guardas —nombre, dirección, coordenadas, notas, fotos, precio y categoría—, los planes que creas, tus respuestas a los planes, tus puntuaciones, tus comentarios, tus colecciones y los espacios de los que formas parte.',
+        '· Lo que aportas a la aplicación: los sitios que guardas (nombre, dirección, coordenadas, notas, fotos, precio y categoría), los planes que creas, tus respuestas a los planes, tus puntuaciones, tus comentarios, tus colecciones y los espacios de los que formas parte.',
         '· Si activas las notificaciones: un identificador del dispositivo que facilita el sistema operativo, necesario para poder enviarlas. No incluye tu número de teléfono ni identifica el aparato de otra forma.',
-        '· Si te suscribes: el estado de la suscripción y su fecha de renovación. Los datos de pago los gestiona la tienda —Apple o Google— y no llegan a nosotros en ningún momento.',
+        '· Si te suscribes: el estado de la suscripción y su fecha de renovación. Los datos de pago los gestiona la tienda (Apple o Google) y no llegan a nosotros en ningún momento.',
         '· Si pulsas el botón de «mi ubicación» del mapa: tu posición aproximada, y solo mientras la pantalla está abierta. No se guarda, no se envía a ningún servidor y no queda registro de por dónde has estado. Sirve únicamente para centrar el mapa en tu dispositivo.',
         'No se usan cookies de seguimiento, ni perfilado publicitario, ni herramientas de analítica de terceros.',
       ],
@@ -322,7 +322,7 @@ const privacidadEs: LegalDoc = {
       heading: 'Almacenamiento en tu dispositivo',
       body: [
         'La aplicación guarda datos en el almacenamiento local de tu navegador o dispositivo: la sesión iniciada, el espacio que tienes abierto, el idioma y, si las activas, el identificador para las notificaciones.',
-        'Son estrictamente necesarios para que el servicio funcione —sin la sesión guardada tendrías que volver a entrar en cada pantalla—, así que no requieren tu consentimiento previo, pero tienes derecho a saber que están ahí.',
+        'Son estrictamente necesarios para que el servicio funcione (sin la sesión guardada tendrías que volver a entrar en cada pantalla), así que no requieren tu consentimiento previo, pero tienes derecho a saber que están ahí.',
         'No hay cookies de terceros, ni píxeles de seguimiento, ni identificadores publicitarios. Cerrar sesión o borrar los datos del navegador los elimina.',
       ],
     },
@@ -331,7 +331,7 @@ const privacidadEs: LegalDoc = {
       body: [
         'Si solicitas administrar un local, se guarda el texto que escribes para acreditarlo. Suele incluir tu nombre, tu cargo y un teléfono, y lo lee una persona para comprobar la solicitud: no se aprueba de forma automática.',
         'Esa información se usa solo para resolver la solicitud y no se muestra a nadie más. La base legal es tu consentimiento al enviarla, y puedes pedir que se borre escribiendo al correo de contacto.',
-        'Si se aprueba, la ficha del local —nombre, descripción, horario, teléfono y web— pasa a ser pública dentro de la aplicación. Ahí no pongas datos personales que no quieras que se vean: es el escaparate del negocio, no tu perfil.',
+        'Si se aprueba, la ficha del local (nombre, descripción, horario, teléfono y web) pasa a ser pública dentro de la aplicación. Ahí no pongas datos personales que no quieras que se vean: es el escaparate del negocio, no tu perfil.',
         'Las estadísticas que ves como responsable de un local son recuentos agregados: cuánta gente lo tiene guardado, cuántas listas lo incluyen. Nunca identidades. No se muestra ningún número por debajo de un mínimo de cinco personas, precisamente para que un recuento pequeño no pueda señalar a nadie concreto.',
       ],
     },
@@ -363,7 +363,7 @@ const privacidadEs: LegalDoc = {
       body: [
         'Aplicamos medidas de seguridad técnicas y organizativas para proteger la información frente a accesos no autorizados o pérdidas.',
         'La comunicación entre tu dispositivo y la base de datos viaja siempre cifrada mediante protocolos seguros (HTTPS/TLS). Los datos almacenados cuentan con cifrado en reposo y las contraseñas se procesan mediante algoritmos de cifrado unidireccional (hashing), por lo que nunca son accesibles en texto plano.',
-        'No se usa cifrado de extremo a extremo. Eso significa que el contenido que guardas —sitios, notas, fotos— se almacena de forma que la infraestructura puede procesarlo, y no cifrado con una clave que solo tengas tú. Se dice aquí para que no haya equívoco: si lo que buscas es que nadie salvo tú pueda leerlo bajo ninguna circunstancia, esta aplicación no ofrece esa garantía.',
+        'No se usa cifrado de extremo a extremo. Eso significa que el contenido que guardas (sitios, notas, fotos) se almacena de forma que la infraestructura puede procesarlo, y no cifrado con una clave que solo tengas tú. Se dice aquí para que no haya equívoco: si lo que buscas es que nadie salvo tú pueda leerlo bajo ninguna circunstancia, esta aplicación no ofrece esa garantía.',
       ],
     },
     {
@@ -391,9 +391,9 @@ const privacidadEn: LegalDoc = {
       body: [
         '· When you create an account: your email address, display name and a username. The email is handled by the authentication system; your password is never stored in plain text nor accessible to us.',
         '· If you add them: a profile photo, a short bio and your preferred language.',
-        '· What you contribute: the places you save — name, address, coordinates, notes, photos, price and category — the plans you create, your responses to plans, your ratings, your comments, your collections and the spaces you belong to.',
+        '· What you contribute: the places you save (name, address, coordinates, notes, photos, price and category), the plans you create, your responses to plans, your ratings, your comments, your collections and the spaces you belong to.',
         '· If you enable notifications: a device identifier provided by the operating system, needed to deliver them. It does not include your phone number or otherwise identify the device.',
-        '· If you subscribe: the subscription status and renewal date. Payment details are handled by the store — Apple or Google — and never reach us.',
+        '· If you subscribe: the subscription status and renewal date. Payment details are handled by the store (Apple or Google) and never reach us.',
         '· If you tap the map’s “my location” button: your approximate position, and only while that screen is open. It is not stored, not sent to any server, and no record is kept of where you have been. It is used solely to centre the map on your device.',
         'No tracking cookies, no advertising profiling, no third-party analytics.',
       ],
@@ -420,14 +420,14 @@ const privacidadEn: LegalDoc = {
         '· Resend: transactional account emails, such as password recovery.',
         'Some of these providers process data outside the European Economic Area. Those transfers rely on the standard contractual clauses approved by the European Commission.',
         'Photos deserve a separate explanation. They are kept in a file store where every file has an address containing a random identifier: there is no way to list the contents or guess addresses, but anyone holding the exact link can open the image without needing an account. This is a deliberate choice, not an oversight: expiring addresses would break photos already loaded on the map and would make public lists impossible, and those exist precisely to be seen without an account. If a photo feels sensitive to you, bear that in mind before uploading it.',
-        'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested — exactly as if you had panned there with your finger.',
+        'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested, exactly as if you had panned there with your finger.',
       ],
     },
     {
       heading: 'Storage on your device',
       body: [
         'The app stores data in your browser or device local storage: your signed-in session, the space you have open, your language, and the notification identifier if you enable them.',
-        'These are strictly necessary for the service to work — without a stored session you would have to sign in again on every screen — so they do not require prior consent, but you have the right to know they are there.',
+        'These are strictly necessary for the service to work (without a stored session you would have to sign in again on every screen), so they do not require prior consent, but you have the right to know they are there.',
         'There are no third-party cookies, tracking pixels or advertising identifiers. Signing out or clearing your browser data removes them.',
       ],
     },
@@ -436,7 +436,7 @@ const privacidadEn: LegalDoc = {
       body: [
         'If you request to manage a venue, the text you write to prove it is stored. It usually includes your name, your role and a phone number, and a person reads it to check the request: it is not approved automatically.',
         'That information is used only to resolve the request and is not shown to anyone else. The legal basis is your consent when submitting it, and you can ask for it to be deleted by writing to the contact address.',
-        'If approved, the venue page — name, description, opening hours, phone and website — becomes public within the app. Do not put personal details there that you would not want seen: it is the business shopfront, not your profile.',
+        'If approved, the venue page (name, description, opening hours, phone and website) becomes public within the app. Do not put personal details there that you would not want seen: it is the business shopfront, not your profile.',
         'The statistics you see as the person managing a venue are aggregate counts: how many people have it saved, how many lists include it. Never identities. No number is shown below a minimum of five people, precisely so that a small count cannot point at anyone in particular.',
       ],
     },
@@ -468,7 +468,7 @@ const privacidadEn: LegalDoc = {
       body: [
         'We apply technical and organisational security measures to protect information against unauthorised access or loss.',
         'Communication between your device and the database always travels encrypted over secure protocols (HTTPS/TLS). Stored data is encrypted at rest, and passwords are processed with one-way hashing algorithms, so they are never accessible in plain text.',
-        'End-to-end encryption is not used. That means the content you save — places, notes, photos — is stored in a way the infrastructure can process, not encrypted with a key only you hold. It is stated here so there is no misunderstanding: if what you need is that nobody but you can read it under any circumstances, this app does not offer that guarantee.',
+        'End-to-end encryption is not used. That means the content you save (places, notes, photos) is stored in a way the infrastructure can process, not encrypted with a key only you hold. It is stated here so there is no misunderstanding: if what you need is that nobody but you can read it under any circumstances, this app does not offer that guarantee.',
       ],
     },
     {
@@ -541,7 +541,7 @@ const avisoEs: LegalDoc = {
       heading: 'Propiedad intelectual e industrial',
       body: [
         `El código fuente, la arquitectura, el diseño de la interfaz, el nombre comercial «${BRAND_NAME}» y los logotipos pertenecen en exclusiva a su titular.`,
-        `El contenido que aportan los usuarios —sitios, fotografías, comentarios, listas— sigue siendo propiedad de quien lo aporta, otorgando a ${BRAND_NAME} la licencia necesaria para mostrarlo dentro de la plataforma según la configuración elegida.`,
+        `El contenido que aportan los usuarios (sitios, fotografías, comentarios, listas) sigue siendo propiedad de quien lo aporta, otorgando a ${BRAND_NAME} la licencia necesaria para mostrarlo dentro de la plataforma según la configuración elegida.`,
         'Los datos cartográficos integrados proceden de OpenStreetMap y sus colaboradores, utilizados bajo la licencia de bases de datos abiertas ODbL. El buscador de direcciones utiliza los servicios de Photon (Komoot) y Nominatim (OpenStreetMap).',
       ],
     },
@@ -587,7 +587,7 @@ const avisoEn: LegalDoc = {
       heading: 'Intellectual and industrial property',
       body: [
         `The source code, the architecture, the interface design, the trade name “${BRAND_NAME}” and the logos belong exclusively to their owner.`,
-        `Content contributed by users — places, photographs, comments, lists — remains the property of whoever contributes it, granting ${BRAND_NAME} the licence needed to display it within the platform according to the settings chosen.`,
+        `Content contributed by users (places, photographs, comments, lists) remains the property of whoever contributes it, granting ${BRAND_NAME} the licence needed to display it within the platform according to the settings chosen.`,
         'The integrated map data comes from OpenStreetMap and its contributors, used under the ODbL open database licence. The address search uses the Photon (Komoot) and Nominatim (OpenStreetMap) services.',
       ],
     },
