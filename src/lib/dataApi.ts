@@ -51,7 +51,7 @@ export interface DataApi {
   // ── Perfil ───────────────────────────────────────────────────────────────
   me(): Promise<Profile>
   updateProfile(patch: Partial<Pick<Profile, 'displayName' | 'locale' | 'bio'>>): Promise<void>
-  setAvatar(file: File): Promise<string>
+  setAvatar(source: File | Blob): Promise<string>
   /**
    * Copiar al mapa personal los sitios que se guardan en los grupos.
    *

@@ -368,9 +368,14 @@ export const supabaseApi: DataApi = {
     return res.data as UsernameStatus
   },
 
-  async setAvatar(file: File): Promise<string> {
+  /**
+   * Un `File` es la foto cruda y se reduce aquí; un `Blob` ya viene recortado
+   * por el encuadrador y se sube tal cual. Volver a pasarlo por `resizeImage`
+   * lo re-comprimiría por segunda vez sin ganar nada.
+   */
+  async setAvatar(source: File | Blob): Promise<string> {
     const uid = await myId()
-    const blob = await resizeImage(file, 512, 0.85)
+    const blob = source instanceof File ? await resizeImage(source, 512, 0.85) : source
     const path = `${uid}/${crypto.randomUUID()}.jpg`
     const up = await supabase.storage
       .from('avatars')

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
+import { CoverCropper } from '../components/CoverCropper'
 import { UsernameEditor } from '../components/UsernameEditor'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -33,6 +34,7 @@ export function EditProfilePage({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [cropping, setCropping] = useState<File | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const setup = mode === 'setup'
@@ -44,12 +46,18 @@ export function EditProfilePage({
     setBio((v) => (v ? v : (profile?.bio ?? '')))
   }, [profile?.displayName, profile?.bio])
 
-  async function pickAvatar(file: File | undefined) {
-    if (!file) return
+  /**
+   * El retrato pasa por el encuadrador, igual que las portadas.
+   *
+   * Antes se subía tal cual y se recortaba centrado al pintarlo redondo, que en
+   * una foto donde no estás en el centro te deja fuera del círculo. La ventana
+   * de recorte es redonda porque es como se va a ver.
+   */
+  async function guardarAvatar(blob: Blob) {
     setError('')
     setBusy(true)
     try {
-      await api.setAvatar(file)
+      await api.setAvatar(blob)
       await refreshSpaces()
     } catch (e) {
       setError(errorMessage(e, t('common.error')))
@@ -122,10 +130,11 @@ export function EditProfilePage({
             accept="image/*"
             className="hidden"
             onChange={(e) => {
-              void pickAvatar(e.target.files?.[0])
+              const file = e.target.files?.[0]
               // Se limpia para que elegir la MISMA foto otra vez vuelva a
               // disparar el evento.
               e.target.value = ''
+              if (file) setCropping(file)
             }}
           />
           <button
@@ -215,6 +224,19 @@ export function EditProfilePage({
           </button>
         )}
       </div>
+
+      {cropping && (
+        <CoverCropper
+          file={cropping}
+          aspect={1}
+          round
+          onCancel={() => setCropping(null)}
+          onDone={(blob) => {
+            setCropping(null)
+            void guardarAvatar(blob)
+          }}
+        />
+      )}
     </div>
   )
 }
