@@ -108,9 +108,16 @@ export function SubscriptionPage() {
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
 
-  /** Las ventajas de un nivel, escritas desde sus topes reales. */
+  /**
+   * Las ventajas de un nivel, escritas desde sus topes reales.
+   *
+   * Los sitios van los primeros a propósito: es la cuota que la gente toca de
+   * verdad, porque guardar sitios es lo que se hace a diario. Los grupos y el
+   * aforo se rozan una vez y ya.
+   */
   function bullets(l: PlanLimits): string[] {
     return [
+      l.maxPlaces === null ? t('sub.bulletPlacesMax') : t('sub.bulletPlaces', { n: l.maxPlaces }),
       l.maxSpaces === null
         ? t('sub.bulletSpacesMax')
         : l.maxSpaces === 1

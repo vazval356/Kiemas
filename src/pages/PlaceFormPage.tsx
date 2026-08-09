@@ -1,7 +1,8 @@
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
 import { PinIcon, SparkleIcon } from '../components/icons'
 import type { PlaceStatus } from '../lib/types'
@@ -45,6 +46,7 @@ export function PlaceFormPage() {
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [atLimit, setAtLimit] = useState(false)
 
   // Importación desde Google Maps
   const [importUrl, setImportUrl] = useState('')
@@ -266,6 +268,7 @@ export function PlaceFormPage() {
     }
     setSaving(true)
     setError('')
+    setAtLimit(false)
     try {
       const input = {
         name: name.trim(),
@@ -293,7 +296,15 @@ export function PlaceFormPage() {
         navigate(`/place/${created.id}`)
       }
     } catch (e) {
-      setError(errorMessage(e, t('form.saveFailed')))
+      // El tope de sitios se explica en vez de soltar el código del servidor, y
+      // sobre todo se dice que cuenta sobre TODOS los grupos: si no, quien lo
+      // lee mira este grupo, ve cuatro sitios y piensa que la app falla.
+      if (rpcErrorCode(e) === 'limit_places') {
+        setError(`${t('limit.places')} ${t('limit.placesHint')}`)
+        setAtLimit(true)
+      } else {
+        setError(errorMessage(e, t('form.saveFailed')))
+      }
     } finally {
       setSaving(false)
     }
@@ -582,7 +593,19 @@ export function PlaceFormPage() {
           </div>
         </details>
 
-        {error && <p className="mt-4 text-sm font-semibold text-error">{error}</p>}
+        {error && (
+          <div className="mt-4 text-sm font-semibold text-error">
+            <p>{error}</p>
+            {atLimit && (
+              <Link
+                to="/subscription"
+                className="mt-1 inline-block text-primary underline underline-offset-2"
+              >
+                {t('limit.seePlans')}
+              </Link>
+            )}
+          </div>
+        )}
 
         <button
           type="button"

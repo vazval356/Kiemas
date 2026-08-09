@@ -425,7 +425,21 @@ export interface MyEntitlement {
   maxSpaces: number | null
   maxMembers: number | null
   maxActivePlans: number | null
+  maxPlaces: number | null
   spacesUsed: number
+  /**
+   * Sitios y planes creados por esta persona, sumando todos sus espacios.
+   *
+   * Se cuentan aquí y no en el cliente porque el cliente solo ve los espacios
+   * que tiene cargados: contar allí daría una cifra menor que la real y la app
+   * enseñaría margen que no existe.
+   *
+   * En `placesUsed` no entran las copias del espejo. Son el mismo local visto
+   * desde otro espacio, y contarlas haría que guardar un bar gastase tantas
+   * unidades como gente tenga el espejo encendido.
+   */
+  placesUsed: number
+  plansUsed: number
 }
 
 export interface PromoRedemption {
@@ -439,6 +453,7 @@ export interface PlanLimits {
   maxSpaces: number | null
   maxMembers: number | null
   maxActivePlans: number | null
+  maxPlaces: number | null
 }
 
 /** Los tres contadores de la cabecera del perfil. */

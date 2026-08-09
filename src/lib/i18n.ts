@@ -581,9 +581,15 @@ const es = {
   'sub.bulletSpacesMax': 'Grupos sin límite',
   'sub.bulletMembers': 'Hasta {n} personas por grupo',
   'sub.bulletMembersMax': 'Personas sin límite',
-  'sub.bulletPlansOne': '1 plan a la vez',
-  'sub.bulletPlans': '{n} planes a la vez',
+  // «Tuyos» no es un adorno: los topes de sitios y planes se cuentan sobre lo
+  // que crea cada persona sumando todos sus grupos, no sobre el grupo. Sin esa
+  // palabra la gente lee «3 planes» como «3 por grupo» y se lleva la sorpresa
+  // al llegar al segundo.
+  'sub.bulletPlansOne': '1 plan tuyo a la vez',
+  'sub.bulletPlans': '{n} planes tuyos a la vez',
   'sub.bulletPlansMax': 'Planes sin límite',
+  'sub.bulletPlaces': '{n} sitios tuyos',
+  'sub.bulletPlacesMax': 'Sitios sin límite',
   'sub.manage': 'Gestionar suscripción',
   'sub.manageHint': 'Se abre en la tienda, que es donde se cambian el pago y la cancelación.',
   'sub.welcomeTitle': 'Ya tienes {plan}',
@@ -607,8 +613,10 @@ const es = {
   'limit.spaces': 'Has llegado al máximo de grupos de tu plan.',
   'limit.members': 'Este grupo está completo.',
   'limit.membersHint': 'Quien lo creó puede ampliarlo cambiando de plan.',
-  'limit.plans': 'Ya hay un plan en marcha en este grupo.',
-  'limit.plansHint': 'Cierra el que hay o amplía tu plan para llevar varios a la vez.',
+  'limit.plans': 'Has llegado a tu tope de planes activos.',
+  'limit.plansHint': 'Cuenta los de todos tus grupos. Cierra alguno o amplía tu plan.',
+  'limit.places': 'Has llegado a tu tope de sitios guardados.',
+  'limit.placesHint': 'Cuenta los de todos tus grupos. Borra alguno o amplía tu plan.',
   'limit.seePlans': 'Ver planes',
 
   // Widget de pantalla de inicio (Fase 4)
@@ -1225,9 +1233,11 @@ const en: Record<TranslationKey, string> = {
   'sub.bulletSpacesMax': 'Unlimited groups',
   'sub.bulletMembers': 'Up to {n} people per group',
   'sub.bulletMembersMax': 'Unlimited people',
-  'sub.bulletPlansOne': '1 plan at a time',
-  'sub.bulletPlans': '{n} plans at a time',
+  'sub.bulletPlansOne': '1 plan of your own at a time',
+  'sub.bulletPlans': '{n} plans of your own at a time',
   'sub.bulletPlansMax': 'Unlimited plans',
+  'sub.bulletPlaces': '{n} places of your own',
+  'sub.bulletPlacesMax': 'Unlimited places',
   'sub.manage': 'Manage subscription',
   'sub.manageHint': 'Opens in the store, where payment and cancellation are handled.',
   'sub.welcomeTitle': "You've got {plan}",
@@ -1251,8 +1261,10 @@ const en: Record<TranslationKey, string> = {
   'limit.spaces': "You've reached the group limit on your plan.",
   'limit.members': 'This group is full.',
   'limit.membersHint': 'Whoever created it can make room by changing plan.',
-  'limit.plans': "There's already a plan running in this group.",
-  'limit.plansHint': 'Close the current one, or upgrade to run several at once.',
+  'limit.plans': "You've reached your limit of active plans.",
+  'limit.plansHint': 'It counts across all your groups. Close one, or upgrade your plan.',
+  'limit.places': "You've reached your limit of saved places.",
+  'limit.placesHint': 'It counts across all your groups. Delete one, or upgrade your plan.',
   'limit.seePlans': 'See plans',
 
   // Home screen widget (Phase 4)

@@ -236,6 +236,9 @@ export const RPC_ERRORS = [
   'limit_spaces',
   'limit_members',
   'limit_plans',
+  // Este no lo lanza una RPC sino el disparador de `places`: los sitios se
+  // insertan directos contra la tabla.
+  'limit_places',
   'promo_not_found',
   'promo_expired',
   'promo_exhausted',
@@ -1144,7 +1147,10 @@ export const supabaseApi: DataApi = {
       maxSpaces: (d.maxSpaces ?? null) as number | null,
       maxMembers: (d.maxMembers ?? null) as number | null,
       maxActivePlans: (d.maxActivePlans ?? null) as number | null,
+      maxPlaces: (d.maxPlaces ?? null) as number | null,
       spacesUsed: Number(d.spacesUsed ?? 0),
+      placesUsed: Number(d.placesUsed ?? 0),
+      plansUsed: Number(d.plansUsed ?? 0),
     }
   },
 
@@ -1152,7 +1158,7 @@ export const supabaseApi: DataApi = {
     const rows = check(
       await supabase
         .from('plan_limits')
-        .select('entitlement, max_spaces, max_members, max_active_plans')
+        .select('entitlement, max_spaces, max_members, max_active_plans, max_places')
     )
     const order: Entitlement[] = ['free', 'plus', 'pro']
     return rows
@@ -1161,6 +1167,7 @@ export const supabaseApi: DataApi = {
         maxSpaces: r.max_spaces,
         maxMembers: r.max_members,
         maxActivePlans: r.max_active_plans,
+        maxPlaces: r.max_places,
       }))
       // La tabla no garantiza orden, y el alfabético deja «free, plus, pro»
       // por pura casualidad: bastaría renombrar un nivel para que la tabla de
