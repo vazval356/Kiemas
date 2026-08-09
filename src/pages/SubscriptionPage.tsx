@@ -34,7 +34,19 @@ import { useApp } from '../state/appState'
 
 const ORDER: Entitlement[] = ['free', 'plus', 'pro']
 /** El nivel que se destaca. Es una decisión comercial, no técnica. */
-const HIGHLIGHT: Entitlement = 'plus'
+/**
+ * Cuál se destaca.
+ *
+ * Antes era una constante con «plus» escrito a mano, y el día que Plus dejó de
+ * ofrecerse la pantalla se quedó sin ninguna tarjeta destacada: la constante
+ * apuntaba a un nivel que ya no se pintaba, y nada avisaba de ello.
+ *
+ * Ahora se calcula: el primero de pago que se esté ofreciendo. Con Plus y Pro
+ * visibles destaca Plus, como antes; con solo Pro, destaca Pro.
+ */
+function nivelDestacado(limits: PlanLimits[]): Entitlement | null {
+  return limits.find((l) => l.entitlement !== 'free')?.entitlement ?? null
+}
 
 type Period = 'monthly' | 'annual'
 
@@ -80,6 +92,8 @@ export function SubscriptionPage() {
   useEffect(() => {
     if (canBuy) void listPackages().then(setPackages)
   }, [canBuy])
+
+  const highlight = useMemo(() => nivelDestacado(limits), [limits])
 
   const hasAnnual = useMemo(
     () => packages.some((p) => p.packageType === 'ANNUAL'),
@@ -317,21 +331,25 @@ export function SubscriptionPage() {
                 if (!l) return null
 
                 const isCurrent = mine?.entitlement === tier
-                const isHighlight = tier === HIGHLIGHT
+                const isHighlight = tier === highlight
                 const pkg = tier === 'free' ? undefined : packageFor(tier)
+                const esVitalicio = pkg?.packageType === 'LIFETIME'
 
                 return (
                   <section
                     key={tier}
                     className={`relative rounded-card p-5 ${
                       isHighlight
-                        ? 'bg-primary text-on-primary shadow-[var(--shadow-float)]'
+                        ? // El anillo exterior es lo que la despega de la página.
+                          // Sin él, un rectángulo azul sobre fondo claro se lee
+                          // como un bloque más; con él, como algo puesto encima.
+                          'bg-primary text-on-primary shadow-[var(--shadow-float)] ring-4 ring-primary/15'
                         : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
                     }`}
                   >
                     {isHighlight && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-secondary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-secondary shadow-md">
-                        {t('sub.popular')}
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-secondary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-secondary shadow-md">
+                        {esVitalicio ? t('sub.badgeForever') : t('sub.popular')}
                       </span>
                     )}
 
@@ -351,7 +369,7 @@ export function SubscriptionPage() {
                     <p
                       className={
                         tier === 'free' || pkg
-                          ? 'mt-3 font-display text-3xl font-bold'
+                          ? `mt-3 font-display font-bold ${isHighlight ? 'text-5xl leading-none' : 'text-3xl'}`
                           : `mt-3 font-display text-lg font-semibold ${isHighlight ? 'text-on-primary/70' : 'text-on-surface-variant'}`
                       }
                     >
@@ -359,6 +377,17 @@ export function SubscriptionPage() {
                         ? t('sub.free0')
                         : (pkg?.product.priceString ?? t('sub.priceSoon'))}
                     </p>
+
+                    {/* Sin esta línea, un precio a secas junto a los demás se
+                        lee como mensual. Decir «pago único» debajo de la cifra
+                        es la diferencia entre parecer caro y parecer barato. */}
+                    {esVitalicio && (
+                      <p
+                        className={`mt-1.5 text-sm ${isHighlight ? 'text-on-primary/85' : 'text-on-surface-variant'}`}
+                      >
+                        {t('sub.oneTime')}
+                      </p>
+                    )}
 
                     <ul className="mt-4 flex flex-col gap-2">
                       {bullets(l).map((b) => (
