@@ -342,26 +342,97 @@ export function PlaceDetailPage() {
           {notesSaved && <p className="mt-2 text-sm text-primary">{t('detail.notesSaved')}</p>}
         </section>
 
-        {/* Fotos */}
-        {place.photos.length > 0 && (
-          <section className="mt-6">
-            <h2 className="mb-2 font-display font-semibold text-on-surface">{t('place.photos')}</h2>
-            <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-              {place.photos.map((photo) => (
-                <button
-                  key={photo.id}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void run(() => api.removePhoto(place.id, photo.id))}
-                  className="size-28 shrink-0 overflow-hidden rounded-card"
-                  title={t('common.delete')}
-                >
-                  <img src={photo.url} alt="" className="size-full object-cover" />
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* ── Fotos ────────────────────────────────────────────────────────
+            La sección se pinta SIEMPRE, aunque no haya ninguna. Antes se
+            escondía cuando el sitio no tenía fotos, y como el único sitio
+            donde se podían añadir era el formulario de edición, quien había
+            subido una al crear el sitio no encontraba por dónde subir la
+            segunda. */}
+        <section className="mt-6">
+          <h2 className="mb-2 font-display font-semibold text-on-surface">{t('place.photos')}</h2>
+          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+            <label className="flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish">
+              <span className="text-2xl">📷</span>
+              <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                disabled={busy}
+                onChange={(e) => {
+                  const files = e.target.files ? Array.from(e.target.files) : []
+                  // Se limpia para que volver a elegir la MISMA foto dispare el
+                  // evento otra vez.
+                  e.target.value = ''
+                  if (files.length > 0) void run(() => api.addPhotos(place.id, files))
+                }}
+              />
+            </label>
+            {place.photos.map((photo) => {
+              const autor = members.find((m) => m.userId === photo.uploadedBy)
+              const esPortada = place.coverPath === photo.id
+              // El servidor manda igual; esconder el botón evita ofrecer una
+              // acción que va a rebotar.
+              const puedoBorrar =
+                photo.uploadedBy === profile?.id || activeSpace?.myRole === 'admin'
+
+              return (
+                <figure key={photo.id} className="w-28 shrink-0">
+                  <div className="relative size-28 overflow-hidden rounded-card">
+                    <img src={photo.url} alt="" loading="lazy" className="size-full object-cover" />
+                    {esPortada && (
+                      <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
+                        {t('detail.cover')}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Quién la subió y cuándo. Es lo que convierte un montón de
+                      imágenes en el recuerdo de una noche concreta. */}
+                  <figcaption className="mt-1 truncate text-[11px] text-on-surface-variant">
+                    {autor?.displayName ?? '—'}
+                    {' · '}
+                    {new Date(photo.uploadedAt).toLocaleDateString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                    })}
+                  </figcaption>
+
+                  <div className="mt-0.5 flex items-center gap-2">
+                    {!esPortada && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void run(() => api.setPlaceCover(place.id, photo.id))}
+                        className="text-[11px] font-semibold text-primary squish disabled:opacity-50"
+                      >
+                        {t('detail.makeCover')}
+                      </button>
+                    )}
+                    {puedoBorrar && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        // Antes bastaba un toque sobre la foto para borrarla,
+                        // sin avisar. El gesto de tocar una foto es el mismo
+                        // que haría quien solo quiere verla más grande.
+                        onClick={() => {
+                          if (window.confirm(t('detail.photoDeleteConfirm'))) {
+                            void run(() => api.removePhoto(place.id, photo.id))
+                          }
+                        }}
+                        className="text-[11px] font-semibold text-error squish disabled:opacity-50"
+                      >
+                        {t('common.delete')}
+                      </button>
+                    )}
+                  </div>
+                </figure>
+              )
+            })}
+          </div>
+        </section>
 
         <CommentThread placeId={place.id} />
 

@@ -74,7 +74,8 @@ interface PlaceRow {
   notes_updated_by: string | null
   phone: string
   website: string
-  photos: string[]
+  cover_path: string | null
+  place_photos: { id: string; path: string; created_by: string | null; created_at: string }[] | null
   venue_id: string | null
   origin_space_id: string | null
   visibility: 'space' | 'public'
@@ -120,12 +121,36 @@ async function myId(): Promise<string> {
   return uid
 }
 
-function photoFromPath(path: string): Photo {
-  const { data } = supabase.storage.from('photos').getPublicUrl(path)
-  return { id: path, url: data.publicUrl }
+function urlDeFoto(path: string): string {
+  return supabase.storage.from('photos').getPublicUrl(path).data.publicUrl
+}
+
+/**
+ * `id` sigue siendo la RUTA del fichero y no el identificador de la fila.
+ *
+ * Es lo que ya usaba la app para borrar una foto, y mantenerlo evita tocar cada
+ * sitio que la pasa de un lado a otro. La ruta es única en toda la tabla, así
+ * que identifica igual de bien.
+ */
+function photoFromRow(row: { path: string; created_by: string | null; created_at: string }): Photo {
+  return {
+    id: row.path,
+    url: urlDeFoto(row.path),
+    uploadedBy: row.created_by,
+    uploadedAt: row.created_at,
+  }
 }
 
 function mapPlace(row: PlaceRow): Place {
+  // De la más antigua a la más reciente: es un recuerdo, y un recuerdo se lee
+  // en el orden en que ocurrió.
+  const galeria = (row.place_photos ?? [])
+    .slice()
+    .sort((a, b) => a.created_at.localeCompare(b.created_at))
+    .map(photoFromRow)
+
+  const portada = row.cover_path ?? galeria[0]?.id ?? null
+
   return {
     id: row.id,
     spaceId: row.space_id,
@@ -141,7 +166,11 @@ function mapPlace(row: PlaceRow): Place {
     notesUpdatedBy: row.notes_updated_by,
     phone: row.phone,
     website: row.website,
-    photos: (row.photos ?? []).map(photoFromPath),
+    photos: galeria,
+    coverPath: row.cover_path,
+    // Sin portada elegida se cae a la primera de la galería, que es lo que la
+    // app venía enseñando cuando las fotos eran una lista suelta.
+    coverUrl: portada ? urlDeFoto(portada) : null,
     ratings: (row.ratings ?? []).map((r) => ({ userId: r.user_id, score: Number(r.score) })),
     tagIds: (row.place_tags ?? []).map((t) => t.tag_id),
     venueId: row.venue_id ?? null,
@@ -659,7 +688,9 @@ export const supabaseApi: DataApi = {
     const rows = check(
       await supabase
         .from('places')
-        .select('*, ratings(user_id, score), place_tags(tag_id)')
+        .select(
+          '*, ratings(user_id, score), place_tags(tag_id), place_photos(id, path, created_by, created_at)'
+        )
         .eq('space_id', spaceId)
         .order('created_at', { ascending: false })
     )
@@ -687,7 +718,9 @@ export const supabaseApi: DataApi = {
           created_by: uid,
           visited_at: input.status === 'visited' ? new Date().toISOString() : null,
         })
-        .select('*, ratings(user_id, score), place_tags(tag_id)')
+        .select(
+          '*, ratings(user_id, score), place_tags(tag_id), place_photos(id, path, created_by, created_at)'
+        )
         .single()
     )
     return mapPlace(row as PlaceRow)
@@ -735,10 +768,10 @@ export const supabaseApi: DataApi = {
   },
 
   async addPhotos(placeId: string, files: File[]) {
+    const uid = await myId()
     const place = check(
-      await supabase.from('places').select('space_id, photos').eq('id', placeId).single()
+      await supabase.from('places').select('space_id, cover_path').eq('id', placeId).single()
     )
-    const existing = (place.photos ?? []) as string[]
     const added: string[] = []
 
     for (const file of files) {
@@ -752,24 +785,52 @@ export const supabaseApi: DataApi = {
       added.push(path)
     }
 
+    // `created_by` va explícito porque la política de subida exige que la foto
+    // se firme con quien la sube. No hay valor por defecto que lo resuelva.
     ok(
       await supabase
-        .from('places')
-        .update({ photos: [...existing, ...added] })
-        .eq('id', placeId)
+        .from('place_photos')
+        .insert(added.map((path) => ({ place_id: placeId, path, created_by: uid })))
     )
+
+    // Un sitio sin portada se queda con la primera que le llegue. Si no, habría
+    // que ir a elegirla a mano para que el sitio dejara de verse vacío en el
+    // mapa, y nadie lo haría.
+    if (!place.cover_path && added.length > 0) {
+      ok(await supabase.from('places').update({ cover_path: added[0] }).eq('id', placeId))
+    }
   },
 
+  /**
+   * Elegir la portada, o quitarla con `null`.
+   *
+   * El servidor comprueba que la ruta sea de una foto de ESTE sitio: sin esa
+   * comprobación bastaría con escribir aquí la ruta de la foto de otro espacio
+   * para sacarla por el mapa.
+   */
+  async setPlaceCover(placeId: string, path: string | null) {
+    ok(await supabase.from('places').update({ cover_path: path }).eq('id', placeId))
+  },
+
+  /**
+   * `photoId` es la ruta del fichero, igual que antes.
+   *
+   * Primero se borra la fila y solo después el fichero. Si se hiciera al revés
+   * y la política impidiera borrar —porque la foto es de otra persona— habría
+   * desaparecido el fichero dejando la fila apuntando a un hueco. Se comprueba
+   * que la fila haya caído de verdad antes de tocar el almacenamiento.
+   */
   async removePhoto(placeId: string, photoId: string) {
-    const place = check(await supabase.from('places').select('photos').eq('id', placeId).single())
-    const existing = (place.photos ?? []) as string[]
-    await supabase.storage.from('photos').remove([photoId])
-    ok(
+    const borradas = check(
       await supabase
-        .from('places')
-        .update({ photos: existing.filter((p) => p !== photoId) })
-        .eq('id', placeId)
+        .from('place_photos')
+        .delete()
+        .eq('place_id', placeId)
+        .eq('path', photoId)
+        .select('path')
     )
+    if (borradas.length === 0) throw new Error('photo_not_yours')
+    await supabase.storage.from('photos').remove([photoId])
   },
 
   // ── Planes ───────────────────────────────────────────────────────────────

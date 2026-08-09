@@ -25,10 +25,11 @@ export function PhotoOrPlaceholder({
   emoji: string
   className: string
 }) {
-  if (place.photos.length > 0) {
-    return (
-      <img src={place.photos[0].url} alt={place.name} className={`${className} object-cover`} />
-    )
+  // La PORTADA, no «la primera foto que haya». Es la que alguien eligió
+  // para representar el sitio, y `coverUrl` ya cae a la primera cuando no se
+  // ha elegido ninguna.
+  if (place.coverUrl) {
+    return <img src={place.coverUrl} alt={place.name} className={`${className} object-cover`} />
   }
   return (
     <div

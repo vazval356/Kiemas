@@ -140,9 +140,21 @@ export interface PlaceRating {
   score: number // 1..10
 }
 
+/**
+ * Una foto de la galería de un sitio.
+ *
+ * `id` es la RUTA del fichero en el almacenamiento, no el identificador de la
+ * fila. Es única en toda la tabla y es lo que la app ya usaba para borrar.
+ *
+ * El autor y la fecha son lo que convierte un montón de imágenes en el recuerdo
+ * de una noche concreta, y lo que permite que solo quien la subió pueda
+ * borrarla.
+ */
 export interface Photo {
   id: string
   url: string
+  uploadedBy: string | null
+  uploadedAt: string
 }
 
 export interface Place {
@@ -162,6 +174,15 @@ export interface Place {
   phone: string
   website: string
   photos: Photo[]
+  /**
+   * La portada: la cara del sitio en el mapa, en la lista y en las colecciones.
+   *
+   * Se elige de la galería. `coverUrl` ya viene resuelta y cae a la primera
+   * foto cuando no hay ninguna elegida, así que quien solo quiera pintar una
+   * imagen no tiene que decidir nada.
+   */
+  coverPath: string | null
+  coverUrl: string | null
   ratings: PlaceRating[]
   /** Etiquetas de ambiente aplicadas a este sitio (Fase 3). */
   tagIds: string[]

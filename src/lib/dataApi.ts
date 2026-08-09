@@ -151,6 +151,8 @@ export interface DataApi {
   setRating(placeId: string, score: number): Promise<void>
   addPhotos(placeId: string, files: File[]): Promise<void>
   removePhoto(placeId: string, photoId: string): Promise<void>
+  /** Elegir la portada del sitio, o quitarla con `null`. */
+  setPlaceCover(placeId: string, path: string | null): Promise<void>
 
   // ── Planes (Fase 2) ──────────────────────────────────────────────────────
   listPlans(spaceId: string, from?: Date): Promise<Plan[]>

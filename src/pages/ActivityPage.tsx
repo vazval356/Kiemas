@@ -270,9 +270,9 @@ function Row({
       </div>
     ) : entry.objectType === 'place' ? (
       <div className="mt-2 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
-        {place?.photos[0] ? (
+        {place?.coverUrl ? (
           <img
-            src={place.photos[0].url}
+            src={place.coverUrl}
             alt=""
             loading="lazy"
             className="size-20 shrink-0 object-cover"
