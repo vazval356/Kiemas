@@ -276,7 +276,7 @@ const es = {
   'roulette.alreadyVisited': '✓ Ya estuvimos aquí',
 
   // Espacios (Fase 1c)
-  'spaces.title': 'Espacios',
+  'spaces.title': 'Añadir un grupo',
   'spaces.createTitle': 'Crear un espacio',
   'spaces.joinTitle': 'Unirme a un espacio',
   'spaces.you': 'tú',
@@ -973,7 +973,7 @@ const en: Record<TranslationKey, string> = {
   'roulette.noPlaces': 'No places saved yet. Add one first.',
   'roulette.alreadyVisited': '✓ We already went here',
 
-  'spaces.title': 'Spaces',
+  'spaces.title': 'Add a group',
   'spaces.createTitle': 'Create a space',
   'spaces.joinTitle': 'Join a space',
   'spaces.you': 'you',

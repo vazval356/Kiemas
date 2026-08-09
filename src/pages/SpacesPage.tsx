@@ -1,27 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
-import { GroupIcon, UserIcon } from '../components/icons'
-import { spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
 /**
- * Lista de espacios, alta de uno nuevo y entrada por código.
+ * Crear un grupo, o entrar en uno con un código.
  *
- * El espacio personal aparece siempre el primero y no se puede compartir ni
- * borrar: es lo que garantiza que quien no quiera grupos siga teniendo dónde
- * guardar sus sitios.
+ * Aquí había además una lista de todos tus espacios, con su botón de gestionar.
+ * Era una copia de la que ya está en el perfil, y desde que cada fila del perfil
+ * lleva su propio engranaje no aportaba nada: dos sitios distintos enseñando lo
+ * mismo, que se desincronizan en cuanto uno de los dos cambie.
+ *
+ * La pantalla no se borra entera por una razón que no se ve: los enlaces de
+ * invitación apuntan a `/#/spaces?code=XXXXXX`. Quitar la ruta rompería todos
+ * los que ya se hayan repartido por WhatsApp, y ese fallo aparecería como «el
+ * enlace no hace nada» sin ninguna pista de por qué.
  */
 export function SpacesPage() {
-  const { spaces, activeSpace, setActiveSpace, api, refreshSpaces, t } = useApp()
-
-  // El espacio personal se separa de los grupos: en el diseño van en secciones
-  // distintas porque no son la misma cosa. `find` y no `filter[0]` porque solo
-  // puede haber uno — lo crea el disparador de alta.
-  const personal = spaces.find((s) => s.kind === 'personal')
-  const groups = spaces.filter((s) => s.kind === 'group')
+  const { setActiveSpace, api, refreshSpaces, t } = useApp()
 
   const nameRef = useRef<HTMLInputElement>(null)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -152,188 +150,6 @@ export function SpacesPage() {
         <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">
           {t('spaces.title')}
         </h1>
-
-        {/* ── Modo en solitario ──────────────────────────────────────────────
-            El espacio personal va aparte y arriba, como en el diseño. No es un
-            grupo más: es el que garantiza que quien no quiera grupos siga
-            teniendo dónde guardar sus sitios. */}
-        {personal && (
-          <section className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
-            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-secondary">
-              <UserIcon className="size-3.5" />
-              {t('space.personalJourney')}
-            </p>
-            <h2 className="mt-1 font-display text-xl font-bold text-on-surface">
-              {t('space.soloTitle')}
-            </h2>
-            <p className="mt-1 text-sm text-on-surface-variant">{t('spaces.personalNote')}</p>
-            {/* «Gestionar» también aquí: el espacio personal se puede
-                renombrar y darle emoji y color igual que un grupo, pero no
-                había ninguna forma de llegar a esa pantalla. */}
-            <div className="mt-4 flex gap-2">
-              <Link
-                to={`/spaces/${personal.id}`}
-                className="shrink-0 rounded-full border border-outline-variant px-4 py-3 text-sm font-semibold text-on-surface-variant squish"
-              >
-                {t('spaces.manage')}
-              </Link>
-              <button
-                type="button"
-                onClick={() => setActiveSpace(personal.id)}
-                disabled={personal.id === activeSpace?.id}
-                className="flex-1 rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-40"
-              >
-                {personal.id === activeSpace?.id ? t('space.inUse') : t('space.useSolo')}
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* ── Grupos ─────────────────────────────────────────────────────── */}
-        <div className="mt-8 flex items-baseline justify-between">
-          <h2 className="font-display text-xl font-bold text-on-surface">{t('space.mine')}</h2>
-          <span className="text-sm font-semibold text-on-surface-variant">
-            {groups.length === 1
-              ? t('spaces.activeOne')
-              : t('spaces.active', { count: groups.length })}
-          </span>
-        </div>
-
-        <ul className="mt-3 flex flex-col gap-4">
-          {groups.map((space) => {
-            const isActive = space.id === activeSpace?.id
-            const c = spaceColors(space.color)
-            return (
-              <li
-                key={space.id}
-                className={`overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)] ${
-                  isActive ? 'ring-2 ring-primary' : ''
-                }`}
-              >
-                {/* La portada es la foto del grupo si la tiene; si no, su color
-                    con el emoji. El emoji se mantiene encima de la foto porque
-                    es lo que identifica al grupo en el resto de la app. */}
-                {/* Portada en 16:9, que es el formato al que se recorta la foto
-                    al subirla. Antes era una franja baja con la tarjeta blanca
-                    ocupando más que la imagen; ahora manda la portada y el
-                    nombre y los botones van encima, en una banda oscurecida.
-                    Menos blanco y más de lo que distingue a cada grupo. */}
-                <div
-                  className="relative aspect-video w-full"
-                  style={{ background: `linear-gradient(135deg, ${c.solid}, ${c.soft})` }}
-                >
-                  {space.coverUrl && (
-                    <img
-                      src={space.coverUrl}
-                      alt=""
-                      loading="lazy"
-                      className="absolute inset-0 size-full object-cover"
-                    />
-                  )}
-
-                  {space.emoji && (
-                    <span className="absolute inset-0 flex items-center justify-center text-5xl drop-shadow-md">
-                      {space.emoji}
-                    </span>
-                  )}
-
-                  <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-surface-lowest/90 px-2.5 py-1 text-xs font-bold text-on-surface">
-                    <GroupIcon className="size-3.5" />
-                    {space.members.length}
-                  </span>
-
-                  {/* Degradado bajo el texto: sobre una foto clara, el blanco
-                      desaparece. Va solo en la mitad inferior para no ensuciar
-                      la imagen entera. */}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent p-3 pt-10">
-                    <h3 className="font-display text-lg font-bold text-white drop-shadow-sm">
-                      {space.name}
-                    </h3>
-                    {space.description && (
-                      <p className="line-clamp-1 text-sm text-white/85 drop-shadow-sm">
-                        {space.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-                  {/* La foto de cada persona, y su color solo como borde. Un
-                      círculo de color no dice quién es; una cara, sí. */}
-                  <div className="flex items-center">
-                    {space.members.slice(0, 4).map((m, i) =>
-                      m.avatarUrl ? (
-                        <img
-                          key={m.userId}
-                          src={m.avatarUrl}
-                          alt=""
-                          title={m.displayName}
-                          loading="lazy"
-                          className="size-8 rounded-full object-cover"
-                          style={{
-                            border: `2px solid ${m.color}`,
-                            marginLeft: i === 0 ? 0 : -8,
-                          }}
-                        />
-                      ) : (
-                        <span
-                          key={m.userId}
-                          title={m.displayName}
-                          className="flex size-8 items-center justify-center rounded-full text-[11px] font-bold text-white"
-                          style={{
-                            backgroundColor: m.color,
-                            border: '2px solid var(--color-surface-lowest)',
-                            marginLeft: i === 0 ? 0 : -8,
-                          }}
-                        >
-                          {m.displayName.slice(0, 1).toUpperCase()}
-                        </span>
-                      )
-                    )}
-                    {space.members.length > 4 && (
-                      <span className="-ml-2 flex size-8 items-center justify-center rounded-full border-2 border-surface-lowest bg-outline text-[10px] font-bold text-white">
-                        +{space.members.length - 4}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex shrink-0 gap-2">
-                    <Link
-                      to={`/spaces/${space.id}`}
-                      className="rounded-full border border-outline-variant px-3 py-2 text-sm font-medium text-on-surface-variant squish"
-                    >
-                      {t('spaces.manage')}
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => setActiveSpace(space.id)}
-                      disabled={isActive}
-                      className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary squish disabled:opacity-40"
-                    >
-                      {t('space.enter')}
-                    </button>
-                  </div>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-
-        {/* Lleva al formulario de abajo en vez de duplicarlo aquí: dos sitios
-            para crear un grupo es un sitio de más que mantener. */}
-        <button
-          type="button"
-          onClick={() => nameRef.current?.focus()}
-          className="mt-4 flex w-full flex-col items-center rounded-card border-2 border-dashed border-outline-variant py-6 squish"
-        >
-          <span className="flex size-11 items-center justify-center rounded-full bg-primary-fixed text-2xl text-primary">
-            +
-          </span>
-          {/* Sin repetir aquí la descripción: la sección de crear, justo
-              debajo, dice exactamente lo mismo. Dos veces la misma frase en
-              media pantalla hace dudar de si son dos cosas distintas. */}
-          <span className="mt-2 font-semibold text-primary">{t('spaces.addNew')}</span>
-        </button>
 
         {error && (
           <div className="mt-4 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
