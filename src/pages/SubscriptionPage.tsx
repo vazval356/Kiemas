@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { PurchasesPackage } from '@revenuecat/purchases-capacitor'
 
+import { QuotaMeter } from '../components/QuotaMeter'
+
 import {
   buyPackage,
   isPurchaseCancelled,
@@ -409,6 +411,35 @@ export function SubscriptionPage() {
                   : t('sub.forever')}
               </p>
             )}
+            {/* Lo gastado va DESPUÉS de los planes, no antes: quien abre esta
+                pantalla viene a comparar precios, y meterle un balance de uso
+                por delante retrasa lo que ha venido a ver. */}
+            {mine && (mine.maxPlaces !== null || mine.maxActivePlans !== null) && (
+              <section className="mt-5 rounded-card bg-surface-container px-4 py-3">
+                <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                  {t('sub.usageTitle')}
+                </h2>
+                <div className="flex flex-col gap-2.5">
+                  <QuotaMeter
+                    label={t('profile.quotaPlaces')}
+                    used={mine.placesUsed}
+                    max={mine.maxPlaces}
+                  />
+                  <QuotaMeter
+                    label={t('profile.quotaPlans')}
+                    used={mine.plansUsed}
+                    max={mine.maxActivePlans}
+                  />
+                  <QuotaMeter
+                    label={t('profile.quotaSpaces')}
+                    used={mine.spacesUsed}
+                    max={mine.maxSpaces}
+                  />
+                </div>
+                <p className="mt-2.5 text-xs text-on-surface-variant">{t('sub.usageHint')}</p>
+              </section>
+            )}
+
             {mine?.lifetime && (
               <p className="mt-5 rounded-card bg-surface-container px-4 py-3 text-sm text-on-surface-variant">
                 {t('sub.viaLifetime')}

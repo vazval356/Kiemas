@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, StoreIcon, UserIcon } from '../components/icons'
+import { QuotaMeter } from '../components/QuotaMeter'
 import { spaceColors } from '../lib/spaceTheme'
-import type { Entitlement, FollowedList, MyStats } from '../lib/types'
+import type { Entitlement, FollowedList, MyEntitlement, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -18,7 +19,10 @@ export function ProfilePage() {
   const { profile, spaces, activeSpace, setActiveSpace, api, refreshSpaces, t, signOut } = useApp()
 
   const [stats, setStats] = useState<MyStats | null>(null)
-  const [entitlement, setEntitlement] = useState<Entitlement>('free')
+  // Se guarda el objeto entero y no solo el nivel: la tarjeta de cuota necesita
+  // los topes y lo gastado, y pedirlo dos veces sería otra ida y vuelta.
+  const [nivel, setNivel] = useState<MyEntitlement | null>(null)
+  const entitlement: Entitlement = nivel?.entitlement ?? 'free'
   const [followed, setFollowed] = useState<FollowedList[]>([])
   const [error, setError] = useState('')
 
@@ -26,7 +30,7 @@ export function ProfilePage() {
     // Los tres son adorno de la cabecera: si alguno falla, el resto del perfil
     // sirve igual, así que se piden por separado y se ignoran sus errores.
     api.myStats().then(setStats).catch(() => {})
-    api.myEntitlement().then((e) => setEntitlement(e.entitlement)).catch(() => {})
+    api.myEntitlement().then(setNivel).catch(() => {})
     api.listFollowedLists().then(setFollowed).catch(() => {})
   }, [api])
 
@@ -123,6 +127,30 @@ export function ProfilePage() {
             </div>
           ))}
         </section>
+
+        {/* ── Lo que llevas de tu plan ─────────────────────────────────── */}
+        {nivel && (nivel.maxPlaces !== null || nivel.maxActivePlans !== null) && (
+          <Link
+            to="/subscription"
+            className="mt-3 block rounded-card bg-surface-container px-4 py-3 squish"
+          >
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              {t('profile.quotaTitle', { plan: t(`sub.${entitlement}` as 'sub.free') })}
+            </p>
+            <div className="flex flex-col gap-2.5">
+              <QuotaMeter
+                label={t('profile.quotaPlaces')}
+                used={nivel.placesUsed}
+                max={nivel.maxPlaces}
+              />
+              <QuotaMeter
+                label={t('profile.quotaPlans')}
+                used={nivel.plansUsed}
+                max={nivel.maxActivePlans}
+              />
+            </div>
+          </Link>
+        )}
 
         {/* ── Espacios ─────────────────────────────────────────────────── */}
         <section className="mt-8">
