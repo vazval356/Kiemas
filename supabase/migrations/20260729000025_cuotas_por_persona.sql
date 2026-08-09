@@ -164,9 +164,9 @@ $$;
 
 -- ── Lo que la pantalla de precios necesita saber ────────────────────────────
 --
--- Ahora hay que devolver también lo gastado en sitios y en planes: sin esas dos
--- cifras la app solo puede avisar del tope DESPUÉS de que alguien rellene el
--- formulario entero y le rebote, que es justo el momento en que se abandona.
+-- Hay que devolver también lo gastado en sitios y en planes: sin esas cifras la
+-- app solo puede avisar del tope DESPUÉS de que alguien rellene el formulario
+-- entero y le rebote, que es justo el momento en que se abandona.
 
 create or replace function public.my_entitlement()
 returns json
@@ -177,6 +177,8 @@ declare
   v_me uuid := (select auth.uid());
   v_ent text;
   v_limits public.plan_limits;
+  v_promo public.promo_redemptions;
+  v_sub public.subscriptions;
 begin
   if v_me is null then
     raise exception 'not_authenticated';
@@ -185,8 +187,30 @@ begin
   v_ent := public.entitlement_of(v_me);
   select * into v_limits from public.plan_limits where entitlement = v_ent;
 
+  select * into v_sub
+  from public.subscriptions
+  where user_id = v_me
+    and status in ('active', 'in_grace')
+    and (current_period_end is null or current_period_end > now());
+
+  select * into v_promo
+  from public.promo_redemptions
+  where user_id = v_me
+    and (expires_at is null or expires_at > now())
+  order by case entitlement when 'pro' then 2 else 1 end desc
+  limit 1;
+
   return json_build_object(
     'entitlement', v_ent,
+    -- 'subscription', 'promo' o null: de dónde sale el nivel actual.
+    'source', case
+                when v_sub.user_id is not null and v_sub.entitlement = v_ent then 'subscription'
+                when v_promo.user_id is not null and v_promo.entitlement = v_ent then 'promo'
+                else null
+              end,
+    'promoCode', v_promo.code,
+    'promoExpiresAt', v_promo.expires_at,
+    'currentPeriodEnd', v_sub.current_period_end,
     'maxSpaces', v_limits.max_spaces,
     'maxMembers', v_limits.max_members,
     'maxActivePlans', v_limits.max_active_plans,
@@ -204,9 +228,6 @@ begin
       where created_by = v_me
         and status <> 'cancelled'
         and (starts_at is null or starts_at >= now())
-    ),
-    'currentPeriodEnd', (
-      select current_period_end from public.subscriptions where user_id = v_me
     )
   );
 end;

@@ -409,6 +409,11 @@ export function SubscriptionPage() {
                   : t('sub.forever')}
               </p>
             )}
+            {mine?.lifetime && (
+              <p className="mt-5 rounded-card bg-surface-container px-4 py-3 text-sm text-on-surface-variant">
+                {t('sub.viaLifetime')}
+              </p>
+            )}
             {mine?.source === 'subscription' && (
               <div className="mt-5 rounded-card bg-surface-container px-4 py-3 text-sm text-on-surface-variant">
                 <p>

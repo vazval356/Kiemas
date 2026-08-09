@@ -418,7 +418,16 @@ export type Entitlement = 'free' | 'plus' | 'pro'
 export interface MyEntitlement {
   entitlement: Entitlement
   /** De dónde sale el nivel: una compra, un código regalado, o nada. */
-  source: 'subscription' | 'promo' | null
+  source: 'subscription' | 'promo' | 'lifetime' | null
+  /**
+   * Compra vitalicia: un pago único que da «pro» para siempre.
+   *
+   * Va aparte de `source` porque manda sobre todo lo demás. A quien la tiene no
+   * se le puede enseñar ni fecha de renovación ni botón de gestionar
+   * suscripción: no tiene ninguna que gestionar, y ese botón lleva a una
+   * pantalla de la tienda donde no aparece su compra.
+   */
+  lifetime: boolean
   promoCode: string | null
   promoExpiresAt: string | null
   currentPeriodEnd: string | null

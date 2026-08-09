@@ -123,10 +123,56 @@ Deno.serve(async (req: Request): Promise<Response> => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
+  const provider = PROVIDER_BY_STORE[event.store ?? ''] ?? 'stripe'
+
+  // ── La compra vitalicia va a su propia tabla ─────────────────────────────
+  //
+  // No es una suscripción y no puede compartir fila con una: `subscriptions`
+  // tiene una por persona, así que el día que alguien se suscribiera a algo y
+  // luego lo cancelara, este mismo upsert le borraría lo que pagó para siempre.
+  if (type === 'NON_RENEWING_PURCHASE') {
+    const { error } = await supabase.from('lifetime_purchases').upsert(
+      {
+        user_id: userId,
+        provider,
+        external_id: event.product_id ?? null,
+        revenuecat_customer_id: event.original_app_user_id ?? userId,
+      },
+      { onConflict: 'user_id' }
+    )
+    if (error) {
+      console.error('no se pudo guardar la compra vitalicia:', error.message)
+      return new Response('db_error', { status: 500 })
+    }
+    console.log(`${type} → ${userId} vitalicio ${event.product_id ?? ''}`)
+    return new Response('ok', { status: 200 })
+  }
+
+  // Un reembolso de la compra vitalicia llega como cancelación o caducidad, y
+  // el aviso solo trae el producto. Se compara con el que se guardó: sin esto,
+  // quien devuelve los 30 € se queda con «pro» de por vida.
+  if (type === 'CANCELLATION' || type === 'EXPIRATION') {
+    const { data: vitalicio } = await supabase
+      .from('lifetime_purchases')
+      .select('external_id')
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (vitalicio && vitalicio.external_id && vitalicio.external_id === event.product_id) {
+      const { error } = await supabase.from('lifetime_purchases').delete().eq('user_id', userId)
+      if (error) {
+        console.error('no se pudo revocar la compra vitalicia:', error.message)
+        return new Response('db_error', { status: 500 })
+      }
+      console.log(`${type} → ${userId} vitalicio revocado`)
+      return new Response('ok', { status: 200 })
+    }
+  }
+
   const { error } = await supabase.from('subscriptions').upsert(
     {
       user_id: userId,
-      provider: PROVIDER_BY_STORE[event.store ?? ''] ?? 'stripe',
+      provider,
       external_id: event.product_id ?? null,
       revenuecat_customer_id: event.original_app_user_id ?? userId,
       entitlement,

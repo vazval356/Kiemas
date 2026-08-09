@@ -1139,6 +1139,7 @@ export const supabaseApi: DataApi = {
     return {
       entitlement: d.entitlement as Entitlement,
       source: (d.source ?? null) as MyEntitlement['source'],
+      lifetime: Boolean(d.lifetime),
       promoCode: (d.promoCode ?? null) as string | null,
       promoExpiresAt: (d.promoExpiresAt ?? null) as string | null,
       currentPeriodEnd: (d.currentPeriodEnd ?? null) as string | null,
