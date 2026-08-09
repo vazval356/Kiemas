@@ -177,13 +177,20 @@ export function ProfilePage() {
             {spaces.map((space) => {
               const c = spaceColors(space.color)
               return (
-                <li key={space.id}>
+                <li
+                  key={space.id}
+                  className={`flex items-center rounded-card bg-surface-lowest pr-1 shadow-[var(--shadow-surface)] ${
+                    space.id === activeSpace?.id ? 'ring-2 ring-primary' : ''
+                  }`}
+                >
+                  {/* Dos zonas de toque, no una: la fila cambia de espacio —que
+                      es lo que más se hace— y el engranaje lleva a gestionarlo.
+                      Un enlace dentro de un botón no es HTML válido y deja el
+                      toque a merced de cuál gane. */}
                   <button
                     type="button"
                     onClick={() => setActiveSpace(space.id)}
-                    className={`flex w-full items-center gap-3 rounded-card bg-surface-lowest p-3 text-left shadow-[var(--shadow-surface)] squish ${
-                      space.id === activeSpace?.id ? 'ring-2 ring-primary' : ''
-                    }`}
+                    className="flex min-w-0 flex-1 items-center gap-3 p-3 text-left squish"
                   >
                     <span
                       className="flex size-10 shrink-0 items-center justify-center rounded-full text-lg"
@@ -217,10 +224,25 @@ export function ProfilePage() {
                       </span>
                     </span>
                   </button>
+
+                  {/* Gestionar, en cada espacio y no escondido tres toques más
+                      adentro. Antes el único camino era el botón de abajo → la
+                      lista de espacios → «Gestionar», y nadie encuentra eso
+                      buscando cómo se cambia el nombre de su grupo. */}
+                  <Link
+                    to={`/spaces/${space.id}`}
+                    aria-label={t('spaces.manage')}
+                    className="shrink-0 rounded-full p-3 text-on-surface-variant squish"
+                  >
+                    <SettingsIcon className="size-5" />
+                  </Link>
                 </li>
               )
             })}
           </ul>
+          {/* Se conserva, aunque gestionar ya esté en cada fila: es el único
+              camino que queda para CREAR un grupo o entrar en uno con código, y
+              quitarlo dejaría esas dos cosas sin puerta. */}
           <Link
             to="/spaces"
             className="mt-2 block rounded-card border-2 border-dashed border-outline-variant p-3 text-center text-sm font-semibold text-on-surface-variant squish"

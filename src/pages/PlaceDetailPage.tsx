@@ -43,6 +43,16 @@ export function PlaceDetailPage() {
   const [notesDirty, setNotesDirty] = useState(false)
   const [notesSaved, setNotesSaved] = useState(false)
   const [busy, setBusy] = useState(false)
+  /**
+   * Modo de la galería: elegir portada, elegir cuál borrar, o ninguno.
+   *
+   * Se entra desde los dos iconos de la cabecera. Fuera de un modo, tocar una
+   * foto la abre grande — que es lo que espera cualquiera y lo que antes la
+   * borraba de golpe.
+   */
+  const [modoFoto, setModoFoto] = useState<'cover' | 'delete' | null>(null)
+  /** Ruta de la foto abierta a pantalla completa. */
+  const [viendo, setViendo] = useState<string | null>(null)
   // Ficha del negocio, si alguien ha verificado este local (Fase 7).
   const [negocio, setNegocio] = useState<BusinessProfile | null>(null)
   const [error, setError] = useState('')
@@ -347,11 +357,60 @@ export function PlaceDetailPage() {
             escondía cuando el sitio no tenía fotos, y como el único sitio
             donde se podían añadir era el formulario de edición, quien había
             subido una al crear el sitio no encontraba por dónde subir la
-            segunda. */}
+            segunda.
+
+            Las acciones viven en la cabecera y no debajo de cada foto. Con un
+            «Poner de portada» y un «Borrar» bajo cada miniatura, la galería
+            eran más botones que fotos y lo que se miraba era el texto. Aquí se
+            entra en un modo, se toca la foto, y se sale. */}
         <section className="mt-6">
-          <h2 className="mb-2 font-display font-semibold text-on-surface">{t('place.photos')}</h2>
-          <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
-            <label className="flex size-28 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish">
+          <div className="mb-2 flex items-center gap-1">
+            <h2 className="flex-1 font-display font-semibold text-on-surface">
+              {t('place.photos')}
+            </h2>
+            {place.photos.length > 0 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setModoFoto(modoFoto === 'cover' ? null : 'cover')}
+                  aria-label={t('detail.makeCover')}
+                  aria-pressed={modoFoto === 'cover'}
+                  className={`rounded-full p-2 squish ${
+                    modoFoto === 'cover'
+                      ? 'bg-primary-fixed text-primary'
+                      : 'text-on-surface-variant'
+                  }`}
+                >
+                  <StarIcon className="size-5" filled={false} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModoFoto(modoFoto === 'delete' ? null : 'delete')}
+                  aria-label={t('common.delete')}
+                  aria-pressed={modoFoto === 'delete'}
+                  className={`rounded-full p-2 squish ${
+                    modoFoto === 'delete'
+                      ? 'bg-error-container text-error'
+                      : 'text-on-surface-variant'
+                  }`}
+                >
+                  <TrashIcon className="size-5" />
+                </button>
+              </>
+            )}
+          </div>
+
+          {modoFoto && (
+            <p className="mb-2 text-sm font-medium text-primary">
+              {modoFoto === 'cover' ? t('detail.pickCover') : t('detail.pickToDelete')}
+            </p>
+          )}
+
+          {/* Tres por fila, cuadradas. Una tira horizontal obligaba a arrastrar
+              para ver la cuarta, y en una galería de recuerdos lo que se quiere
+              es abarcarlas de un vistazo. */}
+          <div className="grid grid-cols-3 gap-1.5">
+            <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish">
               <span className="text-2xl">📷</span>
               <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
               <input
@@ -369,66 +428,48 @@ export function PlaceDetailPage() {
                 }}
               />
             </label>
+
             {place.photos.map((photo) => {
-              const autor = members.find((m) => m.userId === photo.uploadedBy)
               const esPortada = place.coverPath === photo.id
-              // El servidor manda igual; esconder el botón evita ofrecer una
-              // acción que va a rebotar.
+              // El servidor manda igual; saberlo aquí evita ofrecer un borrado
+              // que va a rebotar.
               const puedoBorrar =
                 photo.uploadedBy === profile?.id || activeSpace?.myRole === 'admin'
 
               return (
-                <figure key={photo.id} className="w-28 shrink-0">
-                  <div className="relative size-28 overflow-hidden rounded-card">
-                    <img src={photo.url} alt="" loading="lazy" className="size-full object-cover" />
-                    {esPortada && (
-                      <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
-                        {t('detail.cover')}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Quién la subió y cuándo. Es lo que convierte un montón de
-                      imágenes en el recuerdo de una noche concreta. */}
-                  <figcaption className="mt-1 truncate text-[11px] text-on-surface-variant">
-                    {autor?.displayName ?? '—'}
-                    {' · '}
-                    {new Date(photo.uploadedAt).toLocaleDateString(undefined, {
-                      day: 'numeric',
-                      month: 'short',
-                    })}
-                  </figcaption>
-
-                  <div className="mt-0.5 flex items-center gap-2">
-                    {!esPortada && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void run(() => api.setPlaceCover(place.id, photo.id))}
-                        className="text-[11px] font-semibold text-primary squish disabled:opacity-50"
-                      >
-                        {t('detail.makeCover')}
-                      </button>
-                    )}
-                    {puedoBorrar && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        // Antes bastaba un toque sobre la foto para borrarla,
-                        // sin avisar. El gesto de tocar una foto es el mismo
-                        // que haría quien solo quiere verla más grande.
-                        onClick={() => {
-                          if (window.confirm(t('detail.photoDeleteConfirm'))) {
-                            void run(() => api.removePhoto(place.id, photo.id))
-                          }
-                        }}
-                        className="text-[11px] font-semibold text-error squish disabled:opacity-50"
-                      >
-                        {t('common.delete')}
-                      </button>
-                    )}
-                  </div>
-                </figure>
+                <button
+                  key={photo.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => {
+                    if (modoFoto === 'cover') {
+                      setModoFoto(null)
+                      void run(() => api.setPlaceCover(place.id, photo.id))
+                    } else if (modoFoto === 'delete') {
+                      if (!puedoBorrar) return
+                      // Se pregunta aunque el modo ya sea explícito: una foto
+                      // de una noche concreta no se recupera, y el modo se
+                      // arma con un toque que puede haber sido a tientas.
+                      if (!window.confirm(t('detail.photoDeleteConfirm'))) return
+                      setModoFoto(null)
+                      void run(() => api.removePhoto(place.id, photo.id))
+                    } else {
+                      // Sin modo, tocar una foto la abre grande. Es lo que
+                      // espera cualquiera, y antes la borraba.
+                      setViendo(photo.id)
+                    }
+                  }}
+                  className={`relative aspect-square overflow-hidden rounded-card squish ${
+                    modoFoto === 'delete' && !puedoBorrar ? 'opacity-40' : ''
+                  }`}
+                >
+                  <img src={photo.url} alt="" loading="lazy" className="size-full object-cover" />
+                  {esPortada && (
+                    <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
+                      {t('detail.cover')}
+                    </span>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -453,6 +494,48 @@ export function PlaceDetailPage() {
           <TrashIcon className="size-5" /> {t('common.delete')}
         </button>
       </div>
+
+      {/* ── Visor ────────────────────────────────────────────────────────────
+          La foto a tamaño completo, con quién la subió y cuándo debajo. Toda la
+          pantalla cierra: en un visor, el gesto de tocar fuera para salir se da
+          por hecho, y una equis diminuta en una esquina no basta en un móvil. */}
+      {viendo && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setViendo(null)}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 p-4"
+        >
+          <img
+            src={place.photos.find((f) => f.id === viendo)?.url}
+            alt=""
+            className="max-h-[80vh] max-w-full rounded-card object-contain"
+          />
+          {(() => {
+            const foto = place.photos.find((f) => f.id === viendo)
+            const autor = members.find((m) => m.userId === foto?.uploadedBy)
+            if (!foto) return null
+            return (
+              <p className="mt-4 text-sm text-white/80">
+                {autor?.displayName ?? '—'}
+                {' · '}
+                {new Date(foto.uploadedAt).toLocaleDateString(undefined, {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </p>
+            )
+          })()}
+          <button
+            type="button"
+            onClick={() => setViendo(null)}
+            className="mt-4 rounded-full border border-white/40 px-6 py-2 font-semibold text-white squish"
+          >
+            {t('common.close')}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
