@@ -7,6 +7,9 @@
       "namespace": "android_app",
       "package_name": "com.kiemas.app",
       "sha256_cert_fingerprints": [
+        "3F:0A:2A:E3:BB:47:45:F8:0A:0B:59:C0:DF:7C:AB:84:EC:9C:CD:B4:0B:28:FA:CD:4C:98:84:63:92:6D:47:C8",
+        "A4:14:63:BD:49:AB:46:96:21:C7:DA:BA:B4:5B:C3:9A:22:A0:4E:8C:D6:FE:07:2A:89:2B:4F:87:8C:31:B7:30",
+        "16:F3:5A:88:71:C5:29:F4:38:CA:DD:6D:8C:77:31:12:11:0A:6D:66:61:59:39:D7:2E:20:0D:3E:3D:6B:8C:8C",
         "5F:17:95:AF:C7:32:5A:A9:CF:F1:0A:DD:30:29:17:AE:2F:9C:66:7E:F6:F9:74:C9:A3:D5:14:A3:3E:79:14:C5"
       ]
     }
