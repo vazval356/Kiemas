@@ -144,9 +144,15 @@ export function PlaceFormPage() {
         const largo = await resolveMapsLink(importUrl)
         parsed = parseGoogleMapsUrl(largo)
         if (!parsed || parsed.needsResolving) throw new Error('sigue sin resolver')
-      } catch {
+      } catch (e) {
         // Si el servidor no puede, queda el camino de siempre: pedir el enlace
         // largo. Es peor experiencia, pero funciona sin depender de nada.
+        //
+        // El motivo va a la consola: en pantalla solo cabe «pega el enlace
+        // largo», y sin el detalle no hay forma de distinguir un despliegue
+        // viejo de la función, una sesión caducada o que Google haya cambiado
+        // la cadena de redirecciones.
+        console.warn('[kiemas] no se pudo resolver el enlace corto:', e)
         setImportMessage({ kind: 'warn', text: t('import.shortLink') })
         return
       }

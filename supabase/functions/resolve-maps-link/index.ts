@@ -88,7 +88,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
   for (let salto = 0; salto < MAX_SALTOS; salto++) {
     let res: Response
     try {
-      res = await fetch(actual.href, { method: 'GET', redirect: 'manual' })
+      // Con la cabecera de agente que pone Deno por defecto, Google trata la
+      // petición como un robot: a veces alarga la cadena de saltos y a veces
+      // devuelve directamente una pantalla de consentimiento —200 y sin
+      // `location`— de la que no sale ningún enlace. Presentarse como un
+      // navegador evita las dos cosas, y el idioma evita que el destino
+      // dependa de dónde esté el servidor.
+      res = await fetch(actual.href, {
+        method: 'GET',
+        redirect: 'manual',
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
+            '(KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+          'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+        },
+      })
     } catch {
       return new Response(JSON.stringify({ error: 'unreachable' }), { status: 502, headers: cors })
     }
@@ -96,6 +111,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const siguiente = res.headers.get('location')
     if (!siguiente) {
       // Ya no redirige: este es el destino.
+      console.log(`resuelto en ${salto + 1} saltos -> ${actual.href}`)
       return new Response(JSON.stringify({ url: actual.href }), { headers: cors })
     }
 
