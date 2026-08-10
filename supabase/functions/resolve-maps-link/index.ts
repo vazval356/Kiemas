@@ -59,14 +59,7 @@ const MAX_SALTOS = 10
  * válida. Se devuelve la primera que aparezca: todas apuntan al mismo sitio,
  * repetidas para los distintos destinos del enlace dinámico.
  */
-async function extraerDelCuerpo(res: Response): Promise<string | null> {
-  let html: string
-  try {
-    html = await res.text()
-  } catch {
-    return null
-  }
-
+function extraerDeHtml(html: string): string | null {
   const encontrado = html.match(/https:\/\/(?:www\.)?google\.[a-z.]{2,6}\/maps\/[^"'<>\s]+/)
   if (!encontrado) return null
 
@@ -112,8 +105,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
   }
 
   let entrada: string
+  let debug = false
   try {
-    entrada = String((await req.json())?.url ?? '')
+    const cuerpo = await req.json()
+    entrada = String(cuerpo?.url ?? '')
+    // Con `debug: true` la respuesta incluye qué le contestó Google de verdad.
+    // Va detrás de una bandera y no siempre porque es ruido para el cliente, y
+    // porque una respuesta que arrastra 300 caracteres de HTML ajeno en cada
+    // importación es una forma tonta de gastar datos de alguien.
+    debug = cuerpo?.debug === true
   } catch {
     return new Response(JSON.stringify({ error: 'bad_json' }), { status: 400, headers: cors })
   }
@@ -173,10 +173,26 @@ Deno.serve(async (req: Request): Promise<Response> => {
       // sitio. Ni la cookie de consentimiento ni seguir más saltos ayudan,
       // porque no hay ningún salto que seguir.
       if (ENTRADA_PERMITIDA.has(actual.hostname.toLowerCase())) {
-        const dentro = await extraerDelCuerpo(res)
+        const html = await res.text().catch(() => '')
+        const dentro = extraerDeHtml(html)
         if (dentro) {
           console.log(`extraido del HTML -> ${dentro}`)
           return new Response(JSON.stringify({ url: dentro }), { headers: cors })
+        }
+        console.log(`sin enlace dentro: ${res.status}, ${html.length} bytes`)
+        if (debug) {
+          return new Response(
+            JSON.stringify({
+              url: actual.href,
+              debug: {
+                status: res.status,
+                bytes: html.length,
+                titulo: html.match(/<title[^>]*>([^<]{0,120})/i)?.[1] ?? null,
+                inicio: html.slice(0, 300),
+              },
+            }),
+            { headers: cors }
+          )
         }
       }
 
