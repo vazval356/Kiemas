@@ -114,8 +114,18 @@ export function PlaceFormPage() {
     mapRef.current?.easeTo({ center: [lng, lat], zoom })
   }
 
+  /**
+   * Cuál es la importación en curso.
+   *
+   * La dirección se busca en segundo plano, así que dos enlaces pegados
+   * seguidos pueden responder al revés y dejar la dirección del primero junto
+   * al pin del segundo. Solo se aplica lo que devuelva la última.
+   */
+  const importSeq = useRef(0)
+
   // ── Importar desde un enlace de Google Maps ──────────────────────────────
   async function runImport() {
+    const mio = ++importSeq.current
     setImportMessage(null)
     let parsed = parseGoogleMapsUrl(importUrl)
 
@@ -153,8 +163,18 @@ export function PlaceFormPage() {
     // direcciones que no lo llevan, que fue justamente lo que pasó.
     const esDireccion = parsed.nameSource === 'query'
 
-    if (parsed.name && !esDireccion && !name.trim()) setName(parsed.name)
-    if (esDireccion && parsed.name && !address) setAddress(parsed.name)
+    // Importar REEMPLAZA, no completa. Estas tres asignaciones llevaban un
+    // «solo si está vacío» para no pisar lo que hubiera escrito la persona, y
+    // el efecto era que al pegar un segundo enlace el pin se movía al sitio
+    // nuevo y el nombre y la dirección se quedaban en los del anterior. Una
+    // dirección equivocada junto a un pin correcto es peor que ninguna.
+    //
+    // La dirección se vacía siempre: la del enlace anterior es seguro que no
+    // corresponde a este, y si este no trae ninguna, se rellena sola con la
+    // búsqueda de abajo.
+    setAddress('')
+    if (parsed.name && !esDireccion) setName(parsed.name)
+    if (esDireccion && parsed.name) setAddress(parsed.name)
 
     // Sin coordenadas pero con texto: es lo que devuelve un enlace corto ya
     // resuelto, que acaba en `?q=<dirección>` en vez de en coordenadas. Se
@@ -165,6 +185,7 @@ export function PlaceFormPage() {
       setImportMessage({ kind: 'info', text: t('import.locating') })
       void searchAddress(texto, position ?? undefined, locale)
         .then((res) => {
+          if (importSeq.current !== mio) return
           if (res.length === 0) {
             setImportMessage({ kind: 'warn', text: t('import.noLocation') })
             return
@@ -184,10 +205,12 @@ export function PlaceFormPage() {
       moveTo(parsed.lat, parsed.lng)
       // El enlace trae coordenadas pero no dirección postal: se busca por el
       // nombre para rellenarla, sin bloquear la importación si falla.
-      if (parsed.name && !address) {
+      if (parsed.name) {
         void searchAddress(parsed.name, { lat: parsed.lat, lng: parsed.lng }, locale)
           .then((res) => {
-            if (res.length > 0 && !address) setAddress(res[0].address)
+            // `address` de la clausura es el de este pintado, no el de ahora:
+            // comprobarlo aquí leería un valor viejo. Manda el contador.
+            if (importSeq.current === mio && res.length > 0) setAddress(res[0].address)
           })
           .catch(() => {})
       }
