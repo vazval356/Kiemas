@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { spaceColors } from '../lib/spaceTheme'
 import { useApp } from '../state/appState'
-import { GroupIcon, UserIcon } from './icons'
+import { BellIcon, GroupIcon, UserIcon } from './icons'
 
 /**
  * Barra superior con el selector de espacio.
@@ -12,9 +13,28 @@ import { GroupIcon, UserIcon } from './icons'
  * forma de saber a qué grupo estás añadiendo un sitio.
  */
 export function TopBar() {
-  const { spaces, activeSpace, setActiveSpace, t } = useApp()
+  const { spaces, activeSpace, setActiveSpace, api, t } = useApp()
   const [open, setOpen] = useState(false)
+  /**
+   * Cuántas cosas han pasado en el grupo desde que las miraste.
+   *
+   * La tabla `activity` lleva seis migraciones apuntando todo lo que ocurre y
+   * no había forma de saber qué era nuevo, porque nunca se guardó cuándo miró
+   * cada cual. Sin esto, la app se ve igual que ayer aunque tres personas hayan
+   * guardado sitios.
+   */
+  const [novedades, setNovedades] = useState(0)
   const boxRef = useRef<HTMLDivElement>(null)
+
+  const spaceId = activeSpace?.id
+  useEffect(() => {
+    if (!spaceId) return
+    // Es un adorno de la barra: si falla, la app sirve igual y no se avisa.
+    api
+      .unseenActivity(spaceId)
+      .then(setNovedades)
+      .catch(() => setNovedades(0))
+  }, [api, spaceId])
 
   // Cerrar al tocar fuera: en móvil no hay tecla Escape a mano.
   useEffect(() => {
@@ -76,6 +96,30 @@ export function TopBar() {
             ▾
           </span>
         </button>
+
+        {/* La campana. Actividad vivía dentro de los ajustes del grupo, tres
+            toques adentro, así que nadie la veía nunca. Aquí está donde se
+            entera uno de que hay algo que mirar. */}
+        {!isPersonal && (
+          <Link
+            to="/activity"
+            aria-label={
+              novedades === 1
+                ? t('activity.unseenOne')
+                : novedades > 0
+                  ? t('activity.unseen', { count: novedades })
+                  : t('activity.title')
+            }
+            className="relative shrink-0 rounded-full p-2 text-on-surface-variant squish"
+          >
+            <BellIcon className="size-5" />
+            {novedades > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex min-w-4 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold leading-4 text-on-secondary">
+                {novedades > 9 ? '9+' : novedades}
+              </span>
+            )}
+          </Link>
+        )}
 
         {/* Los colores de los miembros son los mismos que identifican a cada
             persona en el calendario de la Fase 2. */}

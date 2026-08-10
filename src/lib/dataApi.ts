@@ -22,6 +22,7 @@ import type {
   ExploreList,
   MyStats,
   PlanLimits,
+  PendingReview,
   PromoRedemption,
   PublicList,
   FollowedList,
@@ -153,6 +154,17 @@ export interface DataApi {
   removePhoto(placeId: string, photoId: string): Promise<void>
   /** Elegir la portada del sitio, o quitarla con `null`. */
   setPlaceCover(placeId: string, path: string | null): Promise<void>
+
+  // ── El día después ───────────────────────────────────────────────────────
+  /** Planes ya pasados a los que fuiste y sobre los que no has dicho nada. */
+  pendingReviews(): Promise<PendingReview[]>
+  /** Cerrar la pregunta de un plan. Solo para quien la cierra. */
+  markPlanReviewed(planId: string): Promise<void>
+
+  // ── Novedades ────────────────────────────────────────────────────────────
+  /** Cuántas cosas han pasado en el espacio desde que lo miraste. */
+  unseenActivity(spaceId: string): Promise<number>
+  markActivitySeen(spaceId: string): Promise<void>
 
   // ── Planes (Fase 2) ──────────────────────────────────────────────────────
   listPlans(spaceId: string, from?: Date): Promise<Plan[]>

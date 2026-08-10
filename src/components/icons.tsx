@@ -334,6 +334,23 @@ export function SparkleIcon({ className = 'w-5 h-5' }: IconProps) {
   )
 }
 
+export function BellIcon({ className = 'w-6 h-6' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 8a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" />
+      <path d="M10.5 20a1.8 1.8 0 0 0 3 0" />
+    </svg>
+  )
+}
+
 export function CalendarIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
     <svg

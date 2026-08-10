@@ -572,3 +572,23 @@ export interface VenueStats {
   lists: number | null
   plans: number | null
 }
+
+/**
+ * Un plan que ya pasó y del que todavía no se ha dicho nada.
+ *
+ * Es la pieza que faltaba para que la galería de fotos y las puntuaciones se
+ * llenen solas: hasta ahora nada preguntaba nunca «¿qué tal estuvo?», y por eso
+ * los sitios se quedaban sin nota y sin una sola foto.
+ */
+export interface PendingReview {
+  planId: string
+  title: string
+  startsAt: string
+  spaceId: string
+  spaceName: string
+  placeId: string | null
+  placeName: string | null
+  /** Ya marcado como visitado: no hace falta volver a ofrecerlo. */
+  placeVisited: boolean
+  alreadyRated: boolean
+}

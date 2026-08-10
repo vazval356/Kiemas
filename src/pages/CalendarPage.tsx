@@ -11,6 +11,7 @@ import {
 } from '../lib/dates'
 import type { Category, Locale, Plan, SpaceMember } from '../lib/types'
 import type { Translate } from '../lib/i18n'
+import { AfterPlanCard } from '../components/AfterPlanCard'
 import { useApp } from '../state/appState'
 
 const STRIP_DAYS = 14
@@ -125,6 +126,10 @@ export function CalendarPage() {
       {/* pb-40 y no pb-32: el botón flotante mide 56 px y arranca a 88 del
           borde, así que con 128 de hueco se comía la última tarjeta. */}
       <div className="mx-auto max-w-md px-4 pb-40 pt-1">
+        {/* Va lo primero, encima del calendario: es una pregunta con fecha de
+            caducidad y compite con un mes entero que no cambia. */}
+        <AfterPlanCard />
+
         {/* ── Cabecera: mes y selector de vista ──────────────────────────── */}
         <header className="flex items-center justify-between gap-2 py-2">
           <div className="flex min-w-0 items-center gap-1">

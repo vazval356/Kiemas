@@ -631,6 +631,13 @@ const es = {
   'promo.alreadyUsed': 'Ya habías usado ese código.',
 
   // Límites alcanzados
+  'after.titleWithPlace': '¿Qué tal estuvo {place}?',
+  'after.title': '¿Qué tal estuvo lo de {plan}?',
+  'after.rate': 'Ponle nota',
+  'after.addPhotos': 'Subir fotos',
+  'after.dismiss': 'Ahora no',
+  'activity.unseenOne': '1 novedad',
+  'activity.unseen': '{count} novedades',
   'limit.spaces': 'Has llegado al máximo de grupos de tu plan.',
   'limit.members': 'Este grupo está completo.',
   'limit.membersHint': 'Quien lo creó puede ampliarlo cambiando de plan.',
@@ -1314,6 +1321,13 @@ const en: Record<TranslationKey, string> = {
   'promo.alreadyUsed': "You've already used that code.",
 
   // Limits reached
+  'after.titleWithPlace': 'How was {place}?',
+  'after.title': 'How was {plan}?',
+  'after.rate': 'Rate it',
+  'after.addPhotos': 'Add photos',
+  'after.dismiss': 'Not now',
+  'activity.unseenOne': '1 update',
+  'activity.unseen': '{count} updates',
   'limit.spaces': "You've reached the group limit on your plan.",
   'limit.members': 'This group is full.',
   'limit.membersHint': 'Whoever created it can make room by changing plan.',

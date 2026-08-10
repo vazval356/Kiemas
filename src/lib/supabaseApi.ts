@@ -35,6 +35,7 @@ import type {
   MyEntitlement,
   MyStats,
   PlanLimits,
+  PendingReview,
   PromoRedemption,
 } from './types'
 import type { DataApi } from './dataApi'
@@ -815,6 +816,38 @@ export const supabaseApi: DataApi = {
    */
   async setPlaceCover(placeId: string, path: string | null) {
     ok(await supabase.from('places').update({ cover_path: path }).eq('id', placeId))
+  },
+
+  async pendingReviews(): Promise<PendingReview[]> {
+    const res = await supabase.rpc('pending_reviews')
+    if (res.error) throw new Error(res.error.message)
+    return (res.data as Record<string, unknown>[]).map((r) => ({
+      planId: r.plan_id as string,
+      title: r.title as string,
+      startsAt: r.starts_at as string,
+      spaceId: r.space_id as string,
+      spaceName: r.space_name as string,
+      placeId: (r.place_id as string) ?? null,
+      placeName: (r.place_name as string) ?? null,
+      placeVisited: Boolean(r.place_visited),
+      alreadyRated: Boolean(r.already_rated),
+    }))
+  },
+
+  async markPlanReviewed(planId: string) {
+    const res = await supabase.rpc('mark_plan_reviewed', { p_plan_id: planId })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async unseenActivity(spaceId: string): Promise<number> {
+    const res = await supabase.rpc('unseen_activity', { p_space_id: spaceId })
+    if (res.error) throw new Error(res.error.message)
+    return Number(res.data ?? 0)
+  },
+
+  async markActivitySeen(spaceId: string) {
+    const res = await supabase.rpc('mark_activity_seen', { p_space_id: spaceId })
+    if (res.error) throw new Error(res.error.message)
   },
 
   /**

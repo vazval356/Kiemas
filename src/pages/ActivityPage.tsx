@@ -88,6 +88,15 @@ export function ActivityPage() {
     void load(PAGE)
   }, [load])
 
+  // Abrir esta pantalla ES haberlo visto. Se marca aquí y no al salir porque
+  // salir puede ser cerrar la app de golpe, y entonces el contador se quedaría
+  // encendido para siempre sobre cosas ya leídas.
+  const spaceId = activeSpace?.id
+  useEffect(() => {
+    if (!spaceId) return
+    void api.markActivitySeen(spaceId).catch(() => {})
+  }, [api, spaceId])
+
   const members = activeSpace?.members ?? []
   const actor = (id: string | null) => members.find((m) => m.userId === id)
   const cols = spaceColors(activeSpace?.color)
