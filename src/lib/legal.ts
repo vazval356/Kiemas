@@ -36,7 +36,7 @@ import type { Locale } from './types'
  */
 export const LEGAL_CONTACT = {
   responsable: 'Adrián Vázquez Valbuena',
-  email: 'hola@kiemas.com',
+  email: 'vazquezvalbuenaa@gmail.com',
   pais: 'España',
   /**
    * NIF del titular, exigido por el artículo 10 de la LSSI a los prestadores de
