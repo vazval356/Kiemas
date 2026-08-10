@@ -114,6 +114,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
             '(KHTML, like Gecko) Chrome/126.0 Safari/537.36',
           'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+          // Google enseña una pantalla de consentimiento a las peticiones que
+          // salen de un centro de datos europeo, y esa pantalla no redirige:
+          // responde 200 y ahí se acaba el rastro. Esta cookie es la que deja
+          // el navegador cuando ya has aceptado, y evita la pantalla entera.
+          Cookie: 'CONSENT=YES+cb; SOCS=CAI',
         },
       })
     } catch {
@@ -132,6 +137,24 @@ Deno.serve(async (req: Request): Promise<Response> => {
       destino = new URL(siguiente, actual)
     } catch {
       return new Response(JSON.stringify({ error: 'bad_redirect' }), { status: 502, headers: cors })
+    }
+
+    // La pantalla de consentimiento lleva el destino real en `continue`. Si se
+    // sigue el salto sin mirar, se acaba en una página de Google sin nombre ni
+    // coordenadas y el enlace parece muerto.
+    if (/^consent\.google\./.test(destino.hostname.toLowerCase())) {
+      const seguir = destino.searchParams.get('continue')
+      if (seguir) {
+        try {
+          const real = new URL(seguir)
+          if (real.protocol === 'https:' && destinoValido(real.hostname)) {
+            console.log(`consentimiento esquivado -> ${real.href}`)
+            return new Response(JSON.stringify({ url: real.href }), { headers: cors })
+          }
+        } catch {
+          // `continue` ilegible: se sigue por el camino normal.
+        }
+      }
     }
 
     if (destino.protocol !== 'https:' || !destinoValido(destino.hostname)) {

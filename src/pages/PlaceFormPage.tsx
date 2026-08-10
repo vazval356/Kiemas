@@ -149,6 +149,10 @@ export function PlaceFormPage() {
         // No es lo mismo que no poder resolverlo, y decir aquí «pega el enlace
         // largo» manda a buscar un enlace largo que no existe.
         if (!parsed || parsed.needsResolving) {
+          // A DÓNDE llevó de verdad. Sin esto solo se sabe que no se pudo
+          // leer, que es compatible con un enlace muerto, con una pantalla de
+          // consentimiento de Google y con media docena de cosas más.
+          console.warn('[kiemas] el enlace resolvió a:', largo)
           setImportMessage({ kind: 'warn', text: t('import.deadLink') })
           return
         }
