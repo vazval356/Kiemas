@@ -27,6 +27,7 @@ export function PlanDetailPage() {
   const { plans, places, categories, activeSpace, profile, api, refresh, locale, t } = useApp()
 
   const [busy, setBusy] = useState(false)
+  const [eligiendoSitio, setEligiendoSitio] = useState(false)
   const [error, setError] = useState('')
 
   const plan = plans.find((p) => p.id === id)
@@ -110,16 +111,73 @@ export function PlanDetailPage() {
           </div>
         </div>
 
-        {place && (
-          <Link
-            to={`/place/${place.id}`}
-            className="mt-4 block rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] squish"
-          >
-            <span className="block font-semibold text-on-surface">{place.name}</span>
-            {place.address && (
-              <span className="block text-sm text-on-surface-variant">📍 {place.address}</span>
+        {/* ── El sitio ──────────────────────────────────────────────────────
+            Se podía elegir al crear el plan y ya no se podía tocar nunca más:
+            no existe ninguna pantalla de editar un plan, así que quien lo creaba
+            sin sitio —porque aún no se sabía— se quedaba sin forma de añadirlo.
+            Aquí se elige y se cambia sin salir de la ficha. */}
+        {place ? (
+          <div className="mt-4 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]">
+            <Link to={`/place/${place.id}`} className="block squish">
+              <span className="block font-semibold text-on-surface">{place.name}</span>
+              {place.address && (
+                <span className="block text-sm text-on-surface-variant">📍 {place.address}</span>
+              )}
+            </Link>
+            {plan.status !== 'cancelled' && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setEligiendoSitio(true)}
+                className="mt-2 text-sm font-semibold text-primary squish disabled:opacity-50"
+              >
+                {t('plan.changePlace')}
+              </button>
             )}
-          </Link>
+          </div>
+        ) : (
+          plan.status !== 'cancelled' && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setEligiendoSitio(true)}
+              className="mt-4 w-full rounded-card bg-surface-container py-3 text-sm font-semibold text-primary squish disabled:opacity-50"
+            >
+              {t('plan.pickPlace')}
+            </button>
+          )
+        )}
+
+        {eligiendoSitio && (
+          <div className="mt-2 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] animate-pop">
+            <ul className="flex max-h-72 flex-col gap-1.5 overflow-y-auto">
+              {places.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setEligiendoSitio(false)
+                      void run(() => api.updatePlan(plan.id, { placeId: p.id }))
+                    }}
+                    className="flex w-full items-center gap-2 rounded-control bg-surface-container px-3 py-2.5 text-left squish disabled:opacity-50"
+                  >
+                    <span>{categories.find((c) => c.id === p.categoryId)?.emoji ?? '📍'}</span>
+                    <span className="min-w-0 flex-1 truncate font-medium text-on-surface">
+                      {p.name}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              onClick={() => setEligiendoSitio(false)}
+              className="mt-2 w-full rounded-full border border-outline-variant py-2 text-sm font-semibold text-on-surface-variant squish"
+            >
+              {t('common.cancel')}
+            </button>
+          </div>
         )}
 
         {plan.notes && (
