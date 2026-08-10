@@ -51,6 +51,42 @@ function destinoValido(host: string): boolean {
  */
 const MAX_SALTOS = 10
 
+/**
+ * Saca la URL de Google Maps de dentro de la página de Firebase.
+ *
+ * El enlace viene escapado como en JavaScript —`=` por `=`— porque está
+ * incrustado en un script, así que hay que deshacerlo antes de que sea una URL
+ * válida. Se devuelve la primera que aparezca: todas apuntan al mismo sitio,
+ * repetidas para los distintos destinos del enlace dinámico.
+ */
+async function extraerDelCuerpo(res: Response): Promise<string | null> {
+  let html: string
+  try {
+    html = await res.text()
+  } catch {
+    return null
+  }
+
+  const encontrado = html.match(/https:\/\/(?:www\.)?google\.[a-z.]{2,6}\/maps\/[^"'<>\s]+/)
+  if (!encontrado) return null
+
+  // Las barras van dobles a propósito: en el HTML hay una barra invertida
+  // seguida de «u003d» —dos caracteres—, no el carácter «=» ya escapado.
+  // Escrito con una sola barra, esto sustituiría «=» por «=»: nada.
+  const limpio = encontrado[0]
+    .replace(/\\u003d/g, '=')
+    .replace(/\\u0026/g, '&')
+    .replace(/\\+$/, '')
+
+  try {
+    const url = new URL(limpio)
+    if (url.protocol !== 'https:' || !destinoValido(url.hostname)) return null
+    return url.href
+  } catch {
+    return null
+  }
+}
+
 Deno.serve(async (req: Request): Promise<Response> => {
   // `apikey` y `x-client-info` van en la lista porque supabase-js los manda
   // SIEMPRE, y el navegador pregunta por todas las cabeceras antes de enviar
@@ -127,7 +163,24 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     const siguiente = res.headers.get('location')
     if (!siguiente) {
-      // Ya no redirige: este es el destino.
+      // Sin redirección. Puede ser que ya estemos en el destino… o que Google
+      // haya servido la página de Firebase en vez de redirigir, que es lo que
+      // le hace a las peticiones que no vienen de un móvil: responde 200 con un
+      // HTML que lleva el enlace real dentro y salta con JavaScript.
+      //
+      // Eso dejaba el rastro muerto aquí mismo: la función devolvía el propio
+      // enlace corto y desde fuera parecía que el enlace no llevaba a ningún
+      // sitio. Ni la cookie de consentimiento ni seguir más saltos ayudan,
+      // porque no hay ningún salto que seguir.
+      if (ENTRADA_PERMITIDA.has(actual.hostname.toLowerCase())) {
+        const dentro = await extraerDelCuerpo(res)
+        if (dentro) {
+          console.log(`extraido del HTML -> ${dentro}`)
+          return new Response(JSON.stringify({ url: dentro }), { headers: cors })
+        }
+      }
+
+      // Ya no redirige y no hay nada dentro: este es el destino.
       console.log(`resuelto en ${salto + 1} saltos -> ${actual.href}`)
       return new Response(JSON.stringify({ url: actual.href }), { headers: cors })
     }
