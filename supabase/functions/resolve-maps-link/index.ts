@@ -52,9 +52,21 @@ function destinoValido(host: string): boolean {
 const MAX_SALTOS = 10
 
 Deno.serve(async (req: Request): Promise<Response> => {
+  // `apikey` y `x-client-info` van en la lista porque supabase-js los manda
+  // SIEMPRE, y el navegador pregunta por todas las cabeceras antes de enviar
+  // nada. Con solo `authorization, content-type` permitidas, la comprobación
+  // previa fallaba y la petición no llegaba a hacerse: la función parecía rota
+  // desde la app y funcionaba perfectamente por curl.
+  //
+  // Se devuelve además lo que el navegador haya pedido, para que añadir una
+  // cabecera nueva en el cliente no vuelva a romper esto en silencio.
+  const pedidas = req.headers.get('access-control-request-headers')
   const cors = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, content-type',
+    'Access-Control-Allow-Headers':
+      pedidas || 'authorization, content-type, apikey, x-client-info',
+    // Sin esto el navegador repite la comprobación en cada importación.
+    'Access-Control-Max-Age': '86400',
     'Content-Type': 'application/json',
   }
 
