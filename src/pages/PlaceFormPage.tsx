@@ -203,17 +203,17 @@ export function PlaceFormPage() {
     if (parsed.lat !== null && parsed.lng !== null) {
       setCoords({ lat: parsed.lat, lng: parsed.lng })
       moveTo(parsed.lat, parsed.lng)
-      // El enlace trae coordenadas pero no dirección postal: se busca por el
-      // nombre para rellenarla, sin bloquear la importación si falla.
-      if (parsed.name) {
-        void searchAddress(parsed.name, { lat: parsed.lat, lng: parsed.lng }, locale)
-          .then((res) => {
-            // `address` de la clausura es el de este pintado, no el de ahora:
-            // comprobarlo aquí leería un valor viejo. Manda el contador.
-            if (importSeq.current === mio && res.length > 0) setAddress(res[0].address)
-          })
-          .catch(() => {})
-      }
+      // La dirección se queda vacía a propósito.
+      //
+      // Aquí se buscaba por el NOMBRE del sitio y se cogía el primer resultado.
+      // Las coordenadas del enlace son exactas, pero el nombre no basta para
+      // encontrar el portal: el geocodificador devolvía el local de al lado y
+      // el sitio quedaba con el pin bien y una calle que no era la suya —
+      // «Plaza de San Martín 2» para algo que está en Mozart 5.
+      //
+      // Una dirección inventada es peor que ninguna: nadie duda de un dato que
+      // la app ha rellenado sola. Quien la quiera, la elige en el buscador de
+      // arriba, que sí devuelve lo que se ha pedido.
     }
     setImportMessage({ kind: 'ok', text: t('import.done') })
     setImportUrl('')
