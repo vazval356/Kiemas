@@ -10,7 +10,7 @@ import {
 } from '../components/icons'
 import { QuotaMeter } from '../components/QuotaMeter'
 import { spaceColors } from '../lib/spaceTheme'
-import type { Entitlement, FollowedList, MyEntitlement, MyStats } from '../lib/types'
+import type { Entitlement, MyEntitlement, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -30,7 +30,6 @@ export function ProfilePage() {
   // los topes y lo gastado, y pedirlo dos veces sería otra ida y vuelta.
   const [nivel, setNivel] = useState<MyEntitlement | null>(null)
   const entitlement: Entitlement = nivel?.entitlement ?? 'free'
-  const [followed, setFollowed] = useState<FollowedList[]>([])
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -43,10 +42,6 @@ export function ProfilePage() {
     api
       .myEntitlement()
       .then(setNivel)
-      .catch(() => {})
-    api
-      .listFollowedLists()
-      .then(setFollowed)
       .catch(() => {})
   }, [api])
 
@@ -294,52 +289,6 @@ export function ProfilePage() {
               </span>
             </span>
           </Link>
-        </section>
-
-        {/* ── Listas guardadas ─────────────────────────────────────────── */}
-        <section className="mt-8">
-          <div className="mb-2 flex items-baseline justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-              {t('followed.title')}
-            </h2>
-            <Link to="/explore" className="text-sm font-semibold text-primary squish">
-              {t('explore.open')}
-            </Link>
-          </div>
-
-          {followed.length === 0 ? (
-            <Link
-              to="/following"
-              className="block rounded-card border-2 border-dashed border-outline-variant px-4 py-5 text-center text-sm text-on-surface-variant squish"
-            >
-              {t('followed.none')}
-            </Link>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {followed.slice(0, 2).map((list) => (
-                <li key={list.token}>
-                  <Link
-                    to={`/l/${list.token}`}
-                    className="flex items-center gap-3 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] squish"
-                  >
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-control bg-primary-fixed text-xl text-primary">
-                      🔖
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold text-on-surface">
-                        {list.name}
-                      </span>
-                      <span className="block truncate text-sm text-on-surface-variant">
-                        {list.places === 1
-                          ? t('collection.countOne')
-                          : t('collection.count', { count: list.places })}
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
 
         {/* ── Ajustes ──────────────────────────────────────────────────────
