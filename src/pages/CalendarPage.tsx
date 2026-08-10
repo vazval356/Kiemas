@@ -12,6 +12,7 @@ import {
 import type { Category, Locale, Plan, SpaceMember } from '../lib/types'
 import type { Translate } from '../lib/i18n'
 import { AfterPlanCard } from '../components/AfterPlanCard'
+import { DecisionsSection } from '../components/DecisionsSection'
 import { useApp } from '../state/appState'
 
 const STRIP_DAYS = 14
@@ -129,6 +130,11 @@ export function CalendarPage() {
         {/* Va lo primero, encima del calendario: es una pregunta con fecha de
             caducidad y compite con un mes entero que no cambia. */}
         <AfterPlanCard />
+
+        {/* Las decisiones van con los planes y no en su propia pestaña: son la
+            misma pregunta —«¿qué hacemos?»— con y sin fecha, y no había hueco
+            en la barra de abajo sin quitar algo que sí hace falta. */}
+        <DecisionsSection />
 
         {/* ── Cabecera: mes y selector de vista ──────────────────────────── */}
         <header className="flex items-center justify-between gap-2 py-2">

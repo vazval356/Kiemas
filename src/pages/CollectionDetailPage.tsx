@@ -172,11 +172,27 @@ export function CollectionDetailPage() {
 
         {/* ── Sitios de la colección ─────────────────────────────────────── */}
         <section className="mt-6">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-            {t('collection.inCollection')}
-          </h2>
+          <div className="mb-2 flex items-baseline justify-between gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              {t('collection.inCollection')}
+            </h2>
+            {inside.length > 0 && (
+              <span className="text-xs font-semibold text-primary">
+                {inside.length === 1
+                  ? t('collection.countOne')
+                  : t('collection.count', { count: inside.length })}
+              </span>
+            )}
+          </div>
           {inside.length === 0 ? (
-            <p className="text-sm text-on-surface-variant">{t('collection.empty')}</p>
+            // Un estado vacío es una pantalla como cualquier otra y necesita su
+            // caja. Suelto entre un titulillo y la tarjeta de compartir, este
+            // párrafo se leía como un error de maquetación.
+            <div className="rounded-card bg-surface-lowest px-4 py-8 text-center shadow-[var(--shadow-surface)]">
+              <div className="mb-2 text-3xl">🗂️</div>
+              <p className="font-medium text-on-surface">{t('collection.empty')}</p>
+              <p className="mt-1 text-sm text-on-surface-variant">{t('collection.emptyHint')}</p>
+            </div>
           ) : (
             <ul className="flex flex-col gap-2">
               {inside.map((place) => (

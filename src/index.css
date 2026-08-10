@@ -88,7 +88,13 @@ body,
 
 body {
   font-family: var(--font-body);
-  background: var(--color-surface);
+  /* El fondo va tintado, no casi blanco.
+   *
+   * Con `--color-surface` (#f9f9ff) y tarjetas blancas encima, la diferencia
+   * entre el papel y lo que hay sobre él era de tres puntos de luminosidad: la
+   * app entera se leía como una hoja en blanco y las tarjetas no parecían
+   * tarjetas. Este tono es del mismo sistema de diseño, solo que sin usar. */
+  background: var(--color-surface-low);
   color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
 }

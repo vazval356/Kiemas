@@ -592,3 +592,31 @@ export interface PendingReview {
   placeVisited: boolean
   alreadyRated: boolean
 }
+
+/**
+ * Una decisión del grupo: una pregunta con opciones y su respuesta.
+ *
+ * No es un plan ni un chat. Es lo que un grupo acuerda —cambiar el apartamento,
+ * quién lleva el coche— y que hasta ahora se iba a WhatsApp, donde se pierde.
+ *
+ * Los votos se ven a propósito. En un grupo de amigos, que alguien cambie el
+ * suyo al ver el de los demás es lo que hace que se llegue a algo.
+ */
+export interface DecisionOption {
+  id: string
+  label: string
+  /** Quiénes han votado esta opción, por orden de voto. */
+  voters: string[]
+}
+
+export interface Decision {
+  id: string
+  title: string
+  createdBy: string | null
+  createdAt: string
+  /** `null` mientras siga abierta. */
+  closedAt: string | null
+  /** La que ganó, fijada al cerrar y no recontada después. */
+  chosenOptionId: string | null
+  options: DecisionOption[]
+}

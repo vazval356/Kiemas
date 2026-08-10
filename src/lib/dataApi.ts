@@ -22,6 +22,7 @@ import type {
   ExploreList,
   MyStats,
   PlanLimits,
+  Decision,
   PendingReview,
   PromoRedemption,
   PublicList,
@@ -160,6 +161,15 @@ export interface DataApi {
   pendingReviews(): Promise<PendingReview[]>
   /** Cerrar la pregunta de un plan. Solo para quien la cierra. */
   markPlanReviewed(planId: string): Promise<void>
+
+  // ── Decisiones del grupo ─────────────────────────────────────────────────
+  listDecisions(spaceId: string): Promise<Decision[]>
+  /** Entre dos y seis opciones. Devuelve el identificador de la creada. */
+  createDecision(spaceId: string, title: string, options: string[]): Promise<string>
+  /** Votar, o cambiar el voto. Una opción por persona y decisión. */
+  castDecisionVote(optionId: string): Promise<void>
+  /** Sin opción gana la más votada. Solo quien la abrió o un administrador. */
+  closeDecision(decisionId: string, optionId?: string): Promise<void>
 
   // ── Novedades ────────────────────────────────────────────────────────────
   /** Cuántas cosas han pasado en el espacio desde que lo miraste. */

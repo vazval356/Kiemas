@@ -35,6 +35,7 @@ import type {
   MyEntitlement,
   MyStats,
   PlanLimits,
+  Decision,
   PendingReview,
   PromoRedemption,
 } from './types'
@@ -839,6 +840,47 @@ export const supabaseApi: DataApi = {
 
   async markPlanReviewed(planId: string) {
     const res = await supabase.rpc('mark_plan_reviewed', { p_plan_id: planId })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async listDecisions(spaceId: string): Promise<Decision[]> {
+    const res = await supabase.rpc('list_decisions', { p_space_id: spaceId })
+    if (res.error) throw new Error(res.error.message)
+    return (res.data as Record<string, unknown>[]).map((d) => ({
+      id: d.id as string,
+      title: d.title as string,
+      createdBy: (d.created_by as string) ?? null,
+      createdAt: d.created_at as string,
+      closedAt: (d.closed_at as string) ?? null,
+      chosenOptionId: (d.chosen_option_id as string) ?? null,
+      options: ((d.options ?? []) as Record<string, unknown>[]).map((o) => ({
+        id: o.id as string,
+        label: o.label as string,
+        voters: (o.voters ?? []) as string[],
+      })),
+    }))
+  },
+
+  async createDecision(spaceId: string, title: string, options: string[]): Promise<string> {
+    const res = await supabase.rpc('create_decision', {
+      p_space_id: spaceId,
+      p_title: title,
+      p_options: options,
+    })
+    if (res.error) throw new Error(res.error.message)
+    return res.data as string
+  },
+
+  async castDecisionVote(optionId: string) {
+    const res = await supabase.rpc('cast_decision_vote', { p_option_id: optionId })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async closeDecision(decisionId: string, optionId?: string) {
+    const res = await supabase.rpc('close_decision', {
+      p_decision_id: decisionId,
+      p_option_id: optionId ?? null,
+    })
     if (res.error) throw new Error(res.error.message)
   },
 
