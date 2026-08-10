@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { TrashIcon } from './icons'
 import type { Decision } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -225,15 +226,36 @@ export function DecisionsSection() {
                 })}
               </ul>
 
-              {!cerrada && puedoCerrar && (
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void hacer(() => api.closeDecision(d.id))}
-                  className="mt-3 text-sm font-semibold text-primary squish disabled:opacity-50"
-                >
-                  {t('decision.close')}
-                </button>
+              {puedoCerrar && (
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  {!cerrada ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void hacer(() => api.closeDecision(d.id))}
+                      className="text-sm font-semibold text-primary squish disabled:opacity-50"
+                    >
+                      {t('decision.close')}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  {/* Se pregunta antes: una decisión cerrada es el registro de lo
+                      que se acordó, y no hay forma de recuperarla. */}
+                  <button
+                    type="button"
+                    disabled={busy}
+                    aria-label={t('decision.delete')}
+                    onClick={() => {
+                      if (window.confirm(t('decision.deleteConfirm', { title: d.title }))) {
+                        void hacer(() => api.deleteDecision(d.id))
+                      }
+                    }}
+                    className="rounded-full p-1.5 text-on-surface-variant squish disabled:opacity-50"
+                  >
+                    <TrashIcon className="size-4" />
+                  </button>
+                </div>
               )}
             </article>
           )

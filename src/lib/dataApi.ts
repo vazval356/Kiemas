@@ -170,6 +170,8 @@ export interface DataApi {
   castDecisionVote(optionId: string): Promise<void>
   /** Sin opción gana la más votada. Solo quien la abrió o un administrador. */
   closeDecision(decisionId: string, optionId?: string): Promise<void>
+  /** La borra entera, con sus opciones y sus votos. Quien la abrió, o un admin. */
+  deleteDecision(decisionId: string): Promise<void>
 
   // ── Novedades ────────────────────────────────────────────────────────────
   /** Cuántas cosas han pasado en el espacio desde que lo miraste. */
@@ -185,6 +187,11 @@ export interface DataApi {
   voteDateOption(optionId: string, vote: DateVote): Promise<void>
   /** Sin `optionId` gana la fecha más votada. */
   closeDatePoll(planId: string, optionId?: string): Promise<void>
+  /** Reemplaza las candidatas de la encuesta de sitios (entre 2 y 6). */
+  setPlanPlaceOptions(planId: string, placeIds: string[]): Promise<void>
+  votePlanPlace(optionId: string): Promise<void>
+  /** Sin `optionId` gana el sitio más votado. El ganador queda como sitio del plan. */
+  closePlacePoll(planId: string, optionId?: string): Promise<void>
 
   // ── Etiquetas de ambiente (Fase 3) ───────────────────────────────────────
   listTags(spaceId: string): Promise<Tag[]>

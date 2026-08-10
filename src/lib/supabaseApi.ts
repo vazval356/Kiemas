@@ -110,6 +110,14 @@ interface PlanRow {
         plan_date_votes: { user_id: string; vote: DateVote }[] | null
       }[]
     | null
+  plan_place_options:
+    | {
+        id: string
+        place_id: string
+        position: number
+        plan_place_votes: { user_id: string }[] | null
+      }[]
+    | null
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -208,6 +216,16 @@ function mapPlan(row: PlanRow): Plan {
         votes: (o.plan_date_votes ?? []).map((v) => ({ userId: v.user_id, vote: v.vote })),
       }))
       .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+    // Por `position`: es el orden en que se propusieron, y el que rompe el
+    // empate cuando se cierra la encuesta.
+    placeOptions: (row.plan_place_options ?? [])
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .map((o) => ({
+        id: o.id,
+        placeId: o.place_id,
+        voters: (o.plan_place_votes ?? []).map((v) => v.user_id),
+      })),
     createdBy: row.created_by,
     createdAt: row.created_at,
   }
@@ -884,6 +902,11 @@ export const supabaseApi: DataApi = {
     if (res.error) throw new Error(res.error.message)
   },
 
+  async deleteDecision(decisionId: string) {
+    const res = await supabase.rpc('delete_decision', { p_decision_id: decisionId })
+    if (res.error) throw new Error(res.error.message)
+  },
+
   async unseenActivity(spaceId: string): Promise<number> {
     const res = await supabase.rpc('unseen_activity', { p_space_id: spaceId })
     if (res.error) throw new Error(res.error.message)
@@ -922,7 +945,7 @@ export const supabaseApi: DataApi = {
     let query = supabase
       .from('plans')
       .select(
-        '*, plan_attendees(user_id, response, responded_at), plan_date_options(id, starts_at, plan_date_votes(user_id, vote))'
+        '*, plan_attendees(user_id, response, responded_at), plan_date_options(id, starts_at, plan_date_votes(user_id, vote)), plan_place_options(id, place_id, position, plan_place_votes(user_id))'
       )
       .eq('space_id', spaceId)
       .neq('status', 'cancelled')
@@ -953,7 +976,7 @@ export const supabaseApi: DataApi = {
       await supabase
         .from('plans')
         .select(
-          '*, plan_attendees(user_id, response, responded_at), plan_date_options(id, starts_at, plan_date_votes(user_id, vote))'
+          '*, plan_attendees(user_id, response, responded_at), plan_date_options(id, starts_at, plan_date_votes(user_id, vote)), plan_place_options(id, place_id, position, plan_place_votes(user_id))'
         )
         .eq('id', id)
         .single()
@@ -998,6 +1021,27 @@ export const supabaseApi: DataApi = {
 
   async closeDatePoll(planId: string, optionId?: string) {
     const res = await supabase.rpc('close_date_poll', {
+      p_plan_id: planId,
+      p_option_id: optionId ?? null,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async setPlanPlaceOptions(planId: string, placeIds: string[]) {
+    const res = await supabase.rpc('set_plan_place_options', {
+      p_plan_id: planId,
+      p_place_ids: placeIds,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async votePlanPlace(optionId: string) {
+    const res = await supabase.rpc('vote_plan_place', { p_option_id: optionId })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async closePlacePoll(planId: string, optionId?: string) {
+    const res = await supabase.rpc('close_place_poll', {
       p_plan_id: planId,
       p_option_id: optionId ?? null,
     })

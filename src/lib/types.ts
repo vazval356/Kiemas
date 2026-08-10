@@ -247,6 +247,17 @@ export interface PlanDateOption {
   votes: { userId: string; vote: DateVote }[]
 }
 
+/**
+ * Una candidata de la encuesta de sitios. La encuesta está abierta mientras el
+ * plan no tenga `placeId`: al cerrarla, el ganador pasa a ser EL sitio del plan,
+ * y por eso no hace falta guardar aparte quién ganó.
+ */
+export interface PlanPlaceOption {
+  id: string
+  placeId: string
+  voters: string[]
+}
+
 export interface Plan {
   id: string
   spaceId: string
@@ -263,6 +274,7 @@ export interface Plan {
   recurrenceUntil: string | null
   attendees: PlanAttendee[]
   dateOptions: PlanDateOption[]
+  placeOptions: PlanPlaceOption[]
   createdBy: string | null
   createdAt: string
 }
