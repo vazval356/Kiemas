@@ -60,7 +60,16 @@ const MAX_SALTOS = 10
  * repetidas para los distintos destinos del enlace dinámico.
  */
 function extraerDeHtml(html: string): string | null {
-  const encontrado = html.match(/https:\/\/(?:www\.)?google\.[a-z.]{2,6}\/maps\/[^"'<>\s]+/)
+  // Google sirve esta página con el enlace de tres formas distintas según a
+  // quién crea que le está contestando: en claro, escapado como en JavaScript
+  // (`=` por `=`), o entero codificado para URL (`%2Fmaps%2F`). Se buscan
+  // las tres, porque a un navegador le llega una y a un servidor otra — y eso
+  // es exactamente lo que hacía que funcionara probándolo a mano y no desde la
+  // función.
+  const enClaro = html.match(/https:\/\/(?:www\.)?google\.[a-z.]{2,6}\/maps\/[^"'<>\s]+/)
+  const codificada = html.match(/https(?::|%3A)(?:\/\/|%2F%2F)(?:www\.)?google\.[a-z.]{2,6}(?:\/|%2F)maps(?:\/|%2F)[^"'<>\s]+/i)
+
+  const encontrado = enClaro ?? codificada
   if (!encontrado) return null
 
   // Las barras van dobles a propósito: en el HTML hay una barra invertida
@@ -188,7 +197,18 @@ Deno.serve(async (req: Request): Promise<Response> => {
                 status: res.status,
                 bytes: html.length,
                 titulo: html.match(/<title[^>]*>([^<]{0,120})/i)?.[1] ?? null,
-                inicio: html.slice(0, 300),
+                marcadores: Object.fromEntries(
+                  ['google.com/maps', '/maps/place', '%2Fmaps', 'maps.google', 'u003d'].map((m) => [
+                    m,
+                    html.split(m).length - 1,
+                  ])
+                ),
+                // Una ventana alrededor de la primera pista, que dice más que
+                // el principio del fichero: la cabecera es igual en todas.
+                cerca: (() => {
+                  const i = html.search(/maps(\/|%2F)place/i)
+                  return i < 0 ? null : html.slice(Math.max(0, i - 120), i + 240)
+                })(),
               },
             }),
             { headers: cors }
