@@ -167,6 +167,7 @@ const es = {
   'import.locating': 'Situando el sitio en el mapa…',
   'import.noLocation': 'Hemos sacado el nombre, pero no la ubicación. Búscala abajo.',
   'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps',
+  'import.deadLink': 'Ese enlace no lleva a ningún sitio. Comprueba que lo has copiado entero.',
   'import.shortLink':
     'Los enlaces cortos de «Compartir» no se pueden leer desde el navegador. Abre el sitio en Google Maps y copia la dirección completa de la barra del navegador.',
   'import.nothingFound': 'No hemos podido sacar nada de ese enlace',
@@ -885,6 +886,7 @@ const en: Record<TranslationKey, string> = {
   'import.locating': 'Placing it on the map…',
   'import.noLocation': 'We got the name but not the location. Search for it below.',
   'import.notGoogleMaps': "That doesn't look like a Google Maps link",
+  'import.deadLink': "That link doesn't lead anywhere. Check you copied all of it.",
   'import.shortLink':
     "Short 'Share' links can't be read from the browser. Open the place in Google Maps and copy the full address from the address bar.",
   'import.nothingFound': "We couldn't get anything out of that link",

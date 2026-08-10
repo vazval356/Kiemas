@@ -143,7 +143,15 @@ export function PlaceFormPage() {
       try {
         const largo = await resolveMapsLink(importUrl)
         parsed = parseGoogleMapsUrl(largo)
-        if (!parsed || parsed.needsResolving) throw new Error('sigue sin resolver')
+        // Resolver ha ido bien pero el destino sigue siendo el dominio corto:
+        // el enlace no lleva a ninguna ficha. Pasa con los que se copian a
+        // medias, que es lo más fácil de hacer al pegarlos desde WhatsApp.
+        // No es lo mismo que no poder resolverlo, y decir aquí «pega el enlace
+        // largo» manda a buscar un enlace largo que no existe.
+        if (!parsed || parsed.needsResolving) {
+          setImportMessage({ kind: 'warn', text: t('import.deadLink') })
+          return
+        }
       } catch (e) {
         // Si el servidor no puede, queda el camino de siempre: pedir el enlace
         // largo. Es peor experiencia, pero funciona sin depender de nada.
