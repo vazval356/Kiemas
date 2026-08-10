@@ -752,11 +752,14 @@ export const supabaseApi: DataApi = {
   },
 
   async deletePlace(placeId: string) {
-    // Las fotos del sitio quedarían huérfanas en el cubo, así que se borran antes.
-    const place = check(
-      await supabase.from('places').select('space_id, photos').eq('id', placeId).single()
-    )
-    const paths = (place.photos ?? []) as string[]
+    // Las filas de `place_photos` se van solas con el sitio, por la clave ajena
+    // en cascada. Los ficheros del almacenamiento NO: eso no lo sabe Postgres,
+    // así que hay que recoger las rutas antes de borrar nada.
+    //
+    // Esto leía `places.photos`, la columna que retiró la migración 30, y
+    // borrar un sitio fallaba con «column places.photos does not exist».
+    const fotos = check(await supabase.from('place_photos').select('path').eq('place_id', placeId))
+    const paths = fotos.map((f) => f.path as string)
     if (paths.length > 0) await supabase.storage.from('photos').remove(paths)
     ok(await supabase.from('places').delete().eq('id', placeId))
   },

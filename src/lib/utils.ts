@@ -1,4 +1,5 @@
 import type { Place } from './types'
+import { createTranslate, detectLocale, type TranslationKey } from './i18n'
 
 /**
  * Utilidades heredadas de Warm Hearth (`src/lib/utils.ts`), con dos cambios:
@@ -26,11 +27,60 @@ export function hasValidCoords(p: { lat: number; lng: number }): boolean {
   )
 }
 
-/** Extrae un mensaje legible de cualquier error (Error, PostgrestError, etc.). */
+/**
+ * Familias de error que sí sabemos explicar.
+ *
+ * El orden importa poco, pero la lista sí: todo lo que no case con ninguna se
+ * considera técnico y no se le enseña a nadie.
+ */
+const FAMILIAS: { patron: RegExp; clave: TranslationKey }[] = [
+  // Sin red. `fetch` falla con «Failed to fetch» en Chrome y «Load failed» en
+  // Safari, que es el navegador que va dentro de la app en iPhone.
+  {
+    patron: /failed to fetch|load failed|networkerror|network request failed/i,
+    clave: 'err.offline',
+  },
+  // La RLS ha dicho que no. Casi siempre es intentar tocar algo de otro grupo,
+  // o algo que era tuyo y ha dejado de serlo.
+  {
+    patron: /row-level security|permission denied|not_allowed|not_admin/i,
+    clave: 'err.notAllowed',
+  },
+  // La sesión ha caducado o no hay.
+  { patron: /jwt|not_authenticated|invalid token|session/i, clave: 'err.session' },
+  // Algo que ya no está: lo ha borrado otra persona mientras mirabas.
+  { patron: /no rows|empty_response|not found|does not exist/i, clave: 'err.gone' },
+]
+
+/**
+ * Un mensaje que se le pueda enseñar a una persona.
+ *
+ * Antes esto devolvía el texto del error tal cual, así que en pantalla salían
+ * cosas como «column places.photos does not exist» — que no dice nada a quien
+ * usa la app y sí dice bastante a quien quiera hurgar en la base de datos.
+ *
+ * Ahora solo salen mensajes escritos para leerse. Lo técnico se manda a la
+ * consola en lugar de tirarse: sin eso, depurar un fallo del que solo se sabe
+ * «Algo ha fallado» es adivinar.
+ */
 export function errorMessage(e: unknown, fallback = 'Algo ha fallado'): string {
-  if (e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' && e.message) {
-    return e.message
+  const bruto =
+    e && typeof e === 'object' && 'message' in e && typeof e.message === 'string' ? e.message : ''
+
+  if (!bruto) return fallback
+
+  const t = createTranslate(detectLocale())
+
+  for (const { patron, clave } of FAMILIAS) {
+    if (patron.test(bruto)) {
+      console.warn('[kiemas]', bruto)
+      return t(clave)
+    }
   }
+
+  // Lo que no reconocemos tampoco se enseña: puede ser cualquier cosa que
+  // escupa Postgres, y ninguna está escrita para leerse.
+  console.warn('[kiemas]', bruto)
   return fallback
 }
 

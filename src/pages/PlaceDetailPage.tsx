@@ -409,10 +409,17 @@ export function PlaceDetailPage() {
           {/* Tres por fila, cuadradas. Una tira horizontal obligaba a arrastrar
               para ver la cuarta, y en una galería de recuerdos lo que se quiere
               es abarcarlas de un vistazo. */}
-          <div className="grid grid-cols-3 gap-1.5">
-            <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish">
-              <span className="text-2xl">📷</span>
-              <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
+          {/* Sin fotos, el botón va a lo ancho y no como una casilla suelta en
+              una cuadrícula vacía: un cuadrado punteado solo en la esquina se
+              lee como un hueco roto, no como algo que se puede pulsar.
+
+              Con fotos, se convierte en una baldosa más — sin borde punteado,
+              del color suave del sistema, para que acompañe a la cuadrícula en
+              vez de competir con ella. */}
+          {place.photos.length === 0 && (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-card bg-surface-container py-4 text-sm font-semibold text-primary squish">
+              <span className="text-lg">📷</span>
+              {t('form.addPhoto')}
               <input
                 type="file"
                 accept="image/*"
@@ -428,6 +435,27 @@ export function PlaceDetailPage() {
                 }}
               />
             </label>
+          )}
+
+          <div className="grid grid-cols-3 gap-1.5">
+            {place.photos.length > 0 && (
+              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-card bg-surface-container text-on-surface-variant squish">
+                <span className="text-xl">📷</span>
+                <span className="text-[11px] font-semibold">{t('form.addPhoto')}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  disabled={busy}
+                  onChange={(e) => {
+                    const files = e.target.files ? Array.from(e.target.files) : []
+                    e.target.value = ''
+                    if (files.length > 0) void run(() => api.addPhotos(place.id, files))
+                  }}
+                />
+              </label>
+            )}
 
             {place.photos.map((photo) => {
               const esPortada = place.coverPath === photo.id
