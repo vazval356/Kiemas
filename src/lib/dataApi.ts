@@ -150,6 +150,12 @@ export interface DataApi {
   addPlace(spaceId: string, input: PlaceInput): Promise<Place>
   updatePlace(placeId: string, patch: PlacePatch): Promise<void>
   deletePlace(placeId: string): Promise<void>
+  /**
+   * Lleva un sitio a otro espacio: solo el local, sin notas, fotos,
+   * valoraciones ni estado. Devuelve el id en el destino, y si ya estaba allí
+   * devuelve el que hubiera en vez de duplicarlo.
+   */
+  copyPlaceTo(placeId: string, targetSpaceId: string): Promise<string>
   setRating(placeId: string, score: number): Promise<void>
   addPhotos(placeId: string, files: File[]): Promise<void>
   removePhoto(placeId: string, photoId: string): Promise<void>

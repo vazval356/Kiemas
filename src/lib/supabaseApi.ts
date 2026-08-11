@@ -783,6 +783,15 @@ export const supabaseApi: DataApi = {
     ok(await supabase.from('places').delete().eq('id', placeId))
   },
 
+  async copyPlaceTo(placeId: string, targetSpaceId: string): Promise<string> {
+    const res = await supabase.rpc('copy_place_to_space', {
+      p_place_id: placeId,
+      p_target_space_id: targetSpaceId,
+    })
+    if (res.error) throw new Error(res.error.message)
+    return res.data as string
+  },
+
   async setRating(placeId: string, score: number) {
     const uid = await myId()
     ok(

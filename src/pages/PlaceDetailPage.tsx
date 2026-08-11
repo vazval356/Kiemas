@@ -35,7 +35,7 @@ import { useApp } from '../state/appState'
 export function PlaceDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { places, categories, activeSpace, profile, position, api, refresh, t } = useApp()
+  const { places, categories, activeSpace, spaces, profile, position, api, refresh, t } = useApp()
 
   const place = places.find((p) => p.id === id)
 
@@ -56,6 +56,8 @@ export function PlaceDetailPage() {
   // Ficha del negocio, si alguien ha verificado este local (Fase 7).
   const [negocio, setNegocio] = useState<BusinessProfile | null>(null)
   const [error, setError] = useState('')
+  const [copiando, setCopiando] = useState(false)
+  const [copiado, setCopiado] = useState('')
 
   // Si otro dispositivo cambia las notas, se recogen — salvo que se estén
   // editando aquí, donde pisarlas sería perder lo escrito a medias.
@@ -114,6 +116,19 @@ export function PlaceDetailPage() {
     } finally {
       setBusy(false)
     }
+  }
+
+  // Los demás espacios a los que se puede llevar: todos menos donde ya está.
+  const otrosEspacios = spaces.filter((e) => e.id !== place?.spaceId)
+
+  async function llevar(destinoId: string, destinoNombre: string) {
+    if (!place) return
+    setCopiando(false)
+    setCopiado('')
+    await run(async () => {
+      await api.copyPlaceTo(place.id, destinoId)
+      setCopiado(t('detail.copyDone', { space: destinoNombre }))
+    })
   }
 
   return (
@@ -240,6 +255,58 @@ export function PlaceDetailPage() {
               {t('claim.cta')}
             </Link>
           )
+        )}
+
+        {/* ── Llevárselo a otro grupo ───────────────────────────────────
+            Un sitio vive en un espacio y ahí se quedaba: el bar que conociste
+            con unos había que volver a escribirlo entero para proponérselo a
+            otros. Viaja el local y nada de lo que pasó alrededor. */}
+        {otrosEspacios.length > 0 && (
+          <div className="mt-4">
+            {copiando ? (
+              <div className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] animate-pop">
+                <p className="px-1 pb-2 text-sm text-on-surface-variant">{t('detail.copyHint')}</p>
+                <ul className="flex flex-col gap-1.5">
+                  {otrosEspacios.map((e) => (
+                    <li key={e.id}>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void llevar(e.id, e.name)}
+                        className="flex w-full items-center gap-2 rounded-control bg-surface-container px-3 py-2.5 text-left squish disabled:opacity-50"
+                      >
+                        <span>{e.kind === 'personal' ? '👤' : (e.emoji ?? '👥')}</span>
+                        <span className="min-w-0 flex-1 truncate font-medium text-on-surface">
+                          {e.name}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  onClick={() => setCopiando(false)}
+                  className="mt-2 w-full rounded-full border border-outline-variant py-2 text-sm font-semibold text-on-surface-variant squish"
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setCopiando(true)}
+                className="w-full rounded-full border border-outline-variant py-3 font-semibold text-on-surface squish disabled:opacity-50"
+              >
+                {t('detail.copyTo')}
+              </button>
+            )}
+            {copiado && (
+              <p className="mt-2 rounded-control bg-primary-fixed px-3 py-2 text-sm text-on-primary-fixed">
+                {copiado}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Estado */}
