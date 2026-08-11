@@ -56,69 +56,39 @@ const db = createClient(URL, ANON, { auth: { persistSession: false } })
 // sale con un solo pin y no se entiende nada. Categoría por nombre, que es como
 // las crea `create_space`.
 const SITIOS = [
+  // Nombre, dirección, lat, lng, categoría, estado, nota /5, precio, favorito, comentario.
+  //
+  // Sitios públicos y conocidos de Madrid, no negocios pequeños: estas capturas
+  // van a la App Store con valoraciones y notas puestas por nosotros, y una
+  // opinión inventada sobre el Retiro es gusto personal, mientras que sobre un
+  // bar con nombre y dirección sería atribuirle algo a alguien que existe.
   [
-    'La Taberna de Ana',
-    'Calle de la Cruz 12',
-    40.4155,
-    -3.7018,
-    'Restaurantes',
-    'visited',
-    5,
-    2,
-    true,
-    'Las croquetas siguen siendo las mejores del barrio.',
-  ],
-  [
-    'Bar Manolo',
-    'Calle de Espoz y Mina 8',
-    40.4148,
-    -3.7025,
-    'Restaurantes',
-    'visited',
-    4,
-    1,
-    false,
-    'Para desayunar antes de currar. Tostada y café en cinco minutos.',
-  ],
-  [
-    'El Asador de Lucía',
-    'Calle de Segovia 45',
-    40.4131,
-    -3.7135,
-    'Restaurantes',
-    'want_to_go',
-    null,
-    3,
-    false,
-    'Nos lo recomendó Marta. Hay que reservar con tiempo.',
-  ],
-  [
-    'Sakura',
-    'Calle de Fuencarral 78',
-    40.4276,
-    -3.701,
-    'Restaurantes',
-    'visited',
-    4,
-    3,
-    false,
-    'El menú del mediodía está muy bien de precio.',
-  ],
-  [
-    'Terraza del Retiro',
     'Parque del Retiro',
+    'Plaza de la Independencia 7',
     40.4153,
     -3.6844,
     'Aire libre',
     'visited',
     5,
-    1,
+    null,
     true,
-    'A última hora de la tarde no cabe un alma, pero merece la pena.',
+    'A última hora, cuando baja el calor y se llena de gente tocando.',
+  ],
+  [
+    'Templo de Debod',
+    'Calle de Ferraz 1',
+    40.424,
+    -3.7178,
+    'Aire libre',
+    'visited',
+    5,
+    null,
+    true,
+    'El atardecer desde aquí no falla nunca. Llegar con tiempo.',
   ],
   [
     'Casa de Campo',
-    'Casa de Campo',
+    'Paseo Puerta del Ángel 1',
     40.4192,
     -3.7473,
     'Aire libre',
@@ -129,76 +99,112 @@ const SITIOS = [
     'Para el picnic que llevamos posponiendo desde marzo.',
   ],
   [
-    'Cines Doré',
-    'Calle de Santa Isabel 3',
-    40.411,
-    -3.6987,
-    'Cultura',
+    'Mercado de San Miguel',
+    'Plaza de San Miguel',
+    40.4154,
+    -3.709,
+    'Restaurantes',
+    'visited',
+    4,
+    3,
+    false,
+    'Carísimo y lleno de turistas, pero una vez al año apetece.',
+  ],
+  [
+    'Chocolatería San Ginés',
+    'Pasadizo de San Ginés 5',
+    40.4166,
+    -3.707,
+    'Restaurantes',
     'visited',
     5,
     1,
-    false,
-    'Filmoteca. Entrada baratísima y programación rarísima.',
+    true,
+    'A las siete de la mañana volviendo a casa. Un clásico.',
   ],
   [
-    'Teatro Pavón',
-    'Calle de Embajadores 9',
-    40.4098,
-    -3.7047,
-    'Cultura',
+    'Mercado de San Antón',
+    'Calle de Augusto Figueroa 24',
+    40.4223,
+    -3.6975,
+    'Restaurantes',
     'want_to_go',
     null,
     2,
     false,
-    'La obra de la que hablaba Javi.',
+    'La azotea de arriba, que dice Marta que está muy bien.',
   ],
   [
-    'Bar Cock',
-    'Calle de la Reina 16',
-    40.42,
-    -3.6995,
+    'Museo del Prado',
+    'Paseo del Prado',
+    40.4138,
+    -3.6921,
+    'Cultura',
+    'visited',
+    5,
+    2,
+    false,
+    'Gratis de 18:00 a 20:00. Se llena, pero merece la pena.',
+  ],
+  [
+    'Matadero Madrid',
+    'Plaza de Legazpi 8',
+    40.3922,
+    -3.6975,
+    'Cultura',
+    'want_to_go',
+    null,
+    1,
+    false,
+    'Hay cine de verano en el patio. Mirar la programación.',
+  ],
+  [
+    'Círculo de Bellas Artes',
+    'Calle de Alcalá 42',
+    40.4184,
+    -3.696,
     'Noche',
     'visited',
     4,
     3,
     false,
-    'Sitio de copas de toda la vida. Se llena a partir de la una.',
+    'La azotea. Cinco euros la entrada y las mejores vistas del centro.',
   ],
   [
-    'La Vía Láctea',
-    'Calle de Velarde 18',
-    40.4265,
-    -3.7028,
+    'El Rastro',
+    'Calle de la Ribera de Curtidores',
+    40.4075,
+    -3.7075,
     'Noche',
     'want_to_go',
     null,
-    2,
-    false,
-    'El clásico de Malasaña que nunca hemos pisado.',
-  ],
-  [
-    'Pistas de Chamberí',
-    'Calle de Almagro 28',
-    40.4322,
-    -3.6934,
-    'Deporte',
-    'visited',
-    4,
     1,
     false,
-    'Se reserva por la web del ayuntamiento.',
+    'Domingo por la mañana, y luego cañas por La Latina.',
   ],
   [
-    'Rocódromo Norte',
-    'Calle de Bravo Murillo 200',
-    40.4585,
-    -3.6975,
+    'Estadio Santiago Bernabéu',
+    'Avenida de Concha Espina 1',
+    40.4531,
+    -3.6883,
     'Deporte',
     'want_to_go',
     null,
+    4,
+    false,
+    'El tour por dentro. Hay que sacarlo con antelación.',
+  ],
+  [
+    'Teleférico de Madrid',
+    'Paseo del Pintor Rosales',
+    40.43,
+    -3.72,
+    'Deporte',
+    'visited',
+    4,
     2,
     false,
-    'Dicen que las vías de iniciación están muy bien.',
+    'Corto pero con buenas vistas del oeste. Mejor sin viento.',
   ],
 ]
 
@@ -349,10 +355,14 @@ async function main() {
     return d.toISOString()
   }
 
+  // Un índice por nombre: antes iban por posición en la lista y bastaba
+  // reordenarla para que un picnic acabara decidiéndose entre dos bares.
+  const porNombre = Object.fromEntries(SITIOS.map(([n], k) => [n, ids[k]]))
+
   const { data: plan1 } = await db.rpc('create_plan', {
     p_space_id: spaceId,
-    p_title: 'Cena en La Taberna',
-    p_place_id: ids[0],
+    p_title: 'Cena en el Mercado de San Miguel',
+    p_place_id: porNombre['Mercado de San Miguel'],
     p_starts_at: dentroDe(3, 21),
     p_notes: 'He reservado para seis. Si viene alguien más, avisad y lo cambio.',
   })
@@ -368,21 +378,25 @@ async function main() {
 
   const { data: plan3 } = await db.rpc('create_plan', {
     p_space_id: spaceId,
-    p_title: 'Copas el viernes',
-    p_starts_at: dentroDe(5, 23),
-    p_notes: '¿Dónde vamos?',
+    p_title: 'Terraza el viernes',
+    p_starts_at: dentroDe(5, 20),
+    p_notes: '¿Dónde nos tomamos algo?',
   })
   if (plan3) {
     await db.rpc('set_plan_place_options', {
       p_plan_id: plan3.id,
-      p_place_ids: [ids[8], ids[9], ids[3]],
+      p_place_ids: [
+        porNombre['Círculo de Bellas Artes'],
+        porNombre['Mercado de San Antón'],
+        porNombre['Templo de Debod'],
+      ],
     })
     const { data: ops } = await db
       .from('plan_place_options')
       .select('id')
       .eq('plan_id', plan3.id)
       .order('position')
-    if (ops?.length) await db.rpc('vote_plan_place', { p_option_id: ops[1].id })
+    if (ops?.length) await db.rpc('vote_plan_place', { p_option_id: ops[0].id })
     console.log('Plan con encuesta de sitios:', plan3.title)
   }
 
