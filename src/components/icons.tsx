@@ -219,6 +219,24 @@ export function TrashIcon({ className = 'w-5 h-5' }: IconProps) {
   )
 }
 
+export function SendIcon({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* La caja con la flecha saliendo por arriba: en iOS y en Android
+          significa lo mismo desde hace años, y no hay que explicarlo. */}
+      <path d="M12 3v13M12 3l-4 4M12 3l4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+    </svg>
+  )
+}
+
 export function DiceIcon({ className = 'w-6 h-6' }: IconProps) {
   return (
     <svg
