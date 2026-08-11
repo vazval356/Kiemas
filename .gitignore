@@ -45,3 +45,6 @@ supabase/.branches
 serviceAccount.json
 # Contraseñas del almacén de claves de Android.
 android/keystore.properties
+
+# Fotos de la cuenta de demostracion: no son parte del proyecto.
+fotos

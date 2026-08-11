@@ -247,8 +247,18 @@ export function AuthPage() {
                       />
                       <span>
                         {t('auth.acceptPre')}{' '}
+                        {/* A las páginas públicas y no a la ruta interna.
+                            Con `#/legal/...` y target="_blank" esto no hacía
+                            nada dentro de la app: la WebView de iOS no abre
+                            ventanas nuevas, así que el toque se perdía y en el
+                            navegador parecía funcionar.
+
+                            Así, además, no se sale del formulario: el enlace lo
+                            recoge `setupExternalLinks` y lo abre en la hoja del
+                            navegador del sistema, encima, sin perder el correo
+                            y la contraseña ya escritos. */}
                         <a
-                          href="#/legal/terminos"
+                          href={`${publicBaseUrl()}/terminos.html`}
                           target="_blank"
                           rel="noreferrer"
                           className="font-medium text-primary underline underline-offset-2"
@@ -257,7 +267,7 @@ export function AuthPage() {
                         </a>{' '}
                         {t('auth.acceptMid')}{' '}
                         <a
-                          href="#/legal/privacidad"
+                          href={`${publicBaseUrl()}/privacidad.html`}
                           target="_blank"
                           rel="noreferrer"
                           className="font-medium text-primary underline underline-offset-2"
