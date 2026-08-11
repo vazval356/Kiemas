@@ -25,6 +25,11 @@ const ANON = process.env.VITE_SUPABASE_ANON_KEY ?? leerDelEnv('VITE_SUPABASE_ANO
 const EMAIL = process.env.KIEMAS_EMAIL
 const PASSWORD = process.env.KIEMAS_PASSWORD
 const CARPETA_FOTOS = process.env.KIEMAS_FOTOS ?? null
+const NOMBRE = process.env.KIEMAS_NOMBRE ?? 'Adrián'
+// Borrar contenido es destructivo, así que hay que pedirlo a propósito. Sin
+// esto, lanzar el script dos veces choca contra el tope de grupos del plan
+// gratuito y el segundo intento falla a medias.
+const LIMPIAR = process.env.KIEMAS_LIMPIAR === '1'
 
 function leerDelEnv(clave) {
   try {
@@ -210,6 +215,56 @@ async function main() {
   const { data: sesion } = await db.auth.getUser()
   const yo = sesion.user.id
 
+  // ── Las fotos ─────────────────────────────────────────────────────────────
+  //
+  // Se leen antes que nada: una cuenta de demostración sin fotos no sirve para
+  // las capturas de la tienda, y es mejor parar aquí que después de haber
+  // creado doce sitios vacíos.
+  let fotos = []
+  if (CARPETA_FOTOS && existsSync(CARPETA_FOTOS)) {
+    fotos = readdirSync(CARPETA_FOTOS)
+      .filter((f) => ['.jpg', '.jpeg', '.png'].includes(extname(f).toLowerCase()))
+      .sort()
+      .map((f) => join(CARPETA_FOTOS, f))
+  }
+  if (fotos.length === 0) {
+    console.error('')
+    console.error('No hay fotos, y sin fotos las capturas no valen.')
+    console.error('Deja unos cuantos .jpg en una carpeta y vuelve a lanzarlo:')
+    console.error('  KIEMAS_FOTOS=./fotos node scripts/seed-demo.mjs')
+    console.error('')
+    console.error('Con 8 o 10 basta: se reparten entre los sitios.')
+    process.exit(1)
+  }
+  console.log(fotos.length, 'fotos encontradas')
+
+  // ── Limpieza opcional ─────────────────────────────────────────────────────
+  if (LIMPIAR) {
+    const { data: viejos } = await db.from('spaces').select('id, name').eq('kind', 'group')
+    for (const g of viejos ?? []) {
+      await db.from('spaces').delete().eq('id', g.id)
+      console.log('Borrado el grupo anterior:', g.name)
+    }
+  }
+
+  // ── El perfil ─────────────────────────────────────────────────────────────
+  //
+  // «Cuenta modelo» delata la demostración en cada captura. Y una foto de
+  // perfil de verdad hace más por la credibilidad que cualquier otra cosa,
+  // porque sale en la cabecera de todas las pantallas.
+  await db.from('profiles').update({ display_name: NOMBRE }).eq('id', yo)
+  const rutaAvatar = `${yo}/${crypto.randomUUID()}.jpg`
+  const subidaAvatar = await db.storage
+    .from('avatars')
+    .upload(rutaAvatar, readFileSync(fotos[0]), { contentType: 'image/jpeg' })
+  if (!subidaAvatar.error) {
+    const { data: pub } = db.storage.from('avatars').getPublicUrl(rutaAvatar)
+    await db.from('profiles').update({ avatar_url: pub.publicUrl }).eq('id', yo)
+    console.log('Perfil:', NOMBRE, 'con foto')
+  } else {
+    console.log('Perfil:', NOMBRE, '(sin foto:', subidaAvatar.error.message + ')')
+  }
+
   // ── El grupo ──────────────────────────────────────────────────────────────
   const { data: espacio, error: eEspacio } = await db.rpc('create_space', {
     p_name: 'La cuadrilla',
@@ -224,16 +279,6 @@ async function main() {
   const { data: cats } = await db.from('categories').select('id, name').eq('space_id', spaceId)
   const catPorNombre = Object.fromEntries((cats ?? []).map((c) => [c.name, c.id]))
 
-  // ── Las fotos disponibles ────────────────────────────────────────────────
-  let fotos = []
-  if (CARPETA_FOTOS && existsSync(CARPETA_FOTOS)) {
-    fotos = readdirSync(CARPETA_FOTOS)
-      .filter((f) => ['.jpg', '.jpeg', '.png'].includes(extname(f).toLowerCase()))
-      .map((f) => join(CARPETA_FOTOS, f))
-    console.log(fotos.length, 'fotos encontradas')
-  } else {
-    console.log('Sin carpeta de fotos: los sitios se crean sin imagen')
-  }
   let siguienteFoto = 0
 
   // ── Los sitios ────────────────────────────────────────────────────────────
@@ -270,7 +315,9 @@ async function main() {
     }
 
     // Una o dos fotos por sitio, y la primera de portada.
-    const cuantas = fotos.length === 0 ? 0 : nombre.length % 2 === 0 ? 2 : 1
+    // Portada siempre, y una segunda en la mitad para que la galería de algún
+    // sitio se vea con más de una y se entienda que hay galería.
+    const cuantas = nombre.length % 2 === 0 ? 2 : 1
     let portada = null
     for (let i = 0; i < cuantas; i++) {
       const origen = fotos[siguienteFoto++ % fotos.length]
