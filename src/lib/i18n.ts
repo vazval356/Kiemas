@@ -184,6 +184,13 @@ const es = {
   'roulette.noCandidates': 'No hay sitios que cumplan el filtro',
 
   // Ajustes y privacidad
+  'push.title': 'Avisos',
+  'push.label': 'Notificaciones',
+  'push.on': 'Te avisamos de los planes y de lo que pasa en tus grupos.',
+  'push.off': 'Ahora mismo no te llega nada.',
+  'push.blocked': 'Los tienes bloqueados en los ajustes del teléfono.',
+  'push.howToUnblock':
+    'Abre los Ajustes del teléfono, busca Kiemas y activa las notificaciones. Desde aquí no se puede: cuando se deniegan, el sistema ya no vuelve a preguntar.',
   'settings.title': 'Ajustes y privacidad',
   'settings.language': 'Idioma',
   'settings.account': 'Cuenta',
@@ -930,6 +937,13 @@ const en: Record<TranslationKey, string> = {
   'roulette.includeVisited': 'Include places already visited',
   'roulette.noCandidates': 'No places match that filter',
 
+  'push.title': 'Alerts',
+  'push.label': 'Notifications',
+  'push.on': 'We’ll tell you about plans and what happens in your groups.',
+  'push.off': 'Nothing is reaching you right now.',
+  'push.blocked': 'They are blocked in your phone settings.',
+  'push.howToUnblock':
+    'Open your phone Settings, find Kiemas and turn notifications on. It can’t be done from here: once denied, the system never asks again.',
   'settings.title': 'Settings and privacy',
   'settings.language': 'Language',
   'settings.account': 'Account',

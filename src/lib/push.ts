@@ -94,3 +94,58 @@ export async function teardownPush(): Promise<void> {
     // acabará borrando cuando Firebase lo rechace.
   }
 }
+
+/** Cómo está el permiso del sistema, para poder enseñarlo en Ajustes. */
+export type EstadoAvisos = 'sin-soporte' | 'concedido' | 'denegado' | 'sin-preguntar'
+
+export async function estadoDeAvisos(): Promise<EstadoAvisos> {
+  if (!isNative) return 'sin-soporte'
+  try {
+    const p = await PushNotifications.checkPermissions()
+    if (p.receive === 'granted') return 'concedido'
+    if (p.receive === 'denied') return 'denegado'
+    return 'sin-preguntar'
+  } catch {
+    return 'sin-soporte'
+  }
+}
+
+/**
+ * Enciende los avisos a petición de la persona, desde Ajustes.
+ *
+ * El arranque los pide una sola vez y no insiste, que es lo correcto: volver a
+ * preguntar en cada apertura es la vía rápida a que lo denieguen para siempre.
+ * Pero eso dejaba sin salida a quien dijo que no y luego cambió de idea.
+ *
+ * Devuelve el estado en el que se ha quedado, para poder decir qué pasó.
+ */
+export async function activarAvisos(onOpenRoute: (route: string) => void): Promise<EstadoAvisos> {
+  if (!isNative) return 'sin-soporte'
+  const antes = await estadoDeAvisos()
+  if (antes === 'denegado') {
+    // Denegado ya no se puede volver a pedir: el sistema no vuelve a enseñar el
+    // diálogo. Solo se arregla desde los ajustes del teléfono.
+    return 'denegado'
+  }
+  // `started` bloquea el segundo montaje de los oyentes, y sin soltarlo apagar
+  // y volver a encender desde aquí no registraba ningún token.
+  started = false
+  await setupPush(onOpenRoute)
+  return estadoDeAvisos()
+}
+
+/** Los apaga: se borra el token y deja de llegar nada, diga lo que diga el sistema. */
+export async function desactivarAvisos(): Promise<void> {
+  await teardownPush()
+  started = false
+}
+
+/** true si este móvil tiene un token registrado ahora mismo. */
+export function avisosRegistrados(): boolean {
+  if (!isNative) return false
+  try {
+    return window.localStorage.getItem(STORED_TOKEN_KEY) !== null
+  } catch {
+    return false
+  }
+}

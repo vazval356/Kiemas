@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { BRAND_KEY } from '../lib/brand'
+import {
+  activarAvisos,
+  avisosRegistrados,
+  desactivarAvisos,
+  estadoDeAvisos,
+  type EstadoAvisos,
+} from '../lib/push'
 import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -77,6 +84,43 @@ export function SettingsPage() {
     }
   }
 
+  // ── Avisos ────────────────────────────────────────────────────────────────
+  //
+  // El permiso se pide una sola vez, al entrar por primera vez, y a propósito
+  // no se insiste: repetir el diálogo en cada apertura acaba en un «no» para
+  // siempre. Pero eso dejaba sin salida a quien dijo que no y luego cambió de
+  // idea, porque en la app no había ningún sitio donde volver a activarlos.
+  const [permiso, setPermiso] = useState<EstadoAvisos>('sin-soporte')
+  const [avisosOn, setAvisosOn] = useState(false)
+  const [cambiandoAvisos, setCambiandoAvisos] = useState(false)
+
+  useEffect(() => {
+    void estadoDeAvisos().then(setPermiso)
+    setAvisosOn(avisosRegistrados())
+  }, [])
+
+  async function alternarAvisos() {
+    setCambiandoAvisos(true)
+    setNotice('')
+    try {
+      if (avisosOn) {
+        await desactivarAvisos()
+        setAvisosOn(false)
+      } else {
+        const r = await activarAvisos((route) => {
+          window.location.hash = route
+        })
+        setPermiso(r)
+        setAvisosOn(avisosRegistrados())
+        if (r === 'denegado') setNotice(t('push.blocked'))
+      }
+    } catch (e) {
+      setError(errorMessage(e, t('common.error')))
+    } finally {
+      setCambiandoAvisos(false)
+    }
+  }
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
@@ -93,6 +137,51 @@ export function SettingsPage() {
           <p className="mt-3 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
             {error}
           </p>
+        )}
+
+        {/* ── Avisos ─────────────────────────────────────────────────────── */}
+        {permiso !== 'sin-soporte' && (
+          <section className="mt-6">
+            <h2 className="mb-2 font-display font-semibold text-on-surface">{t('push.title')}</h2>
+            <div className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-on-surface">{t('push.label')}</p>
+                  <p className="mt-0.5 text-sm text-on-surface-variant">
+                    {permiso === 'denegado'
+                      ? t('push.blocked')
+                      : avisosOn
+                        ? t('push.on')
+                        : t('push.off')}
+                  </p>
+                </div>
+                {permiso !== 'denegado' && (
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={avisosOn}
+                    disabled={cambiandoAvisos}
+                    onClick={() => void alternarAvisos()}
+                    className={`relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+                      avisosOn ? 'bg-primary' : 'bg-surface-container'
+                    }`}
+                    aria-label={t('push.label')}
+                  >
+                    <span
+                      className={`absolute top-1 size-5 rounded-full bg-surface-lowest shadow transition-all ${
+                        avisosOn ? 'left-6' : 'left-1'
+                      }`}
+                    />
+                  </button>
+                )}
+              </div>
+              {permiso === 'denegado' && (
+                <p className="mt-3 rounded-control bg-surface-container px-3 py-2 text-sm text-on-surface-variant">
+                  {t('push.howToUnblock')}
+                </p>
+              )}
+            </div>
+          </section>
         )}
 
         {/* ── Idioma ─────────────────────────────────────────────────────── */}
