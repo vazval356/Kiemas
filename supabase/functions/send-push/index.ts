@@ -50,9 +50,8 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
 
   // La clave del JSON viene en PEM con saltos de línea escapados.
   const pem = sa.private_key.replace(/\\n/g, '\n')
-  const der = Uint8Array.from(
-    atob(pem.replace(/-----(BEGIN|END) PRIVATE KEY-----|\s/g, '')),
-    (c) => c.charCodeAt(0)
+  const der = Uint8Array.from(atob(pem.replace(/-----(BEGIN|END) PRIVATE KEY-----|\s/g, '')), (c) =>
+    c.charCodeAt(0)
   )
   const key = await crypto.subtle.importKey(
     'pkcs8',
@@ -84,20 +83,41 @@ async function getAccessToken(sa: ServiceAccount): Promise<string> {
 }
 
 Deno.serve(async (req) => {
+  try {
+    return await enviar(req)
+  } catch (e) {
+    // Sin esto, cualquier fallo aquí dentro sale como «Internal Server Error»
+    // a secas: ni en la respuesta ni en el registro queda qué se rompió, y el
+    // cron lo reintenta cada minuto sin que nadie se entere de nada.
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('send-push:', msg)
+    return new Response(msg.slice(0, 500), { status: 500 })
+  }
+})
+
+async function enviar(req: Request): Promise<Response> {
   if (req.headers.get('x-cron-secret') !== Deno.env.get('CRON_SECRET')) {
     return new Response('no autorizado', { status: 401 })
   }
 
   const saRaw = Deno.env.get('FCM_SERVICE_ACCOUNT')
   if (!saRaw) return new Response('falta FCM_SERVICE_ACCOUNT', { status: 500 })
-  const sa: ServiceAccount = JSON.parse(saRaw)
+
+  let sa: ServiceAccount
+  try {
+    sa = JSON.parse(saRaw)
+  } catch {
+    // El fallo típico al guardarlo: el JSON entero tiene que ir entrecomillado
+    // o la consola se come los saltos de línea de la clave privada.
+    throw new Error('FCM_SERVICE_ACCOUNT no es un JSON válido')
+  }
+  if (!sa.project_id || !sa.client_email || !sa.private_key) {
+    throw new Error('FCM_SERVICE_ACCOUNT incompleto: faltan project_id, client_email o private_key')
+  }
 
   // Clave de servicio: salta la RLS, que es justo lo que hace falta para leer
   // una bandeja que está cerrada a todo el mundo.
-  const db = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  )
+  const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
   const { data: pending, error } = await db
     .from('notification_outbox')
@@ -125,7 +145,10 @@ Deno.serve(async (req) => {
     if (!devices?.length) {
       // Sin dispositivo no hay nada que enviar; marcarla evita que se quede
       // dando vueltas por la cola para siempre.
-      await db.from('notification_outbox').update({ sent_at: new Date().toISOString() }).eq('id', note.id)
+      await db
+        .from('notification_outbox')
+        .update({ sent_at: new Date().toISOString() })
+        .eq('id', note.id)
       continue
     }
 
@@ -165,7 +188,10 @@ Deno.serve(async (req) => {
     }
 
     if (anyOk) {
-      await db.from('notification_outbox').update({ sent_at: new Date().toISOString() }).eq('id', note.id)
+      await db
+        .from('notification_outbox')
+        .update({ sent_at: new Date().toISOString() })
+        .eq('id', note.id)
       sent++
     } else {
       await db
@@ -180,4 +206,4 @@ Deno.serve(async (req) => {
   }
 
   return Response.json({ sent, processed: pending.length, removedTokens: deadTokens.length })
-})
+}
