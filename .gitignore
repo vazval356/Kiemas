@@ -48,3 +48,6 @@ android/keystore.properties
 
 # Fotos de la cuenta de demostracion: no son parte del proyecto.
 fotos
+
+# Fichero de un solo uso para subir el secreto de Firebase.
+.env.push
