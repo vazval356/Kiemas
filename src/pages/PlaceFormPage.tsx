@@ -418,6 +418,19 @@ export function PlaceFormPage() {
                 {importMessage.text}
               </p>
             )}
+            {/* Cuando el enlace no se ha podido seguir, el siguiente paso es
+                abrirlo. Un botón ahorra copiar, cambiar de app y volver, que
+                es justo el momento en el que la gente abandona. */}
+            {importMessage?.kind === 'warn' && /^https?:/i.test(importUrl.trim()) && (
+              <a
+                href={importUrl.trim()}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-block rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-primary squish"
+              >
+                {t('import.openIt')}
+              </a>
+            )}
           </div>
         )}
 

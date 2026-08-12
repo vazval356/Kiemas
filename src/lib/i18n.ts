@@ -167,9 +167,11 @@ const es = {
   'import.locating': 'Situando el sitio en el mapa…',
   'import.noLocation': 'Hemos sacado el nombre, pero no la ubicación. Búscala abajo.',
   'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps',
-  'import.deadLink': 'Ese enlace no lleva a ningún sitio. Comprueba que lo has copiado entero.',
+  'import.deadLink':
+    'Los enlaces de «Compartir» de Google Maps no se pueden abrir desde aquí. Ábrelo tú, deja que cargue Google Maps y copia el enlace de la barra de direcciones: ese sí funciona.',
   'import.shortLink':
-    'Los enlaces cortos de «Compartir» no se pueden leer desde el navegador. Abre el sitio en Google Maps y copia la dirección completa de la barra del navegador.',
+    'No hemos podido seguir ese enlace. Ábrelo tú, deja que cargue Google Maps y copia el enlace de la barra de direcciones.',
+  'import.openIt': 'Abrir el enlace',
   'import.nothingFound': 'No hemos podido sacar nada de ese enlace',
   'import.done': 'Datos importados',
 
@@ -912,9 +914,11 @@ const en: Record<TranslationKey, string> = {
   'import.locating': 'Placing it on the map…',
   'import.noLocation': 'We got the name but not the location. Search for it below.',
   'import.notGoogleMaps': "That doesn't look like a Google Maps link",
-  'import.deadLink': "That link doesn't lead anywhere. Check you copied all of it.",
+  'import.deadLink':
+    'Google Maps “Share” links can’t be opened from here. Open it yourself, let Google Maps load, and copy the link from the address bar: that one works.',
   'import.shortLink':
-    "Short 'Share' links can't be read from the browser. Open the place in Google Maps and copy the full address from the address bar.",
+    'We couldn’t follow that link. Open it yourself, let Google Maps load, and copy the link from the address bar.',
+  'import.openIt': 'Open the link',
   'import.nothingFound': "We couldn't get anything out of that link",
   'import.done': 'Details imported',
 
