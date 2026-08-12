@@ -59,6 +59,28 @@ export function SpaceDetailPage() {
     normalizeHex(space?.members.find((m) => m.userId === profile?.id)?.color)
   )
 
+  /**
+   * El aspecto local se resincroniza con el espacio.
+   *
+   * `useState` solo mira su valor inicial una vez, y aquí llegaba mal por dos
+   * caminos. Si los espacios aún no habían cargado, el color arrancaba en el
+   * índigo de respaldo y el primer guardado lo escribía encima del de verdad.
+   * Y al pasar de un grupo a otro, React reutiliza el componente porque solo
+   * cambia el `:id` de la ruta, así que el estado se quedaba con el color del
+   * grupo anterior y lo llevaba al siguiente.
+   *
+   * Se depende de `space?.id` y no del objeto: `spaces` se reconstruye en cada
+   * refresco, y con el objeto esto pisaría lo que se esté escribiendo.
+   */
+  useEffect(() => {
+    if (!space) return
+    setName(space.name)
+    setEmoji(space.emoji)
+    setColor(normalizeHex(space.color))
+    setMyColor(normalizeHex(space.members.find((m) => m.userId === profile?.id)?.color))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [space?.id])
+
   async function saveMyColor(next: string) {
     if (!space) return
     const previo = myColor
