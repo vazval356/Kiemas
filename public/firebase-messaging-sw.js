@@ -12,6 +12,16 @@
  * registra —`?apiKey=…&appId=…`— y se lee de ahí. Es el patrón que usa la
  * propia documentación de Firebase para no dejar claves escritas a mano en un
  * fichero que se sirve tal cual.
+ *
+ * Este fichero es deliberadamente casi vacío. Basta con inicializar Firebase:
+ * el aviso lleva un bloque `notification` y con eso el navegador lo pinta solo,
+ * y el destino al tocarlo viaja en `webpush.fcm_options.link`.
+ *
+ * Aquí hubo un `onBackgroundMessage` que volvía a pintarlo a mano y un
+ * `notificationclick` que abría la ventana por su cuenta. Con eso el aviso
+ * llegaba DOS VECES —una del navegador y otra nuestra— y un toque podía abrir
+ * dos pestañas. Es el error más repetido del push web, y solo se ve en un móvil
+ * de verdad.
  */
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js')
 importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js')
@@ -26,41 +36,5 @@ const config = {
 
 if (config.apiKey && config.appId) {
   firebase.initializeApp(config)
-  const messaging = firebase.messaging()
-
-  // Con la pestaña cerrada, Firebase ya pinta el aviso por su cuenta a partir
-  // del bloque `notification`. Esto solo añade la ruta, para que al tocarlo se
-  // abra la pantalla concreta y no el mapa.
-  messaging.onBackgroundMessage((payload) => {
-    const route = (payload.data && payload.data.route) || '/'
-    const titulo = (payload.notification && payload.notification.title) || 'Kiemas'
-    const cuerpo = (payload.notification && payload.notification.body) || ''
-    self.registration.showNotification(titulo, {
-      body: cuerpo,
-      icon: '/icons/icon-192.png',
-      badge: '/icons/icon-192.png',
-      data: { route },
-      tag: route,
-    })
-  })
+  firebase.messaging()
 }
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close()
-  const route = (event.notification.data && event.notification.data.route) || '/'
-  const destino = new URL('/#' + route, self.location.origin).href
-
-  // Si ya hay una ventana de Kiemas abierta se reutiliza: abrir otra dejaría
-  // dos copias de la app compitiendo por la misma sesión.
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientes) => {
-      for (const c of clientes) {
-        if (c.url.startsWith(self.location.origin) && 'focus' in c) {
-          c.navigate(destino)
-          return c.focus()
-        }
-      }
-      return self.clients.openWindow(destino)
-    })
-  )
-})

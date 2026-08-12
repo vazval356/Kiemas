@@ -17,6 +17,8 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
 const FCM_SCOPE = 'https://www.googleapis.com/auth/firebase.messaging'
+/** Dónde vive la app, para que el aviso web sepa a dónde llevar al tocarlo. */
+const APP_URL = (Deno.env.get('PUBLIC_APP_URL') ?? 'https://kiemas.com').replace(/\/+$/, '')
 const BATCH = 100
 /** Tras cinco intentos el token casi siempre está muerto; insistir es ruido. */
 const MAX_ATTEMPTS = 5
@@ -171,6 +173,14 @@ async function enviar(req: Request): Promise<Response> {
             data: { route: note.route },
             android: { priority: 'high', notification: { sound: 'default' } },
             apns: { payload: { aps: { sound: 'default' } } },
+            // En la web, el destino al tocar el aviso lo lleva el propio
+            // mensaje: el trabajador de servicio ya no pinta nada a mano —lo
+            // hacía y el aviso llegaba duplicado— así que sin esto un toque
+            // abriría la portada en vez de la pantalla concreta.
+            webpush: {
+              fcm_options: { link: `${APP_URL}/#${note.route ?? '/'}` },
+              notification: { icon: `${APP_URL}/icons/icon-192.png` },
+            },
           },
         }),
       })
