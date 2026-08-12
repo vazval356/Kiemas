@@ -128,29 +128,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       if (loadedRef.current) return
       loadedRef.current = true
-      void refreshSpaces()
-        .then(() => {
-          setAuthStatus('ready')
-          // Después de tener sesión: el registro llama a una RPC que exige
-          // estar autenticado. Se pide en cada arranque porque Firebase rota
-          // los tokens y uno viejo deja de recibir en silencio.
-          void setupPush((route) => {
-            window.location.hash = route
-          })
-          // El id de RevenueCat tiene que ser el de Supabase: es lo que ata un
-          // cobro a una cuenta cuando llega el webhook. Sin claves configuradas
-          // esto no hace nada.
-          void setupPurchases(session.user.id)
+      void cargarSesion(session.user.id)
+    })
+    return () => sub.subscription.unsubscribe()
+
+    /**
+     * Carga el perfil y los espacios, con reintentos.
+     *
+     * Antes, cualquier fallo aquí cerraba la sesión. Pero esto son dos
+     * peticiones de red, y al abrir la app la WebView arranca antes de que el
+     * móvil tenga cobertura: quedarse sin red medio segundo te echaba, y como
+     * `signOut()` borra el token, había que volver a escribir la contraseña.
+     * Era el motivo de que «recordar este dispositivo» pareciera no funcionar.
+     *
+     * Sacar a alguien solo tiene sentido cuando el servidor ha contestado y ha
+     * dicho que no hay perfil. Si no ha contestado, se reintenta.
+     */
+    async function cargarSesion(userId: string, intento = 0) {
+      try {
+        await refreshSpaces()
+        setAuthStatus('ready')
+        // Después de tener sesión: el registro llama a una RPC que exige
+        // estar autenticado. Se pide en cada arranque porque Firebase rota
+        // los tokens y uno viejo deja de recibir en silencio.
+        void setupPush((route) => {
+          window.location.hash = route
         })
-        .catch(() => {
-          // Sesión válida pero sin perfil: algo se ha quedado a medias en el
-          // alta. Es preferible sacar a la persona que dejarla en un limbo.
+        // El id de RevenueCat tiene que ser el de Supabase: es lo que ata un
+        // cobro a una cuenta cuando llega el webhook. Sin claves configuradas
+        // esto no hace nada.
+        void setupPurchases(userId)
+      } catch (e) {
+        const sinPerfil = /empty_response|no rows|not found/i.test(
+          e instanceof Error ? e.message : String(e)
+        )
+        if (sinPerfil) {
+          // El servidor ha contestado y no hay perfil: el alta se quedó a
+          // medias. Aquí sí procede sacar a la persona del limbo.
           loadedRef.current = false
           void supabase.auth.signOut()
           setAuthStatus('signedOut')
-        })
-    })
-    return () => sub.subscription.unsubscribe()
+          return
+        }
+        // Cualquier otra cosa es el servidor sin contestar: red que aún no
+        // está, un corte, un despliegue. La sesión se queda donde está y se
+        // reintenta, espaciando los intentos.
+        console.warn('[kiemas] no se ha podido cargar la sesión:', e)
+        if (intento < 5) {
+          setTimeout(
+            () => void cargarSesion(userId, intento + 1),
+            Math.min(1000 * 2 ** intento, 15000)
+          )
+          return
+        }
+        // Agotados los reintentos, se deja entrar sin datos en vez de echar:
+        // la app enseñará lo que pueda y el siguiente refresco los traerá.
+        loadedRef.current = false
+        setAuthStatus('ready')
+      }
+    }
   }, [refreshSpaces])
 
   // ── Datos del espacio activo ─────────────────────────────────────────────
