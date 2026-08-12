@@ -193,13 +193,16 @@ export function PlaceFormPage() {
     setAddress('')
     if (parsed.name && !esDireccion) setName(parsed.name)
     if (esDireccion && parsed.name) setAddress(parsed.name)
+    // Cuando el enlace trae las dos cosas separadas —«Poyo Club, Calle de San
+    // Andrés, 38, Madrid»— el nombre ya se ha puesto arriba y aquí va el resto.
+    if (parsed.address) setAddress(parsed.address)
 
     // Sin coordenadas pero con texto: es lo que devuelve un enlace corto ya
     // resuelto, que acaba en `?q=<dirección>` en vez de en coordenadas. Se
     // geocodifica ese texto para dejar el sitio situado en el mapa; si no,
     // habría que buscarlo a mano justo después de haberlo importado.
     if (parsed.lat === null && parsed.name) {
-      const texto = parsed.name
+      const texto = parsed.address ? `${parsed.name}, ${parsed.address}` : parsed.name
       setImportMessage({ kind: 'info', text: t('import.locating') })
       void searchAddress(texto, position ?? undefined, locale)
         .then((res) => {

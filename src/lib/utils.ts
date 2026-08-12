@@ -310,6 +310,14 @@ export async function searchAddress(
 export interface GoogleMapsLink {
   /** Nombre del sitio si el enlace lo lleva. */
   name: string | null
+  /**
+   * Dirección postal, cuando el enlace la trae aparte del nombre.
+   *
+   * Los enlaces cortos ya resueltos acaban en `?q=Nombre, calle, número,
+   * ciudad`: todo junto en un parámetro. Separarlo aquí es lo que permite que
+   * el formulario rellene los dos campos en vez de amontonarlo en uno.
+   */
+  address: string | null
   lat: number | null
   lng: number | null
   /**
@@ -370,7 +378,14 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
   if (!isGoogleMaps) return null
 
   if (host === 'maps.app.goo.gl' || /(^|\.)goo\.gl$/.test(host)) {
-    return { name: null, lat: null, lng: null, needsResolving: true, nameSource: null }
+    return {
+      name: null,
+      address: null,
+      lat: null,
+      lng: null,
+      needsResolving: true,
+      nameSource: null,
+    }
   }
 
   const full = url.href
@@ -419,11 +434,31 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
       nameSource = 'place'
     }
   }
+  let address: string | null = null
   if (!name) {
     const q = url.searchParams.get('q') ?? url.searchParams.get('query')
     if (q && !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
-      name = safeDecode(q).replace(/\+/g, ' ').trim() || null
-      if (name) nameSource = 'query'
+      const texto = safeDecode(q).replace(/\+/g, ' ').trim()
+      if (texto) {
+        // «Poyo Club, Calle de San Andrés, 38, Centro, 28004 Madrid»: el nombre
+        // hasta la primera coma y la dirección después. Solo cuando el primer
+        // trozo NO empieza por vía, porque «Calle de la Cruz, 12, Madrid» es
+        // una dirección entera y partirla dejaría «Calle de la Cruz» de nombre.
+        const corte = texto.indexOf(',')
+        const cabeza = corte > 0 ? texto.slice(0, corte).trim() : ''
+        const esVia =
+          /^(calle|c\/|avda?|avenida|plaza|pza|paseo|carrera|camino|carretera|ctra|ronda|travesía|travesia|gran vía|gran via|via|vía)/i.test(
+            cabeza
+          ) || /^\d/.test(cabeza)
+        if (cabeza && !esVia && corte < texto.length - 1) {
+          name = cabeza
+          nameSource = 'place'
+          address = texto.slice(corte + 1).trim() || null
+        } else {
+          name = texto
+          nameSource = 'query'
+        }
+      }
     }
   }
 
@@ -437,7 +472,7 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
   }
 
   if (name === null && lat === null) return null
-  return { name, lat, lng, needsResolving: false, nameSource }
+  return { name, address, lat, lng, needsResolving: false, nameSource }
 }
 
 function safeDecode(value: string): string {
