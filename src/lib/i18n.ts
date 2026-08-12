@@ -171,6 +171,7 @@ const es = {
     'Los enlaces de «Compartir» de Google Maps no se pueden abrir desde aquí. Ábrelo tú, deja que cargue Google Maps y copia el enlace de la barra de direcciones: ese sí funciona.',
   'import.shortLink':
     'No hemos podido seguir ese enlace. Ábrelo tú, deja que cargue Google Maps y copia el enlace de la barra de direcciones.',
+  'import.clear': 'Limpiar',
   'import.openIt': 'Abrir el enlace',
   'import.nothingFound': 'No hemos podido sacar nada de ese enlace',
   'import.done': 'Datos importados',
@@ -918,6 +919,7 @@ const en: Record<TranslationKey, string> = {
     'Google Maps “Share” links can’t be opened from here. Open it yourself, let Google Maps load, and copy the link from the address bar: that one works.',
   'import.shortLink':
     'We couldn’t follow that link. Open it yourself, let Google Maps load, and copy the link from the address bar.',
+  'import.clear': 'Clear',
   'import.openIt': 'Open the link',
   'import.nothingFound': "We couldn't get anything out of that link",
   'import.done': 'Details imported',

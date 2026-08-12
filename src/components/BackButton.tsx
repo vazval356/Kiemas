@@ -27,10 +27,17 @@ export function BackButton({ to, className = '' }: { to?: string; className?: st
     <button
       type="button"
       onClick={() => (to ? navigate(to) : navigate(-1))}
-      className={`-ml-2 mb-1 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish ${className}`}
+      // Círculo con la flecha y sin la palabra «Volver». El texto no aportaba
+      // nada —la flecha en la esquina superior izquierda se entiende sola— y
+      // desalineaba el título, que empieza en el margen mientras el botón se
+      // salía con un margen negativo para compensar.
+      //
+      // El nombre no desaparece: va en `aria-label`, que es de donde lo lee
+      // quien navega con lector de pantalla.
+      className={`mb-2 flex size-10 items-center justify-center rounded-full bg-surface-lowest text-on-surface-variant shadow-[var(--shadow-surface)] squish ${className}`}
+      aria-label={t('common.back')}
     >
       <BackIcon className="size-5" />
-      <span className="text-sm font-medium">{t('common.back')}</span>
     </button>
   )
 }

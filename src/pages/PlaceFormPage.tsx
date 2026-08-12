@@ -420,16 +420,38 @@ export function PlaceFormPage() {
             )}
             {/* Cuando el enlace no se ha podido seguir, el siguiente paso es
                 abrirlo. Un botón ahorra copiar, cambiar de app y volver, que
-                es justo el momento en el que la gente abandona. */}
-            {importMessage?.kind === 'warn' && /^https?:/i.test(importUrl.trim()) && (
-              <a
-                href={importUrl.trim()}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-block rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-primary squish"
-              >
-                {t('import.openIt')}
-              </a>
+                es justo el momento en el que la gente abandona.
+
+                Y al lado, limpiar: el campo se queda con el enlace que acaba
+                de fallar, y pegar el siguiente encima obliga a seleccionarlo
+                todo primero. */}
+            {importUrl.trim() !== '' && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {importMessage?.kind === 'warn' && /^https?:/i.test(importUrl.trim()) && (
+                  <a
+                    href={importUrl.trim()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-primary squish"
+                  >
+                    {t('import.openIt')}
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImportUrl('')
+                    setImportMessage(null)
+                    // Descarta lo que venga de una importación en vuelo: sin
+                    // esto, limpiar y que llegue después la respuesta anterior
+                    // volvería a rellenar el formulario.
+                    importSeq.current++
+                  }}
+                  className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
+                >
+                  {t('import.clear')}
+                </button>
+              </div>
             )}
           </div>
         )}
