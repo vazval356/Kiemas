@@ -1507,11 +1507,27 @@ export const supabaseApi: DataApi = {
         onChange
       )
     }
-    for (const table of ['ratings', 'plan_attendees', 'plan_date_votes'] as const) {
+    for (const table of [
+      'ratings',
+      'plan_attendees',
+      'plan_date_votes',
+      'place_photos',
+      'decisions',
+      'decision_votes',
+      'plan_place_options',
+      'plan_place_votes',
+    ] as const) {
       channel.on('postgres_changes', { event: '*', schema: 'public', table }, onChange)
     }
 
-    channel.subscribe()
+    // Con `subscribe()` a secas, un canal que no llega a establecerse falla en
+    // absoluto silencio y la app parece simplemente «lenta en actualizar». El
+    // estado va a la consola para poder distinguir las dos cosas.
+    channel.subscribe((estado) => {
+      if (estado === 'CHANNEL_ERROR' || estado === 'TIMED_OUT' || estado === 'CLOSED') {
+        console.warn('[kiemas] tiempo real:', estado, 'en space:' + spaceId)
+      }
+    })
     return () => {
       void supabase.removeChannel(channel)
     }

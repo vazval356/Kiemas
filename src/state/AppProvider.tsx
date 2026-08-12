@@ -196,12 +196,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [authStatus, refresh])
 
   // ── Tiempo real, acotado al espacio que se está mirando ──────────────────
+  //
+  // El aviso se manda por una referencia y no por dependencia. `refresh` cambia
+  // de identidad cada vez que cambia `activeSpace`, y `activeSpace` se rehace
+  // en cada `refreshSpaces`: con ellos en las dependencias, este efecto tiraba
+  // el canal y creaba otro constantemente, y un canal que no llega a
+  // establecerse no recibe nada. Ese era el motivo de que lo que añadía otra
+  // persona no apareciera hasta reiniciar.
+  const refreshRef = useRef(refresh)
   useEffect(() => {
-    if (authStatus !== 'ready' || !activeSpace) return
-    return api.subscribe(activeSpace.id, () => {
-      void refresh()
+    refreshRef.current = refresh
+  }, [refresh])
+
+  const activeSpaceId2 = activeSpace?.id ?? null
+  useEffect(() => {
+    if (authStatus !== 'ready' || !activeSpaceId2) return
+    return api.subscribe(activeSpaceId2, () => {
+      void refreshRef.current()
     })
-  }, [authStatus, api, activeSpace, refresh])
+  }, [authStatus, api, activeSpaceId2])
 
   // ── Widget de pantalla de inicio ─────────────────────────────────────────
   // Se alimenta de lo que ya está cargado, sin pedir nada extra. Va aquí y no
