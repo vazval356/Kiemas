@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import type { BusinessProfile } from '../lib/types'
 import { CommentThread } from '../components/CommentThread'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
+import { PhotoViewer } from '../components/PhotoViewer'
 import { TagBadges } from '../components/TagPicker'
 import {
   BackIcon,
@@ -601,45 +602,16 @@ export function PlaceDetailPage() {
       </div>
 
       {/* ── Visor ────────────────────────────────────────────────────────────
-          La foto a tamaño completo, con quién la subió y cuándo debajo. Toda la
-          pantalla cierra: en un visor, el gesto de tocar fuera para salir se da
-          por hecho, y una equis diminuta en una esquina no basta en un móvil. */}
+          La foto a tamaño completo, y se pasa de una a otra arrastrando. Antes
+          había que salir de una y entrar en la siguiente: con nueve fotos eso
+          son dieciocho toques para verlas todas, y así no las ve nadie. */}
       {viendo && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setViendo(null)}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 p-4"
-        >
-          <img
-            src={place.photos.find((f) => f.id === viendo)?.url}
-            alt=""
-            className="max-h-[80vh] max-w-full rounded-card object-contain"
-          />
-          {(() => {
-            const foto = place.photos.find((f) => f.id === viendo)
-            const autor = members.find((m) => m.userId === foto?.uploadedBy)
-            if (!foto) return null
-            return (
-              <p className="mt-4 text-sm text-white/80">
-                {autor?.displayName ?? '—'}
-                {' · '}
-                {new Date(foto.uploadedAt).toLocaleDateString(undefined, {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
-            )
-          })()}
-          <button
-            type="button"
-            onClick={() => setViendo(null)}
-            className="mt-4 rounded-full border border-white/40 px-6 py-2 font-semibold text-white squish"
-          >
-            {t('common.close')}
-          </button>
-        </div>
+        <PhotoViewer
+          fotos={place.photos}
+          abierta={viendo}
+          onCerrar={() => setViendo(null)}
+          nombreDe={(id) => members.find((m) => m.userId === id)?.displayName ?? '—'}
+        />
       )}
     </div>
   )
