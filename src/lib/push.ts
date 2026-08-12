@@ -3,6 +3,13 @@ import { Capacitor } from '@capacitor/core'
 import { isNative } from './appUrl'
 import { storageKey } from './brand'
 import { supabase } from './supabaseClient'
+import {
+  activarWebPush,
+  desactivarWebPush,
+  webPushDisponible,
+  webPushPermiso,
+  webPushRegistrado,
+} from './webPush'
 
 /**
  * Registro del dispositivo para recibir notificaciones.
@@ -99,7 +106,14 @@ export async function teardownPush(): Promise<void> {
 export type EstadoAvisos = 'sin-soporte' | 'concedido' | 'denegado' | 'sin-preguntar'
 
 export async function estadoDeAvisos(): Promise<EstadoAvisos> {
-  if (!isNative) return 'sin-soporte'
+  if (!isNative) {
+    // La app instalada en la pantalla de inicio tambien recibe avisos.
+    if (!webPushDisponible()) return 'sin-soporte'
+    const p = webPushPermiso()
+    if (p === 'granted') return 'concedido'
+    if (p === 'denied') return 'denegado'
+    return 'sin-preguntar'
+  }
   try {
     const p = await PushNotifications.checkPermissions()
     if (p.receive === 'granted') return 'concedido'
@@ -120,7 +134,15 @@ export async function estadoDeAvisos(): Promise<EstadoAvisos> {
  * Devuelve el estado en el que se ha quedado, para poder decir qué pasó.
  */
 export async function activarAvisos(onOpenRoute: (route: string) => void): Promise<EstadoAvisos> {
-  if (!isNative) return 'sin-soporte'
+  if (!isNative) {
+    // La app instalada en la pantalla de inicio también recibe avisos: en
+    // Android desde siempre y en iPhone desde iOS 16.4.
+    const r = await activarWebPush()
+    if (r === 'unsupported') return 'sin-soporte'
+    if (r === 'granted') return 'concedido'
+    if (r === 'denied') return 'denegado'
+    return 'sin-preguntar'
+  }
   const antes = await estadoDeAvisos()
   if (antes === 'denegado') {
     // Denegado ya no se puede volver a pedir: el sistema no vuelve a enseñar el
@@ -136,13 +158,17 @@ export async function activarAvisos(onOpenRoute: (route: string) => void): Promi
 
 /** Los apaga: se borra el token y deja de llegar nada, diga lo que diga el sistema. */
 export async function desactivarAvisos(): Promise<void> {
+  if (!isNative) {
+    await desactivarWebPush()
+    return
+  }
   await teardownPush()
   started = false
 }
 
 /** true si este móvil tiene un token registrado ahora mismo. */
 export function avisosRegistrados(): boolean {
-  if (!isNative) return false
+  if (!isNative) return webPushRegistrado()
   try {
     return window.localStorage.getItem(STORED_TOKEN_KEY) !== null
   } catch {
