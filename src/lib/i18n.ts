@@ -698,6 +698,10 @@ const es = {
   // Perfil
   'profile.bioPlaceholder': 'Una frase sobre ti',
   'profile.bioEmpty': 'Añade una frase sobre ti',
+  'profile.statPlace': 'Sitio',
+  'profile.statGroup': 'Grupo',
+  'profile.statPlan': 'Plan',
+  'plan.noDateYet': 'Fecha por decidir',
   'profile.statPlaces': 'Sitios',
   'profile.quotaTitle': 'Tu plan {plan}',
   'profile.quotaPlaces': 'Sitios guardados',
@@ -1433,6 +1437,10 @@ const en: Record<TranslationKey, string> = {
   // Profile
   'profile.bioPlaceholder': 'A line about you',
   'profile.bioEmpty': 'Add a line about you',
+  'profile.statPlace': 'Place',
+  'profile.statGroup': 'Group',
+  'profile.statPlan': 'Plan',
+  'plan.noDateYet': 'Date to be decided',
   'profile.statPlaces': 'Places',
   'profile.quotaTitle': 'Your {plan} plan',
   'profile.quotaPlaces': 'Places saved',

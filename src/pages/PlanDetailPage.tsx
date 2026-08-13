@@ -91,7 +91,10 @@ export function PlanDetailPage() {
                     today: t('calendar.today'),
                     tomorrow: t('calendar.tomorrow'),
                   })}`
-                : t('plan.isPoll')}
+                : // Sin fecha, la línea de arriba se queda vacía: el estado ya
+                  // lo dice la etiqueta de debajo, y ponerlo en los dos sitios
+                  // hacía que «Votando fechas» saliera dos veces seguidas.
+                  t('plan.noDateYet')}
             </p>
             <span
               className={`mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${

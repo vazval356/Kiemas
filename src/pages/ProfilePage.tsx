@@ -114,9 +114,11 @@ export function ProfilePage() {
         <section className="mt-4 grid grid-cols-3 gap-2">
           {(
             [
-              ['profile.statPlaces', stats?.places],
-              ['profile.statGroups', stats?.groups],
-              ['profile.statPlans', stats?.plans],
+              // Singular y plural: con uno solo se leía «1 GRUPOS», y eso en
+              // una captura de la tienda es de lo primero que se nota.
+              [stats?.places === 1 ? 'profile.statPlace' : 'profile.statPlaces', stats?.places],
+              [stats?.groups === 1 ? 'profile.statGroup' : 'profile.statGroups', stats?.groups],
+              [stats?.plans === 1 ? 'profile.statPlan' : 'profile.statPlans', stats?.plans],
             ] as const
           ).map(([label, value], i) => (
             <div
