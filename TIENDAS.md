@@ -234,3 +234,44 @@ cd android && ./gradlew bundleRelease      # con JAVA_HOME apuntando al JDK
 `cap sync` **nunca compila la web**. Sin el `npm run build` delante, se empaqueta
 el bundle anterior, y es un fallo que no da ningún error: la app simplemente sale
 con el código de la vez pasada.
+
+---
+
+## Cómo se encienden los avisos
+
+Se olvida, y sin esto no llega ninguna notificación aunque todo lo demás esté
+bien. Después de cada `supabase db push` que toque estas piezas, o si alguna vez
+se resetea la base de datos, hay que volver a armarlo desde el editor SQL:
+
+```sql
+select public.armar_envio_de_avisos(
+  'https://tyjcqnvxruoyafobgzok.supabase.co/functions/v1/send-push',
+  'el valor de CRON_SECRET'
+);
+```
+
+Eso hace tres cosas: guarda la dirección y el secreto donde los lee el empujón
+inmediato, programa el cron de cada minuto como red de seguridad, y da por
+enviados los avisos de más de una hora para que no salga de golpe una tanda
+vieja.
+
+Para ver cómo va:
+
+```sql
+select public.estado_de_los_avisos();
+```
+
+- `moviles_registrados` en 0 → nadie ha aceptado los avisos, o el token no llega
+- `pendientes` subiendo y `ultimo_envio` parado → el envío no se está ejecutando
+- `atascados` con algo → Firebase los rechaza; el motivo está en `last_error`
+
+Los tres secretos que hacen falta en Supabase, y que no se pueden leer una vez
+puestos: `CRON_SECRET`, `FCM_SERVICE_ACCOUNT` y `REVENUECAT_WEBHOOK_SECRET`. Si
+se pierde alguno se genera otro y se pone en los dos lados.
+
+`FCM_SERVICE_ACCOUNT` en Windows solo entra bien por fichero, porque la consola
+parte el JSON al pasarlo como argumento:
+
+```bash
+npx supabase secrets set --env-file .env.push
+```
