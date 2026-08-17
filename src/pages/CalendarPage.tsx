@@ -186,7 +186,10 @@ export function CalendarPage() {
 
         {/* ── Franja de días ─────────────────────────────────────────────── */}
         {view === 'week' ? (
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 py-1 hide-scrollbar">
+          <div
+            data-tour="dias"
+            className="-mx-1 flex gap-1.5 overflow-x-auto px-1 py-1 hide-scrollbar"
+          >
             {days.map((day) => {
               const key = day.toISOString()
               const count = plansByDay.get(key)?.length ?? 0
@@ -230,7 +233,10 @@ export function CalendarPage() {
             })}
           </div>
         ) : (
-          <div className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]">
+          <div
+            data-tour="dias"
+            className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+          >
             <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-on-surface-variant">
               {/* Los nombres de día salen de una semana real para que los
                   traduzca el navegador, en vez de escribirlos en cada idioma. */}
@@ -312,6 +318,7 @@ export function CalendarPage() {
       {activeSpace && (
         <Link
           to="/plan/new"
+          data-tour="plan-nuevo"
           className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
           aria-label={t('plan.new')}
         >

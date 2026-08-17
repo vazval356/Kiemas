@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { useApp } from '../state/appState'
 import type { TranslationKey } from '../lib/i18n'
@@ -19,33 +20,57 @@ interface Paso {
   texto: TranslationKey
 }
 
-const PASOS: Paso[] = [
-  { titulo: 'tour.mapTitle', texto: 'tour.mapBody' },
-  { objetivo: 'anadir', titulo: 'tour.addTitle', texto: 'tour.addBody' },
-  { objetivo: 'calendario', titulo: 'tour.planTitle', texto: 'tour.planBody' },
-  { objetivo: 'explorar', titulo: 'tour.exploreTitle', texto: 'tour.exploreBody' },
-  { objetivo: 'perfil', titulo: 'tour.profileTitle', texto: 'tour.profileBody' },
-]
+/**
+ * Un recorrido por pantalla, y no uno largo al entrar.
+ *
+ * Explicar el calendario mientras la persona está mirando el mapa no sirve de
+ * nada: cuando llegue al calendario no se acordará, porque lo que se le contó no
+ * tenía nada delante a lo que agarrarse. Así que el mapa explica el mapa, y el
+ * calendario espera a que alguien entre en el calendario.
+ *
+ * El del mapa sí señala las pestañas, pero solo para decir que existen. El
+ * detalle de cada una lo da la pantalla cuando se abre.
+ */
+const RECORRIDOS: Record<string, Paso[]> = {
+  mapa: [
+    { titulo: 'tour.mapTitle', texto: 'tour.mapBody' },
+    { objetivo: 'anadir', titulo: 'tour.addTitle', texto: 'tour.addBody' },
+    { objetivo: 'calendario', titulo: 'tour.planTitle', texto: 'tour.planBody' },
+    { objetivo: 'explorar', titulo: 'tour.exploreTitle', texto: 'tour.exploreBody' },
+    { objetivo: 'perfil', titulo: 'tour.profileTitle', texto: 'tour.profileBody' },
+  ],
+  calendario: [
+    { objetivo: 'dias', titulo: 'tour.daysTitle', texto: 'tour.daysBody' },
+    { objetivo: 'plan-nuevo', titulo: 'tour.newPlanTitle', texto: 'tour.newPlanBody' },
+    { objetivo: 'decision-nueva', titulo: 'tour.decisionTitle', texto: 'tour.decisionBody' },
+  ],
+}
+
+/** Qué recorrido toca en cada ruta. Lo que no esté aquí no tiene recorrido. */
+const POR_RUTA: Record<string, string> = {
+  '/': 'mapa',
+  '/calendar': 'calendario',
+}
 
 /** Hueco alrededor del elemento señalado, para que no quede pegado al borde. */
 const AIRE = 8
 
 /**
- * Si ya se ha visto, en el propio dispositivo.
+ * Si ya se ha visto, en el propio dispositivo y por recorrido.
  *
  * No va en el perfil a propósito. Un recorrido que enseña dónde están los
  * botones es de la pantalla, no de la cuenta: quien entra desde el móvil después
  * de haber usado la web tiene delante otra disposición, y volver a verlo ahí no
  * molesta, mientras que no verlo nunca sí.
  *
- * Lleva versión en la clave para poder volver a enseñarlo el día que cambien las
- * pestañas, sin tener que buscar a quién.
+ * Una clave por recorrido, y con versión, para poder volver a enseñar solo el que
+ * cambie sin repetirle a nadie los demás.
  */
-const VISTO = 'kiemas.tour.v1'
+const clave = (id: string) => `kiemas.tour.v1.${id}`
 
-export function tourPendiente(): boolean {
+function pendiente(id: string): boolean {
   try {
-    return window.localStorage.getItem(VISTO) !== 'true'
+    return window.localStorage.getItem(clave(id)) !== 'true'
   } catch {
     // Sin almacenamiento no hay forma de recordar que ya se vio, y un recorrido
     // que sale en cada pantalla es peor que no tenerlo.
@@ -53,15 +78,16 @@ export function tourPendiente(): boolean {
   }
 }
 
-export function marcarTourVisto() {
+function marcarVisto(id: string) {
   try {
-    window.localStorage.setItem(VISTO, 'true')
+    window.localStorage.setItem(clave(id), 'true')
   } catch {
     // da igual: lo peor es que vuelva a salir
   }
 }
 
 interface Props {
+  pasos: Paso[]
   onCerrar: () => void
 }
 
@@ -83,7 +109,7 @@ interface Props {
  * una pantalla nueva a mitad del paso 2 y los objetivos de los pasos siguientes
  * dejarían de existir.
  */
-export function Tour({ onCerrar }: Props) {
+export function Tour({ pasos, onCerrar }: Props) {
   const { t } = useApp()
   const [i, setI] = useState(0)
   const [caja, setCaja] = useState<DOMRect | null>(null)
@@ -98,11 +124,11 @@ export function Tour({ onCerrar }: Props) {
    * rendering a different component» y en el peor caso el cierre se pierde.
    */
   const siguiente = useCallback(() => {
-    if (i + 1 >= PASOS.length) onCerrar()
+    if (i + 1 >= pasos.length) onCerrar()
     else setI(i + 1)
-  }, [i, onCerrar])
+  }, [i, pasos.length, onCerrar])
 
-  const paso = PASOS[i]
+  const paso = pasos[i]
 
   // Medir el objetivo. Puede no estar montado todavía —la barra inferior entra
   // con la pantalla— así que se reintenta unos fotogramas antes de rendirse. Un
@@ -165,7 +191,7 @@ export function Tour({ onCerrar }: Props) {
     return () => window.removeEventListener('keydown', tecla)
   }, [siguiente, onCerrar])
 
-  const ultimo = i === PASOS.length - 1
+  const ultimo = i === pasos.length - 1
 
   // El globo va debajo del objetivo si cabe y encima si no. Se ancla por `top` o
   // por `bottom` en lugar de medir su propia altura: así no hace falta un
@@ -212,7 +238,7 @@ export function Tour({ onCerrar }: Props) {
             {/* Los puntos dicen cuánto queda. Sin ellos, un recorrido del que no
                 se ve el final se salta por si acaso son quince pasos. */}
             <div className="flex items-center gap-1.5" aria-hidden>
-              {PASOS.map((p, n) => (
+              {pasos.map((p, n) => (
                 <span
                   key={p.titulo}
                   className={`size-1.5 rounded-full ${n === i ? 'bg-primary' : 'bg-outline-variant'}`}
@@ -248,5 +274,48 @@ export function Tour({ onCerrar }: Props) {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * El recorrido que le toca a la pantalla en la que estás, si es la primera vez.
+ *
+ * Va aquí y no en `App` porque la decisión es de este módulo: qué rutas tienen
+ * recorrido, cuál es el de cada una y si ya se vio. `App` solo tiene que decidir
+ * si hay sitio para enseñarlo.
+ *
+ * `cerrados` existe además del almacenamiento porque guardar y volver a leer no
+ * ocurren en el mismo tic: sin ese estado, al cerrar el recorrido el siguiente
+ * render lo encontraría todavía pendiente y volvería a montarlo.
+ */
+export function GuiaDeLaPantalla() {
+  const { pathname } = useLocation()
+  const id = POR_RUTA[pathname]
+  const [cerrados, setCerrados] = useState<Record<string, true>>({})
+
+  // Un momento antes de aparecer. La pantalla acaba de entrar y sus datos
+  // todavía están llegando: soltar el foco encima de una lista a medio pintar se
+  // ve como un fallo, y además el objetivo del primer paso puede no existir aún.
+  const [listo, setListo] = useState(false)
+  useEffect(() => {
+    setListo(false)
+    if (!id) return
+    const reloj = setTimeout(() => setListo(true), 500)
+    return () => clearTimeout(reloj)
+  }, [id])
+
+  if (!id || !listo || cerrados[id] || !pendiente(id)) return null
+
+  return (
+    <Tour
+      // La clave fuerza a empezar por el primer paso si se cambia de pantalla
+      // con un recorrido a medias, en vez de heredar el índice del anterior.
+      key={id}
+      pasos={RECORRIDOS[id]}
+      onCerrar={() => {
+        marcarVisto(id)
+        setCerrados((c) => ({ ...c, [id]: true }))
+      }}
+    />
   )
 }

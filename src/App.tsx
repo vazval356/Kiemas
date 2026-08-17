@@ -3,7 +3,7 @@ import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'r
 import { BottomNav } from './components/BottomNav'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
-import { Tour, marcarTourVisto, tourPendiente } from './components/Tour'
+import { GuiaDeLaPantalla } from './components/Tour'
 import { recoveryTokens } from './lib/recovery'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { ActivityPage } from './pages/ActivityPage'
@@ -112,12 +112,6 @@ function Shell() {
   // llegue del servidor.
   const [welcomeDone, setWelcomeDone] = useState(false)
 
-  // El recorrido guiado. Se decide una vez al montar y no en cada render: leer
-  // el almacenamiento en cada navegación lo haría reaparecer al volver al mapa
-  // en el mismo instante en que se acaba de cerrar, porque el guardado y el
-  // siguiente render no van en el mismo tic.
-  const [tour, setTour] = useState(tourPendiente)
-
   if (authStatus === 'loading') {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3">
@@ -190,17 +184,11 @@ function Shell() {
       </Routes>
       {!isFullScreen && <BottomNav />}
 
-      {/* Solo en el mapa: los pasos señalan el botón de añadir y tres pestañas,
-          y todo eso solo existe ahí a la vez. Al ir detrás de la bienvenida en
-          el árbol, no puede aparecer encima de ella. */}
-      {!isFullScreen && location.pathname === '/' && tour && (
-        <Tour
-          onCerrar={() => {
-            marcarTourVisto()
-            setTour(false)
-          }}
-        />
-      )}
+      {/* Cada pantalla tiene su propio recorrido y decide él mismo si toca. No
+          en las de pila: ahí la persona ha entrado a hacer algo concreto, y las
+          que tienen recorrido son destinos de la barra inferior. Al ir detrás de
+          la bienvenida en el árbol, no puede aparecer encima de ella. */}
+      {!isFullScreen && <GuiaDeLaPantalla />}
     </div>
   )
 }

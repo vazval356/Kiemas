@@ -83,6 +83,7 @@ export function DecisionsSection() {
           <button
             type="button"
             onClick={() => setAbriendo(true)}
+            data-tour="decision-nueva"
             className="text-sm font-semibold text-primary squish"
           >
             {t('decision.new')}

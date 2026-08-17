@@ -88,6 +88,16 @@ const es = {
   'tour.profileTitle': 'Tus grupos y tus ajustes',
   'tour.profileBody':
     'Desde aquí invitas a alguien con un código, cambias de grupo y activas los avisos. Ya está: a guardar sitios.',
+  // El calendario, cuando se entra en él por primera vez.
+  'tour.daysTitle': 'Vuestro mes',
+  'tour.daysBody':
+    'Los días que tienen algo salen marcados. Toca uno y abajo se queda solo lo de ese día; vuelve a tocarlo para verlo todo.',
+  'tour.newPlanTitle': 'Crea un plan',
+  'tour.newPlanBody':
+    'Pones qué es y quién está invitado. Si no tenéis fecha, se proponen varias y cada uno vota las que le vienen bien.',
+  'tour.decisionTitle': 'Decisiones del grupo',
+  'tour.decisionBody':
+    '¿Cambiamos el apartamento? ¿Quién lleva el coche? Se pregunta aquí y queda escrito quién votó qué, en vez de perderse en el chat.',
   'auth.forgot': '¿Has olvidado la contraseña?',
   'auth.welcomeBack': 'Bienvenido de vuelta',
   'auth.joinTitle': 'Únete',
@@ -878,6 +888,15 @@ const en: Record<TranslationKey, string> = {
   'tour.profileTitle': 'Your groups and settings',
   'tour.profileBody':
     'From here you invite someone with a code, switch group and turn notifications on. That’s it — go save some places.',
+  'tour.daysTitle': 'Your month',
+  'tour.daysBody':
+    'Days with something on are marked. Tap one and the list below shows only that day; tap again to see everything.',
+  'tour.newPlanTitle': 'Create a plan',
+  'tour.newPlanBody':
+    'You set what it is and who is invited. If you have no date, several are proposed and everyone votes for the ones that suit them.',
+  'tour.decisionTitle': 'Group decisions',
+  'tour.decisionBody':
+    'Change the apartment? Who is driving? You ask here and it stays in writing, with who voted what, instead of getting lost in the chat.',
   'auth.forgot': 'Forgotten your password?',
   'auth.welcomeBack': 'Welcome back',
   'auth.joinTitle': 'Join in',
