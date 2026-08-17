@@ -98,6 +98,34 @@ export function SubscriptionPage() {
   const hasAnnual = useMemo(() => packages.some((p) => p.packageType === 'ANNUAL'), [packages])
 
   /**
+   * El cero del plan gratuito, en la moneda de la tienda.
+   *
+   * Estaba escrito a mano como «0 €», justo debajo de un comentario que decía
+   * que el precio lo pone siempre la tienda. En una tienda que no sea de la zona
+   * euro se veía «0 €» al lado de «$2.99», y esa pareja delata que una de las
+   * dos cifras se la ha inventado la aplicación. Se nota especialmente porque
+   * quien revisa la app en Apple está justo en esa situación.
+   *
+   * Si todavía no hay paquetes cargados no hay moneda que usar, y entonces se
+   * cae al texto traducido: es el caso de la web, donde no se puede comprar y no
+   * hay tienda de la que preguntar.
+   */
+  const monedaDeLaTienda = packages[0]?.product.currencyCode
+  const precioCero = useMemo(() => {
+    if (!monedaDeLaTienda) return t('sub.free0')
+    try {
+      return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: monedaDeLaTienda,
+        maximumFractionDigits: 0,
+      }).format(0)
+    } catch {
+      // Una moneda que Intl no conozca no puede dejar la tarjeta sin precio.
+      return t('sub.free0')
+    }
+  }, [monedaDeLaTienda, locale, t])
+
+  /**
    * Qué paquete corresponde a cada nivel y periodo.
    *
    * Se empareja por el identificador, que es lo único que RevenueCat expone y
@@ -371,7 +399,7 @@ export function SubscriptionPage() {
                       }
                     >
                       {tier === 'free'
-                        ? t('sub.free0')
+                        ? precioCero
                         : (pkg?.product.priceString ?? t('sub.priceSoon'))}
                     </p>
 
