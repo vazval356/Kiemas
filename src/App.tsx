@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TopBar } from './components/TopBar'
@@ -19,7 +19,6 @@ import { FollowedListsPage } from './pages/FollowedListsPage'
 import { LegalPage } from './pages/LegalPage'
 import { ListPage } from './pages/ListPage'
 import { MapPage } from './pages/MapPage'
-import { OnboardingPage } from './pages/OnboardingPage'
 import { EditProfilePage } from './pages/EditProfilePage'
 import { PlaceDetailPage } from './pages/PlaceDetailPage'
 import { PlaceFormPage } from './pages/PlaceFormPage'
@@ -58,36 +57,30 @@ const FULL_SCREEN = [
   '/claim/',
   '/wrapped',
   '/subscription',
-  '/welcome',
 ]
 
 /**
- * La bienvenida, con el marcado de «ya vista» resuelto en un solo sitio.
+ * Lo único que se le pide a una cuenta nueva antes de entrar: su perfil.
  *
- * Se marca y se continúa sin esperar a la respuesta. Si la red falla, lo peor
- * que ocurre es que la presentación vuelva a salir la próxima vez; dejar a
- * alguien mirando un botón girando en su primer minuto en la app sería bastante
- * peor.
+ * Aquí había además una presentación de cinco láminas a pantalla completa. Se
+ * leían, se olvidaban y luego había que encontrar las cosas igual, porque
+ * contaban la app en abstracto. Lo que la explica ahora es el recorrido guiado,
+ * que espera dentro y señala los botones de verdad cuando se llega a cada
+ * pantalla.
+ *
+ * El perfil sí se queda, y antes de nada: cuando la persona entre en un grupo
+ * aparecerá ante los demás con el @usuario que le generó el sistema a partir de
+ * su correo, y este es el único momento en que cambiarlo no le cuesta nada.
+ *
+ * Se marca como hecha y se continúa sin esperar a la respuesta. Si la red falla,
+ * lo peor que ocurre es que vuelva a pedirse la próxima vez; dejar a alguien
+ * mirando un botón girando en su primer minuto en la app sería bastante peor.
  */
 function Welcome({ onDone }: { onDone: () => void }) {
   const { api, refreshSpaces } = useApp()
-  // Primero el perfil, después el recorrido.
-  //
-  // El orden importa: cuando termina la presentación, la persona entra en un
-  // grupo y aparece ante los demás con el @usuario que le generó el sistema a
-  // partir de su correo. Pedirlo antes, cuando todavía no la ha visto nadie, es
-  // el único momento en que cambiarlo no cuesta nada.
-  //
-  // No hace falta una columna nueva para saber si ya pasó por aquí: se apoya en
-  // el mismo `onboardedAt` que ya gobierna la bienvenida.
-  const [perfilHecho, setPerfilHecho] = useState(false)
-
-  if (!perfilHecho) {
-    return <EditProfilePage mode="setup" onDone={() => setPerfilHecho(true)} />
-  }
-
   return (
-    <OnboardingPage
+    <EditProfilePage
+      mode="setup"
       onDone={() => {
         void api
           .completeOnboarding()
@@ -97,12 +90,6 @@ function Welcome({ onDone }: { onDone: () => void }) {
       }}
     />
   )
-}
-
-/** La misma pantalla, alcanzable desde ajustes para volver a verla. */
-function WelcomeRoute() {
-  const navigate = useNavigate()
-  return <Welcome onDone={() => navigate('/profile')} />
 }
 
 function Shell() {
@@ -134,12 +121,7 @@ function Shell() {
 
   // Cuenta nueva: la bienvenida va antes que nada. Se salta si ya se está en la
   // ruta que la enseña a propósito, para no montarla dos veces.
-  if (
-    profile !== null &&
-    !profile.onboardedAt &&
-    !welcomeDone &&
-    location.pathname !== '/welcome'
-  ) {
+  if (profile !== null && !profile.onboardedAt && !welcomeDone) {
     return <Welcome onDone={() => setWelcomeDone(true)} />
   }
 
@@ -176,7 +158,6 @@ function Shell() {
         <Route path="/profile/edit" element={<EditProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
-        <Route path="/welcome" element={<WelcomeRoute />} />
         <Route path="/add" element={<PlaceFormPage />} />
         <Route path="/edit/:id" element={<PlaceFormPage />} />
         <Route path="/place/:id" element={<PlaceDetailPage />} />

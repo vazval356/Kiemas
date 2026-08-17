@@ -812,33 +812,6 @@ const es = {
   'space.myColorHint': 'Con este color se te reconoce en el calendario y en los planes.',
   'space.addCover': 'Añadir foto de portada',
   'space.changeCover': 'Cambiar la portada',
-
-  // Bienvenida
-  'onb.skip': 'Saltar',
-  'onb.next': 'Siguiente',
-  'onb.start': 'Empezar',
-  'onb.go': '¡Vamos allá!',
-  'onb.replay': 'Ver la bienvenida otra vez',
-
-  'onb.1.title': 'Esto es Kiemas',
-  'onb.1.body':
-    'El mapa y el calendario de tu grupo, en el mismo sitio. Para que «un día tenemos que ir» acabe teniendo fecha.',
-
-  'onb.2.title': 'Guardad sitios juntos',
-  'onb.2.body':
-    'Ese bar que os gustó, el restaurante que os recomendaron. Con categoría, notas, fotos y precio. Todos veis el mismo mapa.',
-
-  'onb.3.title': 'Poned fecha sin veinte mensajes',
-  'onb.3.body':
-    'Propón varias fechas y que cada uno vote la que le venga bien. Cuando cierras la encuesta, el plan se confirma con la más votada.',
-
-  'onb.4.title': 'Un espacio por grupo',
-  'onb.4.body':
-    'La cuadrilla, la familia, el viaje de verano. Cada grupo con su mapa y su calendario. Se entra con un código, y nadie ve lo de los demás.',
-
-  'onb.5.title': 'Y cuando acabe el año',
-  'onb.5.body':
-    'Comparte listas con quien no tenga la app, y en diciembre mira vuestro resumen: dónde estuvisteis, cuántos planes y con quién.',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -1609,31 +1582,6 @@ const en: Record<TranslationKey, string> = {
   'space.changeCover': 'Change cover',
 
   // Onboarding
-  'onb.skip': 'Skip',
-  'onb.next': 'Next',
-  'onb.start': 'Get started',
-  'onb.go': 'Let’s go!',
-  'onb.replay': 'See the welcome tour again',
-
-  'onb.1.title': 'This is Kiemas',
-  'onb.1.body':
-    "Your group's map and calendar in one place. So that “we should go someday” finally gets a date.",
-
-  'onb.2.title': 'Save places together',
-  'onb.2.body':
-    'That bar you liked, the restaurant someone recommended. With category, notes, photos and price. Everyone sees the same map.',
-
-  'onb.3.title': 'Pick a date without twenty messages',
-  'onb.3.body':
-    'Suggest a few dates and let everyone vote for what suits them. Close the poll and the plan is confirmed with the winner.',
-
-  'onb.4.title': 'One space per group',
-  'onb.4.body':
-    'Your mates, your family, the summer trip. Each with its own map and calendar. People join with a code, and no group sees another.',
-
-  'onb.5.title': 'And when the year ends',
-  'onb.5.body':
-    "Share lists with people who don't have the app, and in December look back: where you went, how many plans, and who with.",
 }
 
 const dictionaries: Record<Locale, Record<TranslationKey, string>> = { es, en }

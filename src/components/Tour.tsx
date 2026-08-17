@@ -78,21 +78,24 @@ const POR_RUTA: Record<string, string> = {
 const AIRE = 8
 
 /**
- * Si ya se ha visto, en el propio dispositivo y por recorrido.
+ * Si ya se ha visto: por persona, por dispositivo y por recorrido.
  *
- * No va en el perfil a propósito. Un recorrido que enseña dónde están los
- * botones es de la pantalla, no de la cuenta: quien entra desde el móvil después
- * de haber usado la web tiene delante otra disposición, y volver a verlo ahí no
- * molesta, mientras que no verlo nunca sí.
+ * Las tres cosas a la vez, y cada una por un motivo:
  *
- * Una clave por recorrido, y con versión, para poder volver a enseñar solo el que
- * cambie sin repetirle a nadie los demás.
+ *   · Por persona, porque es lo que hace que una cuenta nueva vea el recorrido
+ *     aunque el móvil sea prestado o compartido. Antes iba solo por dispositivo,
+ *     y quien se creaba una cuenta en el teléfono de un amigo no lo veía nunca.
+ *   · Por dispositivo, porque enseña dónde están los botones, y eso cambia entre
+ *     el móvil y el navegador. Guardarlo en el perfil haría que quien ya lo vio
+ *     en el ordenador no lo viera al instalarse la app.
+ *   · Por recorrido, para poder volver a enseñar el que cambie sin repetirle a
+ *     nadie los demás. De ahí también la versión en la clave.
  */
-const clave = (id: string) => `kiemas.tour.v1.${id}`
+const clave = (usuario: string, id: string) => `kiemas.tour.v1.${usuario}.${id}`
 
-function pendiente(id: string): boolean {
+function pendiente(usuario: string, id: string): boolean {
   try {
-    return window.localStorage.getItem(clave(id)) !== 'true'
+    return window.localStorage.getItem(clave(usuario, id)) !== 'true'
   } catch {
     // Sin almacenamiento no hay forma de recordar que ya se vio, y un recorrido
     // que sale en cada pantalla es peor que no tenerlo.
@@ -100,9 +103,9 @@ function pendiente(id: string): boolean {
   }
 }
 
-function marcarVisto(id: string) {
+function marcarVisto(usuario: string, id: string) {
   try {
-    window.localStorage.setItem(clave(id), 'true')
+    window.localStorage.setItem(clave(usuario, id), 'true')
   } catch {
     // da igual: lo peor es que vuelva a salir
   }
@@ -355,6 +358,7 @@ export function Tour({ pasos, onCerrar }: Props) {
  */
 export function GuiaDeLaPantalla() {
   const { pathname } = useLocation()
+  const { profile } = useApp()
   const id = POR_RUTA[pathname]
   const [cerrados, setCerrados] = useState<Record<string, true>>({})
 
@@ -369,7 +373,9 @@ export function GuiaDeLaPantalla() {
     return () => clearTimeout(reloj)
   }, [id])
 
-  if (!id || !listo || cerrados[id] || !pendiente(id)) return null
+  // Sin perfil todavía no se sabe de quién es el recorrido, y arrancarlo con la
+  // clave equivocada lo daría por visto a la persona que no era.
+  if (!profile || !id || !listo || cerrados[id] || !pendiente(profile.id, id)) return null
 
   return (
     <Tour
@@ -378,7 +384,7 @@ export function GuiaDeLaPantalla() {
       key={id}
       pasos={RECORRIDOS[id]}
       onCerrar={() => {
-        marcarVisto(id)
+        marcarVisto(profile.id, id)
         setCerrados((c) => ({ ...c, [id]: true }))
       }}
     />

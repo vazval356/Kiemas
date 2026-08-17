@@ -237,16 +237,6 @@ export function SettingsPage() {
           </label>
         </section>
 
-        {/* ── Bienvenida ─────────────────────────────────────────────────── */}
-        <section className="mt-6">
-          <Link
-            to="/welcome"
-            className="block rounded-control border border-outline-variant px-4 py-3 text-center font-semibold text-on-surface squish"
-          >
-            {t('onb.replay')}
-          </Link>
-        </section>
-
         {/* ── Legal ──────────────────────────────────────────────────────── */}
         <section className="mt-6 flex flex-col gap-2">
           {(
