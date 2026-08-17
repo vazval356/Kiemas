@@ -14,8 +14,17 @@ Si cambia algo aquí, cambia en la tienda: este fichero es la fuente, no una cop
 | Opción de compra (Play) | `lifetime` |
 | Entitlement en RevenueCat | `pro` |
 | Offering en RevenueCat | `default`, package `$rc_lifetime` |
-| Precio de lanzamiento | 4,99 € (España como país base) |
-| Precio previsto después | 7,99 € |
+| Precio de lanzamiento | 2,99 € (España como país base) |
+
+El precio está escrito también en los textos legales (`PRO_PRICE_ES` en
+`src/lib/legal.ts`, con la fecha de revisión al lado). Si se cambia en la tienda
+hay que cambiarlo ahí, relanzar `node scripts/generar-legales.mjs` y desplegar.
+
+Subirlo más adelante no da problema: las Condiciones dicen que una subida solo
+afecta a las compras nuevas y que una compra hecha no se vuelve a cobrar, y que
+Pro sigue dando al menos lo que desbloqueaba el día de la compra aunque cambien
+los límites del plan gratuito. Eso es lo que evita la reclamación de «pagué por
+"para siempre" y me lo habéis recortado».
 
 ## Enlaces
 
