@@ -190,6 +190,22 @@ export function Tour({ pasos, onCerrar }: Props) {
       if (!vivo) return
       const el = document.querySelector(`[data-tour="${paso.objetivo}"]`)
       if (el) {
+        // Traerlo a la vista si no se ve.
+        //
+        // `getBoundingClientRect` da coordenadas de pantalla, así que un objetivo
+        // que está más abajo del pliegue devuelve un `top` mayor que la altura de
+        // la ventana y el foco se dibuja fuera. Pasaba en el perfil, que es la
+        // única pantalla con recorrido que hace scroll de verdad: el aro de «Tus
+        // grupos» caía en 792 con una pantalla de 812, y el de «Ajustes» en 1228.
+        //
+        // Se desplaza solo cuando hace falta. Centrar algo que ya se veía es un
+        // salto gratuito en cada paso, y `instant` en lugar del suave porque la
+        // medición viene justo detrás: con una animación por medio se mediría la
+        // posición de salida.
+        const antes = el.getBoundingClientRect()
+        if (antes.top < 0 || antes.bottom > window.innerHeight) {
+          el.scrollIntoView({ block: 'center', behavior: 'instant' })
+        }
         setCaja(el.getBoundingClientRect())
         setBuscando(false)
         return
@@ -211,11 +227,15 @@ export function Tour({ pasos, onCerrar }: Props) {
     }
     window.addEventListener('resize', remedir)
     window.addEventListener('orientationchange', remedir)
+    // En captura, porque el que se desplaza es un contenedor de dentro y no la
+    // ventana: el evento de un elemento con scroll propio no burbujea.
+    window.addEventListener('scroll', remedir, true)
     return () => {
       vivo = false
       clearTimeout(reloj)
       window.removeEventListener('resize', remedir)
       window.removeEventListener('orientationchange', remedir)
+      window.removeEventListener('scroll', remedir, true)
     }
   }, [paso.objetivo, siguiente])
 
