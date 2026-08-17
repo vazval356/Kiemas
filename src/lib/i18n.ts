@@ -66,6 +66,28 @@ const es = {
   'auth.badEmail': 'Ese correo no parece válido',
   'auth.signupClosed': 'Ahora mismo no se pueden crear cuentas nuevas',
   'auth.failed': 'No se ha podido completar. Inténtalo otra vez',
+
+  // Recorrido guiado. Cada paso señala un botón de verdad, así que el texto
+  // dice qué hace ESE botón y no qué es la app en general.
+  'tour.title': 'Cómo se usa',
+  'tour.next': 'Siguiente',
+  'tour.skip': 'Saltar',
+  'tour.done': 'Entendido',
+  'tour.mapTitle': 'Este es vuestro mapa',
+  'tour.mapBody':
+    'Cada pin es un sitio que ha guardado alguien del grupo. Tócalo y verás sus fotos, las notas y lo que le habéis puntuado.',
+  'tour.addTitle': 'Añade un sitio',
+  'tour.addBody':
+    'Y si pegas un enlace de Google Maps, el formulario se rellena solo: nombre, dirección y coordenadas.',
+  'tour.planTitle': 'Aquí quedáis',
+  'tour.planBody':
+    'Creas un plan y ves quién se apunta. Si no hay fecha o no sabéis dónde, se vota aquí dentro en vez de en el chat.',
+  'tour.exploreTitle': 'Listas de otra gente',
+  'tour.exploreBody':
+    'Sitios que ha publicado gente que no conoces, por si os falta inspiración. Y aquí podéis publicar las vuestras.',
+  'tour.profileTitle': 'Tus grupos y tus ajustes',
+  'tour.profileBody':
+    'Desde aquí invitas a alguien con un código, cambias de grupo y activas los avisos. Ya está: a guardar sitios.',
   'auth.forgot': '¿Has olvidado la contraseña?',
   'auth.welcomeBack': 'Bienvenido de vuelta',
   'auth.joinTitle': 'Únete',
@@ -836,6 +858,26 @@ const en: Record<TranslationKey, string> = {
   'auth.badEmail': 'That email does not look valid',
   'auth.signupClosed': 'New accounts cannot be created right now',
   'auth.failed': "That didn't go through. Please try again",
+
+  'tour.title': 'How it works',
+  'tour.next': 'Next',
+  'tour.skip': 'Skip',
+  'tour.done': 'Got it',
+  'tour.mapTitle': 'This is your map',
+  'tour.mapBody':
+    'Every pin is a place someone in the group saved. Tap one to see its photos, the notes and how you rated it.',
+  'tour.addTitle': 'Add a place',
+  'tour.addBody':
+    'And if you paste a Google Maps link, the form fills itself in: name, address and coordinates.',
+  'tour.planTitle': 'This is where you meet up',
+  'tour.planBody':
+    'Create a plan and see who is in. If there is no date, or nobody knows where, you vote in here instead of in the chat.',
+  'tour.exploreTitle': 'Other people’s lists',
+  'tour.exploreBody':
+    'Places published by people you don’t know, for when you are out of ideas. And where you publish your own.',
+  'tour.profileTitle': 'Your groups and settings',
+  'tour.profileBody':
+    'From here you invite someone with a code, switch group and turn notifications on. That’s it — go save some places.',
   'auth.forgot': 'Forgotten your password?',
   'auth.welcomeBack': 'Welcome back',
   'auth.joinTitle': 'Join in',

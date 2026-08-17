@@ -18,12 +18,17 @@ import type { TranslationKey } from '../lib/i18n'
  * al final del Perfil. Es lo único de la app que puede traer a alguien que no
  * conozca a nadie que ya la use, así que era justo lo que no podía estar ahí.
  */
-const tabs: { to: string; labelKey: TranslationKey; icon: typeof MapIcon }[] = [
+/**
+ * `tour` es la marca que busca el recorrido guiado para señalar la pestaña. Solo
+ * la llevan las tres que el recorrido explica; las otras dos se entienden solas
+ * y un recorrido de cinco pasos ya es lo máximo que alguien aguanta.
+ */
+const tabs: { to: string; labelKey: TranslationKey; icon: typeof MapIcon; tour?: string }[] = [
   { to: '/', labelKey: 'nav.map', icon: MapIcon },
   { to: '/list', labelKey: 'nav.list', icon: ListIcon },
-  { to: '/calendar', labelKey: 'nav.calendar', icon: CalendarIcon },
-  { to: '/explore', labelKey: 'nav.explore', icon: SearchIcon },
-  { to: '/profile', labelKey: 'nav.profile', icon: UserIcon },
+  { to: '/calendar', labelKey: 'nav.calendar', icon: CalendarIcon, tour: 'calendario' },
+  { to: '/explore', labelKey: 'nav.explore', icon: SearchIcon, tour: 'explorar' },
+  { to: '/profile', labelKey: 'nav.profile', icon: UserIcon, tour: 'perfil' },
 ]
 
 export function BottomNav() {
@@ -33,11 +38,16 @@ export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant/40 bg-surface-low/95 backdrop-blur pb-safe">
       <div className="mx-auto flex max-w-md items-stretch justify-around px-2 py-1">
-        {tabs.map(({ to, labelKey, icon: Icon }) => {
+        {tabs.map(({ to, labelKey, icon: Icon, tour }) => {
           // `/` casa con todo si se usa startsWith, así que la raíz se compara exacta.
           const active = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to)
           return (
-            <NavLink key={to} to={to} className="flex flex-col items-center gap-0.5 py-0.5 squish">
+            <NavLink
+              key={to}
+              to={to}
+              data-tour={tour}
+              className="flex flex-col items-center gap-0.5 py-0.5 squish"
+            >
               <span
                 className={`rounded-full px-3 py-1 transition-colors ${
                   active ? 'bg-primary-fixed text-primary' : 'text-on-surface-variant'

@@ -340,6 +340,7 @@ export function MapPage() {
         </button>
         <Link
           to="/add"
+          data-tour="anadir"
           className="flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
           aria-label={t('place.add')}
         >
