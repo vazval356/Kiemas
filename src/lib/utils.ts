@@ -46,6 +46,34 @@ const FAMILIAS: { patron: RegExp; clave: TranslationKey }[] = [
     patron: /row-level security|permission denied|not_allowed|not_admin/i,
     clave: 'err.notAllowed',
   },
+  // ── Entrar y registrarse ─────────────────────────────────────────────────
+  //
+  // Los mensajes de GoTrue llegan en inglés y sin traducir. Iban aparte, en la
+  // pantalla de entrada, y esa versión acababa devolviendo el texto tal cual
+  // cuando no reconocía nada. Resultado: a quien se registraba le salía «Load
+  // failed», que es como Safari llama a una petición que no ha llegado, y se lee
+  // como si el problema fuera lo que acababa de escribir en el formulario.
+  //
+  // Van antes que las familias genéricas porque son más específicas: «invalid
+  // login credentials» no debe caer en la de sesión por contener «invalid».
+  { patron: /invalid login credentials|invalid credentials/i, clave: 'auth.invalidCredentials' },
+  {
+    patron: /already registered|already been registered|user already exists/i,
+    clave: 'auth.emailInUse',
+  },
+  { patron: /email not confirmed|not confirmed/i, clave: 'auth.notConfirmed' },
+  // Límite de envíos de Supabase. Sale al pedir la contraseña varias veces
+  // seguidas, y sin explicarlo parece que la app está rota.
+  {
+    patron: /rate limit|too many requests|over_email_send_rate_limit|for security purposes/i,
+    clave: 'auth.tooMany',
+  },
+  { patron: /password.*(6|short|weak|length)|weak_password/i, clave: 'auth.passwordTooShort' },
+  {
+    patron: /invalid email|email_address_invalid|unable to validate email/i,
+    clave: 'auth.badEmail',
+  },
+  { patron: /signup.*disabled|signups not allowed/i, clave: 'auth.signupClosed' },
   // La sesión ha caducado o no hay.
   { patron: /jwt|not_authenticated|invalid token|session/i, clave: 'err.session' },
   // Algo que ya no está: lo ha borrado otra persona mientras mirabas.

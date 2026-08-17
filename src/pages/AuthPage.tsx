@@ -4,6 +4,7 @@ import { publicBaseUrl } from '../lib/appUrl'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { oauthProviders, signInWith, type OAuthProvider } from '../lib/oauth'
 import { REMEMBER_KEY, supabase } from '../lib/supabaseClient'
+import { errorMessage } from '../lib/utils'
 
 /**
  * Entrada, alta de cuenta y recuperación de contraseña.
@@ -31,14 +32,21 @@ export function AuthPage() {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
-  function translateAuthError(message: string): string {
-    const lower = message.toLowerCase()
-    if (lower.includes('invalid login credentials')) return t('auth.invalidCredentials')
-    if (lower.includes('already registered') || lower.includes('already been registered')) {
-      return t('auth.emailInUse')
-    }
-    if (lower.includes('password')) return t('auth.passwordTooShort')
-    return message
+  /**
+   * El error, en un idioma que se entienda.
+   *
+   * Esto tenía su propia lista de tres casos y acababa en `return message`, así
+   * que cualquier cosa que no reconociera salía en pantalla tal cual y en
+   * inglés. Con eso, a quien se registraba le aparecía «Load failed» —así llama
+   * Safari a una petición que no ha llegado— y se lee como si el problema fuera
+   * lo que acababa de escribir en el formulario, no la conexión.
+   *
+   * Ahora usa la misma tabla que el resto de la aplicación, que ya distingue el
+   * fallo de red del de credenciales y que manda lo técnico a la consola. Nada
+   * sin traducir llega a la pantalla.
+   */
+  function mensajeDeError(err: unknown): string {
+    return errorMessage(err, t('auth.failed'))
   }
 
   function cambiarModo(next: typeof mode) {
@@ -53,7 +61,7 @@ export function AuthPage() {
     try {
       await signInWith(provider)
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      setError(mensajeDeError(err))
       setBusy(false)
     }
   }
@@ -121,7 +129,7 @@ export function AuthPage() {
         if (!data.session) setNotice(t('auth.checkInbox'))
       }
     } catch (err) {
-      setError(translateAuthError(err instanceof Error ? err.message : String(err)))
+      setError(mensajeDeError(err))
     } finally {
       setBusy(false)
     }
