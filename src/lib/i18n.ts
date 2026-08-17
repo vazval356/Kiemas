@@ -98,6 +98,30 @@ const es = {
   'tour.decisionTitle': 'Decisiones del grupo',
   'tour.decisionBody':
     '¿Cambiamos el apartamento? ¿Quién lleva el coche? Se pregunta aquí y queda escrito quién votó qué, en vez de perderse en el chat.',
+  // La lista.
+  'tour.filterTitle': 'Los mismos sitios, en lista',
+  'tour.filterBody':
+    'Filtra por categoría, por precio o por si ya fuisteis. Y ahí al lado se cambia el orden: por nota, por nombre o por lo último que añadisteis.',
+  'tour.collectionsTitle': 'Colecciones',
+  'tour.collectionsBody':
+    'Agrupa sitios como quieras: «para el finde», «con niños». Un sitio puede estar en varias, y una colección se puede compartir.',
+  // Explorar.
+  'tour.searchTitle': 'Busca listas de otros',
+  'tour.searchBody':
+    'Escribe una ciudad o un tema: «bares Madrid», «brunch». Lo que sale lo ha publicado gente que no conoces.',
+  'tour.publishTitle': 'Publica las vuestras',
+  'tour.publishBody':
+    'Una colección vuestra le puede servir a más gente. Se publica desde aquí y se puede retirar cuando queráis.',
+  // El perfil.
+  'tour.quotaTitle': 'Lo que llevas usado',
+  'tour.quotaBody':
+    'Los topes son tuyos y cuentan sumando todos tus grupos, no por grupo. Aquí se ve cuánto queda, y aquí se quitan.',
+  'tour.groupsTitle': 'Tus grupos',
+  'tour.groupsBody':
+    'Cada uno con su mapa y su calendario. Desde aquí creas uno nuevo o entras en el de alguien con su código. Y tienes un espacio solo tuyo.',
+  'tour.settingsTitle': 'Ajustes',
+  'tour.settingsBody':
+    'Aquí se activan los avisos, que es lo que hace que os enteréis de un plan nuevo sin abrir la app. También están el idioma y descargar tus datos.',
   'auth.forgot': '¿Has olvidado la contraseña?',
   'auth.welcomeBack': 'Bienvenido de vuelta',
   'auth.joinTitle': 'Únete',
@@ -897,6 +921,27 @@ const en: Record<TranslationKey, string> = {
   'tour.decisionTitle': 'Group decisions',
   'tour.decisionBody':
     'Change the apartment? Who is driving? You ask here and it stays in writing, with who voted what, instead of getting lost in the chat.',
+  'tour.filterTitle': 'The same places, as a list',
+  'tour.filterBody':
+    'Filter by category, by price or by whether you have been. And right next to it you change the order: by rating, by name, or by what you added last.',
+  'tour.collectionsTitle': 'Collections',
+  'tour.collectionsBody':
+    'Group places however you like: “for the weekend”, “with kids”. A place can be in several, and a collection can be shared.',
+  'tour.searchTitle': 'Search other people’s lists',
+  'tour.searchBody':
+    'Type a city or a theme: “bars Madrid”, “brunch”. What comes up was published by people you don’t know.',
+  'tour.publishTitle': 'Publish your own',
+  'tour.publishBody':
+    'One of your collections could be useful to more people. You publish it from here, and you can unlist it whenever you want.',
+  'tour.quotaTitle': 'What you have used',
+  'tour.quotaBody':
+    'The caps are yours and count across all your groups, not per group. Here you see what is left, and here you remove them.',
+  'tour.groupsTitle': 'Your groups',
+  'tour.groupsBody':
+    'Each with its own map and calendar. From here you create a new one or join someone’s with their code. And you have a space that is only yours.',
+  'tour.settingsTitle': 'Settings',
+  'tour.settingsBody':
+    'This is where you turn notifications on, which is what lets you hear about a new plan without opening the app. Language and downloading your data are here too.',
   'auth.forgot': 'Forgotten your password?',
   'auth.welcomeBack': 'Welcome back',
   'auth.joinTitle': 'Join in',

@@ -103,7 +103,10 @@ export function ExplorePage() {
         <h1 className="font-display text-2xl font-bold text-on-surface">{t('explore.title')}</h1>
         <p className="mt-0.5 text-sm text-on-surface-variant">{t('explore.subtitle')}</p>
 
-        <div className="mt-4 flex items-center gap-2 rounded-full bg-surface-lowest px-4 shadow-[var(--shadow-surface)]">
+        <div
+          data-tour="explorar-buscador"
+          className="mt-4 flex items-center gap-2 rounded-full bg-surface-lowest px-4 shadow-[var(--shadow-surface)]"
+        >
           <SearchIcon className="size-5 shrink-0 text-primary" />
           <input
             value={query}
@@ -158,6 +161,7 @@ export function ExplorePage() {
         {!query && (
           <Link
             to="/collections"
+            data-tour="publicar"
             className="mt-4 flex items-center gap-3 rounded-card bg-surface-container px-4 py-3 squish"
           >
             <span className="text-xl">📌</span>

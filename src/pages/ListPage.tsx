@@ -107,6 +107,7 @@ export function ListPage() {
             type="button"
             onClick={() => setFiltersOpen((v) => !v)}
             aria-expanded={filtersOpen}
+            data-tour="filtros"
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold squish ${
               extraCount > 0 || filtersOpen
                 ? 'bg-primary text-on-primary'
@@ -174,6 +175,7 @@ export function ListPage() {
 
         <Link
           to="/collections"
+          data-tour="colecciones"
           className="mt-3 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
         >
           <CollectionIcon className="size-5 text-primary" />

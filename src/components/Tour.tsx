@@ -39,17 +39,39 @@ const RECORRIDOS: Record<string, Paso[]> = {
     { objetivo: 'explorar', titulo: 'tour.exploreTitle', texto: 'tour.exploreBody' },
     { objetivo: 'perfil', titulo: 'tour.profileTitle', texto: 'tour.profileBody' },
   ],
+  lista: [
+    { objetivo: 'filtros', titulo: 'tour.filterTitle', texto: 'tour.filterBody' },
+    { objetivo: 'colecciones', titulo: 'tour.collectionsTitle', texto: 'tour.collectionsBody' },
+  ],
   calendario: [
     { objetivo: 'dias', titulo: 'tour.daysTitle', texto: 'tour.daysBody' },
     { objetivo: 'plan-nuevo', titulo: 'tour.newPlanTitle', texto: 'tour.newPlanBody' },
     { objetivo: 'decision-nueva', titulo: 'tour.decisionTitle', texto: 'tour.decisionBody' },
   ],
+  explorar: [
+    { objetivo: 'explorar-buscador', titulo: 'tour.searchTitle', texto: 'tour.searchBody' },
+    { objetivo: 'publicar', titulo: 'tour.publishTitle', texto: 'tour.publishBody' },
+  ],
+  perfil: [
+    { objetivo: 'cuota', titulo: 'tour.quotaTitle', texto: 'tour.quotaBody' },
+    { objetivo: 'grupos', titulo: 'tour.groupsTitle', texto: 'tour.groupsBody' },
+    { objetivo: 'ajustes', titulo: 'tour.settingsTitle', texto: 'tour.settingsBody' },
+  ],
 }
 
-/** Qué recorrido toca en cada ruta. Lo que no esté aquí no tiene recorrido. */
+/**
+ * Qué recorrido toca en cada ruta. Lo que no esté aquí no tiene recorrido.
+ *
+ * Son las cinco pestañas de la barra inferior y nada más. Las pantallas de pila
+ * —crear un sitio, la ficha de un plan, los ajustes— se abren para hacer algo
+ * concreto, y ahí un foco encima no explica: interrumpe.
+ */
 const POR_RUTA: Record<string, string> = {
   '/': 'mapa',
+  '/list': 'lista',
   '/calendar': 'calendario',
+  '/explore': 'explorar',
+  '/profile': 'perfil',
 }
 
 /** Hueco alrededor del elemento señalado, para que no quede pegado al borde. */
@@ -115,6 +137,18 @@ export function Tour({ pasos, onCerrar }: Props) {
   const [caja, setCaja] = useState<DOMRect | null>(null)
 
   /**
+   * Buscando el objetivo del paso actual.
+   *
+   * Hace falta para distinguir dos cosas que en `caja` se ven igual: un paso que
+   * no señala nada a propósito —el que presenta la pantalla, que va centrado— y
+   * uno cuyo objetivo todavía no ha aparecido. Sin esa distinción, un paso que va
+   * a saltarse enseñaba su globo en el centro durante el segundo de espera. Pasa
+   * de verdad: la tarjeta de cuota del perfil no existe si tienes Pro, porque no
+   * hay ningún tope que enseñar.
+   */
+  const [buscando, setBuscando] = useState(false)
+
+  /**
    * Avanzar, y cerrar si era el último.
    *
    * La decisión se toma con el `i` actual y no dentro del actualizador de
@@ -138,6 +172,7 @@ export function Tour({ pasos, onCerrar }: Props) {
   useEffect(() => {
     if (!paso.objetivo) {
       setCaja(null)
+      setBuscando(false)
       return
     }
 
@@ -145,6 +180,7 @@ export function Tour({ pasos, onCerrar }: Props) {
     // nuevo el foco sigue rodeando el del paso anterior, y se ve un globo que
     // habla de Explorar con el aro puesto en Calendario.
     setCaja(null)
+    setBuscando(true)
 
     let vivo = true
     let intentos = 0
@@ -155,6 +191,7 @@ export function Tour({ pasos, onCerrar }: Props) {
       const el = document.querySelector(`[data-tour="${paso.objetivo}"]`)
       if (el) {
         setCaja(el.getBoundingClientRect())
+        setBuscando(false)
         return
       }
       // Por temporizador y no por `requestAnimationFrame`: los fotogramas no
@@ -229,50 +266,58 @@ export function Tour({ pasos, onCerrar }: Props) {
         <div className="absolute inset-0 bg-[rgba(12,10,30,0.78)]" />
       )}
 
-      <div className="absolute inset-x-4 max-w-md sm:left-1/2 sm:-translate-x-1/2" style={posicion}>
-        <div className="rounded-card bg-surface-lowest p-5 shadow-[var(--shadow-float)]">
-          <p className="font-display text-lg font-bold text-on-surface">{t(paso.titulo)}</p>
-          <p className="mt-1.5 text-sm text-on-surface-variant">{t(paso.texto)}</p>
+      {/* Mientras se busca el objetivo, solo el fondo oscuro. Enseñar el globo
+          antes de saber si hay algo que señalar es prometer un paso que puede
+          que se salte, y en ese caso se lee como un parpadeo. */}
+      {!buscando && (
+        <div
+          className="absolute inset-x-4 max-w-md sm:left-1/2 sm:-translate-x-1/2"
+          style={posicion}
+        >
+          <div className="rounded-card bg-surface-lowest p-5 shadow-[var(--shadow-float)]">
+            <p className="font-display text-lg font-bold text-on-surface">{t(paso.titulo)}</p>
+            <p className="mt-1.5 text-sm text-on-surface-variant">{t(paso.texto)}</p>
 
-          <div className="mt-4 flex items-center justify-between gap-3">
-            {/* Los puntos dicen cuánto queda. Sin ellos, un recorrido del que no
+            <div className="mt-4 flex items-center justify-between gap-3">
+              {/* Los puntos dicen cuánto queda. Sin ellos, un recorrido del que no
                 se ve el final se salta por si acaso son quince pasos. */}
-            <div className="flex items-center gap-1.5" aria-hidden>
-              {pasos.map((p, n) => (
-                <span
-                  key={p.titulo}
-                  className={`size-1.5 rounded-full ${n === i ? 'bg-primary' : 'bg-outline-variant'}`}
-                />
-              ))}
-            </div>
+              <div className="flex items-center gap-1.5" aria-hidden>
+                {pasos.map((p, n) => (
+                  <span
+                    key={p.titulo}
+                    className={`size-1.5 rounded-full ${n === i ? 'bg-primary' : 'bg-outline-variant'}`}
+                  />
+                ))}
+              </div>
 
-            <div className="flex items-center gap-2">
-              {!ultimo && (
+              <div className="flex items-center gap-2">
+                {!ultimo && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onCerrar()
+                    }}
+                    className="rounded-full px-3 py-2 text-sm font-semibold text-on-surface-variant squish"
+                  >
+                    {t('tour.skip')}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation()
-                    onCerrar()
+                    siguiente()
                   }}
-                  className="rounded-full px-3 py-2 text-sm font-semibold text-on-surface-variant squish"
+                  className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary squish"
                 >
-                  {t('tour.skip')}
+                  {ultimo ? t('tour.done') : t('tour.next')}
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  siguiente()
-                }}
-                className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary squish"
-              >
-                {ultimo ? t('tour.done') : t('tour.next')}
-              </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

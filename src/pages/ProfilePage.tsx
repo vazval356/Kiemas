@@ -145,6 +145,7 @@ export function ProfilePage() {
         {nivel && (nivel.maxPlaces !== null || nivel.maxActivePlans !== null) && (
           <Link
             to="/subscription"
+            data-tour="cuota"
             className="mt-3 block rounded-card bg-surface-container px-4 py-3 squish"
           >
             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
@@ -263,6 +264,7 @@ export function ProfilePage() {
               quitarlo dejaría esas dos cosas sin puerta. */}
           <Link
             to="/spaces"
+            data-tour="grupos"
             className="mt-2 block rounded-card border-2 border-dashed border-outline-variant p-3 text-center text-sm font-semibold text-on-surface-variant squish"
           >
             {t('space.create')} · {t('invite.join')}
@@ -310,6 +312,9 @@ export function ProfilePage() {
             <Link
               key={to}
               to={to}
+              // Solo Ajustes lleva marca: es donde están los avisos, que es lo
+              // único de esa lista que hay que explicar.
+              data-tour={to === '/settings' ? 'ajustes' : undefined}
               className="flex items-center gap-3 border-b border-outline-variant/40 px-4 py-3.5 squish"
             >
               <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-surface-lowest text-primary">
