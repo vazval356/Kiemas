@@ -542,50 +542,6 @@ export interface ExploreList {
 }
 
 /**
- * Un local del mundo real (Fase 7).
- *
- * No es lo mismo que un `Place`: un `Place` es la copia que un espacio guarda
- * de un sitio, y diez cuadrillas que guardan el mismo bar son diez `Place`
- * distintos apuntando a un solo `Venue`.
- */
-export interface BusinessProfile {
-  venueId: string
-  displayName: string
-  description: string
-  phone: string
-  website: string
-  hours: string
-  verified: boolean
-}
-
-/** Un local que administras, o uno cuya solicitud está en revisión. */
-export interface MyBusiness {
-  venueId: string
-  name: string
-  lat: number
-  lng: number
-  /** `false` mientras la solicitud está pendiente. */
-  owned: boolean
-  claimStatus: 'pending' | 'approved' | 'rejected' | null
-}
-
-/**
- * Recuentos agregados de un local, para quien lo administra.
- *
- * Cuando `enough` es falso todos los números son `null`: por debajo del mínimo
- * no se devuelve nada, porque un recuento de uno o dos en un pueblo señala a
- * personas concretas en vez de describir una tendencia.
- */
-export interface VenueStats {
-  enough: boolean
-  minimum: number
-  saves: number | null
-  visited: number | null
-  lists: number | null
-  plans: number | null
-}
-
-/**
  * Un plan que ya pasó y del que todavía no se ha dicho nada.
  *
  * Es la pieza que faltaba para que la galería de fotos y las puntuaciones se

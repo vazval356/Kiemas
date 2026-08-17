@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { SelectorDeSitios } from './SelectorDeSitios'
+import { Caras } from './Votantes'
 import type { Plan } from '../lib/types'
 import { useApp } from '../state/appState'
 
@@ -121,7 +122,9 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
                 key={o.id}
                 // `relative` y `overflow-hidden` por la barra, que va dentro de
                 // la tarjeta y tiene que recortarse con ella.
-                className="relative overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]"
+                className={`relative overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)] ${
+                  mia ? 'ring-2 ring-primary' : ''
+                }`}
               >
                 {/* La misma barra de apoyo que en la encuesta de fechas: se ve
                     cuál gana sin contar nombres. */}
@@ -149,19 +152,7 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
                         cuatro personas no cabían: se cortaban a media palabra. */}
                     <span className="mt-1 flex min-h-5 items-center">
                       {o.voters.length > 0 ? (
-                        o.voters.map((id) => {
-                          const m = miembros.find((x) => x.userId === id)
-                          return (
-                            <span
-                              key={id}
-                              title={nombreDe(id)}
-                              className="-mr-1.5 flex size-5 items-center justify-center rounded-full text-[9px] font-bold text-white ring-2 ring-surface-lowest"
-                              style={{ backgroundColor: m?.color ?? 'var(--color-outline)' }}
-                            >
-                              {nombreDe(id).slice(0, 1).toUpperCase()}
-                            </span>
-                          )
-                        })
+                        <Caras ids={o.voters} miembros={miembros} lado={22} />
                       ) : (
                         <span className="text-xs text-on-surface-variant">
                           {t('poll.nobodyYet')}
@@ -177,6 +168,11 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
                     >
                       {t('poll.support', { n: String(o.voters.length), total: String(cuantos) })}
                     </span>
+                    {mia && (
+                      <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-on-primary">
+                        ✓ {t('poll.yourVote')}
+                      </span>
+                    )}
                     {ganador === o.id && (
                       <span className="text-[10px] font-semibold text-primary">
                         {t('poll.leaderPlace')}

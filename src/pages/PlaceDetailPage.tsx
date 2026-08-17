@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import type { BusinessProfile } from '../lib/types'
 import { CommentThread } from '../components/CommentThread'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { PhotoViewer } from '../components/PhotoViewer'
@@ -24,6 +23,7 @@ import {
   priceLabel,
 } from '../lib/utils'
 import { RatingStars } from '../components/RatingStars'
+import { Cara } from '../components/Votantes'
 import { useApp } from '../state/appState'
 
 /**
@@ -55,8 +55,6 @@ export function PlaceDetailPage() {
   const [modoFoto, setModoFoto] = useState<'cover' | 'delete' | null>(null)
   /** Ruta de la foto abierta a pantalla completa. */
   const [viendo, setViendo] = useState<string | null>(null)
-  // Ficha del negocio, si alguien ha verificado este local (Fase 7).
-  const [negocio, setNegocio] = useState<BusinessProfile | null>(null)
   const [error, setError] = useState('')
   const [copiando, setCopiando] = useState(false)
   const [copiado, setCopiado] = useState('')
@@ -66,28 +64,6 @@ export function PlaceDetailPage() {
   useEffect(() => {
     if (!notesDirty) setNotes(place?.notes ?? '')
   }, [place?.notes, notesDirty])
-
-  // La ficha del negocio se pide aparte y sin bloquear: es un añadido a la
-  // pantalla, y si falla o tarda, el sitio se ve igual de bien sin ella.
-  const venueId = place?.venueId ?? null
-  useEffect(() => {
-    if (!venueId) {
-      setNegocio(null)
-      return
-    }
-    let vigente = true
-    void api
-      .venueProfile(venueId)
-      .then((p) => {
-        if (vigente) setNegocio(p)
-      })
-      .catch(() => {
-        if (vigente) setNegocio(null)
-      })
-    return () => {
-      vigente = false
-    }
-  }, [venueId, api])
 
   if (!place) {
     return (
@@ -290,36 +266,6 @@ export function PlaceDetailPage() {
           )}
         </div>
 
-        {/* ── Ficha del negocio, si está verificada (Fase 7) ─────────────
-            Va debajo de los datos del grupo, no encima: lo que escribió tu
-            cuadrilla manda sobre lo que diga el local. */}
-        {negocio ? (
-          <section className="mt-5 rounded-card border border-primary/30 bg-primary-fixed/30 p-4">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm">✅</span>
-              <h2 className="font-display font-semibold text-on-surface">{negocio.displayName}</h2>
-              <span className="text-xs font-semibold text-primary">{t('biz.verified')}</span>
-            </div>
-            {negocio.description && (
-              <p className="mt-1.5 text-sm text-on-surface-variant">{negocio.description}</p>
-            )}
-            {negocio.hours && (
-              <p className="mt-2 whitespace-pre-line text-sm text-on-surface-variant">
-                {negocio.hours}
-              </p>
-            )}
-          </section>
-        ) : (
-          place.venueId && (
-            <Link
-              to={`/claim/${place.venueId}`}
-              className="mt-4 block text-center text-xs font-semibold text-on-surface-variant underline decoration-outline-variant underline-offset-4 squish"
-            >
-              {t('claim.cta')}
-            </Link>
-          )
-        )}
-
         {/* Estado */}
         <button
           type="button"
@@ -364,6 +310,28 @@ export function PlaceDetailPage() {
             <h2 className="mb-2 font-display font-semibold text-on-surface">
               {t('detail.groupRatings')}
             </h2>
+            {/* La media del grupo, en estrellas.
+                Estaba solo como número suelto arriba, junto a la categoría y el
+                precio, y la única fila de estrellas de la pantalla era la de
+                puntuar: es decir, la tuya. Así que las estrellas que se veían de
+                un sitio eran las de una persona, no las del grupo, que es justo
+                lo contrario de para qué está un mapa compartido.
+
+                Aquí no se redondea al entero como al puntuar: una media de 7,4
+                tiene sentido a mitades, y redondearla la haría parecer un ocho. */}
+            {avg !== null && (
+              <div className="mb-3 flex items-center gap-3 rounded-card bg-surface-container px-4 py-3">
+                <span className="font-mono text-2xl font-bold leading-none text-primary">
+                  {formatRating(avg)}
+                </span>
+                <RatingStars value={avg} size="sm" soloLectura />
+                <span className="ml-auto text-xs text-on-surface-variant">
+                  {place.ratings.length === 1
+                    ? t('detail.ratedByOne')
+                    : t('detail.ratedBy', { count: place.ratings.length })}
+                </span>
+              </div>
+            )}
             {place.ratings.length === 0 ? (
               <p className="text-sm text-on-surface-variant">{t('detail.noRatings')}</p>
             ) : (
@@ -375,11 +343,9 @@ export function PlaceDetailPage() {
                       key={r.userId}
                       className="flex items-center gap-3 rounded-md bg-surface-lowest px-3 py-2 shadow-[var(--shadow-surface)]"
                     >
-                      <span
-                        className="size-3 shrink-0 rounded-full"
-                        style={{ backgroundColor: member?.color ?? 'var(--color-outline)' }}
-                        aria-hidden
-                      />
+                      {/* La cara de cada uno, como en las votaciones: un punto
+                          de color obliga a recordar de quién es cada color. */}
+                      <Cara miembro={member} lado={24} anillo="ring-transparent" />
                       <span className="flex-1 truncate text-on-surface">
                         {member?.displayName ?? '—'}
                       </span>

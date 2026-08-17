@@ -100,8 +100,23 @@ export function ExplorePage() {
           perfil y pasó a ser una pestaña. Un «volver» en un destino de la barra
           inferior no tiene a dónde ir. */}
       <div className="mx-auto max-w-md px-4 pt-4">
-        <h1 className="font-display text-2xl font-bold text-on-surface">{t('explore.title')}</h1>
-        <p className="mt-0.5 text-sm text-on-surface-variant">{t('explore.subtitle')}</p>
+        {/* Título y botón de publicar en la misma línea.
+            Antes el título llevaba debajo un subtítulo que repetía lo que ya
+            dicen las secciones —«listas que otros grupos han hecho públicas»— y
+            el botón de publicar era una tarjeta a todo el ancho metida entre las
+            listas que sigues y las públicas, justo donde rompía la comparación
+            entre las dos. Arriba y pequeño ocupa una esquina que estaba vacía. */}
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="font-display text-2xl font-bold text-on-surface">{t('explore.title')}</h1>
+          <Link
+            to="/collections"
+            data-tour="publicar"
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-sm font-semibold text-on-primary squish"
+          >
+            <span aria-hidden>📌</span>
+            {t('explore.publish')}
+          </Link>
+        </div>
 
         <div
           data-tour="explorar-buscador"
@@ -129,9 +144,16 @@ export function ExplorePage() {
             sea el resultado estorba. */}
         {!query && siguiendo.length > 0 && (
           <section className="mt-5">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-              {t('followed.title')}
-            </h2>
+            <div className="mb-2 flex items-baseline justify-between gap-2">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                {t('followed.title')}
+              </h2>
+              {/* La tira solo enseña las primeras y no había forma de ver el
+                  resto: la pantalla que las lista todas existía sin puerta. */}
+              <Link to="/following" className="text-xs font-semibold text-primary squish">
+                {t('common.seeAll')}
+              </Link>
+            </div>
             <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 hide-scrollbar">
               {siguiendo.map((l) => (
                 <li key={l.token} className="w-36 shrink-0">
@@ -155,32 +177,23 @@ export function ExplorePage() {
           </section>
         )}
 
-        {/* Publicar la tuya. El directorio arranca vacío y solo se llena si
-            alguien publica: sin esta puerta, la pantalla pide que descubras
-            listas que nadie ha puesto todavía. */}
-        {!query && (
-          <Link
-            to="/collections"
-            data-tour="publicar"
-            className="mt-4 flex items-center gap-3 rounded-card bg-surface-container px-4 py-3 squish"
-          >
-            <span className="text-xl">📌</span>
-            <span className="min-w-0 flex-1">
-              <span className="block font-semibold text-on-surface">
-                {t('explore.publishTitle')}
-              </span>
-              <span className="block text-sm text-on-surface-variant">
-                {t('explore.publishHint')}
-              </span>
-            </span>
-            <span className="text-on-surface-variant">›</span>
-          </Link>
-        )}
+        {/* Separador y cabecera propia para las públicas.
+            Sin esto, la tira de las que sigues y la cuadrícula de las públicas se
+            leían como una sola lista con dos formas distintas, y no quedaba claro
+            dónde acababa lo tuyo y empezaba lo de los demás. */}
+        <div className="mt-6 flex items-baseline justify-between gap-2 border-t border-outline-variant/50 pt-4">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            {query ? t('explore.results') : t('explore.publicTitle')}
+          </h2>
+          {!loading && lists.length > 0 && (
+            <span className="text-xs text-on-surface-variant">{lists.length}</span>
+          )}
+        </div>
 
         {loading ? (
-          <p className="mt-6 text-sm text-on-surface-variant">{t('common.loading')}</p>
+          <p className="mt-3 text-sm text-on-surface-variant">{t('common.loading')}</p>
         ) : lists.length === 0 ? (
-          <div className="mt-6 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
+          <div className="mt-3 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
             <div className="mb-2 text-4xl">🧭</div>
             <p className="font-medium text-on-surface">
               {query ? t('explore.noResults') : t('explore.empty')}
@@ -190,7 +203,7 @@ export function ExplorePage() {
             )}
           </div>
         ) : (
-          <ul className="mt-4 grid grid-cols-2 gap-3">
+          <ul className="mt-3 grid grid-cols-2 gap-3">
             {lists.map((list) => {
               const lejos = distancia(list)
               return (

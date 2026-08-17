@@ -23,14 +23,23 @@ export function RatingStars({
   onChange,
   disabled = false,
   size = 'md',
+  soloLectura = false,
 }: {
   /** De 0 a 10. El 0 es «sin puntuar». */
   value: number
-  onChange: (next: number) => void
+  onChange?: (next: number) => void
   disabled?: boolean
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'xs'
+  /**
+   * Para enseñar una puntuación que no es tuya, como la media del grupo.
+   *
+   * Sin esto habría que duplicar el pintado de las estrellas en otro sitio, y la
+   * media saldría con medias estrellas calculadas de otra manera que las de
+   * puntuar: dos escalas distintas para la misma cosa en la misma pantalla.
+   */
+  soloLectura?: boolean
 }) {
-  const clase = size === 'sm' ? 'size-6' : 'size-9'
+  const clase = size === 'xs' ? 'size-4' : size === 'sm' ? 'size-6' : 'size-9'
 
   return (
     <div className="flex items-center gap-1" role="group">
@@ -42,7 +51,7 @@ export function RatingStars({
         // heredado saldría como un cuarto de estrella, que no se lee como una
         // gradación fina sino como un fallo de pintado. Lo guardado no se toca:
         // solo se redondea al enseñarlo.
-        const mostrado = Math.round(value)
+        const mostrado = soloLectura ? value : Math.round(value)
         // Cuánto de ESTA estrella está encendido, de 0 a 1.
         const lleno = Math.max(0, Math.min(1, mostrado / 2 - i))
         const mitad = (i + 0.5) * 2
@@ -65,20 +74,24 @@ export function RatingStars({
             {/* Dos zonas invisibles por estrella: la izquierda da el medio
                 punto y la derecha el entero. Es lo que hace que puntuar sea un
                 toque en vez de un arrastre preciso. */}
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => onChange(mitad)}
-              aria-label={String(mitad)}
-              className="absolute inset-y-0 left-0 w-1/2"
-            />
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => onChange(entera)}
-              aria-label={String(entera)}
-              className="absolute inset-y-0 right-0 w-1/2"
-            />
+            {!soloLectura && (
+              <>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange?.(mitad)}
+                  aria-label={String(mitad)}
+                  className="absolute inset-y-0 left-0 w-1/2"
+                />
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange?.(entera)}
+                  aria-label={String(entera)}
+                  className="absolute inset-y-0 right-0 w-1/2"
+                />
+              </>
+            )}
           </span>
         )
       })}

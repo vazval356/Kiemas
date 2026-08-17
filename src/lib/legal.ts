@@ -210,16 +210,6 @@ const terminosEs: LegalDoc = {
       ],
     },
     {
-      heading: 'Perfiles de negocio',
-      body: [
-        'Si regentas un local que aparece en la aplicación, puedes solicitar administrarlo. La solicitud la revisa una persona y puede ser denegada; no basta con pedirlo.',
-        'Al solicitarlo declaras que estás autorizado para representar a ese negocio. Reclamar un local que no te corresponde, o hacerte pasar por quien lo regenta, es motivo de retirada inmediata y de cierre de la cuenta.',
-        'La información que publiques en la ficha debe ser veraz y actualizada. Puedes perder la administración del local si deja de serlo o si se usa para promocionar algo distinto de ese negocio.',
-        'Administrar un local no da ningún trato preferente: no cambia el orden en que aparece, ni en el mapa ni en Explorar. No se vende posicionamiento.',
-        `Si administras un local, eres el único responsable frente a terceros de la información que publiques o de los conflictos legales que genere esa ficha. Al asumir la administración, aceptas eximir y mantener indemne a ${BRAND_NAME} de cualquier reclamación o demanda derivada de tu gestión del perfil.`,
-      ],
-    },
-    {
       heading: 'Disponibilidad y responsabilidad',
       body: [
         'El servicio se ofrece sin garantía de estar disponible de forma ininterrumpida. Puede haber cortes técnicos, mantenimiento o incidencias derivadas de proveedores de infraestructura (como bases de datos o servidores de alojamiento) ajenos a nuestro control.',
@@ -367,16 +357,6 @@ const terminosEn: LegalDoc = {
       ],
     },
     {
-      heading: 'Business profiles',
-      body: [
-        'If you run a venue that appears in the app, you can request to manage it. A person reviews the request and it may be refused; asking is not enough.',
-        'By requesting it you declare that you are authorised to represent that business. Claiming a venue that is not yours, or passing yourself off as the person who runs it, is grounds for immediate removal and account closure.',
-        'The information you publish on the venue page must be accurate and kept up to date. You may lose management of a venue if you stop running it, or if the page is used to promote something other than that business.',
-        'Managing a venue grants no preferential treatment: it does not change where it appears, either on the map or in Explore. Placement is not for sale.',
-        `If you manage a venue, you are solely responsible towards third parties for the information you publish and for any legal disputes that page gives rise to. By taking on that management, you agree to hold ${BRAND_NAME} harmless from any claim arising from how you run the profile.`,
-      ],
-    },
-    {
       heading: 'Availability and liability',
       body: [
         'The service is offered without any guarantee of uninterrupted availability. There may be technical outages, maintenance, or incidents caused by infrastructure providers (such as databases or hosting servers) outside our control.',
@@ -498,15 +478,6 @@ const privacidadEs: LegalDoc = {
         'La aplicación guarda datos en el almacenamiento local de tu navegador o dispositivo: la sesión iniciada, el espacio que tienes abierto, el idioma y, si las activas, el identificador para las notificaciones.',
         'Son estrictamente necesarios para que el servicio funcione (sin la sesión guardada tendrías que volver a entrar en cada pantalla), así que no requieren tu consentimiento previo, pero tienes derecho a saber que están ahí.',
         'No hay cookies de terceros, ni píxeles de seguimiento, ni identificadores publicitarios. Cerrar sesión o borrar los datos del navegador los elimina.',
-      ],
-    },
-    {
-      heading: 'Si administras un negocio',
-      body: [
-        'Si solicitas administrar un local, se guarda el texto que escribes para acreditarlo. Suele incluir tu nombre, tu cargo y un teléfono, y lo lee una persona para comprobar la solicitud: no se aprueba de forma automática.',
-        'Esa información se usa solo para resolver la solicitud y no se muestra a nadie más. La base legal es tu consentimiento al enviarla, y puedes pedir que se borre escribiendo al correo de contacto.',
-        'Si se aprueba, la ficha del local (nombre, descripción, horario, teléfono y web) pasa a ser pública dentro de la aplicación. Ahí no pongas datos personales que no quieras que se vean: es el escaparate del negocio, no tu perfil.',
-        'Las estadísticas que ves como responsable de un local son recuentos agregados: cuánta gente lo tiene guardado, cuántas listas lo incluyen. Nunca identidades. No se muestra ningún número por debajo de un mínimo de cinco personas, precisamente para que un recuento pequeño no pueda señalar a nadie concreto.',
       ],
     },
     {
@@ -634,15 +605,6 @@ const privacidadEn: LegalDoc = {
         'The app stores data in your browser or device local storage: your signed-in session, the space you have open, your language, and the notification identifier if you enable them.',
         'These are strictly necessary for the service to work (without a stored session you would have to sign in again on every screen), so they do not require prior consent, but you have the right to know they are there.',
         'There are no third-party cookies, tracking pixels or advertising identifiers. Signing out or clearing your browser data removes them.',
-      ],
-    },
-    {
-      heading: 'If you manage a business',
-      body: [
-        'If you request to manage a venue, the text you write to prove it is stored. It usually includes your name, your role and a phone number, and a person reads it to check the request: it is not approved automatically.',
-        'That information is used only to resolve the request and is not shown to anyone else. The legal basis is your consent when submitting it, and you can ask for it to be deleted by writing to the contact address.',
-        'If approved, the venue page (name, description, opening hours, phone and website) becomes public within the app. Do not put personal details there that you would not want seen: it is the business shopfront, not your profile.',
-        'The statistics you see as the person managing a venue are aggregate counts: how many people have it saved, how many lists include it. Never identities. No number is shown below a minimum of five people, precisely so that a small count cannot point at anyone in particular.',
       ],
     },
     {

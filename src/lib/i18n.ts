@@ -21,6 +21,7 @@ const es = {
   'common.cancel': 'Cancelar',
   'common.delete': 'Borrar',
   'common.edit': 'Editar',
+  'common.seeAll': 'Ver todas',
   'common.back': 'Volver',
   'err.offline': 'Parece que no hay conexión. Inténtalo cuando vuelvas a tener internet.',
   'err.notAllowed': 'No tienes permiso para hacer esto.',
@@ -327,6 +328,8 @@ const es = {
 
   // Detalle del sitio
   'detail.myRating': 'Tu puntuación',
+  'detail.ratedBy': 'de {count} personas',
+  'detail.ratedByOne': 'de 1 persona',
   'detail.groupRatings': 'Puntuaciones del grupo',
   'detail.noRatings': 'Nadie ha puntuado todavía.',
   'detail.notesPlaceholder': 'Escribe aquí lo que queráis recordar de este sitio…',
@@ -480,6 +483,7 @@ const es = {
   'poll.support': '{n} de {total}',
   'poll.maybeExtra': '+{n} quizás',
   'poll.nobodyYet': 'Nadie todavía',
+  'poll.yourVote': 'Tu voto',
   'poll.leader': 'la más votada',
   'poll.leaderPlace': 'el más votado',
   'poll.closeNamed': 'Cerrar y fijar {what}',
@@ -578,57 +582,15 @@ const es = {
   'public.needAccount': 'Entra en Kiemas para seguir esta lista.',
 
   // Explorar (Fase 6)
-  'explore.title': 'Explorar listas',
-  'explore.subtitle': 'Listas que otros grupos han hecho públicas.',
+  'explore.title': 'Explorar',
+  'explore.publish': 'Publicar',
+  'explore.publicTitle': 'Listas públicas',
+  'explore.results': 'Resultados',
   'explore.search': 'Busca una lista o un @usuario…',
   'explore.open': 'Explorar listas públicas',
 
-  // ── Fase 7 · Negocios ─────────────────────────────────────────────────
-  'biz.title': 'Mis negocios',
-  'biz.subtitle': 'Los locales que administras en Kiemas.',
-  'biz.empty': 'Todavía no administras ningún local',
-  'biz.emptyHint':
-    'Si llevas un bar o un restaurante que está en el mapa, ábrelo y pulsa «¿Trabajas aquí?».',
-  'biz.verified': 'Verificado',
-  'biz.pendingTitle': 'En revisión',
-  'biz.pendingHint': 'Estamos comprobando tu solicitud.',
-  'biz.notFound': 'Este local no existe o no lo administras.',
-  'biz.statsTitle': 'Cuánta gente lo tiene guardado',
-  'biz.statsNotEnough':
-    'Todavía no hay suficientes datos. Los números aparecen a partir de {min} personas, para que ningún recuento pueda señalar a alguien concreto.',
-  'biz.statsPrivacy':
-    'Solo recuentos. Nunca vas a ver quién ha guardado tu local, de qué grupo es, ni qué ha escrito.',
-  'biz.saves': 'lo tienen guardado',
-  'biz.visited': 'ya han venido',
-  'biz.lists': 'listas lo incluyen',
-  'biz.plans': 'planes aquí',
-  'biz.profileTitle': 'Lo que se enseña de tu local',
-  'biz.name': 'Nombre',
-  'biz.description': 'Descripción',
-  'biz.hours': 'Horario',
-  'biz.phone': 'Teléfono',
-  'biz.website': 'Web',
-  'biz.saved': 'Guardado',
-
-  'claim.title': '¿Trabajas aquí?',
-  'claim.body':
-    'Si llevas este local puedes administrar su ficha en Kiemas: corregir el nombre, el horario y el teléfono, y ver cuánta gente lo tiene guardado.',
-  'claim.evidenceLabel': 'Cuéntanos quién eres',
-  'claim.evidencePlaceholder':
-    'Tu cargo y el teléfono fijo del local, o cualquier cosa que nos permita comprobarlo.',
-  'claim.reviewNotice':
-    'Esto lo revisa una persona, no es automático. Comprobamos cada solicitud para que nadie pueda quedarse con un local que no es suyo, así que puede tardar unos días.',
-  'claim.send': 'Enviar solicitud',
-  'claim.sentTitle': 'Solicitud enviada',
-  'claim.sentBody': 'La revisaremos y te avisaremos. Puedes ver su estado en «Mis negocios».',
-  'claim.alreadyClaimed':
-    'Este local ya lo administra alguien. Si crees que hay un error, escríbenos.',
-  'claim.alreadyPending': 'Ya tienes una solicitud en revisión para este local.',
-  'claim.cta': '¿Trabajas aquí?',
   'explore.followers': '{count} siguiendo',
   'explore.followerOne': '1 siguiendo',
-  'explore.publishTitle': 'Publica una de tus listas',
-  'explore.publishHint': 'Para que otros grupos la encuentren aquí.',
   'explore.empty': 'Todavía no hay listas publicadas',
   'explore.emptyHint': 'Publica una de las tuyas y será la primera.',
   'explore.noResults': 'Nada con esa búsqueda',
@@ -838,6 +800,7 @@ const en: Record<TranslationKey, string> = {
   'common.cancel': 'Cancel',
   'common.delete': 'Delete',
   'common.edit': 'Edit',
+  'common.seeAll': 'See all',
   'common.back': 'Back',
   'err.offline': 'Looks like you are offline. Try again when you have a connection.',
   'err.notAllowed': "You don't have permission to do this.",
@@ -1126,6 +1089,8 @@ const en: Record<TranslationKey, string> = {
   'form.gone': 'This place no longer exists.',
 
   'detail.myRating': 'Your rating',
+  'detail.ratedBy': 'from {count} people',
+  'detail.ratedByOne': 'from 1 person',
   'detail.groupRatings': 'Group ratings',
   'detail.noRatings': 'Nobody has rated it yet.',
   'detail.notesPlaceholder': 'Write down whatever you want to remember about this place…',
@@ -1271,6 +1236,7 @@ const en: Record<TranslationKey, string> = {
   'poll.support': '{n} of {total}',
   'poll.maybeExtra': '+{n} maybe',
   'poll.nobodyYet': 'Nobody yet',
+  'poll.yourVote': 'Your vote',
   'poll.leader': 'most votes',
   'poll.leaderPlace': 'most votes',
   'poll.closeNamed': 'Close and pick {what}',
@@ -1363,58 +1329,15 @@ const en: Record<TranslationKey, string> = {
   'public.needAccount': 'Sign in to Kiemas to follow this list.',
 
   // Explore (Phase 6)
-  'explore.title': 'Explore lists',
-  'explore.subtitle': 'Lists other groups have made public.',
+  'explore.title': 'Explore',
+  'explore.publish': 'Publish',
+  'explore.publicTitle': 'Public lists',
+  'explore.results': 'Results',
   'explore.search': 'Search a list or a @username…',
   'explore.open': 'Explore public lists',
 
-  // ── Phase 7 · Businesses ──────────────────────────────────────────────
-  'biz.title': 'My businesses',
-  'biz.subtitle': 'The venues you manage on Kiemas.',
-  'biz.empty': 'You don’t manage any venue yet',
-  'biz.emptyHint':
-    'If you run a bar or restaurant that’s on the map, open it and tap “Do you work here?”.',
-  'biz.verified': 'Verified',
-  'biz.pendingTitle': 'Under review',
-  'biz.pendingHint': 'We’re checking your request.',
-  'biz.notFound': 'This venue doesn’t exist, or you don’t manage it.',
-  'biz.statsTitle': 'How many people saved it',
-  'biz.statsNotEnough':
-    'Not enough data yet. Numbers appear from {min} people onwards, so no count can point at anyone in particular.',
-  'biz.statsPrivacy':
-    'Counts only. You will never see who saved your venue, which group they belong to, or what they wrote.',
-  'biz.saves': 'have it saved',
-  'biz.visited': 'have been',
-  'biz.lists': 'lists include it',
-  'biz.plans': 'plans here',
-  'biz.profileTitle': 'What people see about your venue',
-  'biz.name': 'Name',
-  'biz.description': 'Description',
-  'biz.hours': 'Opening hours',
-  'biz.phone': 'Phone',
-  'biz.website': 'Website',
-  'biz.saved': 'Saved',
-
-  'claim.title': 'Do you work here?',
-  'claim.body':
-    'If you run this venue you can manage its page on Kiemas: fix the name, hours and phone number, and see how many people have it saved.',
-  'claim.evidenceLabel': 'Tell us who you are',
-  'claim.evidencePlaceholder':
-    'Your role and the venue’s landline, or anything that lets us check it.',
-  'claim.reviewNotice':
-    'A person reviews this — it isn’t automatic. We check every request so nobody can take over a venue that isn’t theirs, so it may take a few days.',
-  'claim.send': 'Send request',
-  'claim.sentTitle': 'Request sent',
-  'claim.sentBody':
-    'We’ll review it and let you know. You can check its status under “My businesses”.',
-  'claim.alreadyClaimed':
-    'Someone already manages this venue. If you think that’s a mistake, get in touch.',
-  'claim.alreadyPending': 'You already have a request under review for this venue.',
-  'claim.cta': 'Do you work here?',
   'explore.followers': '{count} following',
   'explore.followerOne': '1 following',
-  'explore.publishTitle': 'Publish one of your lists',
-  'explore.publishHint': 'So other groups can find it here.',
   'explore.empty': 'No lists published yet',
   'explore.emptyHint': 'Publish one of yours and it will be the first.',
   'explore.noResults': 'Nothing matches that search',

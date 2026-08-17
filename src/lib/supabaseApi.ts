@@ -29,9 +29,6 @@ import type {
   YearInReview,
   Entitlement,
   ExploreList,
-  BusinessProfile,
-  MyBusiness,
-  VenueStats,
   MyEntitlement,
   MyStats,
   PlanLimits,
@@ -1534,74 +1531,6 @@ export const supabaseApi: DataApi = {
   },
 
   // ── Fase 7 · Negocios ────────────────────────────────────────────────────
-
-  async myBusinesses(): Promise<MyBusiness[]> {
-    const res = await supabase.rpc('my_businesses')
-    if (res.error) throw new Error(res.error.message)
-    return (res.data as Record<string, unknown>[]).map((r) => ({
-      venueId: r.venue_id as string,
-      name: r.name as string,
-      lat: parseCoord(r.lat),
-      lng: parseCoord(r.lng),
-      owned: Boolean(r.owned),
-      claimStatus: (r.claim_status as MyBusiness['claimStatus']) ?? null,
-    }))
-  },
-
-  async venueProfile(venueId: string): Promise<BusinessProfile | null> {
-    const res = await supabase.rpc('venue_profile', { p_venue_id: venueId })
-    if (res.error) throw new Error(res.error.message)
-    const r = res.data as Record<string, unknown> | null
-    if (!r) return null
-    return {
-      venueId: r.venueId as string,
-      displayName: r.displayName as string,
-      description: (r.description as string) ?? '',
-      phone: (r.phone as string) ?? '',
-      website: (r.website as string) ?? '',
-      hours: (r.hours as string) ?? '',
-      verified: Boolean(r.verified),
-    }
-  },
-
-  async requestBusinessClaim(venueId: string, evidence: string): Promise<void> {
-    const res = await supabase.rpc('request_business_claim', {
-      p_venue_id: venueId,
-      p_evidence: evidence,
-    })
-    if (res.error) throw new Error(res.error.message)
-  },
-
-  async updateBusinessProfile(
-    venueId: string,
-    patch: Partial<Omit<BusinessProfile, 'venueId' | 'verified'>>
-  ): Promise<void> {
-    // `undefined` se manda como null, y null significa «déjalo como está».
-    // Vaciar un campo se hace pasando la cadena vacía, no omitiéndolo.
-    const res = await supabase.rpc('update_business_profile', {
-      p_venue_id: venueId,
-      p_display_name: patch.displayName ?? null,
-      p_description: patch.description ?? null,
-      p_phone: patch.phone ?? null,
-      p_website: patch.website ?? null,
-      p_hours: patch.hours ?? null,
-    })
-    if (res.error) throw new Error(res.error.message)
-  },
-
-  async venueStats(venueId: string): Promise<VenueStats> {
-    const res = await supabase.rpc('venue_stats', { p_venue_id: venueId })
-    if (res.error) throw new Error(res.error.message)
-    const r = res.data as Record<string, unknown>
-    return {
-      enough: Boolean(r.enough),
-      minimum: Number(r.minimum),
-      saves: (r.saves as number | null) ?? null,
-      visited: (r.visited as number | null) ?? null,
-      lists: (r.lists as number | null) ?? null,
-      plans: (r.plans as number | null) ?? null,
-    }
-  },
 }
 
 /**

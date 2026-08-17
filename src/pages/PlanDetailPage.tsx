@@ -7,6 +7,7 @@ import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { PlanPlaceSection } from '../components/PlanPlaceSection'
+import { Cara, Caras } from '../components/Votantes'
 import { useApp } from '../state/appState'
 
 const RESPONSES: { value: AttendeeResponse; key: 'plan.going' | 'plan.maybe' | 'plan.notGoing' }[] =
@@ -257,21 +258,7 @@ export function PlanDetailPage() {
                           lo que hace que alguien se mueva. */}
                       <div className="mt-1.5 flex min-h-6 items-center gap-2">
                         {sies.length > 0 ? (
-                          <span className="flex items-center">
-                            {sies.map((v) => {
-                              const m = members.find((x) => x.userId === v.userId)
-                              return (
-                                <span
-                                  key={v.userId}
-                                  title={m?.displayName ?? ''}
-                                  className="-mr-1.5 flex size-6 items-center justify-center rounded-full text-[10px] font-bold text-white ring-2 ring-surface-lowest"
-                                  style={{ backgroundColor: m?.color ?? 'var(--color-outline)' }}
-                                >
-                                  {(m?.displayName ?? '?').slice(0, 1).toUpperCase()}
-                                </span>
-                              )
-                            })}
-                          </span>
+                          <Caras ids={sies.map((v) => v.userId)} miembros={members} />
                         ) : (
                           quizas === 0 && (
                             <span className="text-xs text-on-surface-variant">
@@ -290,23 +277,32 @@ export function PlanDetailPage() {
                         {/* Los tres votos como una sola pieza de tres
                             segmentos. Con tres fechas eran nueve pastillas
                             iguales, y ninguna destacaba sobre las demás. */}
-                        <span className="flex shrink-0 overflow-hidden rounded-full bg-surface-container">
-                          {VOTES.map((v) => (
-                            <button
-                              key={v.value}
-                              type="button"
-                              disabled={busy}
-                              aria-pressed={myVote === v.value}
-                              onClick={() => void run(() => api.voteDateOption(option.id, v.value))}
-                              className={`px-3 py-1.5 text-xs font-semibold squish disabled:opacity-50 ${
-                                myVote === v.value
-                                  ? 'bg-primary text-on-primary'
-                                  : 'text-on-surface-variant'
-                              }`}
-                            >
-                              {t(v.key)}
-                            </button>
-                          ))}
+                        {/* El elegido lleva relleno, aro y una marca delante. Con
+                            solo el relleno, sobre la barra de apoyo del fondo, no
+                            estaba claro cuál habías marcado tú. */}
+                        <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-surface-container p-0.5">
+                          {VOTES.map((v) => {
+                            const mio = myVote === v.value
+                            return (
+                              <button
+                                key={v.value}
+                                type="button"
+                                disabled={busy}
+                                aria-pressed={mio}
+                                onClick={() =>
+                                  void run(() => api.voteDateOption(option.id, v.value))
+                                }
+                                className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs squish disabled:opacity-50 ${
+                                  mio
+                                    ? 'bg-primary font-bold text-on-primary shadow-sm ring-2 ring-primary'
+                                    : 'font-semibold text-on-surface-variant'
+                                }`}
+                              >
+                                {mio && <span aria-hidden>✓</span>}
+                                {t(v.key)}
+                              </button>
+                            )
+                          })}
                         </span>
                       </div>
 
@@ -367,12 +363,7 @@ export function PlanDetailPage() {
                   key={attendee.userId}
                   className="flex items-center gap-3 rounded-md bg-surface-lowest px-3 py-2 shadow-[var(--shadow-surface)]"
                 >
-                  <span
-                    className="flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ backgroundColor: member?.color ?? 'var(--color-outline)' }}
-                  >
-                    {(member?.displayName ?? '?').slice(0, 1).toUpperCase()}
-                  </span>
+                  <Cara miembro={member} lado={32} anillo="ring-transparent" />
                   <span className="min-w-0 flex-1 truncate text-on-surface">
                     {member?.displayName ?? '—'}
                   </span>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { TrashIcon } from './icons'
+import { Caras } from './Votantes'
 import type { Decision } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -199,27 +200,36 @@ export function DecisionsSection() {
                       <button
                         type="button"
                         disabled={busy || cerrada}
+                        aria-pressed={mia}
                         onClick={() => void hacer(() => api.castDecisionVote(o.id))}
                         className={`flex w-full items-center gap-2 rounded-control px-3 py-2.5 text-left squish disabled:cursor-default ${
                           gana
                             ? 'bg-primary text-on-primary'
                             : mia
-                              ? 'bg-primary-fixed text-on-primary-fixed'
+                              ? 'bg-primary-fixed text-on-primary-fixed ring-2 ring-primary'
                               : 'bg-surface-container text-on-surface'
                         }`}
                       >
                         <span className="min-w-0 flex-1 truncate font-medium">{o.label}</span>
+                        {/* Tu voto, dicho con palabras además del color: el tono
+                            claro de «la tuya» y el del resto se parecen bastante
+                            en una pantalla al sol. */}
+                        {mia && !gana && (
+                          <span className="shrink-0 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-on-primary">
+                            ✓ {t('poll.yourVote')}
+                          </span>
+                        )}
                         {/* Quién ha votado qué, a la vista. Es la regla: en un
                             grupo, ver el voto de los demás es lo que hace que
-                            alguien cambie el suyo y se llegue a algo. */}
+                            alguien cambie el suyo y se llegue a algo. Con caras y
+                            no con nombres: cuatro nombres no caben en una fila. */}
                         {o.voters.length > 0 && (
-                          <span
-                            className={`shrink-0 truncate text-xs ${
-                              gana ? 'text-on-primary/80' : 'text-on-surface-variant'
-                            }`}
-                          >
-                            {o.voters.map(nombreDe).join(', ')}
-                          </span>
+                          <Caras
+                            ids={o.voters}
+                            miembros={miembros}
+                            lado={22}
+                            anillo={gana ? 'ring-primary' : 'ring-surface-container'}
+                          />
                         )}
                       </button>
                     </li>

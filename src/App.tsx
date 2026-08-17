@@ -12,9 +12,6 @@ import { CalendarPage } from './pages/CalendarPage'
 import { CollectionDetailPage } from './pages/CollectionDetailPage'
 import { CollectionsPage } from './pages/CollectionsPage'
 import { ExplorePage } from './pages/ExplorePage'
-import { MyBusinessesPage } from './pages/MyBusinessesPage'
-import { BusinessPage } from './pages/BusinessPage'
-import { ClaimBusinessPage } from './pages/ClaimBusinessPage'
 import { FollowedListsPage } from './pages/FollowedListsPage'
 import { LegalPage } from './pages/LegalPage'
 import { ListPage } from './pages/ListPage'
@@ -32,7 +29,7 @@ import { SetupPage } from './pages/SetupPage'
 import { SpaceDetailPage } from './pages/SpaceDetailPage'
 import { SpacesPage } from './pages/SpacesPage'
 import { SubscriptionPage } from './pages/SubscriptionPage'
-import { YearInReviewPage } from './pages/YearInReviewPage'
+import { YearInReviewPage, resumenDelAnoDisponible } from './pages/YearInReviewPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
 
@@ -52,9 +49,6 @@ const FULL_SCREEN = [
   '/collections',
   '/activity',
   '/following',
-  '/businesses',
-  '/business/',
-  '/claim/',
   '/wrapped',
   '/subscription',
 ]
@@ -148,10 +142,15 @@ function Shell() {
         <Route path="/activity" element={<ActivityPage />} />
         <Route path="/following" element={<FollowedListsPage />} />
         <Route path="/explore" element={<ExplorePage />} />
-        <Route path="/businesses" element={<MyBusinessesPage />} />
-        <Route path="/business/:venueId" element={<BusinessPage />} />
-        <Route path="/claim/:venueId" element={<ClaimBusinessPage />} />
-        <Route path="/wrapped" element={<YearInReviewPage />} />
+        {/* La dirección sigue existiendo, pero fuera de diciembre no lleva a
+            ninguna parte: quien la tenga guardada acaba en su perfil en vez de
+            en un resumen de dos meses. */}
+        <Route
+          path="/wrapped"
+          element={
+            resumenDelAnoDisponible() ? <YearInReviewPage /> : <Navigate to="/profile" replace />
+          }
+        />
         <Route path="/spaces" element={<SpacesPage />} />
         <Route path="/spaces/:id" element={<SpaceDetailPage />} />
         <Route path="/profile" element={<ProfilePage />} />

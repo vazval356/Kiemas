@@ -5,6 +5,22 @@ import type { YearInReview } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
+/**
+ * Cuándo está disponible el resumen del año: en diciembre y solo en diciembre.
+ *
+ * No se borra la pantalla, se le pone temporada. Un resumen de doce meses en
+ * marzo enseña dos meses y medio de datos, y lo que se lleva la gente de él es
+ * que la app tiene poco que contar. En diciembre, en cambio, es lo que se
+ * reenvía.
+ *
+ * Va como función y no como constante para que la lea el reloj y no haya que
+ * acordarse de encenderla. Si algún año hay que sacarlo antes o dejarlo más
+ * tiempo, esta es la única línea que se toca.
+ */
+export function resumenDelAnoDisponible(): boolean {
+  return new Date().getMonth() === 11
+}
+
 /** Cuánto dura cada panel antes de pasar solo. */
 const SLIDE_MS = 5000
 

@@ -1,18 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  CardIcon,
-  GroupIcon,
-  LogoutIcon,
-  SettingsIcon,
-  StoreIcon,
-  UserIcon,
-} from '../components/icons'
+import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, UserIcon } from '../components/icons'
 import { QuotaMeter } from '../components/QuotaMeter'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, MyEntitlement, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { resumenDelAnoDisponible } from './YearInReviewPage'
 
 /**
  * Perfil: quién eres, qué has hecho, y la puerta a todo lo demás.
@@ -272,28 +266,30 @@ export function ProfilePage() {
         </section>
 
         {/* ── Resumen del año ──────────────────────────────────────────────
-            El diseño lo enseña como un carrusel de años pasados. Aquí va solo
-            el que existe: la app se estrenó este año, así que un carrusel con
-            una tarjeta y huecos prometería un historial que nadie tiene
-            todavía. Cuando haya dos años de datos, se convierte en carrusel. */}
-        <section className="mt-8">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
-            {t('wrapped.title', { year: new Date().getFullYear() })}
-          </h2>
-          <Link
-            to="/wrapped"
-            className="flex h-28 items-end rounded-card bg-gradient-to-br from-primary via-primary-container to-secondary p-4 shadow-[var(--shadow-float)] squish"
-          >
-            <span>
-              <span className="block font-display text-2xl font-bold leading-none text-on-primary">
-                {new Date().getFullYear()}
+            Solo en diciembre: `resumenDelAnoDisponible` es la única regla, y la
+            explica ahí. El diseño lo enseña como un carrusel de años pasados;
+            aquí va solo el que existe, porque un carrusel con una tarjeta y
+            huecos prometería un historial que nadie tiene todavía. */}
+        {resumenDelAnoDisponible() && (
+          <section className="mt-8">
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              {t('wrapped.title', { year: new Date().getFullYear() })}
+            </h2>
+            <Link
+              to="/wrapped"
+              className="flex h-28 items-end rounded-card bg-gradient-to-br from-primary via-primary-container to-secondary p-4 shadow-[var(--shadow-float)] squish"
+            >
+              <span>
+                <span className="block font-display text-2xl font-bold leading-none text-on-primary">
+                  {new Date().getFullYear()}
+                </span>
+                <span className="mt-1 block text-sm font-medium text-on-primary/85">
+                  {t('wrapped.open')}
+                </span>
               </span>
-              <span className="mt-1 block text-sm font-medium text-on-primary/85">
-                {t('wrapped.open')}
-              </span>
-            </span>
-          </Link>
-        </section>
+            </Link>
+          </section>
+        )}
 
         {/* ── Ajustes ──────────────────────────────────────────────────────
             Agrupados en una sola tarjeta con separadores, como en el diseño,
@@ -305,7 +301,6 @@ export function ProfilePage() {
           {(
             [
               ['/subscription', CardIcon, 'sub.open'],
-              ['/businesses', StoreIcon, 'biz.title'],
               ['/settings', SettingsIcon, 'settings.open'],
             ] as const
           ).map(([to, Icon, key]) => (
