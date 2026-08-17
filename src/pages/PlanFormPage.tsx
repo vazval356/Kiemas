@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { TrashIcon } from '../components/icons'
+import { SelectorDeSitios } from '../components/SelectorDeSitios'
 import { nextRoundHour, toDateTimeLocalValue } from '../lib/dates'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
@@ -23,6 +24,8 @@ export function PlanFormPage() {
 
   const [title, setTitle] = useState('')
   const [placeId, setPlaceId] = useState<string | null>(null)
+  const [abriendoSitio, setAbriendoSitio] = useState(false)
+  const elegido = placeId ? places.find((p) => p.id === placeId) : undefined
   const [mode, setMode] = useState<Mode>('fixed')
   const [startsAt, setStartsAt] = useState(toDateTimeLocalValue(nextRoundHour()))
   const [options, setOptions] = useState<string[]>([
@@ -102,35 +105,63 @@ export function PlanFormPage() {
 
         {/* ── Sitio ──────────────────────────────────────────────────────── */}
         <Label className="mt-5">{t('plan.where')}</Label>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setPlaceId(null)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold squish ${
-              placeId === null
-                ? 'bg-primary text-on-primary'
-                : 'bg-surface-container text-on-surface-variant'
-            }`}
-          >
-            {t('plan.noPlace')}
-          </button>
-          {places.map((place) => (
+        {/* Aquí había una maraña de pastillas: una por cada sitio guardado, todas
+            del mismo tamaño y sin orden. Con treinta sitios ocupaba media
+            pantalla y no había forma de encontrar nada.
+
+            Ahora el sitio elegido se enseña solo, y el selector —con buscador y
+            por categorías— se abre cuando hace falta. Sin sitio es un caso
+            legítimo y frecuente: se queda primero y no hay que elegir nada. */}
+        {elegido ? (
+          <div className="flex items-center gap-2.5 rounded-card bg-surface-container px-3 py-2.5">
+            <span className="shrink-0">
+              {categoryById.get(elegido.categoryId ?? '')?.emoji ?? '📍'}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium text-on-surface">{elegido.name}</span>
+              {elegido.address && (
+                <span className="block truncate text-xs text-on-surface-variant">
+                  {elegido.address}
+                </span>
+              )}
+            </span>
             <button
-              key={place.id}
               type="button"
-              onClick={() => setPlaceId(placeId === place.id ? null : place.id)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold squish ${
-                placeId === place.id
-                  ? 'bg-primary text-on-primary'
-                  : 'bg-surface-container text-on-surface-variant'
-              }`}
+              onClick={() => setPlaceId(null)}
+              className="shrink-0 text-sm font-semibold text-primary squish"
             >
-              {categoryById.get(place.categoryId ?? '')?.emoji ?? '📍'} {place.name}
+              {t('plan.clearPlace')}
             </button>
-          ))}
-        </div>
-        {placeId === null && (
-          <p className="mt-1.5 text-xs text-on-surface-variant">{t('plan.noPlaceHint')}</p>
+          </div>
+        ) : abriendoSitio ? (
+          <div className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]">
+            <SelectorDeSitios
+              elegidos={[]}
+              onAlternar={(id) => {
+                setPlaceId(id)
+                setAbriendoSitio(false)
+              }}
+              altoLista="max-h-64"
+            />
+            <button
+              type="button"
+              onClick={() => setAbriendoSitio(false)}
+              className="mt-2.5 w-full rounded-full border border-outline-variant py-2 text-sm font-semibold text-on-surface-variant squish"
+            >
+              {t('common.cancel')}
+            </button>
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setAbriendoSitio(true)}
+              className="w-full rounded-card bg-surface-container py-3 text-sm font-semibold text-primary squish"
+            >
+              {t('plan.pickPlace')}
+            </button>
+            <p className="mt-1.5 text-xs text-on-surface-variant">{t('plan.noPlaceHint')}</p>
+          </>
         )}
 
         {/* ── Cuándo ─────────────────────────────────────────────────────── */}
