@@ -88,4 +88,14 @@
 
     <!-- El mapa necesita saber si hay conexión para no quedarse en blanco. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Guardar los planes confirmados en el calendario del móvil, que en
+         Android es el de la cuenta de Google y sube solo.
+
+         Lectura además de escritura: sin poder leer no se puede modificar ni
+         retirar un evento ya creado, y un plan que cambia de hora dejaría el
+         viejo clavado en la agenda. Las dos son permisos en tiempo de
+         ejecución: el sistema pregunta, y solo cuando se enciende el ajuste. -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 </manifest>

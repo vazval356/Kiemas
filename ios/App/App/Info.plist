@@ -54,6 +54,17 @@
     <!-- Las fotos se eligen con un <input type="file"> normal, pero la hoja que
          abre iOS ofrece «Hacer foto», y sin estas dos cadenas la app se cierra
          en el momento en que alguien la toca. -->
+    <!-- Calendario. Hacen falta las DOS claves: iOS 17 en adelante mira la de
+         acceso completo, y las versiones anteriores la genérica. Sin la que
+         toque, la app no pide permiso: se cierra en el acto.
+
+         Se pide acceso completo y no solo de escritura porque hay que poder
+         CORREGIR: un plan que cambia de hora tiene que mover su evento, y con
+         permiso de escritura iOS no deja volver a leerlo para modificarlo. -->
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Para guardar en tu calendario los planes que confirmáis, y corregirlos si cambian de hora o se cancelan.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Para guardar en tu calendario los planes que confirmáis, y corregirlos si cambian de hora o se cancelan.</string>
     <key>NSCameraUsageDescription</key>
     <string>Para hacer una foto de un sitio y añadirla a su galería.</string>
     <key>NSPhotoLibraryUsageDescription</key>

@@ -6,6 +6,7 @@ import type {
   PlaceInput,
   PlacePatch,
   PlaceOsmSync,
+  CalendarLink,
   Plan,
   PlanInput,
   Profile,
@@ -60,6 +61,17 @@ export interface DataApi {
    * sitios sin avisar, y deshacerlo sería borrarlos uno a uno.
    */
   setMirrorToPersonal(on: boolean): Promise<void>
+  /**
+   * Copiar los planes confirmados al calendario del móvil.
+   *
+   * Solo tiene efecto dentro de las apps nativas: el navegador no puede
+   * escribir en la agenda del sistema.
+   */
+  setCalendarSync(on: boolean): Promise<void>
+  /** Qué evento del sistema corresponde a cada plan, para poder corregirlos. */
+  listCalendarLinks(): Promise<CalendarLink[]>
+  saveCalendarLink(link: CalendarLink): Promise<void>
+  deleteCalendarLink(planId: string): Promise<void>
   /**
    * Tu color para un espacio. `null` lo devuelve al que eligió el grupo.
    *

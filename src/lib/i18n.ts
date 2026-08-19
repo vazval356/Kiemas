@@ -408,6 +408,11 @@ const es = {
 
   // Ajustes y privacidad (Fase 1d)
   'settings.mirror': 'Copiar a mi mapa personal',
+  'settings.calendar': 'Guardar los planes en el calendario del móvil',
+  'settings.calendarHint':
+    'Cuando un plan queda confirmado, se copia a tu calendario del sistema. Si cambia de hora o se cancela, se corrige solo, y al apagar esto se retiran los que aún no han pasado. Solo lo ves tú.',
+  'settings.calendarDenied':
+    'El sistema no ha dado permiso para escribir en tu calendario. Puedes concedérselo en los ajustes del teléfono.',
   'settings.mirrorHint':
     'Los sitios que se guarden en tus grupos aparecerán también en tu mapa personal. Solo los nuevos: lo que ya está no se trae.',
   'settings.open': 'Ajustes y privacidad',
@@ -1182,6 +1187,11 @@ const en: Record<TranslationKey, string> = {
   'invite.joinedTo': 'You joined {name}',
 
   'settings.mirror': 'Copy to my personal map',
+  'settings.calendar': 'Save plans to my phone calendar',
+  'settings.calendarHint':
+    'Once a plan is confirmed it is copied to your system calendar. If it moves or gets cancelled, it is corrected automatically, and turning this off removes the ones that have not happened yet. Only you see it.',
+  'settings.calendarDenied':
+    'Your device did not grant permission to write to your calendar. You can allow it in the phone settings.',
   'settings.mirrorHint':
     'Places saved in your groups will also appear on your personal map. New ones only: what is already there is not brought over.',
   'settings.open': 'Settings and privacy',

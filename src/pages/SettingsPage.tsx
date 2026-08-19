@@ -9,6 +9,11 @@ import {
   estadoDeAvisos,
   type EstadoAvisos,
 } from '../lib/push'
+import {
+  calendarioDisponible,
+  pedirPermisoCalendario,
+  retirarTodoDelCalendario,
+} from '../lib/calendar'
 import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -28,6 +33,10 @@ export function SettingsPage() {
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
   const [busy, setBusy] = useState(false)
   const [mirrorBusy, setMirrorBusy] = useState(false)
+  const [calendarBusy, setCalendarBusy] = useState(false)
+  /** Se enseña cuando el sistema ha dicho que no: sin esto, el interruptor
+      volvería solo a su sitio y nadie sabría por qué. */
+  const [calendarDenied, setCalendarDenied] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
 
@@ -236,6 +245,67 @@ export function SettingsPage() {
             </span>
           </label>
         </section>
+
+        {/* ── Calendario del móvil ───────────────────────────────────────── */}
+        {/* Solo dentro de las apps: el navegador no puede escribir en la agenda
+            del dispositivo, y ofrecer un interruptor que no hace nada es peor
+            que no ofrecer ninguno. */}
+        {calendarioDisponible && (
+          <section className="mt-6">
+            <label className="flex items-start gap-3 rounded-card bg-surface-container p-4">
+              <input
+                type="checkbox"
+                checked={profile?.calendarSync ?? false}
+                disabled={calendarBusy}
+                onChange={(e) => {
+                  const on = e.target.checked
+                  setCalendarBusy(true)
+                  setCalendarDenied(false)
+                  setError('')
+                  void (async () => {
+                    try {
+                      // El permiso se pide AQUÍ y no en el primer plan que se
+                      // sincronice: el aviso del sistema tiene sentido cuando
+                      // acabas de pedirlo tú, y ninguno cuando aparece solo
+                      // mientras mirabas otra cosa.
+                      if (on && !(await pedirPermisoCalendario())) {
+                        setCalendarDenied(true)
+                        return
+                      }
+                      // Al apagar se retiran los eventos que puso la app.
+                      // Dejarlos sería dejar copias que ya nadie corrige: un
+                      // plan que se moviera después seguiría anunciando la hora
+                      // vieja para siempre. Los que ya ocurrieron se quedan.
+                      if (!on) {
+                        await retirarTodoDelCalendario(await api.listCalendarLinks(), api)
+                      }
+                      await api.setCalendarSync(on)
+                      await refreshSpaces()
+                    } catch (err) {
+                      setError(errorMessage(err, t('common.error')))
+                    } finally {
+                      setCalendarBusy(false)
+                    }
+                  })()
+                }}
+                className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+              />
+              <span>
+                <span className="block font-semibold text-on-surface">
+                  {t('settings.calendar')}
+                </span>
+                <span className="mt-0.5 block text-sm text-on-surface-variant">
+                  {t('settings.calendarHint')}
+                </span>
+                {calendarDenied && (
+                  <span className="mt-1.5 block text-sm font-semibold text-error">
+                    {t('settings.calendarDenied')}
+                  </span>
+                )}
+              </span>
+            </label>
+          </section>
+        )}
 
         {/* ── Legal ──────────────────────────────────────────────────────── */}
         <section className="mt-6 flex flex-col gap-2">

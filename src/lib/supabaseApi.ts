@@ -11,6 +11,7 @@ import type {
   PlaceInput,
   PlacePatch,
   PlaceOsmSync,
+  CalendarLink,
   Plan,
   PlanInput,
   Profile,
@@ -339,7 +340,7 @@ export const supabaseApi: DataApi = {
       await supabase
         .from('profiles')
         .select(
-          'id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal'
+          'id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal, calendar_sync'
         )
         .eq('id', uid)
         .single()
@@ -353,6 +354,7 @@ export const supabaseApi: DataApi = {
       locale: row.locale as Locale,
       mirrorToPersonal: Boolean(row.mirror_to_personal),
       onboardedAt: row.onboarded_at,
+      calendarSync: Boolean(row.calendar_sync),
     }
   },
 
@@ -561,6 +563,53 @@ export const supabaseApi: DataApi = {
   async setMirrorToPersonal(on: boolean): Promise<void> {
     const res = await supabase.rpc('set_mirror_to_personal', { p_on: on })
     if (res.error) throw new Error(res.error.message)
+  },
+
+  // ── Calendario del móvil ─────────────────────────────────────────────────
+
+  async setCalendarSync(on: boolean): Promise<void> {
+    const res = await supabase.rpc('set_calendar_sync', { p_on: on })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async listCalendarLinks(): Promise<CalendarLink[]> {
+    const rows = check(
+      await supabase
+        .from('plan_calendar_events')
+        .select('plan_id, event_id, space_id, starts_at, signature')
+    )
+    return rows.map((r) => ({
+      planId: r.plan_id as string,
+      eventId: r.event_id as string,
+      spaceId: (r.space_id as string | null) ?? null,
+      startsAt: (r.starts_at as string | null) ?? null,
+      signature: (r.signature as string | null) ?? '',
+    }))
+  },
+
+  async saveCalendarLink(link: CalendarLink): Promise<void> {
+    const uid = await myId()
+    ok(
+      await supabase.from('plan_calendar_events').upsert(
+        {
+          user_id: uid,
+          plan_id: link.planId,
+          event_id: link.eventId,
+          space_id: link.spaceId,
+          starts_at: link.startsAt,
+          signature: link.signature,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,plan_id' }
+      )
+    )
+  },
+
+  async deleteCalendarLink(planId: string): Promise<void> {
+    const uid = await myId()
+    ok(
+      await supabase.from('plan_calendar_events').delete().eq('user_id', uid).eq('plan_id', planId)
+    )
   },
 
   async setCollectionCover(

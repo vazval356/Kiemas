@@ -5,6 +5,7 @@ import { supabaseApi } from '../lib/supabaseApi'
 import { setupPush, teardownPush } from '../lib/push'
 import { purchasesLogOut, setupPurchases } from '../lib/purchases'
 import { updateWidget } from '../lib/widget'
+import { calendarioDisponible, sincronizarCalendario } from '../lib/calendar'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
 import { AppContext, type AppState, type AuthStatus } from './appState'
@@ -224,6 +225,49 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (authStatus !== 'ready') return
     void updateWidget(plans, places, locale, t('widget.empty'))
   }, [authStatus, plans, places, locale, t])
+
+  // ── Calendario del móvil ─────────────────────────────────────────────────
+  //
+  // Mismo sitio y misma razón que el widget: los planes ya están cargados y la
+  // agenda de la gente tiene que quedar al día aunque nadie llegue a abrir la
+  // pantalla del calendario. En web no hace nada.
+  //
+  // El cerrojo no es un adorno: cada evento es una llamada al sistema operativo
+  // y una escritura en la base, así que dos pasadas solapadas crearían el mismo
+  // evento dos veces. Si una pasada se salta por estar ocupada, el siguiente
+  // refresco —hay uno al volver a la app— la recupera.
+  //
+  // Se llama en cada refresco, y es barato a propósito: lo único que hace
+  // siempre es leer una tabla pequeña. Escribir en el calendario solo ocurre
+  // cuando la firma del plan ha cambiado de verdad.
+  const sincronizandoRef = useRef(false)
+  useEffect(() => {
+    if (authStatus !== 'ready') return
+    if (!calendarioDisponible) return
+    if (!profile?.calendarSync) return
+    if (sincronizandoRef.current) return
+
+    sincronizandoRef.current = true
+    const yo = profile.id
+    void (async () => {
+      try {
+        const links = await api.listCalendarLinks()
+        await sincronizarCalendario({
+          plans,
+          places,
+          links,
+          activeSpaceId: activeSpace?.id ?? null,
+          myUserId: yo,
+          store: api,
+        })
+      } catch {
+        // Sin red, o con el permiso retirado desde los ajustes del sistema. No
+        // es motivo para molestar a nadie: la app funciona igual sin esto.
+      } finally {
+        sincronizandoRef.current = false
+      }
+    })()
+  }, [authStatus, plans, places, profile?.calendarSync, profile?.id, activeSpace?.id, api])
 
   const setActiveSpace = useCallback((spaceId: string) => {
     storeSpaceId(spaceId)

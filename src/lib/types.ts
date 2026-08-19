@@ -40,6 +40,40 @@ export interface Profile {
    * el navegador para que cambiar de móvil no la haga reaparecer.
    */
   onboardedAt: string | null
+  /**
+   * Si los planes confirmados se copian al calendario del móvil.
+   *
+   * Apagado de salida: escribir en la agenda de alguien es meterse en su vida
+   * fuera de la app, y además iOS pide permiso la primera vez, así que venir
+   * encendido sería prometer algo que la app no puede cumplir sola.
+   */
+  calendarSync: boolean
+}
+
+/**
+ * Qué evento del calendario del sistema corresponde a qué plan.
+ *
+ * Es lo que permite CORREGIR en vez de duplicar: un plan que se mueve al
+ * domingo tiene que mover su evento, y para eso hay que recordar cuál era.
+ *
+ * `spaceId` y `startsAt` son copias del plan, no referencias. Existen para
+ * reconocer un plan BORRADO, que es justo el caso en el que ya no se puede
+ * consultar nada de él.
+ */
+export interface CalendarLink {
+  planId: string
+  /** El identificador que devolvió iOS o Android al crear el evento. */
+  eventId: string
+  spaceId: string | null
+  startsAt: string | null
+  /**
+   * Resumen de lo que se escribió en el evento.
+   *
+   * Comparar esta cadena con la del plan actual dice si hay que corregir algo,
+   * sin tener que preguntarle al sistema operativo por cada plan en cada
+   * arranque.
+   */
+  signature: string
 }
 
 /**
