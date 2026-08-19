@@ -1,4 +1,5 @@
 import type { Place } from './types'
+import type { OsmType } from './osm'
 import { createTranslate, detectLocale, type TranslationKey } from './i18n'
 
 /**
@@ -203,6 +204,42 @@ export interface GeoResult {
   address: string
   lat: number
   lng: number
+  /**
+   * El local dentro de OpenStreetMap, cuando el resultado ES un negocio.
+   *
+   * Los dos buscadores lo devuelven y hasta ahora se descartaba. Guardarlo al
+   * crear el sitio es lo que luego permite preguntar por su horario sin tener
+   * que adivinar cuál de los treinta bares de la manzana era.
+   *
+   * `null` en un portal o una calle: ahí no hay nada que abra ni cierre.
+   */
+  osmType: OsmType | null
+  osmId: number | null
+}
+
+/**
+ * Qué clase de cosa de OpenStreetMap tiene horario.
+ *
+ * Un resultado puede ser un número de portal, una carretera o una ciudad. Solo
+ * los negocios interesan, y quedarse con el identificador de un portal sería
+ * peor que no tener ninguno: la consulta iría directa a algo que nunca va a
+ * tener horario, en vez de mirar qué hay alrededor.
+ */
+const CLAVES_DE_NEGOCIO = ['amenity', 'shop', 'leisure', 'tourism', 'office', 'craft']
+
+function osmDePhoton(p: Record<string, unknown>): {
+  osmType: OsmType | null
+  osmId: number | null
+} {
+  const clave = String(p.osm_key ?? '')
+  const id = Number(p.osm_id)
+  // Photon abrevia el tipo a una letra.
+  const tipos: Record<string, OsmType> = { N: 'node', W: 'way', R: 'relation' }
+  const tipo = tipos[String(p.osm_type ?? '')]
+  if (!tipo || !Number.isFinite(id) || !CLAVES_DE_NEGOCIO.includes(clave)) {
+    return { osmType: null, osmId: null }
+  }
+  return { osmType: tipo, osmId: id }
 }
 
 /** Photon (OpenStreetMap). OJO: no soporta lang=es — devuelve 400 si se envía. */
@@ -233,6 +270,7 @@ async function searchPhoton(
       address: parts.slice(1).join(', ') || parts.join(', '),
       lat,
       lng,
+      ...osmDePhoton(p),
     })
   }
   return results
@@ -255,11 +293,21 @@ async function searchNominatim(query: string, lang = 'es'): Promise<GeoResult[]>
     const lng = Number(d.lon)
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue
     const parts = String(d.display_name ?? '').split(', ')
+    const tipo = String(d.osm_type ?? '')
+    const id = Number(d.osm_id)
+    // Nominatim escribe el tipo entero, y `category` es lo que Photon llama
+    // `osm_key`. El criterio para quedárselo es el mismo.
+    const esNegocio =
+      CLAVES_DE_NEGOCIO.includes(String(d.category ?? '')) &&
+      (tipo === 'node' || tipo === 'way' || tipo === 'relation') &&
+      Number.isFinite(id)
     results.push({
       label: parts.slice(0, 4).join(', '),
       address: parts.slice(1, 5).join(', ') || parts.slice(0, 4).join(', '),
       lat,
       lng,
+      osmType: esNegocio ? (tipo as OsmType) : null,
+      osmId: esNegocio ? id : null,
     })
   }
   return results

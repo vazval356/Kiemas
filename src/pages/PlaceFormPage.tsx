@@ -7,6 +7,8 @@ import { TagPicker } from '../components/TagPicker'
 import { PinIcon, SparkleIcon } from '../components/icons'
 import type { PlaceStatus } from '../lib/types'
 import { resolveMapsLink } from '../lib/mapsLink'
+import { parseOpeningHours } from '../lib/openingHours'
+import type { OsmType } from '../lib/osm'
 import {
   CATEGORY_EMOJIS,
   errorMessage,
@@ -41,6 +43,19 @@ export function PlaceFormPage() {
   const [priceLevel, setPriceLevel] = useState<number | null>(existing?.priceLevel ?? null)
   const [notes, setNotes] = useState(existing?.notes ?? '')
   const [phone, setPhone] = useState(existing?.phone ?? '')
+  const [hours, setHours] = useState(existing?.openingHoursManual ?? '')
+  /**
+   * El local dentro de OpenStreetMap.
+   *
+   * Lo trae el buscador de direcciones y no se enseña en ninguna parte: es lo
+   * que luego permite preguntar por el horario de ESTE bar y no del de al lado.
+   * Se pierde a propósito si alguien mueve el marcador a mano, porque entonces
+   * el punto ya no es el que devolvió el buscador.
+   */
+  const [osm, setOsm] = useState<{ osmType: OsmType | null; osmId: number | null }>({
+    osmType: existing?.osmType ?? null,
+    osmId: existing?.osmId ?? null,
+  })
   const [website, setWebsite] = useState(existing?.website ?? '')
   const [tagIds, setTagIds] = useState<string[]>(existing?.tagIds ?? [])
   const [photoFiles, setPhotoFiles] = useState<File[]>([])
@@ -89,13 +104,18 @@ export function PlaceFormPage() {
     const marker = new maplibregl.Marker({ color: '#4648d4', draggable: true })
       .setLngLat(center)
       .addTo(map)
+    // Mover el pin a mano deshace la identificación del local: el punto ya no
+    // es el que devolvió el buscador, y quedarse con el identificador anterior
+    // acabaría enseñando el horario de un sitio que no es este.
     marker.on('dragend', () => {
       const p = marker.getLngLat()
       setCoords({ lat: p.lat, lng: p.lng })
+      setOsm({ osmType: null, osmId: null })
     })
     map.on('click', (e) => {
       marker.setLngLat(e.lngLat)
       setCoords({ lat: e.lngLat.lat, lng: e.lngLat.lng })
+      setOsm({ osmType: null, osmId: null })
     })
     mapRef.current = map
     markerRef.current = marker
@@ -213,6 +233,7 @@ export function PlaceFormPage() {
           }
           setCoords({ lat: res[0].lat, lng: res[0].lng })
           setAddress(res[0].address)
+          setOsm({ osmType: res[0].osmType, osmId: res[0].osmId })
           moveTo(res[0].lat, res[0].lng)
           setImportMessage({ kind: 'ok', text: t('import.done') })
         })
@@ -223,6 +244,9 @@ export function PlaceFormPage() {
 
     if (parsed.lat !== null && parsed.lng !== null) {
       setCoords({ lat: parsed.lat, lng: parsed.lng })
+      // Las coordenadas vienen de Google: no identifican ningún local de
+      // OpenStreetMap. La ficha lo buscará luego por cercanía y nombre.
+      setOsm({ osmType: null, osmId: null })
       moveTo(parsed.lat, parsed.lng)
       // La dirección se queda vacía a propósito.
       //
@@ -283,6 +307,10 @@ export function PlaceFormPage() {
   function pickResult(r: GeoResult) {
     setCoords({ lat: r.lat, lng: r.lng })
     setAddress(r.address)
+    // El buscador dice de qué local se trata. Es el único momento en que se
+    // sabe con certeza, y es lo que después evita confundirlo con el bar de al
+    // lado al ir a por su horario.
+    setOsm({ osmType: r.osmType, osmId: r.osmId })
     if (!name) setName(r.label.split(',')[0])
     setQuery('')
     setResults([])
@@ -326,6 +354,9 @@ export function PlaceFormPage() {
         notes,
         phone,
         website,
+        openingHoursManual: hours.trim(),
+        osmType: osm.osmType,
+        osmId: osm.osmId,
       }
       // Al terminar se vuelve al MAPA, no a la ficha del sitio, con el pin
       // recién guardado seleccionado y la cámara encima. La ficha dejaba a la
@@ -683,6 +714,28 @@ export function PlaceFormPage() {
               type="url"
               className="kd-input"
             />
+            {/* El horario a mano.
+                OpenStreetMap solo conoce el de uno de cada seis bares, así que
+                sin esta casilla las otras cinco fichas tendrían un hueco que
+                nadie podría rellenar nunca. Lo que se escriba aquí manda sobre
+                lo que diga el mapa: quien ha estado en el sitio sabe más. */}
+            <div>
+              <input
+                value={hours}
+                onChange={(e) => setHours(e.target.value)}
+                placeholder={t('hours.manualLabel')}
+                className="kd-input"
+                maxLength={300}
+              />
+              <p className="mt-1 text-xs text-on-surface-variant">{t('hours.manualHint')}</p>
+              {/* Solo se avisa; no se impide guardar. Alguien puede tener un
+                  horario raro que esta gramática no entienda, y perder lo
+                  escrito por eso sería peor que enseñarlo sin la línea de
+                  «abierto ahora». */}
+              {hours.trim() !== '' && parseOpeningHours(hours) === null && (
+                <p className="mt-1 text-xs font-semibold text-error">{t('hours.manualBad')}</p>
+              )}
+            </div>
           </div>
         </details>
 

@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { CommentThread } from '../components/CommentThread'
+import {
+  OpeningBadge,
+  OpeningHoursSection,
+  semanaDe,
+  useSincronizarOsm,
+} from '../components/OpeningHours'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { PhotoViewer } from '../components/PhotoViewer'
 import { TagBadges } from '../components/TagPicker'
@@ -40,6 +46,12 @@ export function PlaceDetailPage() {
   const { places, categories, activeSpace, spaces, profile, position, api, refresh, t } = useApp()
 
   const place = places.find((p) => p.id === id)
+
+  // Al abrir la ficha se le pregunta a OpenStreetMap por el horario de este
+  // local. Aquí y no al guardar: guardar tiene que ser instantáneo, y es aquí
+  // donde el dato se va a mirar. Aguanta que `place` sea `undefined` porque
+  // los ganchos tienen que llamarse antes del `return` de «no encontrado».
+  const consultandoHorario = useSincronizarOsm(place)
 
   const [notes, setNotes] = useState(place?.notes ?? '')
   const [notesDirty, setNotesDirty] = useState(false)
@@ -230,6 +242,15 @@ export function PlaceDetailPage() {
         {place.address && (
           <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>
         )}
+        {/* Lo primero que se pregunta quien mira esto de noche. Va pegado a la
+            dirección porque es la otra mitad de «¿puedo ir ahora?». */}
+        {semanaDe(place) ? (
+          <OpeningBadge place={place} className="mt-2" />
+        ) : (
+          consultandoHorario && (
+            <p className="mt-2 text-sm text-on-surface-variant">{t('hours.checking')}</p>
+          )
+        )}
         {creator && (
           <p className="mt-1 text-xs text-on-surface-variant">
             {t('detail.addedBy', { name: creator.displayName })}
@@ -282,6 +303,25 @@ export function PlaceDetailPage() {
         >
           {place.status === 'visited' ? t('detail.markWantToGo') : t('detail.markVisited')}
         </button>
+
+        {/* El horario entero. Responde a «¿y el domingo?», que es la pregunta
+            que decide un plan; la línea de arriba solo responde por hoy. */}
+        <OpeningHoursSection place={place} />
+
+        {/* OpenStreetMap tiene el horario de uno de cada seis bares. En los
+            otros cinco no se deja un hueco mudo: se dice que no se sabe y se
+            ofrece escribirlo, que es lo único que puede arreglarlo. */}
+        {!semanaDe(place) && !consultandoHorario && (
+          <p className="mt-6 text-sm text-on-surface-variant">
+            {t('hours.unknown')}{' '}
+            <Link
+              to={`/edit/${place.id}`}
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              {t('hours.addYours')}
+            </Link>
+          </p>
+        )}
 
         {/* Mi puntuación */}
         <section className="mt-6">

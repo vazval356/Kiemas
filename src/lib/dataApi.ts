@@ -5,6 +5,7 @@ import type {
   Place,
   PlaceInput,
   PlacePatch,
+  PlaceOsmSync,
   Plan,
   PlanInput,
   Profile,
@@ -146,6 +147,14 @@ export interface DataApi {
   listPlaces(spaceId: string): Promise<Place[]>
   addPlace(spaceId: string, input: PlaceInput): Promise<Place>
   updatePlace(placeId: string, patch: PlacePatch): Promise<void>
+  /**
+   * Guardar el horario y el contacto que OpenStreetMap sepa de un sitio.
+   *
+   * Lo llama la ficha al abrirse, no una persona. `null` significa que se
+   * preguntó y no había nada, y se apunta igual para no repetir la consulta en
+   * cada visita.
+   */
+  syncPlaceOsm(placeId: string, data: PlaceOsmSync | null): Promise<void>
   deletePlace(placeId: string): Promise<void>
   /**
    * Lleva un sitio a otro espacio: solo el local, sin notas, fotos,

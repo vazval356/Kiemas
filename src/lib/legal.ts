@@ -461,6 +461,7 @@ const privacidadEs: LegalDoc = {
         'Algunos de estos proveedores tratan datos fuera del Espacio Económico Europeo. Esas transferencias se amparan en las cláusulas contractuales tipo aprobadas por la Comisión Europea.',
         'Las fotos merecen una explicación aparte. Se guardan en un almacén de archivos donde cada fichero tiene una dirección con un identificador aleatorio: no existe forma de listar el contenido ni de adivinar direcciones, pero quien tenga el enlace exacto puede abrir la imagen sin necesidad de cuenta. Es una decisión consciente y no un descuido: las direcciones que caducan romperían las fotos ya cargadas en el mapa y harían imposibles las listas públicas, que existen precisamente para verse sin cuenta. Si una foto te resulta delicada, tenlo en cuenta antes de subirla.',
         'Al usar el mapa y el buscador de direcciones, tu dispositivo consulta directamente a OpenFreeMap, Photon (Komoot) y Nominatim (OpenStreetMap). Reciben la búsqueda o la zona que estás viendo, pero no tu identidad ni tus datos de cuenta. Si centras el mapa en tu ubicación, esa zona pasa a ser la que se pide, igual que si hubieras llegado hasta ahí arrastrando el mapa con el dedo.',
+        'Al abrir la ficha de un sitio guardado, tu dispositivo pregunta además a Overpass (OpenStreetMap) por el horario y el teléfono de ese local. Recibe las coordenadas del sitio y su nombre, nada más: ni quién eres, ni de qué grupo es, ni qué habéis escrito de él. La respuesta se guarda con el sitio, de modo que la consulta se hace una vez y no cada vez que alguien lo mira.',
       ],
     },
     {
@@ -588,6 +589,7 @@ const privacidadEn: LegalDoc = {
         'Some of these providers process data outside the European Economic Area. Those transfers rely on the standard contractual clauses approved by the European Commission.',
         'Photos deserve a separate explanation. They are kept in a file store where every file has an address containing a random identifier: there is no way to list the contents or guess addresses, but anyone holding the exact link can open the image without needing an account. This is a deliberate choice, not an oversight: expiring addresses would break photos already loaded on the map and would make public lists impossible, and those exist precisely to be seen without an account. If a photo feels sensitive to you, bear that in mind before uploading it.',
         'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested, exactly as if you had panned there with your finger.',
+        'When you open a saved place, your device also asks Overpass (OpenStreetMap) for that venue’s opening hours and phone number. It receives the place coordinates and its name, nothing else: not who you are, not which group it belongs to, not anything you have written about it. The answer is stored with the place, so the query happens once rather than every time someone looks at it.',
       ],
     },
     {
@@ -735,7 +737,7 @@ const avisoEs: LegalDoc = {
       body: [
         `El código fuente, la arquitectura, el diseño de la interfaz, el nombre comercial «${BRAND_NAME}» y los logotipos pertenecen en exclusiva a su titular.`,
         `El contenido que aportan los usuarios (sitios, fotografías, comentarios, listas) sigue siendo propiedad de quien lo aporta, otorgando a ${BRAND_NAME} la licencia necesaria para mostrarlo dentro de la plataforma según la configuración elegida.`,
-        'Los datos cartográficos integrados proceden de OpenStreetMap y sus colaboradores, utilizados bajo la licencia de bases de datos abiertas ODbL, y se sirven a través de OpenFreeMap. El buscador de direcciones utiliza los servicios de Photon (Komoot) y Nominatim (OpenStreetMap).',
+        'Los datos cartográficos integrados proceden de OpenStreetMap y sus colaboradores, utilizados bajo la licencia de bases de datos abiertas ODbL, y se sirven a través de OpenFreeMap. El buscador de direcciones utiliza los servicios de Photon (Komoot) y Nominatim (OpenStreetMap), y los horarios y datos de contacto de los locales se consultan mediante Overpass, también sobre datos de OpenStreetMap y bajo la misma licencia ODbL.',
       ],
     },
     {
@@ -794,7 +796,7 @@ const avisoEn: LegalDoc = {
       body: [
         `The source code, the architecture, the interface design, the trade name “${BRAND_NAME}” and the logos belong exclusively to their owner.`,
         `Content contributed by users (places, photographs, comments, lists) remains the property of whoever contributes it, granting ${BRAND_NAME} the licence needed to display it within the platform according to the settings chosen.`,
-        'The integrated map data comes from OpenStreetMap and its contributors, used under the ODbL open database licence and served through OpenFreeMap. The address search uses the Photon (Komoot) and Nominatim (OpenStreetMap) services.',
+        'The integrated map data comes from OpenStreetMap and its contributors, used under the ODbL open database licence and served through OpenFreeMap. The address search uses the Photon (Komoot) and Nominatim (OpenStreetMap) services, and venue opening hours and contact details are queried through Overpass, also over OpenStreetMap data and under the same ODbL licence.',
       ],
     },
     {

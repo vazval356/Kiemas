@@ -10,6 +10,7 @@ import type {
   Place,
   PlaceInput,
   PlacePatch,
+  PlaceOsmSync,
   Plan,
   PlanInput,
   Profile,
@@ -73,6 +74,11 @@ interface PlaceRow {
   notes_updated_by: string | null
   phone: string
   website: string
+  osm_type: 'node' | 'way' | 'relation' | null
+  osm_id: number | null
+  opening_hours: string
+  opening_hours_manual: string
+  osm_synced_at: string | null
   cover_path: string | null
   place_photos: { id: string; path: string; created_by: string | null; created_at: string }[] | null
   venue_id: string | null
@@ -173,6 +179,14 @@ function mapPlace(row: PlaceRow): Place {
     notesUpdatedBy: row.notes_updated_by,
     phone: row.phone,
     website: row.website,
+    osmType: row.osm_type ?? null,
+    // Un `bigint` llega como texto desde PostgREST cuando no cabe en un
+    // número seguro. Los identificadores de OpenStreetMap están lejísimos de
+    // ese límite, pero convertir aquí evita comparar un texto con un número.
+    osmId: row.osm_id === null || row.osm_id === undefined ? null : Number(row.osm_id),
+    openingHours: row.opening_hours ?? '',
+    openingHoursManual: row.opening_hours_manual ?? '',
+    osmSyncedAt: row.osm_synced_at ?? null,
     photos: galeria,
     coverPath: row.cover_path,
     // Sin portada elegida se cae a la primera de la galería, que es lo que la
@@ -736,6 +750,11 @@ export const supabaseApi: DataApi = {
           phone: input.phone,
           website: input.website,
           notes: input.notes,
+          opening_hours_manual: input.openingHoursManual ?? '',
+          // El buscador de direcciones ya sabía qué local es. Guardarlo ahora
+          // ahorra tener que adivinarlo después por cercanía.
+          osm_type: input.osmType ?? null,
+          osm_id: input.osmId ?? null,
           notes_updated_by: input.notes ? uid : null,
           created_by: uid,
           visited_at: input.status === 'visited' ? new Date().toISOString() : null,
@@ -759,11 +778,35 @@ export const supabaseApi: DataApi = {
     if (patch.priceLevel !== undefined) row.price_level = patch.priceLevel
     if (patch.phone !== undefined) row.phone = patch.phone
     if (patch.website !== undefined) row.website = patch.website
+    if (patch.openingHoursManual !== undefined) {
+      row.opening_hours_manual = patch.openingHoursManual
+    }
+    if (patch.osmType !== undefined) row.osm_type = patch.osmType
+    if (patch.osmId !== undefined) row.osm_id = patch.osmId
     if (patch.notes !== undefined) row.notes = patch.notes
     if (patch.favorite !== undefined) row.favorite = patch.favorite
     if (patch.visitedAt !== undefined) row.visited_at = patch.visitedAt
     if (patch.notesUpdatedBy !== undefined) row.notes_updated_by = patch.notesUpdatedBy
     if (Object.keys(row).length === 0) return
+    ok(await supabase.from('places').update(row).eq('id', placeId))
+  },
+
+  /**
+   * Guarda lo que OpenStreetMap ha contado de un sitio.
+   *
+   * `null` es «se preguntó y no había nada». Se sella igual la fecha: si no,
+   * los cinco de cada seis locales que el mapa libre no conoce volverían a
+   * lanzar una consulta cada vez que alguien abre su ficha.
+   */
+  async syncPlaceOsm(placeId: string, data: PlaceOsmSync | null) {
+    const row: Record<string, unknown> = { osm_synced_at: new Date().toISOString() }
+    if (data) {
+      row.osm_type = data.osmType
+      row.osm_id = data.osmId
+      row.opening_hours = data.openingHours
+      if (data.phone !== undefined) row.phone = data.phone
+      if (data.website !== undefined) row.website = data.website
+    }
     ok(await supabase.from('places').update(row).eq('id', placeId))
   },
 

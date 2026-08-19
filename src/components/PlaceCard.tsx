@@ -4,6 +4,7 @@ import { averageRating, formatKm, formatRating, kmBetween, priceLabel } from '..
 import { useApp } from '../state/appState'
 import { TagBadges } from './TagPicker'
 import { HeartIcon, StarIcon } from './icons'
+import { OpeningBadge } from './OpeningHours'
 
 interface Props {
   place: Place
@@ -106,6 +107,9 @@ export function PlaceCard({ place, category, onToggleFavorite }: Props) {
           {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}
           {distance !== null && <span>· {formatKm(distance)}</span>}
         </div>
+        {/* Solo aparece en los sitios cuyo horario se conoce. En una lista,
+            saber cuáles están abiertos AHORA es lo que decide a cuál ir. */}
+        <OpeningBadge place={place} className="mt-1.5" />
         <TagBadges tagIds={place.tagIds} className="mt-2" />
         {place.notes && (
           <p className="mt-2 line-clamp-2 text-sm text-on-surface-variant">{place.notes}</p>

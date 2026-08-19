@@ -173,6 +173,27 @@ export interface Place {
   notesUpdatedBy: string | null
   phone: string
   website: string
+  /**
+   * El local dentro de OpenStreetMap, si se conoce.
+   *
+   * Lo devuelve el buscador de direcciones al guardar. Con él, preguntar por el
+   * horario es una consulta exacta; sin él hay que buscar por cercanía y
+   * nombre, que puede acabar en el bar de al lado.
+   */
+  osmType: 'node' | 'way' | 'relation' | null
+  osmId: number | null
+  /** El horario tal y como lo escribe OpenStreetMap: `Mo-Fr 09:00-14:00`. */
+  openingHours: string
+  /**
+   * El horario que ha escrito el grupo, en el mismo formato.
+   *
+   * Manda sobre `openingHours`: quien ha estado en el bar sabe más que el mapa,
+   * y OpenStreetMap solo tiene el horario de uno de cada seis. Sin esto, cinco
+   * de cada seis fichas tendrían un hueco que nadie podría rellenar.
+   */
+  openingHoursManual: string
+  /** Cuándo se preguntó por última vez a OpenStreetMap. `null` = nunca. */
+  osmSyncedAt: string | null
   photos: Photo[]
   /**
    * La portada: la cara del sitio en el mapa, en la lista y en las colecciones.
@@ -219,12 +240,37 @@ export interface PlaceInput {
   phone: string
   website: string
   notes: string
+  openingHoursManual?: string
+  osmType?: 'node' | 'way' | 'relation' | null
+  osmId?: number | null
 }
 
 export type PlacePatch = Partial<PlaceInput> & {
   favorite?: boolean
   visitedAt?: string | null
   notesUpdatedBy?: string | null
+}
+
+/**
+ * Lo que OpenStreetMap ha contado de un local, listo para guardar.
+ *
+ * Va aparte de `PlacePatch` porque no lo escribe una persona: lo trae la app
+ * sola al abrir la ficha. Mezclarlo con lo demás invitaría a que una pantalla
+ * de edición pisara sin querer un horario recién consultado.
+ */
+export interface PlaceOsmSync {
+  osmType: 'node' | 'way' | 'relation' | null
+  osmId: number | null
+  openingHours: string
+  /**
+   * Teléfono y web solo cuando el sitio no los tenía.
+   *
+   * Van sueltos porque rellenar un hueco es un regalo y pisar lo que alguien
+   * escribió es una avería. Quien llama decide, porque es quien tiene delante
+   * lo que ya había guardado.
+   */
+  phone?: string
+  website?: string
 }
 
 // ───────────────────────────────────────────────────────────────────────────
