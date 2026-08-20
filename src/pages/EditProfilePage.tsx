@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { CoverCropper } from '../components/CoverCropper'
 import { UsernameEditor } from '../components/UsernameEditor'
-import { errorMessage } from '../lib/utils'
+import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { useApp } from '../state/appState'
 
 /**
@@ -27,7 +27,7 @@ export function EditProfilePage({
   onDone?: () => void
 }) {
   const navigate = useNavigate()
-  const { profile, refreshSpaces, api, t } = useApp()
+  const { profile, refreshSpaces, api, t, locale } = useApp()
 
   const [displayName, setDisplayName] = useState(profile?.displayName ?? '')
   const [bio, setBio] = useState(profile?.bio ?? '')
@@ -114,6 +114,7 @@ export function EditProfilePage({
           >
             {profile?.avatarUrl ? (
               <img
+                decoding="async"
                 src={profile.avatarUrl}
                 alt=""
                 className="size-24 rounded-full border-4 border-surface object-cover"
@@ -134,7 +135,19 @@ export function EditProfilePage({
               // Se limpia para que elegir la MISMA foto otra vez vuelva a
               // disparar el evento.
               e.target.value = ''
-              if (file) setCropping(file)
+              if (!file) return
+              // Mismo tope que las fotos de un sitio, y por el mismo motivo:
+              // encuadrar pasa por descodificar la imagen entera en memoria, y
+              // una foto de réflex tumba la WebView antes de llegar al
+              // encuadrador.
+              if (file.size > MAX_FOTO_BYTES) {
+                setError(
+                  t('photo.tooBig', { nombre: file.name, peso: pesoLegible(file.size, locale) })
+                )
+                return
+              }
+              setError('')
+              setCropping(file)
             }}
           />
           <button

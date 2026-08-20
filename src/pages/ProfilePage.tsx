@@ -6,7 +6,8 @@ import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, MyEntitlement, MyStats } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
-import { resumenDelAnoDisponible } from './YearInReviewPage'
+import { usePageTitle } from '../lib/seo'
+import { resumenDelAnoDisponible } from '../lib/dates'
 
 /**
  * Perfil: quién eres, qué has hecho, y la puerta a todo lo demás.
@@ -18,6 +19,9 @@ import { resumenDelAnoDisponible } from './YearInReviewPage'
  */
 export function ProfilePage() {
   const { profile, spaces, activeSpace, setActiveSpace, api, refreshSpaces, t, signOut } = useApp()
+  // El nombre de la persona, no «Perfil»: es su pantalla y así se distingue
+  // en el historial de las de los demás grupos.
+  usePageTitle(profile?.displayName ?? t('nav.profile'))
 
   const [stats, setStats] = useState<MyStats | null>(null)
   // Se guarda el objeto entero y no solo el nivel: la tarjeta de cuota necesita
@@ -56,6 +60,7 @@ export function ProfilePage() {
           >
             {profile?.avatarUrl ? (
               <img
+                decoding="async"
                 src={profile.avatarUrl}
                 alt=""
                 className="size-24 rounded-full border-4 border-surface object-cover"
@@ -199,6 +204,7 @@ export function ProfilePage() {
                     >
                       {space.coverUrl && space.kind !== 'personal' && (
                         <img
+                          decoding="async"
                           src={space.coverUrl}
                           alt=""
                           loading="lazy"

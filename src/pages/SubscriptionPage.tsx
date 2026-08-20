@@ -17,6 +17,7 @@ import type { Entitlement, MyEntitlement, PlanLimits } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Planes, canje de códigos y compra.
@@ -53,6 +54,7 @@ type Period = 'monthly' | 'annual'
 export function SubscriptionPage() {
   const navigate = useNavigate()
   const { api, locale, t, refreshSpaces } = useApp()
+  usePageTitle(t('sub.title'))
 
   const [mine, setMine] = useState<MyEntitlement | null>(null)
   const [limits, setLimits] = useState<PlanLimits[]>([])
@@ -556,9 +558,14 @@ export function SubscriptionPage() {
               </h2>
               <form onSubmit={redeem} className="flex gap-2">
                 <input
+                  id="codigo-promocional"
                   value={code}
                   onChange={(e) => setCode(e.target.value.toUpperCase())}
                   placeholder={t('promo.placeholder')}
+                  // El nombre del campo estaba solo en el marcador de posición,
+                  // que desaparece al escribir y que muchos lectores de
+                  // pantalla no anuncian.
+                  aria-label={t('promo.title')}
                   autoCapitalize="characters"
                   autoCorrect="off"
                   spellCheck={false}
@@ -575,7 +582,10 @@ export function SubscriptionPage() {
               </form>
 
               {promoError && (
-                <p className="mt-2 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
+                <p
+                  role="alert"
+                  className="mt-2 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container"
+                >
                   {promoError}
                 </p>
               )}

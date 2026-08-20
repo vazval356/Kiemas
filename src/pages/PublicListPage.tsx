@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { createTranslate, detectLocale } from '../lib/i18n'
+import { useHtmlLang, usePageTitle } from '../lib/seo'
 import { getPublicList, rpcErrorCode, supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
 import type { PublicList, Space } from '../lib/types'
@@ -47,6 +48,14 @@ export function PublicListPage() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null)
   const [following, setFollowing] = useState(false)
   const [followBusy, setFollowBusy] = useState(false)
+
+  // El nombre de la lista, en cuanto llegue. Es lo que se guarda como
+  // nombre del marcador y lo que se lee en la pestaña de quien abrió el
+  // enlace desde un mensaje.
+  usePageTitle(list?.name)
+  // Quien abre este enlace puede no tener cuenta, así que el idioma sale del
+  // navegador y no de un perfil que quizá no exista.
+  useHtmlLang(detectLocale())
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
@@ -185,6 +194,8 @@ export function PublicListPage() {
               >
                 {place.photos.length > 0 ? (
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={place.photos[0]}
                     alt={place.name}
                     className="h-40 w-full object-cover"

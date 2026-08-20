@@ -5,6 +5,7 @@ import type { FollowedList } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Las listas públicas que sigo.
@@ -15,6 +16,7 @@ import { useApp } from '../state/appState'
  */
 export function FollowedListsPage() {
   const { api, locale, t } = useApp()
+  usePageTitle(t('followed.title'))
 
   const [lists, setLists] = useState<FollowedList[]>([])
   const [loading, setLoading] = useState(true)

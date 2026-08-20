@@ -30,7 +30,15 @@ export function PhotoOrPlaceholder({
   // para representar el sitio, y `coverUrl` ya cae a la primera cuando no se
   // ha elegido ninguna.
   if (place.coverUrl) {
-    return <img src={place.coverUrl} alt={place.name} className={`${className} object-cover`} />
+    return (
+      <img
+        loading="lazy"
+        decoding="async"
+        src={place.coverUrl}
+        alt={place.name}
+        className={`${className} object-cover`}
+      />
+    )
   }
   return (
     <div

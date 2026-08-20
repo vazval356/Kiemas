@@ -17,6 +17,7 @@ import {
   priceLabel,
 } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Teselas de OpenFreeMap sobre MapLibre, heredado de Warm Hearth.
@@ -36,6 +37,7 @@ const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168] // Madrid
 export function MapPage() {
   const { places, categories, position, requestPosition, spaces, activeSpace, api, refresh, t } =
     useApp()
+  usePageTitle(t('nav.map'))
 
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
@@ -289,6 +291,7 @@ export function MapPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('map.searchPlaceholder')}
+            aria-label={t('map.searchPlaceholder')}
             className="flex-1 bg-transparent text-on-surface outline-none placeholder:text-on-surface-variant/60"
           />
           {query && (

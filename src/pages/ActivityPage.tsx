@@ -8,6 +8,7 @@ import type { TranslationKey, Translate } from '../lib/i18n'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 const VERB_KEY: Record<ActivityVerb, TranslationKey> = {
   saved_place: 'activity.saved_place',
@@ -53,6 +54,7 @@ const PAGE = 25
  */
 export function ActivityPage() {
   const { activeSpace, places, plans, api, locale, t } = useApp()
+  usePageTitle(t('activity.title'))
 
   const [entries, setEntries] = useState<ActivityEntry[]>([])
   const [limit, setLimit] = useState(PAGE)
@@ -281,6 +283,7 @@ function Row({
       <div className="mt-2 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
         {place?.coverUrl ? (
           <img
+            decoding="async"
             src={place.coverUrl}
             alt=""
             loading="lazy"
@@ -325,6 +328,7 @@ function Row({
         <span className="relative shrink-0" style={{ marginLeft: -21 }}>
           {actorAvatar ? (
             <img
+              decoding="async"
               src={actorAvatar}
               alt=""
               loading="lazy"

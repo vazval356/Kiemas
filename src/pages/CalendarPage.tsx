@@ -12,8 +12,10 @@ import {
 import type { Category, Locale, Plan, SpaceMember } from '../lib/types'
 import type { Translate } from '../lib/i18n'
 import { AfterPlanCard } from '../components/AfterPlanCard'
+import { FalloAlCargar, ListaCargando } from '../components/EstadoDeSeccion'
 import { DecisionsSection } from '../components/DecisionsSection'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 const STRIP_DAYS = 14
 
@@ -28,7 +30,8 @@ const STRIP_DAYS = 14
  * llegar a «el finde que viene» sin desplazarse a ciegas.
  */
 export function CalendarPage() {
-  const { plans, places, categories, activeSpace, profile, locale, t } = useApp()
+  const { plans, places, categories, activeSpace, profile, locale, t, dataStatus } = useApp()
+  usePageTitle(t('nav.calendar'))
   const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [view, setView] = useState<'week' | 'month'>('week')
   /** Primer día del mes que enseña la rejilla. */
@@ -303,9 +306,17 @@ export function CalendarPage() {
               : t('plan.upcoming')}
           </SectionTitle>
 
-          {visible.length === 0 ? (
+          {dataStatus === 'loading' ? (
+            <div className="mt-2">
+              <ListaCargando filas={2} />
+            </div>
+          ) : dataStatus === 'error' ? (
+            <FalloAlCargar />
+          ) : visible.length === 0 ? (
             <div className="mt-2 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
-              <div className="mb-2 text-4xl">📅</div>
+              <div className="mb-2 text-4xl" aria-hidden>
+                📅
+              </div>
               <p className="font-medium text-on-surface">{t('plan.none')}</p>
               <p className="mt-1 text-sm text-on-surface-variant">{t('plan.noneHint')}</p>
             </div>

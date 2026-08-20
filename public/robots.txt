@@ -1,0 +1,22 @@
+# Kiemas — https://kiemas.com
+#
+# La aplicación entera vive detrás de `#/`, y el fragmento no llega al
+# servidor: para un rastreador solo existen esta portada y las páginas legales
+# estáticas. No hay nada que ocultarle, así que no hay reglas que inventarse.
+#
+# Lo único que se aparta son los service workers: son JavaScript, no páginas, y
+# lo único que consigue indexarlos es un resultado de búsqueda que lleva a un
+# fichero de código.
+#
+# `/.well-known/` se deja abierto a propósito. Ahí viven los ficheros con los
+# que Android e iOS verifican que este dominio es de la app, y aunque esas
+# comprobaciones no pasan por un rastreador ni miran robots.txt, bloquear la
+# ruta que sostiene los enlaces profundos para ganar cero es un riesgo tonto.
+
+User-agent: *
+Allow: /
+Disallow: /sw.js
+Disallow: /registerSW.js
+Disallow: /firebase-messaging-sw.js
+
+Sitemap: https://kiemas.com/sitemap.xml

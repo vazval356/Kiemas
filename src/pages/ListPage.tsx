@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
+import { FalloAlCargar, ListaCargando } from '../components/EstadoDeSeccion'
 import { PlaceCard } from '../components/PlaceCard'
 import { AddIcon, CollectionIcon } from '../components/icons'
 import type { Place, PlaceStatus } from '../lib/types'
 import { averageRating } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 type StatusFilter = 'all' | PlaceStatus
 type SortKey = 'recent' | 'name' | 'rating'
 
 export function ListPage() {
-  const { places, categories, tags, activeSpace, api, refresh, locale, t } = useApp()
+  const { places, categories, tags, activeSpace, api, refresh, locale, t, dataStatus } = useApp()
+  usePageTitle(t('nav.list'))
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
@@ -189,9 +192,13 @@ export function ListPage() {
               ? t('list.countOne')
               : t('list.count', { count: filtered.length })}
           </p>
+          {/* Sin rótulo visible por diseño: es un desplegable que ya enseña la
+              opción elegida. Pero para un lector de pantalla, «Más recientes,
+              lista desplegable» no dice de qué es. */}
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
+            aria-label={t('list.sortLabel')}
             className="bg-transparent text-sm font-semibold text-primary outline-none"
           >
             <option value="recent">{t('list.sortRecent')}</option>
@@ -200,9 +207,19 @@ export function ListPage() {
           </select>
         </div>
 
-        {filtered.length === 0 ? (
+        {/* El orden importa: primero «todavía viene», luego «no ha venido», y
+            solo al final «no hay nada». Al revés —que es como estaba— un grupo
+            lleno de sitios enseñaba «aún no has guardado nada» mientras
+            cargaba. */}
+        {dataStatus === 'loading' ? (
+          <ListaCargando />
+        ) : dataStatus === 'error' ? (
+          <FalloAlCargar />
+        ) : filtered.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="mb-3 text-5xl">🗺️</div>
+            <div className="mb-3 text-5xl" aria-hidden>
+              🗺️
+            </div>
             <h2 className="mb-1 font-display text-xl font-bold text-on-surface">
               {t('list.emptyTitle')}
             </h2>

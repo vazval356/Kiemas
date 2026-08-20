@@ -18,6 +18,7 @@ import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Ajustes y privacidad: idioma, exportación y borrado de datos, y bloqueos.
@@ -29,6 +30,7 @@ import { useApp } from '../state/appState'
  */
 export function SettingsPage() {
   const { profile, locale, setLocale, refreshSpaces, api, t } = useApp()
+  usePageTitle(t('settings.title'))
 
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
   const [busy, setBusy] = useState(false)
@@ -407,6 +409,7 @@ export function SettingsPage() {
                   value={deleteWord}
                   onChange={(e) => setDeleteWord(e.target.value.toUpperCase())}
                   placeholder={t('settings.deleteTypeHere', { word: keyword })}
+                  aria-label={t('settings.deleteTypeHere', { word: keyword })}
                   className="kd-input"
                   autoCapitalize="characters"
                 />

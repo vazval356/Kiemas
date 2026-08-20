@@ -31,6 +31,7 @@ import {
 import { RatingStars } from '../components/RatingStars'
 import { Cara } from '../components/Votantes'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Ficha de un sitio.
@@ -46,6 +47,7 @@ export function PlaceDetailPage() {
   const { places, categories, activeSpace, spaces, profile, position, api, refresh, t } = useApp()
 
   const place = places.find((p) => p.id === id)
+  usePageTitle(place?.name)
 
   // Al abrir la ficha se le pregunta a OpenStreetMap por el horario de este
   // local. Aquí y no al guardar: guardar tiene que ser instantáneo, y es aquí
@@ -407,6 +409,10 @@ export function PlaceDetailPage() {
             value={notes}
             rows={4}
             placeholder={t('detail.notesPlaceholder')}
+            // El nombre corto de la sección, no la frase larga de invitación:
+            // el marcador de posición anima a escribir, pero como nombre del
+            // campo se lee entero cada vez que se entra en él.
+            aria-label={t('place.notes')}
             onChange={(e) => {
               setNotes(e.target.value)
               setNotesDirty(true)
@@ -541,7 +547,7 @@ export function PlaceDetailPage() {
               </label>
             )}
 
-            {place.photos.map((photo) => {
+            {place.photos.map((photo, indice) => {
               const esPortada = place.coverPath === photo.id
               // El servidor manda igual; saberlo aquí evita ofrecer un borrado
               // que va a rebotar.
@@ -571,11 +577,26 @@ export function PlaceDetailPage() {
                       setViendo(photo.id)
                     }
                   }}
+                  // El botón ES la miniatura, así que sin esto se anunciaba
+                  // como «botón» a secas: ni qué foto es ni cuántas hay. Se
+                  // sitúa por número, que es lo único que sabemos de ella.
+                  aria-label={t('photo.number', { n: indice + 1, total: place.photos.length })}
                   className={`relative aspect-square overflow-hidden rounded-card squish ${
                     modoFoto === 'delete' && !puedoBorrar ? 'opacity-40' : ''
                   }`}
                 >
-                  <img src={photo.url} alt="" loading="lazy" className="size-full object-cover" />
+                  {/* `alt=""` a propósito: la miniatura vive dentro de un
+                      botón que ya se anuncia con su propio nombre, y repetirla
+                      haría que el lector de pantalla dijera lo mismo dos
+                      veces. `decoding="async"` para que descodificar nueve
+                      fotos no bloquee el desplazamiento de la ficha. */}
+                  <img
+                    src={photo.url}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="size-full object-cover"
+                  />
                   {esPortada && (
                     <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
                       {t('detail.cover')}

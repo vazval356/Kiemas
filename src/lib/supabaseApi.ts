@@ -38,7 +38,17 @@ import type {
   PendingReview,
   PromoRedemption,
 } from './types'
-import type { DataApi } from './dataApi'
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js'
+import type { AvisoDeCambio, DataApi } from './dataApi'
+
+/**
+ * Una fila cualquiera tal como la manda Realtime.
+ *
+ * No se tipa mejor a propósito: son doce tablas con formas distintas y de lo
+ * único que se lee son dos columnas opcionales, comprobando el tipo antes de
+ * usarlas.
+ */
+type Fila = Record<string, unknown>
 import { cropToCover, parseCoord, resizeImage } from './utils'
 
 /**
@@ -421,22 +431,80 @@ export const supabaseApi: DataApi = {
 
   // ── Espacios ─────────────────────────────────────────────────────────────
 
+  /**
+   * Mis grupos, con sus miembros y el perfil de cada uno.
+   *
+   * ── Por qué esto filtra a mano en vez de dejárselo a la RLS ───────────────
+   *
+   * Antes eran cuatro consultas sin un solo `where`, apoyadas en que la
+   * seguridad a nivel de fila ya recorta lo que devuelve cada una. Y es verdad
+   * que lo recorta: nunca salió de aquí una fila de más. El problema no era la
+   * seguridad, era el precio.
+   *
+   * `select ... from profiles` sin filtro obliga a Postgres a evaluar la
+   * política de `profiles` —`id = auth.uid() or shares_space_with(id)`— UNA VEZ
+   * POR CADA FILA DE LA TABLA. Con veinte usuarios de prueba no se nota. Con
+   * cien mil, cada arranque de la app hace cien mil llamadas a una función que
+   * a su vez cruza `space_members` consigo misma, para acabar devolviendo los
+   * seis perfiles de tus grupos. Es decir: el coste crecía con el número total
+   * de personas registradas en Kiemas, no con el tamaño de TUS grupos. Ese es
+   * exactamente el tipo de consulta que funciona perfectamente hasta el día que
+   * la app tiene éxito, y entonces se cae.
+   *
+   * Ahora se piden primero mis pertenencias —con `where user_id = yo`, que va
+   * directo al índice `space_members_user_idx`— y de ahí salen las listas de
+   * identificadores con las que se acotan las demás. El coste pasa a depender
+   * solo de en cuántos grupos estás y cuánta gente hay en ellos.
+   *
+   * La RLS sigue estando y sigue mandando: esto no la sustituye, la adelanta.
+   * Si alguien colara aquí un identificador que no le corresponde, la política
+   * seguiría dejando la fila fuera.
+   *
+   * El precio son dos idas y vueltas en vez de una, porque la segunda tanda
+   * necesita los identificadores de la primera. A cambio, lo que viaja por la
+   * red deja de ser la tabla de usuarios entera.
+   */
   async listSpaces(): Promise<Space[]> {
     const uid = await myId()
-    // Las tres consultas ya vienen recortadas por RLS a lo que me corresponde.
-    const [spacesRes, membersRes, prefsRes, profilesRes] = await Promise.all([
+
+    // Primera ida: en qué grupos estoy. Filtrada por índice, no por política.
+    const misPertenencias = check(
+      await supabase.from('space_members').select('space_id').eq('user_id', uid)
+    ) as { space_id: string }[]
+
+    const misEspacios = [...new Set(misPertenencias.map((m) => m.space_id))]
+
+    // Sin grupos no hay nada que pedir. Y hace falta salir aquí: un `.in()` con
+    // la lista vacía es una consulta que no devuelve nada pero que se manda
+    // igual, tres veces.
+    if (misEspacios.length === 0) return []
+
+    // Segunda ida: todo lo que cuelga de esos grupos, ya acotado.
+    const [spacesRes, membersRes, prefsRes] = await Promise.all([
       supabase
         .from('spaces')
         .select('id, name, description, kind, emoji, color, cover_path, theme')
+        .in('id', misEspacios)
         .order('kind')
         .order('name'),
-      supabase.from('space_members').select('space_id, user_id, role, color, joined_at'),
-      supabase.from('space_color_prefs').select('space_id, color'),
-      supabase.from('profiles').select('id, display_name, username, avatar_url'),
+      supabase
+        .from('space_members')
+        .select('space_id, user_id, role, color, joined_at')
+        .in('space_id', misEspacios),
+      supabase.from('space_color_prefs').select('space_id, color').eq('user_id', uid),
     ])
     const spaces = check(spacesRes)
     const members = check(membersRes)
-    const profiles = check(profilesRes)
+
+    // Tercera ida, y solo por los perfiles que de verdad hacen falta: los de la
+    // gente que comparte grupo conmigo. Antes esto era la tabla entera.
+    const gente = [...new Set(members.map((m) => m.user_id))]
+    const profiles = check(
+      await supabase
+        .from('profiles')
+        .select('id, display_name, username, avatar_url')
+        .in('id', gente)
+    )
 
     const byId = new Map(profiles.map((p) => [p.id, p]))
     const membersBySpace = new Map<string, SpaceMember[]>()
@@ -455,7 +523,8 @@ export const supabaseApi: DataApi = {
       membersBySpace.set(m.space_id, list)
     }
 
-    // La RLS ya deja aquí solo las mías, así que no hace falta filtrar por uid.
+    // Filtradas por `user_id` en la consulta, no solo por la política: es la
+    // misma razón que arriba, y aquí además el índice es directo.
     const misColores = new Map(
       (check(prefsRes) as { space_id: string; color: string }[]).map((r) => [r.space_id, r.color])
     )
@@ -1582,42 +1651,98 @@ export const supabaseApi: DataApi = {
 
   // ── Tiempo real ──────────────────────────────────────────────────────────
 
-  subscribe(spaceId: string, onChange: () => void): () => void {
+  subscribe(spaceId: string, onChange: (aviso: AvisoDeCambio) => void): () => void {
     const channel = supabase.channel(`space:${spaceId}`)
 
-    // Las tablas con `space_id` se filtran en el servidor; `ratings`,
-    // `plan_attendees` y `plan_date_votes` no lo tienen, así que llegan todas
-    // las que la RLS deja pasar y se refresca igualmente. Es más tráfico, pero
-    // solo de filas que ya puedo ver.
-    for (const table of ['places', 'categories', 'plans', 'space_members'] as const) {
+    /**
+     * Saca del aviso lo poco que se sabe de la fila que ha cambiado.
+     *
+     * En un borrado, la fila viene en `old` y no en `new`, y además `old` solo
+     * trae la clave primaria salvo que la tabla tenga `replica identity full`.
+     * Por eso esto devuelve campos opcionales y nunca da por hecho que estén:
+     * cuando no hay nada que mirar, quien escucha recarga por si acaso.
+     */
+    const deLaFila = (tabla: string, payload: RealtimePostgresChangesPayload<Fila>) => {
+      // `payload.new` llega como objeto VACÍO en un borrado, no como `null`, así
+      // que un `??` se quedaría con él y nunca miraría `old`. Se elige el que
+      // tenga algo dentro.
+      const nueva = (payload.new ?? {}) as Fila
+      const vieja = (payload.old ?? {}) as Fila
+      const fila = Object.keys(nueva).length > 0 ? nueva : vieja
+      return {
+        tabla,
+        placeId: typeof fila.place_id === 'string' ? fila.place_id : undefined,
+        planId: typeof fila.plan_id === 'string' ? fila.plan_id : undefined,
+      }
+    }
+
+    // ── Tablas que el servidor puede filtrar ─────────────────────────────────
+    //
+    // Estas cinco tienen `space_id`, así que Realtime descarta en el servidor
+    // todo lo que no sea de este grupo y al dispositivo no le llega nada más.
+    //
+    // `decisions` estaba abajo, en el montón sin filtrar, y tiene `space_id`
+    // desde que se creó: era un descuido que costaba un aviso por cada decisión
+    // que abriera cualquiera de Kiemas, en cualquier grupo del mundo, a todos
+    // los clientes conectados.
+    for (const table of ['places', 'categories', 'plans', 'space_members', 'decisions'] as const) {
       channel.on(
         'postgres_changes',
         { event: '*', schema: 'public', table, filter: `space_id=eq.${spaceId}` },
-        onChange
+        (payload) => onChange(deLaFila(table, payload))
       )
     }
+
+    // ── Tablas que el servidor NO puede filtrar ──────────────────────────────
+    //
+    // Ninguna tiene `space_id`: una puntuación cuelga de un sitio, un voto de
+    // una opción. Sin columna por la que filtrar, Realtime manda todas las filas
+    // que la RLS deje pasar y el recorte se hace aquí.
+    //
+    // Esto sigue siendo lo más caro del tiempo real, y no se arregla del todo
+    // desde el cliente: el servidor tiene que evaluar la RLS de cada uno de
+    // estos cambios contra cada cliente conectado, y eso crece con el producto
+    // de las dos cosas. La solución de verdad es darle `space_id` a estas siete
+    // tablas para poder filtrarlas arriba; queda pendiente porque es una
+    // migración de esquema y no hay forma de probarla sin la base de datos
+    // delante.
+    //
+    // Lo que sí arregla el aviso con datos es lo que pasaba DESPUÉS: cada uno de
+    // estos cambios provocaba una recarga completa del grupo activo, cinco
+    // consultas, aunque la fila fuera de otro grupo tuyo.
     for (const table of [
       'ratings',
       'plan_attendees',
       'plan_date_votes',
-      'place_photos',
-      'decisions',
       'decision_votes',
+      'place_photos',
       'plan_place_options',
       'plan_place_votes',
     ] as const) {
-      channel.on('postgres_changes', { event: '*', schema: 'public', table }, onChange)
+      channel.on('postgres_changes', { event: '*', schema: 'public', table }, (payload) =>
+        onChange(deLaFila(table, payload))
+      )
     }
 
     // Con `subscribe()` a secas, un canal que no llega a establecerse falla en
     // absoluto silencio y la app parece simplemente «lenta en actualizar». El
     // estado va a la consola para poder distinguir las dos cosas.
+    //
+    // Pero `CLOSED` llega TAMBIÉN cuando el que cierra el canal somos nosotros,
+    // y eso pasa en cada cambio de grupo y cada vez que la pantalla se
+    // desmonta. Avisando de eso, la consola se llenaba de advertencias de un
+    // cierre perfectamente normal, y con ese ruido de fondo un `CLOSED` de
+    // verdad —el que sí significa que se ha perdido el tiempo real— no se
+    // distinguía de los demás. Un aviso que salta siempre no avisa de nada.
+    let cerrandoNosotros = false
     channel.subscribe((estado) => {
+      if (estado === 'CLOSED' && cerrandoNosotros) return
       if (estado === 'CHANNEL_ERROR' || estado === 'TIMED_OUT' || estado === 'CLOSED') {
         console.warn('[kiemas] tiempo real:', estado, 'en space:' + spaceId)
       }
     })
     return () => {
+      cerrandoNosotros = true
       void supabase.removeChannel(channel)
     }
   },

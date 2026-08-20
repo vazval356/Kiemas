@@ -4,9 +4,10 @@ import { CopyIcon, CollectionIcon, ShareIcon, TrashIcon } from '../components/ic
 import { CoverCropper } from '../components/CoverCropper'
 import { publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
-import { errorMessage } from '../lib/utils'
+import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 import type { TranslationKey } from '../lib/i18n'
 
 const EXPIRY_OPTIONS: { value: InviteExpiry; labelKey: TranslationKey }[] = [
@@ -36,6 +37,7 @@ export function CollectionDetailPage() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const collection = collections.find((c) => c.id === id)
+  usePageTitle(collection?.name)
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
   const share = collection?.share && !collection.share.revokedAt ? collection.share : null
 
@@ -113,6 +115,7 @@ export function CollectionDetailPage() {
         <div className="relative mb-4 flex aspect-[16/9] items-center justify-center overflow-hidden rounded-card bg-primary-fixed">
           {collection.coverUrl ? (
             <img
+              decoding="async"
               src={collection.coverUrl}
               alt=""
               className="absolute inset-0 size-full object-cover"
@@ -128,10 +131,19 @@ export function CollectionDetailPage() {
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0]
-              if (f) setCropping(f)
               // Se limpia para que elegir la MISMA foto otra vez vuelva a
               // disparar el evento; si no, `change` no salta y no pasa nada.
               e.target.value = ''
+              if (!f) return
+              // Mismo tope que las fotos de un sitio: encuadrar descodifica la
+              // imagen entera en memoria y una foto enorme tumba la WebView
+              // antes de llegar al encuadrador.
+              if (f.size > MAX_FOTO_BYTES) {
+                setError(t('photo.tooBig', { nombre: f.name, peso: pesoLegible(f.size, locale) }))
+                return
+              }
+              setError('')
+              setCropping(f)
             }}
           />
 

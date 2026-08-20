@@ -37,6 +37,36 @@ jwt_expiry = 3600
 enable_refresh_token_rotation = true
 enable_signup = true
 
+# ── Contraseñas ────────────────────────────────────────────────────────────
+#
+# El servidor es quien manda. La misma regla está en `src/lib/password.ts` para
+# poder enseñarla mientras se escribe, pero esa se salta con la consola abierta:
+# la de verdad es esta.
+#
+# Ocho caracteres, con mayúsculas y minúsculas, y un número. El mínimo anterior
+# eran seis caracteres sin más condiciones.
+#
+# `lower_upper_letters_digits` y no `letters_digits` porque la regla pedida era
+# que llevara una MAYÚSCULA, y Supabase no tiene esa opción suelta: o exige
+# minúscula + número, o exige minúscula + mayúscula + número. Dejar el servidor
+# en la primera y pedir la mayúscula solo en el navegador estaría roto —
+# «PASSWORD1» pasaría el formulario y la rechazaría el servidor—, así que se
+# exigen las dos, que es lo mínimo que garantiza la mayúscula de verdad.
+#
+# OJO: los alfabetos son LITERALES —`abcdefghijklmnopqrstuvwxyz`,
+# `ABCDEFGHIJKLMNOPQRSTUVWXYZ` y `0123456789`—, no clases Unicode. Una «Ñ» no
+# cuenta como mayúscula para el servidor. La regla del cliente está escrita para
+# coincidir exactamente con eso.
+#
+# Y OJO otra vez: este fichero configura el Supabase LOCAL. El proyecto alojado
+# tiene sus propios ajustes en Authentication → Sign In / Providers → Email, y
+# hay que ponerlos allí también. Si no, en producción sigue valiendo cualquier
+# cosa de seis caracteres y la lista de requisitos del formulario estaría
+# prometiendo algo que nadie comprueba.
+minimum_password_length = 8
+password_requirements = "lower_upper_letters_digits"
+
+
 [auth.email]
 enable_signup = true
 # En desarrollo se salta la verificación; en producción debe estar en true.

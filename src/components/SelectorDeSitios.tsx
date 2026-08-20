@@ -144,6 +144,7 @@ export function SelectorDeSitios({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('place.searchYours')}
+          aria-label={t('place.searchYours')}
           className="flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-on-surface-variant/70"
         />
         {query && (

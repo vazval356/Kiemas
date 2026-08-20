@@ -20,8 +20,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Eliminar tu cuenta de Kiemas</title>
-    <link rel="icon" href="/icons/icon-192.png" />
+    <title>Eliminar tu cuenta · Kiemas</title>
+    <meta
+      name="description"
+      content="Cómo borrar tu cuenta de Kiemas desde la app o por correo, qué datos se eliminan al instante y qué se conserva."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://kiemas.com/eliminar-cuenta.html" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#4648d4" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kiemas" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://kiemas.com/eliminar-cuenta.html" />
+    <meta property="og:title" content="Eliminar tu cuenta · Kiemas" />
+    <meta
+      property="og:description"
+      content="Cómo borrar tu cuenta de Kiemas desde la app o por correo, qué datos se eliminan al instante y qué se conserva."
+    />
+    <meta property="og:image" content="https://kiemas.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Logotipo de Kiemas sobre fondo lavanda, con el lema «El mapa y el calendario de tu grupo»." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Eliminar tu cuenta · Kiemas" />
+    <meta
+      name="twitter:description"
+      content="Cómo borrar tu cuenta de Kiemas desde la app o por correo, qué datos se eliminan al instante y qué se conserva."
+    />
+    <meta name="twitter:image" content="https://kiemas.com/og.png" />
     <style>
       :root {
         --fondo: #f7f9fb;
@@ -158,11 +187,18 @@
         </p>
       </div>
 
+      <!-- A las páginas ESTÁTICAS y no a `/#/legal/privacidad`.
+           Esa es una ruta de la app: la pinta JavaScript, así que quien llegue
+           aquí sin ejecutarlo —el revisor de Google Play, que es justo para
+           quien existe esta página— se encontraba un documento en blanco al
+           seguir el enlace. -->
       <footer>
-        <p style="margin: 0">
-          Kiemas · <a href="https://kiemas.com">kiemas.com</a> ·
-          <a href="https://kiemas.com/#/legal/privacidad">Política de privacidad</a>
-        </p>
+        <nav style="margin: 0" aria-label="Otras páginas legales">
+          Kiemas · <a href="/">kiemas.com</a> ·
+          <a href="/privacidad.html">Política de privacidad</a> ·
+          <a href="/terminos.html">Condiciones de uso</a> ·
+          <a href="/aviso-legal.html">Aviso legal</a>
+        </nav>
       </footer>
     </div>
   </body>

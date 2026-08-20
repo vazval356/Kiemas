@@ -104,6 +104,7 @@ export function DecisionsSection() {
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             placeholder={t('decision.titlePlaceholder')}
+            aria-label={t('decision.titlePlaceholder')}
             maxLength={120}
             className="kd-input"
           />
@@ -116,6 +117,10 @@ export function DecisionsSection() {
                   setOpciones(opciones.map((v, j) => (i === j ? e.target.value : v)))
                 }
                 placeholder={t('decision.optionPlaceholder', { n: i + 1 })}
+                // Numerada, porque son campos iguales en una columna: sin el
+                // número todos se anuncian igual y no hay forma de saber en
+                // cuál está el cursor.
+                aria-label={t('decision.optionPlaceholder', { n: i + 1 })}
                 maxLength={80}
                 className="kd-input"
               />

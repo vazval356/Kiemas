@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BackIcon } from '../components/icons'
 import { BRAND_NAME } from '../lib/brand'
 import { createTranslate, detectLocale } from '../lib/i18n'
+import { useHtmlLang, usePageTitle } from '../lib/seo'
 import { LEGAL_UPDATED, noticeDoc, privacyDoc, termsDoc, type LegalDoc } from '../lib/legal'
 
 export type LegalKind = 'privacy' | 'terms' | 'notice'
@@ -54,6 +55,10 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
         : noticeDoc(locale)
 
   const otros = (Object.keys(RUTAS) as LegalKind[]).filter((k) => k !== kind)
+  usePageTitle(doc.title)
+  // Estas páginas se abren desde un enlace suelto, sin sesión: el idioma sale
+  // del navegador y el atributo del HTML tiene que seguirlo.
+  useHtmlLang(locale)
 
   return (
     <div className="pt-safe h-full overflow-y-auto bg-surface">

@@ -57,8 +57,22 @@ const es = {
   'auth.toSignUp': '¿No tienes cuenta? Crear una',
   'auth.toSignIn': '¿Ya tienes cuenta? Entrar',
   'auth.signOut': 'Cerrar sesión',
-  'auth.passwordTooShort': 'La contraseña necesita al menos 6 caracteres',
+  'auth.passwordTooShort': 'La contraseña no cumple los requisitos',
+  // Las tres reglas, en la lista que se ve mientras se escribe. Redactadas en
+  // positivo —lo que hace falta— y no en negativo —lo que falta—: es la misma
+  // lista antes y después de cumplirla, y solo cambia la marca de al lado.
+  'password.ruleLength': 'Al menos {min} caracteres',
+  'password.ruleCase': 'Mayúsculas y minúsculas',
+  'password.ruleNumber': 'Un número',
+  'password.requirements': 'La contraseña necesita:',
+  'password.met': 'cumplido',
+  'password.pending': 'pendiente',
+  'password.show': 'Mostrar la contraseña',
+  'password.hide': 'Ocultar la contraseña',
+  'password.capsLock': 'Tienes el Bloq Mayús activado.',
   'auth.nameRequired': 'Escribe tu nombre',
+  'auth.emailRequired': 'Escribe tu correo',
+  'auth.emailInvalid': 'A este correo le falta algo. Revisa que esté entero',
   'auth.invalidCredentials': 'Correo o contraseña incorrectos',
   'auth.emailInUse': 'Ya existe una cuenta con ese correo',
   'auth.checkInbox': 'Revisa tu correo para confirmar la cuenta',
@@ -310,6 +324,7 @@ const es = {
   'list.clearFilters': 'Quitar filtros',
   'list.count': '{count} sitios guardados',
   'list.countOne': '1 sitio guardado',
+  'list.sortLabel': 'Ordenar por',
   'list.sortRecent': 'Más recientes',
   'list.sortName': 'Por nombre',
   'list.sortRating': 'Mejor puntuados',
@@ -812,6 +827,24 @@ const es = {
   'space.myColorHint': 'Con este color se te reconoce en el calendario y en los planes.',
   'space.addCover': 'Añadir foto de portada',
   'space.changeCover': 'Cambiar la portada',
+
+  // Página no encontrada
+  'notFound.title': 'Esto no lleva a ninguna parte',
+  'notFound.body':
+    'La dirección que has abierto no existe. Puede que el enlace esté mal copiado, o que apunte a algo que ya se ha borrado.',
+  'notFound.home': 'Ir al mapa',
+
+  // Cargando y fallos al cargar los datos de un grupo
+  'data.loading': 'Cargando el grupo…',
+  'data.errorTitle': 'No hemos podido cargar tu grupo',
+  'data.errorBody':
+    'Puede ser la conexión o un tropiezo del servidor. Tus datos están a salvo: no se ha perdido nada.',
+
+  // Fotos
+  'photo.tooBig': 'La foto «{nombre}» pesa {peso} y no cabe. El tope son 8 MB por foto.',
+  'photo.unreadable': 'No hemos podido leer «{nombre}». Prueba con otra foto.',
+  'photo.ofPlace': 'Foto de {nombre}',
+  'photo.number': 'Foto {n} de {total}',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -856,8 +889,19 @@ const en: Record<TranslationKey, string> = {
   'auth.toSignUp': "Don't have an account? Create one",
   'auth.toSignIn': 'Already have an account? Sign in',
   'auth.signOut': 'Sign out',
-  'auth.passwordTooShort': 'Password needs at least 6 characters',
+  'auth.passwordTooShort': 'That password does not meet the requirements',
+  'password.ruleLength': 'At least {min} characters',
+  'password.ruleCase': 'Upper and lower case',
+  'password.ruleNumber': 'One number',
+  'password.requirements': 'Your password needs:',
+  'password.met': 'met',
+  'password.pending': 'not yet',
+  'password.show': 'Show password',
+  'password.hide': 'Hide password',
+  'password.capsLock': 'Caps Lock is on.',
   'auth.nameRequired': 'Enter your name',
+  'auth.emailRequired': 'Enter your email',
+  'auth.emailInvalid': 'That email looks incomplete. Check it over',
   'auth.invalidCredentials': 'Wrong email or password',
   'auth.emailInUse': 'An account with that email already exists',
   'auth.checkInbox': 'Check your inbox to confirm your account',
@@ -1095,6 +1139,7 @@ const en: Record<TranslationKey, string> = {
   'list.clearFilters': 'Clear filters',
   'list.count': '{count} places saved',
   'list.countOne': '1 place saved',
+  'list.sortLabel': 'Sort by',
   'list.sortRecent': 'Most recent',
   'list.sortName': 'By name',
   'list.sortRating': 'Best rated',
@@ -1576,6 +1621,24 @@ const en: Record<TranslationKey, string> = {
   'space.myColorHint': "This is the colour you're recognised by in the calendar and in plans.",
   'space.addCover': 'Add a cover photo',
   'space.changeCover': 'Change cover',
+
+  // Página no encontrada
+  'notFound.title': 'This does not lead anywhere',
+  'notFound.body':
+    'The address you opened does not exist. The link may have been copied wrong, or it points to something that has since been deleted.',
+  'notFound.home': 'Go to the map',
+
+  // Cargando y fallos al cargar los datos de un grupo
+  'data.loading': 'Loading your group…',
+  'data.errorTitle': 'We could not load your group',
+  'data.errorBody':
+    'It may be the connection or a hiccup on the server. Your data is safe: nothing has been lost.',
+
+  // Fotos
+  'photo.tooBig': '“{nombre}” is {peso} and will not fit. The limit is 8 MB per photo.',
+  'photo.unreadable': 'We could not read “{nombre}”. Try a different photo.',
+  'photo.ofPlace': 'Photo of {nombre}',
+  'photo.number': 'Photo {n} of {total}',
 
   // Onboarding
 }

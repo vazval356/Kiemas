@@ -69,7 +69,15 @@ const FAMILIAS: { patron: RegExp; clave: TranslationKey }[] = [
     patron: /rate limit|too many requests|over_email_send_rate_limit|for security purposes/i,
     clave: 'auth.tooMany',
   },
-  { patron: /password.*(6|short|weak|length)|weak_password/i, clave: 'auth.passwordTooShort' },
+  // La contraseña no cumple las reglas. El servidor las comprueba también, y
+  // cuando falla contesta cosas como «Password should contain at least one
+  // character of each: abcdefghijklmnopqrstuvwxyz, 0123456789.» — un alfabeto
+  // literal en inglés, que es lo último que quiere leer alguien que acaba de
+  // intentar registrarse. El patrón cubre esa forma además de la de longitud.
+  {
+    patron: /password.*(short|weak|length|at least|should contain)|weak_password/i,
+    clave: 'auth.passwordTooShort',
+  },
   {
     patron: /invalid email|email_address_invalid|unable to validate email/i,
     clave: 'auth.badEmail',
@@ -166,6 +174,27 @@ export const CATEGORY_EMOJIS = [
   '💃',
   '📍',
 ]
+
+/**
+ * Tope de tamaño de una foto antes de tocarla siquiera.
+ *
+ * Lo que se sube va comprimido a unos cientos de kilobytes venga de donde
+ * venga, así que este tope no protege al servidor: protege al móvil. Reducir
+ * una imagen pasa por meterla entera descodificada en memoria —una foto de
+ * 8 MB son unos 100 MB de mapa de bits—, y un par de fotos de una cámara
+ * moderna bastan para que la WebView se quede sin memoria y el sistema cierre
+ * la app sin decir nada. Desde fuera eso parece que la app «se cierra sola al
+ * poner fotos», que es de los fallos más difíciles de atribuir a su causa.
+ *
+ * Un móvil normal hace fotos de entre 2 y 5 MB, así que a 8 MB no molesta a
+ * nadie: lo que aparta son capturas de réflex y panorámicas enormes.
+ */
+export const MAX_FOTO_BYTES = 8 * 1024 * 1024
+
+/** «12,4 MB»: para poder decir cuánto se ha pasado y no solo que se ha pasado. */
+export function pesoLegible(bytes: number, locale = 'es'): string {
+  return `${(bytes / (1024 * 1024)).toLocaleString(locale, { maximumFractionDigits: 1 })} MB`
+}
 
 /** Redimensiona una imagen a un JPEG razonable para subir/guardar. */
 export function resizeImage(file: File, maxSize = 1280, quality = 0.82): Promise<Blob> {

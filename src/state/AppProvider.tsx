@@ -3,12 +3,13 @@ import { storageKey } from '../lib/brand'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { supabaseApi } from '../lib/supabaseApi'
 import { setupPush, teardownPush } from '../lib/push'
+import { useHtmlLang } from '../lib/seo'
 import { purchasesLogOut, setupPurchases } from '../lib/purchases'
 import { updateWidget } from '../lib/widget'
 import { calendarioDisponible, sincronizarCalendario } from '../lib/calendar'
 import { supabase } from '../lib/supabaseClient'
 import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } from '../lib/types'
-import { AppContext, type AppState, type AuthStatus } from './appState'
+import { AppContext, type AppState, type AuthStatus, type DataStatus } from './appState'
 
 /**
  * Estado global: sesión, espacios, espacio activo y sus datos.
@@ -56,9 +57,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [collections, setCollections] = useState<Collection[]>([])
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
   const [fallbackLocale, setFallbackLocale] = useState<Locale>(detectLocale)
+  const [dataStatus, setDataStatus] = useState<DataStatus>('loading')
 
   // Evita recargarlo todo cada vez que Supabase renueva el token.
   const loadedRef = useRef(false)
+
+  /**
+   * Qué espacio se ha llegado a cargar del todo alguna vez.
+   *
+   * Es lo que distingue la primera carga de un refresco. `refresh` se llama
+   * también al guardar un sitio y cada vez que llega un aviso de tiempo real,
+   * y si esas pasadas pusieran «cargando» la pantalla parpadearía a esqueleto
+   * cada pocos segundos, encima de contenido que ya está bien.
+   */
+  const cargadoRef = useRef<string | null>(null)
 
   const activeSpace = useMemo(
     () => spaces.find((s) => s.id === activeSpaceId) ?? spaces[0] ?? null,
@@ -68,6 +80,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const locale = profile?.locale ?? fallbackLocale
   const t = useMemo(() => createTranslate(locale), [locale])
 
+  useHtmlLang(locale)
+
   const refresh = useCallback(async () => {
     if (!activeSpace) {
       setCategories([])
@@ -75,26 +89,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setPlans([])
       setTags([])
       setCollections([])
+      cargadoRef.current = null
+      setDataStatus('ready')
       return
     }
+
+    const primeraVez = cargadoRef.current !== activeSpace.id
+    if (primeraVez) setDataStatus('loading')
+
     // Los planes se piden desde ayer, no desde ahora: uno que empezó hace dos
     // horas sigue siendo el plan de esta noche y desaparecer de la lista a mitad
     // de la cena sería absurdo.
     const since = new Date()
     since.setDate(since.getDate() - 1)
 
-    const [cats, pls, plns, tgs, cols] = await Promise.all([
-      api.listCategories(activeSpace.id),
-      api.listPlaces(activeSpace.id),
-      api.listPlans(activeSpace.id, since),
-      api.listTags(activeSpace.id),
-      api.listCollections(activeSpace.id),
-    ])
-    setCategories(cats)
-    setPlaces(pls)
-    setPlans(plns)
-    setTags(tgs)
-    setCollections(cols)
+    try {
+      const [cats, pls, plns, tgs, cols] = await Promise.all([
+        api.listCategories(activeSpace.id),
+        api.listPlaces(activeSpace.id),
+        api.listPlans(activeSpace.id, since),
+        api.listTags(activeSpace.id),
+        api.listCollections(activeSpace.id),
+      ])
+      setCategories(cats)
+      setPlaces(pls)
+      setPlans(plns)
+      setTags(tgs)
+      setCollections(cols)
+      cargadoRef.current = activeSpace.id
+      setDataStatus('ready')
+    } catch (e) {
+      // Un refresco que falla sobre datos que ya están en pantalla no se
+      // anuncia: lo que se ve sigue siendo correcto, solo que un poco viejo, y
+      // tapar un grupo entero con un cartel de error por un aviso de tiempo
+      // real perdido sería el remedio peor que la enfermedad. Solo se dice
+      // cuando no hay nada detrás que enseñar.
+      if (primeraVez) setDataStatus('error')
+      console.warn('[kiemas] no se han podido cargar los datos del grupo:', e)
+      // Se relanza: quien llama a `refresh()` a mano —al guardar un sitio, al
+      // salirse de un grupo— tiene su propio manejo y espera enterarse.
+      throw e
+    }
   }, [api, activeSpace])
 
   const refreshSpaces = useCallback(async () => {
@@ -191,9 +226,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [refreshSpaces])
 
   // ── Datos del espacio activo ─────────────────────────────────────────────
+  //
+  // El `catch` vacío no se traga nada: `refresh` ya ha dejado el estado en
+  // «error» y ha escrito el motivo en la consola. Lo que evita es que un fallo
+  // de red aquí acabe como una promesa rechazada sin dueño, que en el navegador
+  // sale como error rojo sin pila útil y en la WebView de iOS no sale en
+  // absoluto.
   useEffect(() => {
     if (authStatus !== 'ready') return
-    void refresh()
+    void refresh().catch(() => {})
   }, [authStatus, refresh])
 
   // ── Tiempo real, acotado al espacio que se está mirando ──────────────────
@@ -209,12 +250,72 @@ export function AppProvider({ children }: { children: ReactNode }) {
     refreshRef.current = refresh
   }, [refresh])
 
+  /**
+   * Lo que hay cargado ahora mismo, para poder descartar avisos ajenos sin
+   * volver a pintar.
+   *
+   * En una referencia y no en el estado: se lee dentro del manejador del canal,
+   * que se crea una vez y tiene que ver siempre lo último. Si dependiera del
+   * estado habría que rehacer la suscripción con cada cambio, que es justo el
+   * fallo que la nota de arriba explica.
+   */
+  const cargadoAhoraRef = useRef({ places: new Set<string>(), plans: new Set<string>() })
+  useEffect(() => {
+    cargadoAhoraRef.current = {
+      places: new Set(places.map((p) => p.id)),
+      plans: new Set(plans.map((p) => p.id)),
+    }
+  }, [places, plans])
+
   const activeSpaceId2 = activeSpace?.id ?? null
   useEffect(() => {
     if (authStatus !== 'ready' || !activeSpaceId2) return
-    return api.subscribe(activeSpaceId2, () => {
-      void refreshRef.current()
+
+    /**
+     * Recargas agrupadas, no una por aviso.
+     *
+     * Cada `refresh()` son cinco consultas, y los avisos no llegan de uno en
+     * uno: guardar un sitio con tres fotos son cuatro inserciones, y cerrar una
+     * votación toca la decisión y todos sus votos. Así, una ráfaga de quince
+     * avisos en medio segundo producía setenta y cinco consultas para acabar
+     * pintando exactamente lo mismo que una sola.
+     *
+     * El temporizador se reinicia con cada aviso, de modo que la recarga sale
+     * una vez que la ráfaga se calma. Un cuarto de segundo no se percibe como
+     * retraso —el tiempo real ya venía de la red— y agrupa cualquier ráfaga
+     * normal.
+     */
+    let temporizador: number | undefined
+    const pedirRecarga = () => {
+      window.clearTimeout(temporizador)
+      temporizador = window.setTimeout(() => {
+        void refreshRef.current().catch(() => {})
+      }, 250)
+    }
+
+    const cancelar = api.subscribe(activeSpaceId2, (aviso) => {
+      const { places: misPlaces, plans: misPlans } = cargadoAhoraRef.current
+
+      // Siete de las doce tablas vigiladas no se pueden filtrar en el servidor
+      // porque no tienen `space_id`, así que llega también lo que ocurre en tus
+      // OTROS grupos. Una puntuación que alguien le pone a un bar del grupo del
+      // trabajo no tiene por qué recargar el mapa del grupo de la familia.
+      //
+      // Solo se descarta cuando hay certeza: el aviso trae un identificador y
+      // ese identificador no está entre lo cargado. Sin identificador —los
+      // borrados suelen llegar solo con la clave primaria— se recarga, porque
+      // equivocarse hacia el lado de recargar de más se nota en la factura y
+      // equivocarse hacia el otro se nota en la pantalla.
+      if (aviso.placeId && !misPlaces.has(aviso.placeId)) return
+      if (aviso.planId && !misPlans.has(aviso.planId)) return
+
+      pedirRecarga()
     })
+
+    return () => {
+      window.clearTimeout(temporizador)
+      cancelar()
+    }
   }, [authStatus, api, activeSpaceId2])
 
   // ── Widget de pantalla de inicio ─────────────────────────────────────────
@@ -321,6 +422,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AppState>(
     () => ({
       authStatus,
+      dataStatus,
       profile,
       spaces,
       activeSpace,
@@ -342,6 +444,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }),
     [
       authStatus,
+      dataStatus,
       profile,
       spaces,
       activeSpace,

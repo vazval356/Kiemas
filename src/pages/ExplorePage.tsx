@@ -5,6 +5,7 @@ import { CollectionIcon, SearchIcon } from '../components/icons'
 import type { ExploreList, FollowedList } from '../lib/types'
 import { errorMessage, formatKm, kmBetween } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Explorar listas públicas.
@@ -18,6 +19,7 @@ import { useApp } from '../state/appState'
  */
 export function ExplorePage() {
   const { api, t, position } = useApp()
+  usePageTitle(t('explore.title'))
 
   /**
    * A qué distancia cae una lista de quien la está mirando.
@@ -127,6 +129,7 @@ export function ExplorePage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('explore.search')}
+            aria-label={t('explore.search')}
             className="flex-1 bg-transparent py-3 outline-none placeholder:text-outline"
           />
         </div>
@@ -215,6 +218,7 @@ export function ExplorePage() {
                     <div className="relative flex aspect-square items-center justify-center bg-primary-fixed">
                       {list.coverUrl ? (
                         <img
+                          decoding="async"
                           src={list.coverUrl}
                           alt=""
                           loading="lazy"
@@ -244,6 +248,7 @@ export function ExplorePage() {
                     <div className="mt-1 flex items-center gap-1.5">
                       {list.authorAvatarUrl ? (
                         <img
+                          decoding="async"
                           src={list.authorAvatarUrl}
                           alt=""
                           loading="lazy"

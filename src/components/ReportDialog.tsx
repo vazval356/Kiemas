@@ -98,6 +98,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
               onChange={(e) => setDetails(e.target.value)}
               rows={3}
               placeholder={t('settings.reportDetails')}
+              aria-label={t('settings.reportDetails')}
               className="kd-input mt-4 resize-none"
             />
 

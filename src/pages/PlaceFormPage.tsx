@@ -13,7 +13,9 @@ import {
   CATEGORY_EMOJIS,
   errorMessage,
   hasValidCoords,
+  MAX_FOTO_BYTES,
   parseGoogleMapsUrl,
+  pesoLegible,
   priceLabel,
   searchAddress,
   suggestAddress,
@@ -21,6 +23,7 @@ import {
 } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168]
@@ -62,6 +65,9 @@ export function PlaceFormPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [atLimit, setAtLimit] = useState(false)
+  // «Editar sitio» o «Nuevo sitio», que es lo que distingue las dos
+  // pantallas que comparten este componente.
+  usePageTitle(existing ? t('form.editTitle') : t('form.newTitle'))
 
   // Importación desde Google Maps
   const [importUrl, setImportUrl] = useState('')
@@ -328,6 +334,23 @@ export function PlaceFormPage() {
     setNewCatName('')
   }
 
+  /**
+   * Las miniaturas de las fotos pendientes de subir.
+   *
+   * Estaban como `URL.createObjectURL(f)` dentro del propio JSX. Eso crea una
+   * URL NUEVA en cada pintado y ninguna se libera: el navegador se queda con
+   * una referencia a la foto entera por cada una. Con tres fotos elegidas,
+   * escribir en el campo de notas iba dejando tres copias por pulsación —en
+   * este formulario, decenas de megas en memoria antes de llegar a guardar.
+   *
+   * Aquí se crean una sola vez por fichero y se liberan cuando la lista cambia
+   * o cuando la pantalla se cierra.
+   */
+  const miniaturas = useMemo(() => photoFiles.map((f) => URL.createObjectURL(f)), [photoFiles])
+  useEffect(() => {
+    return () => miniaturas.forEach((url) => URL.revokeObjectURL(url))
+  }, [miniaturas])
+
   const canSave = useMemo(
     () => name.trim().length > 0 && coords !== null && !saving && Boolean(activeSpace),
     [name, coords, saving, activeSpace]
@@ -395,7 +418,24 @@ export function PlaceFormPage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
-      <div className="mx-auto max-w-md px-5 pt-2">
+      {/* Un `<form>` y no un `<div>` con un botón suelto, que es como estaba.
+          Tres cosas que solo aparecen al ponerlo: pulsar Intro desde el campo
+          del nombre guarda, el navegador ofrece autocompletar teléfono y web, y
+          un lector de pantalla anuncia el conjunto como un formulario en vez de
+          leer campos sueltos.
+
+          `noValidate` porque los mensajes nativos del navegador salen en el
+          idioma del sistema, no en el de la app, y se colocan donde el
+          navegador quiere. La comprobación ya la hace `canSave`, y los errores
+          se enseñan en el recuadro de siempre. */}
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (canSave) void save()
+        }}
+        className="mx-auto max-w-md px-5 pt-2"
+      >
         <BackButton />
 
         <h1 className="font-display text-3xl font-bold text-on-surface">
@@ -424,6 +464,10 @@ export function PlaceFormPage() {
                   }
                 }}
                 placeholder="https://www.google.com/maps/place/…"
+                // El marcador de posición es una URL de ejemplo, y como nombre
+                // del campo un lector de pantalla leería la dirección letra a
+                // letra. El rótulo es el de la sección de arriba.
+                aria-label={t('import.title')}
                 inputMode="url"
                 autoCapitalize="none"
                 spellCheck={false}
@@ -487,8 +531,10 @@ export function PlaceFormPage() {
           </div>
         )}
 
-        <Label>{t('place.name')}</Label>
+        <Label htmlFor="sitio-nombre">{t('place.name')}</Label>
         <input
+          id="sitio-nombre"
+          required
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={t('form.namePlaceholder')}
@@ -512,6 +558,7 @@ export function PlaceFormPage() {
                 }
               }}
               placeholder={t('form.searchAddress')}
+              aria-label={t('form.searchAddress')}
               className="flex-1 bg-transparent py-3.5 outline-none"
             />
             {searching && (
@@ -584,6 +631,7 @@ export function PlaceFormPage() {
               value={newCatName}
               onChange={(e) => setNewCatName(e.target.value)}
               placeholder={t('form.categoryNamePlaceholder')}
+              aria-label={t('form.categoryNamePlaceholder')}
               className="kd-input"
             />
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -657,8 +705,11 @@ export function PlaceFormPage() {
         <Label className="mt-5">{t('tag.plural')}</Label>
         <TagPicker selected={tagIds} onChange={setTagIds} />
 
-        <Label className="mt-5">{t('place.notes')}</Label>
+        <Label className="mt-5" htmlFor="sitio-notas">
+          {t('place.notes')}
+        </Label>
         <textarea
+          id="sitio-notas"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
@@ -677,20 +728,47 @@ export function PlaceFormPage() {
               multiple
               hidden
               onChange={(e) => {
-                if (e.target.files) setPhotoFiles([...photoFiles, ...Array.from(e.target.files)])
+                const elegidas = Array.from(e.target.files ?? [])
+                // El campo se vacía siempre, incluso si no se acepta nada:
+                // sin esto, volver a elegir la MISMA foto no dispara `change`
+                // y parece que el botón ha dejado de funcionar.
                 e.target.value = ''
+
+                const caben = elegidas.filter((f) => f.size <= MAX_FOTO_BYTES)
+                const gordas = elegidas.filter((f) => f.size > MAX_FOTO_BYTES)
+
+                if (caben.length > 0) setPhotoFiles([...photoFiles, ...caben])
+                // Se nombra la foto y se dice cuánto pesa. «Imagen demasiado
+                // grande» a secas, con cinco fotos elegidas de golpe, no dice
+                // cuál sobra ni por cuánto.
+                setError(
+                  gordas.length === 0
+                    ? ''
+                    : gordas
+                        .map((f) =>
+                          t('photo.tooBig', {
+                            nombre: f.name,
+                            peso: pesoLegible(f.size, locale),
+                          })
+                        )
+                        .join(' ')
+                )
               }}
             />
           </label>
-          {photoFiles.map((f, i) => (
+          {photoFiles.map((foto, i) => (
             <button
-              key={i}
+              key={`${foto.name}-${foto.lastModified}-${i}`}
               type="button"
               onClick={() => setPhotoFiles(photoFiles.filter((_, j) => j !== i))}
               className="relative size-24 overflow-hidden rounded-card"
               title={t('common.delete')}
+              // El botón ES la miniatura, así que sin esto un lector de
+              // pantalla anuncia «botón» y nada más: ni qué foto es ni que al
+              // pulsarlo se quita. `title` solo lo leen algunos.
+              aria-label={`${t('common.delete')}: ${foto.name}`}
             >
-              <img src={URL.createObjectURL(f)} alt="" className="size-full object-cover" />
+              <img decoding="async" src={miniaturas[i]} alt="" className="size-full object-cover" />
             </button>
           ))}
         </div>
@@ -704,6 +782,7 @@ export function PlaceFormPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder={t('place.phone')}
+              aria-label={t('place.phone')}
               type="tel"
               className="kd-input"
             />
@@ -711,6 +790,7 @@ export function PlaceFormPage() {
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               placeholder={t('place.website')}
+              aria-label={t('place.website')}
               type="url"
               className="kd-input"
             />
@@ -724,6 +804,7 @@ export function PlaceFormPage() {
                 value={hours}
                 onChange={(e) => setHours(e.target.value)}
                 placeholder={t('hours.manualLabel')}
+                aria-label={t('hours.manualLabel')}
                 className="kd-input"
                 maxLength={300}
               />
@@ -754,8 +835,7 @@ export function PlaceFormPage() {
         )}
 
         <button
-          type="button"
-          onClick={() => void save()}
+          type="submit"
           disabled={!canSave}
           className="mt-6 w-full rounded-full bg-primary py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-40"
         >
@@ -764,14 +844,38 @@ export function PlaceFormPage() {
         {editing && !existing && (
           <p className="mt-2 text-sm text-on-surface-variant">{t('form.gone')}</p>
         )}
-      </div>
+      </form>
     </div>
   )
 }
 
-function Label({ children, className = '' }: { children: ReactNode; className?: string }) {
+/**
+ * El rótulo de un campo, atado al campo.
+ *
+ * `htmlFor` no es decoración: sin él, un `<label>` suelto encima de un
+ * `<input>` es texto que da la casualidad de estar cerca. Atados, el lector de
+ * pantalla anuncia «Nombre, campo de texto» en vez de «campo de texto» a
+ * secas, y tocar el rótulo pone el cursor dentro — que en un móvil, donde el
+ * rótulo es un blanco mucho más grande que el campo, se agradece.
+ *
+ * Es opcional para los tres rótulos que encabezan un grupo de botones en vez
+ * de un campo (estado, precio, etiquetas): ahí no hay un único control al que
+ * apuntar, y un `htmlFor` a ninguna parte es peor que no ponerlo.
+ */
+function Label({
+  children,
+  className = '',
+  htmlFor,
+}: {
+  children: ReactNode
+  className?: string
+  htmlFor?: string
+}) {
   return (
-    <label className={`mb-2 block font-display font-semibold text-on-surface ${className}`}>
+    <label
+      htmlFor={htmlFor}
+      className={`mb-2 block font-display font-semibold text-on-surface ${className}`}
+    >
       {children}
     </label>
   )

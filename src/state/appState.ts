@@ -18,8 +18,25 @@ import type { Category, Collection, Locale, Place, Plan, Profile, Space, Tag } f
 
 export type AuthStatus = 'loading' | 'signedOut' | 'ready'
 
+/**
+ * En qué punto está la carga de los datos del espacio activo.
+ *
+ * Sin esto, una lista vacía y una lista que todavía no ha llegado eran el mismo
+ * array vacío, y las pantallas enseñaban «Aún no hay sitios guardados» durante
+ * el segundo que tarda la red. En un grupo con cuarenta sitios dentro, ese
+ * cartel es sencillamente falso, y es lo primero que se ve al abrir la app.
+ *
+ * Solo vale «loading» la primera vez que se cargan los datos de un espacio. Los
+ * refrescos posteriores —al guardar algo, o al llegar un aviso de tiempo real—
+ * no lo tocan: encima de contenido que ya está bien, un esqueleto es un
+ * parpadeo, no información.
+ */
+export type DataStatus = 'loading' | 'ready' | 'error'
+
 export interface AppState {
   authStatus: AuthStatus
+  /** Carga de los datos del espacio activo: sitios, planes, categorías… */
+  dataStatus: DataStatus
   profile: Profile | null
   spaces: Space[]
   activeSpace: Space | null

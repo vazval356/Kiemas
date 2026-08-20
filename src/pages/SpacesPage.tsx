@@ -4,6 +4,7 @@ import { BackButton } from '../components/BackButton'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Crear un grupo, o entrar en uno con un código.
@@ -21,6 +22,7 @@ import { useApp } from '../state/appState'
 export function SpacesPage() {
   const navigate = useNavigate()
   const { setActiveSpace, api, refreshSpaces, t } = useApp()
+  usePageTitle(t('spaces.title'))
 
   const nameRef = useRef<HTMLInputElement>(null)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -186,6 +188,7 @@ export function SpacesPage() {
                 if (e.key === 'Enter') void createSpace()
               }}
               placeholder={t('space.name')}
+              aria-label={t('space.name')}
               maxLength={60}
               className="kd-input flex-1"
             />
@@ -216,6 +219,9 @@ export function SpacesPage() {
                 if (e.key === 'Enter') void join()
               }}
               placeholder="KD92X7"
+              // El marcador de posición es un código de ejemplo, que como
+              // nombre del campo se leería letra a letra.
+              aria-label={t('invite.enterCode')}
               maxLength={6}
               autoCapitalize="characters"
               autoCorrect="off"

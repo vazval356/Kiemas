@@ -9,6 +9,7 @@ import { BackButton } from '../components/BackButton'
 import { PlanPlaceSection } from '../components/PlanPlaceSection'
 import { Cara, Caras } from '../components/Votantes'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 const RESPONSES: { value: AttendeeResponse; key: 'plan.going' | 'plan.maybe' | 'plan.notGoing' }[] =
   [
@@ -32,6 +33,7 @@ export function PlanDetailPage() {
   const [error, setError] = useState('')
 
   const plan = plans.find((p) => p.id === id)
+  usePageTitle(plan?.title)
 
   if (!plan) {
     return (

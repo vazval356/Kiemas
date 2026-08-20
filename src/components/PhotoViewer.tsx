@@ -95,8 +95,14 @@ export function PhotoViewer({ fotos, abierta, onCerrar, nombreDe }: Props) {
         onTouchCancel={alSoltar}
       >
         <img
+          decoding="async"
           src={foto.url}
-          alt=""
+          // Aquí la foto NO es decoración: es lo único que hay en la pantalla.
+          // Con `alt=""` el visor era una pantalla negra vacía para un lector
+          // de pantalla, sin manera de saber siquiera cuántas fotos hay ni en
+          // cuál se está. No podemos describir lo que se ve —nadie ha escrito
+          // esa descripción— pero sí situar: qué foto de cuántas.
+          alt={t('photo.number', { n: i + 1, total: fotos.length })}
           draggable={false}
           style={{
             transform: `translateX(${arrastre}px)`,

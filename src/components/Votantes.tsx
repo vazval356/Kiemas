@@ -30,6 +30,7 @@ export function Cara({
   if (miembro?.avatarUrl) {
     return (
       <img
+        decoding="async"
         src={miembro.avatarUrl}
         alt={nombre}
         title={nombre}

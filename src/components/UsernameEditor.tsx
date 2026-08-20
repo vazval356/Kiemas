@@ -128,7 +128,13 @@ export function UsernameEditor() {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+      {/* `htmlFor` porque el campo no va dentro del rótulo sino dos niveles
+          más abajo, envuelto en la caja que le pone la arroba delante. Sin
+          esto, el rótulo era texto que da la casualidad de estar encima. */}
+      <label
+        htmlFor="usuario-arroba"
+        className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant"
+      >
         {t('username.label')}
       </label>
 
@@ -139,6 +145,7 @@ export function UsernameEditor() {
           </span>
           <input
             type="text"
+            id="usuario-arroba"
             value={value}
             autoFocus
             autoCapitalize="none"

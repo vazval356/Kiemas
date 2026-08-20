@@ -1,17 +1,29 @@
-# Iconos de la app
+# Marca: el logotipo original y todo lo que sale de él
 
-Deja aquí el logotipo como **`source.png`** y ejecuta:
+Deja aquí el logotipo como **`logo-source.png`** y ejecuta:
 
 ```bash
 npm run icons
 ```
 
+Esta carpeta guarda el original y **no se despliega**. Todo lo que el script
+genera va a `public/` y a `assets/`, que son las que sí se publican:
+
 | Fichero | Tamaño | Para qué |
 |---|---|---|
-| `icon-192.png` | 192×192 | Icono del manifiesto |
-| `icon-512.png` | 512×512 | Icono del manifiesto y splash |
-| `icon-512-maskable.png` | 512×512 | Android adaptativo, con margen de seguridad |
-| `apple-touch-icon.png` | 180×180 | Pantalla de inicio de iOS |
+| `public/icons/icon-192.png` | 192×192 | Icono del manifiesto |
+| `public/icons/icon-512.png` | 512×512 | Icono del manifiesto y splash |
+| `public/icons/icon-512-maskable.png` | 512×512 | Android adaptativo, con margen de seguridad |
+| `public/icons/apple-touch-icon.png` | 180×180 | Pantalla de inicio de iOS |
+| `public/icons/favicon-16/32/48.png` | — | Icono de la pestaña del navegador |
+| `public/favicon.ico` | 16+32+48 | Para lectores y agregadores que piden `/favicon.ico` sin mirar el HTML |
+| `public/og.png` | 1200×630 | Vista previa al pegar el enlace en WhatsApp, Telegram o X |
+| `assets/icon.png` | 1024×1024 | Fuente de `@capacitor/assets` para Android e iOS |
+| `assets/splash.png` | 2732×2732 | Pantalla de arranque nativa |
+
+El original vivía en `public/icons/source.png`, de donde se copiaba tal cual a
+cada despliegue y a cada compilación nativa: 220 kB que nadie pide nunca. Aquí
+está fuera del alcance del empaquetador.
 
 ## El script recorta el símbolo por su cuenta
 

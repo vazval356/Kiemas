@@ -24,6 +24,35 @@ export default defineConfig({
       'maplibre-gl',
     ],
   },
+  build: {
+    /**
+     * Se separan las librerías grandes del código de la app.
+     *
+     * Sin esto todo caía en un único fichero de 1,9 MB, y bastaba cambiar una
+     * palabra de un botón para que el nombre con hash cambiara: a cada
+     * despliegue, todo el mundo volvía a descargarse el motor de mapas entero.
+     * Sueltas, esas tres piezas cambian de versión un par de veces al año y el
+     * navegador se las queda en caché entre despliegues.
+     *
+     * El motor de mapas, además, solo lo pide la pantalla que lleva mapa: con
+     * las pantallas ya divididas por rutas, este trozo no se descarga hasta que
+     * hace falta uno.
+     */
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-dom/client', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          maplibre: ['maplibre-gl'],
+        },
+      },
+    },
+    // El listón está justo por encima del motor de mapas, que es el trozo más
+    // grande que hay y no se puede partir: maplibre-gl viene en una pieza.
+    // Por debajo, el aviso saltaba en cada compilación y ya no lo leía nadie;
+    // así solo salta si aparece algo nuevo y gordo.
+    chunkSizeWarningLimit: 1100,
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -47,6 +76,20 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        /**
+         * El motor de mapas se queda fuera de la precarga.
+         *
+         * El service worker se descarga por adelantado todo lo que case con el
+         * patrón de arriba, y ahí dentro va `maplibre`: 1 MB que se bajaba en
+         * la primera visita aunque quien llegara se quedara en la pantalla de
+         * entrada sin crear cuenta. Justo lo que la división por rutas acababa
+         * de ahorrar, devuelto por detrás.
+         *
+         * No se pierde el funcionamiento sin conexión: la regla de abajo lo
+         * guarda en cuanto se usa una vez, y el mapa es la pantalla de inicio
+         * de quien tiene sesión, así que eso ocurre en su primera visita.
+         */
+        globIgnores: ['**/maplibre-*.js'],
         // Páginas que NO debe secuestrar el service worker.
         //
         // Su regla de respaldo devuelve el armazón de la app ante cualquier
@@ -59,9 +102,29 @@ export default defineConfig({
         //
         // Esa página la exige Google Play y la enlaza desde la ficha de la
         // tienda, así que tiene que abrirse siempre.
-        navigateFallbackDenylist: [/^\/eliminar-cuenta\.html$/, /^\/\.well-known\//],
+        navigateFallbackDenylist: [
+          /^\/eliminar-cuenta\.html$/,
+          /^\/404\.html$/,
+          /^\/\.well-known\//,
+        ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
+          {
+            // El motor de mapas, guardado la primera vez que se usa. Se
+            // responde desde la caché y se comprueba por detrás si hay una
+            // versión nueva, que es lo que hace que un despliegue no obligue a
+            // esperar 1 MB antes de ver el mapa.
+            //
+            // `maxEntries: 2` porque cada compilación le pone un nombre nuevo:
+            // sin tope, la caché iría acumulando una copia del motor por cada
+            // despliegue y nunca soltaría ninguna.
+            urlPattern: /\/assets\/maplibre-[\w-]+\.js$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'map-engine',
+              expiration: { maxEntries: 2, maxAgeSeconds: 60 * 60 * 24 * 90 },
+            },
+          },
           {
             urlPattern: /^https:\/\/tiles\.openfreemap\.org\/.*/i,
             handler: 'CacheFirst',

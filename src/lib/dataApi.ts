@@ -48,6 +48,29 @@ import type {
  * Fase 0: aquí solo está el contrato. Las implementaciones llegan en la Fase 1,
  * junto con el porte de la interfaz.
  */
+/**
+ * Qué ha cambiado, para que quien escucha decida si le afecta.
+ *
+ * Antes el aviso no llevaba nada: cualquier cambio en cualquiera de las doce
+ * tablas vigiladas disparaba una recarga completa del espacio activo —cinco
+ * consultas— sin poder saber siquiera si la fila que había cambiado era de este
+ * grupo o de otro de los tuyos.
+ *
+ * Los identificadores son los que la fila trae de verdad. Varias de esas tablas
+ * no tienen `space_id` —una puntuación cuelga de un sitio, un voto de una
+ * opción—, así que lo que se manda es lo que hay, y quien escucha lo compara
+ * con lo que ya tiene cargado. Cuando no hay nada que comparar, se recarga: es
+ * preferible una recarga de más que quedarse con datos viejos.
+ */
+export interface AvisoDeCambio {
+  /** La tabla donde ha ocurrido. Sirve sobre todo para diagnosticar. */
+  tabla: string
+  /** El sitio al que pertenece la fila, si la tabla lo dice. */
+  placeId?: string
+  /** El plan al que pertenece la fila, si la tabla lo dice. */
+  planId?: string
+}
+
 export interface DataApi {
   // ── Perfil ───────────────────────────────────────────────────────────────
   me(): Promise<Profile>
@@ -317,7 +340,7 @@ export interface DataApi {
 
   // ── Tiempo real ──────────────────────────────────────────────────────────
   /** Avisa cuando otro dispositivo cambia datos del espacio. Devuelve la limpieza. */
-  subscribe(spaceId: string, onChange: () => void): () => void
+  subscribe(spaceId: string, onChange: (aviso: AvisoDeCambio) => void): () => void
 
   // ── Fase 7 · Negocios ──────────────────────────────────────────────────
   /** Los locales que administras, más las solicitudes en revisión. */

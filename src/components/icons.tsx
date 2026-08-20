@@ -536,3 +536,64 @@ export function StoreIcon({ className = 'w-5 h-5' }: IconProps) {
     </svg>
   )
 }
+
+/**
+ * Ojo abierto y ojo tachado: mostrar y ocultar la contraseña.
+ *
+ * Con una norma de contraseña estricta, poder verla deja de ser una comodidad.
+ * Escribir a ciegas ocho caracteres con letra y número, fallar, y no saber si
+ * el error fue un dedo o la regla es exactamente lo que hace que alguien
+ * abandone un registro.
+ */
+export function EyeIcon({ className = 'w-6 h-6' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
+export function EyeOffIcon({ className = 'w-6 h-6' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10.7 6.1A8.9 8.9 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.9 3.5" />
+      <path d="M6.4 7.6A15.6 15.6 0 0 0 2.5 12S6 18 12 18a9.4 9.4 0 0 0 4-.86" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+      <path d="m3.5 3.5 17 17" />
+    </svg>
+  )
+}
+
+/** La marca de «esto ya lo cumples» en la lista de requisitos. */
+export function CheckIcon({ className = 'w-6 h-6' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m5 12.5 4.5 4.5L19 7" />
+    </svg>
+  )
+}

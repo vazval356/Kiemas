@@ -1,11 +1,11 @@
 import sharp from 'sharp'
-import { existsSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Genera los iconos de la app a partir de `public/icons/source.png`.
+ * Genera los iconos de la app a partir de `brand/logo-source.png`.
  *
  * El original de Kopasymas es un logotipo completo: tarjeta blanca con esquinas
  * redondeadas y sombra, el símbolo de la K, y debajo la palabra «Kopasymas». Eso
@@ -26,7 +26,10 @@ import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const iconsDir = join(root, 'public', 'icons')
-const source = join(iconsDir, 'source.png')
+// Fuera de `public/` a propósito: el original pesa 220 kB y no lo pide ningún
+// navegador, pero al vivir dentro de la carpeta pública se copiaba tal cual a
+// cada despliegue y a cada compilación de Android e iOS.
+const source = join(root, 'brand', 'logo-source.png')
 
 if (!existsSync(source)) {
   console.error(`\nNo encuentro ${source}`)
@@ -89,7 +92,9 @@ const markH = mark.bottom - mark.top + 1
 const side = Math.max(markW, markH)
 
 console.log(`\nOriginal ${W}×${H}. Bandas de marca detectadas: ${bands.length}.`)
-console.log(`Símbolo recortado en x ${left}–${right}, y ${mark.top}–${mark.bottom} (${markW}×${markH}).`)
+console.log(
+  `Símbolo recortado en x ${left}–${right}, y ${mark.top}–${mark.bottom} (${markW}×${markH}).`
+)
 if (bands.length > 1) {
   console.log('Las demás bandas (texto del logotipo) se descartan: a tamaño de icono no se leen.')
 }
@@ -101,7 +106,12 @@ const cropLeft = Math.max(0, Math.min(W - side, Math.round(cx - side / 2)))
 const cropTop = Math.max(0, Math.min(H - side, Math.round(cy - side / 2)))
 
 const markPng = await sharp(source)
-  .extract({ left: cropLeft, top: cropTop, width: Math.min(side, W - cropLeft), height: Math.min(side, H - cropTop) })
+  .extract({
+    left: cropLeft,
+    top: cropTop,
+    width: Math.min(side, W - cropLeft),
+    height: Math.min(side, H - cropTop),
+  })
   .png()
   .toBuffer()
 
@@ -112,7 +122,10 @@ const WHITE = { r: 255, g: 255, b: 255, alpha: 1 }
 /** Símbolo centrado sobre fondo blanco, ocupando `ratio` del lienzo. */
 async function compose(size, ratio) {
   const inner = Math.round(size * ratio)
-  const resized = await sharp(markPng).resize(inner, inner, { fit: 'contain', background: WHITE }).png().toBuffer()
+  const resized = await sharp(markPng)
+    .resize(inner, inner, { fit: 'contain', background: WHITE })
+    .png()
+    .toBuffer()
   return sharp({ create: { width: size, height: size, channels: 4, background: WHITE } })
     .composite([{ input: resized, gravity: 'centre' }])
     .png()
@@ -153,4 +166,133 @@ console.log('  assets/icon.png  1024×1024  (fuente para Android e iOS)')
 await sharp(await compose(2732, 0.22)).toFile(join(assetsDir, 'splash.png'))
 console.log('  assets/splash.png  2732×2732  (pantalla de arranque)')
 
+// El resumen final se imprime al terminar, tras los activos de la web.
+
+// ── Activos de la web ───────────────────────────────────────────────────────
+//
+// Lo que la app instalada no necesita pero la web sí: el icono de la pestaña
+// del navegador y la imagen que sale cuando alguien pega el enlace en WhatsApp
+// o en un mensaje directo. Salen del mismo recorte que todo lo demás, que es la
+// razón de que estén en este script y no en uno aparte: un logo actualizado a
+// medias, con el icono nuevo y la vista previa vieja, es peor que no cambiarlo.
+
+const publicDir = join(root, 'public')
+
+/** Escribe un PNG del símbolo del tamaño pedido dentro de `public/icons`. */
+async function writeIcon(name, size, ratio) {
+  const buf = await compose(size, ratio)
+  await sharp(buf).toFile(join(iconsDir, name))
+  return buf
+}
+
+const fav16 = await writeIcon('favicon-16.png', 16, 0.86)
+const fav32 = await writeIcon('favicon-32.png', 32, 0.86)
+const fav48 = await writeIcon('favicon-48.png', 48, 0.86)
+console.log('  favicon-16/32/48.png  (icono de la pestaña)')
+
+/**
+ * Empaqueta varios PNG en un `.ico`.
+ *
+ * Sharp no escribe ICO, pero el formato admite PNG dentro desde Windows Vista y
+ * la cabecera son treinta líneas. Se sigue generando aunque el HTML declare los
+ * PNG uno a uno: los navegadores respetan esas etiquetas, pero hay lectores de
+ * enlaces, extensiones y agregadores que piden `/favicon.ico` a pelo y no miran
+ * el HTML. Sin el fichero, eso es un 404 en cada visita.
+ */
+function ico(pngs) {
+  const head = Buffer.alloc(6)
+  head.writeUInt16LE(0, 0) // reservado
+  head.writeUInt16LE(1, 2) // 1 = icono
+  head.writeUInt16LE(pngs.length, 4)
+
+  let offset = 6 + pngs.length * 16
+  const dir = []
+  for (const { size, data } of pngs) {
+    const e = Buffer.alloc(16)
+    e.writeUInt8(size >= 256 ? 0 : size, 0) // 0 significa 256
+    e.writeUInt8(size >= 256 ? 0 : size, 1)
+    e.writeUInt8(0, 2) // paleta: ninguna
+    e.writeUInt8(0, 3) // reservado
+    e.writeUInt16LE(1, 4) // planos
+    e.writeUInt16LE(32, 6) // bits por píxel
+    e.writeUInt32LE(data.length, 8)
+    e.writeUInt32LE(offset, 12)
+    offset += data.length
+    dir.push(e)
+  }
+  return Buffer.concat([head, ...dir, ...pngs.map((p) => p.data)])
+}
+
+writeFileSync(
+  join(publicDir, 'favicon.ico'),
+  ico([
+    { size: 16, data: fav16 },
+    { size: 32, data: fav32 },
+    { size: 48, data: fav48 },
+  ])
+)
+console.log('  favicon.ico  (16+32+48, para quien lo pide a pelo)')
+
+/**
+ * La vista previa al compartir el enlace: 1200×630, la medida que piden
+ * OpenGraph y Twitter.
+ *
+ * Con el símbolo a secas se vería una mancha azul sin contexto, así que lleva
+ * el nombre y la frase de la app. El texto va en SVG porque es lo único que
+ * sharp sabe rasterizar, y con `font-family` genérica: la fuente de marca no
+ * está instalada en la máquina que ejecuta esto y pedirla solo conseguiría un
+ * recambio silencioso por otra peor.
+ */
+const OG_W = 1200
+const OG_H = 630
+/**
+ * El símbolo va sobre una tarjeta blanca redondeada, no pegado al fondo.
+ *
+ * El recorte del logo trae fondo blanco propio, así que sobre el degradado
+ * lavanda se recortaba un cuadrado blanco que parecía un fallo de montaje.
+ * Dándole la forma de un icono de app, ese blanco pasa a ser deliberado.
+ */
+const CARD = 230
+const tarjeta = Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD}" height="${CARD}">
+     <rect width="${CARD}" height="${CARD}" rx="52" fill="#ffffff"/>
+   </svg>`
+)
+const simbolo = await sharp(markPng)
+  .resize(178, 178, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+  .png()
+  .toBuffer()
+const marca = await sharp(tarjeta)
+  .composite([{ input: simbolo, gravity: 'centre', blend: 'atop' }])
+  .png()
+  .toBuffer()
+
+const fondo = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${OG_W}" height="${OG_H}">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4f4ff"/>
+      <stop offset="100%" stop-color="#e2e3ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="${OG_W}" height="${OG_H}" fill="url(#g)"/>
+  <rect x="0" y="${OG_H - 12}" width="${OG_W}" height="12" fill="#4648d4"/>
+</svg>`)
+
+const texto = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${OG_W}" height="${OG_H}">
+  <text x="600" y="415" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="86" font-weight="700" fill="#2f2fa8" letter-spacing="-2">Kiemas</text>
+  <text x="600" y="482" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="34" fill="#55556a">El mapa y el calendario de tu grupo</text>
+</svg>`)
+
+await sharp(fondo)
+  .composite([
+    { input: marca, top: 128, left: Math.round((OG_W - CARD) / 2) },
+    { input: texto, top: 0, left: 0 },
+  ])
+  .png({ compressionLevel: 9 })
+  .toFile(join(publicDir, 'og.png'))
+console.log(`  og.png  ${OG_W}×${OG_H}  (vista previa al compartir el enlace)`)
+
+console.log('')
 console.log('\nListo.\n')

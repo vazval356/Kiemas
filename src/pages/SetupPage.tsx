@@ -1,4 +1,5 @@
 import { createTranslate, detectLocale } from '../lib/i18n'
+import { usePageTitle } from '../lib/seo'
 
 /**
  * Se muestra cuando faltan las variables de entorno de Supabase.
@@ -10,6 +11,7 @@ import { createTranslate, detectLocale } from '../lib/i18n'
  */
 export function SetupPage() {
   const t = createTranslate(detectLocale())
+  usePageTitle(t('setup.title'))
 
   return (
     <div className="h-full flex flex-col items-center justify-center gap-4 p-6 text-center">

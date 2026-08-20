@@ -182,6 +182,7 @@ export function CommentThread({ placeId }: { placeId: string }) {
             rows={2}
             maxLength={2000}
             placeholder={t('comment.placeholder')}
+            aria-label={t('comment.placeholder')}
             className="kd-input flex-1 resize-none"
           />
           <button

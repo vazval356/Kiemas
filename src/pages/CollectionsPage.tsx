@@ -3,11 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CollectionIcon, ShareIcon } from '../components/icons'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
+import { FalloAlCargar, RejillaCargando } from '../components/EstadoDeSeccion'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 export function CollectionsPage() {
   const navigate = useNavigate()
-  const { collections, activeSpace, api, refresh, t } = useApp()
+  const { collections, activeSpace, api, refresh, t, dataStatus } = useApp()
+  usePageTitle(t('collection.plural'))
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -51,9 +54,15 @@ export function CollectionsPage() {
           </p>
         )}
 
-        {collections.length === 0 ? (
+        {dataStatus === 'loading' ? (
+          <RejillaCargando />
+        ) : dataStatus === 'error' ? (
+          <FalloAlCargar />
+        ) : collections.length === 0 ? (
           <div className="rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
-            <div className="mb-2 text-4xl">📚</div>
+            <div className="mb-2 text-4xl" aria-hidden>
+              📚
+            </div>
             <p className="font-medium text-on-surface">{t('collection.none')}</p>
             <p className="mt-1 text-sm text-on-surface-variant">{t('collection.noneHint')}</p>
           </div>
@@ -74,6 +83,7 @@ export function CollectionsPage() {
                     <span className="relative flex aspect-[4/3] items-center justify-center bg-primary-fixed">
                       {collection.coverUrl ? (
                         <img
+                          decoding="async"
                           src={collection.coverUrl}
                           alt=""
                           loading="lazy"
@@ -124,6 +134,7 @@ export function CollectionsPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t('collection.namePlaceholder')}
+                aria-label={t('collection.namePlaceholder')}
                 maxLength={60}
                 className="kd-input"
               />
@@ -131,6 +142,7 @@ export function CollectionsPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t('collection.descPlaceholder')}
+                aria-label={t('collection.descPlaceholder')}
                 className="kd-input mt-2"
               />
               <div className="mt-3 flex gap-2">

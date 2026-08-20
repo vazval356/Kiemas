@@ -105,6 +105,7 @@ export function TagPicker({ selected, onChange }: Props) {
               }
             }}
             placeholder={t('tag.namePlaceholder')}
+            aria-label={t('tag.namePlaceholder')}
             maxLength={30}
             className="kd-input"
           />

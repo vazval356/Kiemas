@@ -7,8 +7,9 @@ import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
 import { inviteUrl } from '../lib/appUrl'
 import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
-import { errorMessage } from '../lib/utils'
+import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 const EXPIRY_OPTIONS: {
   value: InviteExpiry
@@ -33,6 +34,7 @@ export function SpaceDetailPage() {
   const { spaces, profile, api, refreshSpaces, locale, t } = useApp()
 
   const space = spaces.find((s) => s.id === id)
+  usePageTitle(space?.name)
 
   const [invites, setInvites] = useState<Invite[]>([])
   const [expiry, setExpiry] = useState<InviteExpiry>('24 hours')
@@ -223,7 +225,12 @@ export function SpaceDetailPage() {
           lo eligió alguien y es identidad igual. */}
       <div className="relative h-48 w-full" style={{ backgroundColor: cols.solid }}>
         {space.coverUrl && (
-          <img src={space.coverUrl} alt="" className="absolute inset-0 size-full object-cover" />
+          <img
+            decoding="async"
+            src={space.coverUrl}
+            alt=""
+            className="absolute inset-0 size-full object-cover"
+          />
         )}
         {/* Velo de abajo arriba: el nombre va sobre la foto y sin él es
             ilegible en cuanto la portada tiene una zona clara. */}
@@ -284,11 +291,17 @@ export function SpaceDetailPage() {
         {/* ── Nombre ─────────────────────────────────────────────────────── */}
         {isAdmin && (
           <section className="mt-6">
-            <label className="mb-2 block font-display font-semibold text-on-surface">
+            {/* `htmlFor` porque el campo va dentro de la fila que comparte con
+                el botón de guardar, no dentro del rótulo. */}
+            <label
+              htmlFor="grupo-nombre"
+              className="mb-2 block font-display font-semibold text-on-surface"
+            >
               {t('spaces.rename')}
             </label>
             <div className="flex gap-2">
               <input
+                id="grupo-nombre"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={60}
@@ -332,6 +345,7 @@ export function SpaceDetailPage() {
             >
               {space.coverUrl && (
                 <img
+                  decoding="async"
                   src={space.coverUrl}
                   alt=""
                   className="absolute inset-0 size-full object-cover"
@@ -509,7 +523,18 @@ export function SpaceDetailPage() {
                 onChange={(e) => {
                   const file = e.target.files?.[0]
                   e.target.value = ''
-                  if (file) setCropping(file)
+                  if (!file) return
+                  // Mismo tope que las fotos de un sitio: encuadrar descodifica
+                  // la imagen entera en memoria y una foto enorme tumba la
+                  // WebView antes de llegar al encuadrador.
+                  if (file.size > MAX_FOTO_BYTES) {
+                    setError(
+                      t('photo.tooBig', { nombre: file.name, peso: pesoLegible(file.size, locale) })
+                    )
+                    return
+                  }
+                  setError('')
+                  setCropping(file)
                 }}
               />
             </div>
@@ -773,6 +798,7 @@ export function SpaceDetailPage() {
                     <div className="flex items-center gap-3">
                       {member.avatarUrl ? (
                         <img
+                          decoding="async"
                           src={member.avatarUrl}
                           alt=""
                           loading="lazy"

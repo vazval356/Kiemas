@@ -7,18 +7,133 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Kiemas" />
+    <meta name="application-name" content="Kiemas" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Iconos.
+         Los PNG por tamaños son lo que miran los navegadores. El .ico está
+         además porque hay lectores de enlaces, extensiones y agregadores que
+         piden /favicon.ico a pelo sin leer el HTML, y sin el fichero eso es un
+         404 en cada visita. Los genera `npm run icons`. -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
-    <title>Kiemas</title>
+
+    <!-- Título y descripción de partida.
+         La app los reescribe por pantalla desde `src/lib/seo.ts` en cuanto
+         arranca, pero estos son los que lee un rastreador que no ejecuta
+         JavaScript, así que tienen que valerse solos. -->
+    <title>Kiemas · El mapa y el calendario de tu grupo</title>
+    <meta
+      name="description"
+      content="Kiemas es el mapa compartido de sitios y el calendario de planes de tu grupo: guardad bares y restaurantes, votad adónde ir y cuadrad la fecha sin veinte mensajes."
+    />
+    <meta name="author" content="Adrián Vázquez Valbuena" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://kiemas.com/" />
+
+    <!-- Vista previa al compartir el enlace (WhatsApp, Telegram, X, Slack).
+         La imagen tiene que ser absoluta: los rastreadores de estas plataformas
+         no resuelven rutas relativas. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kiemas" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://kiemas.com/" />
+    <meta property="og:title" content="Kiemas · El mapa y el calendario de tu grupo" />
+    <meta
+      property="og:description"
+      content="Guardad los sitios que os apetecen en un mapa común, votad adónde ir y cuadrad la fecha. Sin veinte mensajes para decidir un plan."
+    />
+    <meta property="og:image" content="https://kiemas.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Logotipo de Kiemas sobre fondo lavanda, con el lema «El mapa y el calendario de tu grupo»."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kiemas · El mapa y el calendario de tu grupo" />
+    <meta
+      name="twitter:description"
+      content="Guardad los sitios que os apetecen en un mapa común, votad adónde ir y cuadrad la fecha. Sin veinte mensajes para decidir un plan."
+    />
+    <meta name="twitter:image" content="https://kiemas.com/og.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Datos estructurados.
+         La app entera vive detrás de `#/`, así que Google solo llega a indexar
+         esta página. Esto es lo que le permite entender qué es Kiemas sin poder
+         recorrer nada más. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Kiemas",
+        "url": "https://kiemas.com/",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Android, iOS, Web",
+        "inLanguage": ["es", "en"],
+        "description": "Mapa compartido de sitios y calendario de planes para tu grupo: guardad bares y restaurantes, votad adónde ir y cuadrad la fecha.",
+        "image": "https://kiemas.com/og.png",
+        "author": {
+          "@type": "Person",
+          "name": "Adrián Vázquez Valbuena"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Sin JavaScript no hay app, pero sí puede haber una explicación y los
+         enlaces legales. Un <div id="root"> vacío es lo que ve un rastreador que
+         no ejecuta nada, y también quien tiene el script bloqueado. -->
+    <noscript>
+      <div
+        style="
+          margin: 0 auto;
+          max-width: 34rem;
+          padding: 3rem 1.5rem;
+          font:
+            16px/1.6 -apple-system,
+            BlinkMacSystemFont,
+            'Segoe UI',
+            Roboto,
+            sans-serif;
+          color: #1b1b20;
+        "
+      >
+        <h1 style="font-size: 1.6rem">Kiemas</h1>
+        <p>
+          El mapa y el calendario de tu grupo: guardad los sitios que os apetecen, votad adónde ir y
+          cuadrad la fecha.
+        </p>
+        <p>
+          Kiemas necesita JavaScript para funcionar. Actívalo en tu navegador y vuelve a cargar la
+          página.
+        </p>
+        <p>
+          <a href="/privacidad.html">Política de privacidad</a> ·
+          <a href="/terminos.html">Condiciones de uso</a> ·
+          <a href="/aviso-legal.html">Aviso legal</a>
+        </p>
+      </div>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

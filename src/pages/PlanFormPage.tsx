@@ -7,6 +7,7 @@ import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
+import { usePageTitle } from '../lib/seo'
 
 type Mode = 'fixed' | 'poll'
 
@@ -21,6 +22,7 @@ type Mode = 'fixed' | 'poll'
 export function PlanFormPage() {
   const navigate = useNavigate()
   const { places, categories, activeSpace, profile, api, refresh, locale, t } = useApp()
+  usePageTitle(t('plan.new'))
 
   const [title, setTitle] = useState('')
   const [placeId, setPlaceId] = useState<string | null>(null)
@@ -89,13 +91,28 @@ export function PlanFormPage() {
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
-      <div className="mx-auto max-w-md px-5 pt-2">
+      {/* Un `<form>` y no un `<div>`: así Intro desde el campo del título crea
+          el plan, y un lector de pantalla anuncia el conjunto como formulario
+          en vez de leer campos sueltos. `noValidate` porque los mensajes
+          nativos del navegador salen en el idioma del sistema y no en el de la
+          app; la comprobación es la misma que apaga el botón, y el error se
+          enseña abajo. */}
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (!busy && title.trim()) void save()
+        }}
+        className="mx-auto max-w-md px-5 pt-2"
+      >
         <BackButton />
 
         <h1 className="mb-6 font-display text-3xl font-bold text-on-surface">{t('plan.new')}</h1>
 
-        <Label>{t('plan.titleLabel')}</Label>
+        <Label htmlFor="plan-titulo">{t('plan.titleLabel')}</Label>
         <input
+          id="plan-titulo"
+          required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('plan.titlePlaceholder')}
@@ -165,6 +182,9 @@ export function PlanFormPage() {
         )}
 
         {/* ── Cuándo ─────────────────────────────────────────────────────── */}
+        {/* Sin `htmlFor`: debajo hay dos campos posibles (una fecha fija o
+            varias a votar) y este rótulo encabeza los dos. Cada campo lleva su
+            propio nombre en `aria-label`. */}
         <Label className="mt-5">{t('plan.when')}</Label>
         <div className="mb-3 grid grid-cols-2 rounded-full bg-surface-container p-1">
           <button
@@ -192,6 +212,7 @@ export function PlanFormPage() {
             type="datetime-local"
             value={startsAt}
             onChange={(e) => setStartsAt(e.target.value)}
+            aria-label={t('plan.when')}
             className="kd-input"
           />
         ) : (
@@ -205,6 +226,10 @@ export function PlanFormPage() {
                   onChange={(e) =>
                     setOptions(options.map((o, j) => (i === j ? e.target.value : o)))
                   }
+                  // Numerada: son varias fechas iguales en una fila, y sin el
+                  // número todas se anuncian «fecha y hora» y no hay forma de
+                  // saber en cuál está el cursor.
+                  aria-label={`${t('plan.when')} ${i + 1}`}
                   className="kd-input flex-1"
                 />
                 {options.length > 2 && (
@@ -295,6 +320,7 @@ export function PlanFormPage() {
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder={t('plan.notePlaceholder')}
+          aria-label={t('plan.notePlaceholder')}
           className="kd-input resize-none"
         />
 
@@ -313,8 +339,7 @@ export function PlanFormPage() {
         )}
 
         <button
-          type="button"
-          onClick={() => void save()}
+          type="submit"
           disabled={busy || !title.trim()}
           className="mt-6 w-full rounded-full bg-primary py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-40"
         >
@@ -331,14 +356,33 @@ export function PlanFormPage() {
                 .find((p) => p.type === 'timeZoneName')?.value ?? '',
           })}
         </p>
-      </div>
+      </form>
     </div>
   )
 }
 
-function Label({ children, className = '' }: { children: ReactNode; className?: string }) {
+/**
+ * El rótulo de un campo, atado al campo. Ver la nota gemela en
+ * `PlaceFormPage`: sin `htmlFor`, el lector de pantalla anuncia «campo de
+ * texto» sin decir de qué, y tocar el rótulo no hace nada.
+ *
+ * Es opcional para los rótulos que encabezan un grupo de botones —la fecha, el
+ * sitio— en vez de un único control al que apuntar.
+ */
+function Label({
+  children,
+  className = '',
+  htmlFor,
+}: {
+  children: ReactNode
+  className?: string
+  htmlFor?: string
+}) {
   return (
-    <label className={`mb-2 block font-display font-semibold text-on-surface ${className}`}>
+    <label
+      htmlFor={htmlFor}
+      className={`mb-2 block font-display font-semibold text-on-surface ${className}`}
+    >
       {children}
     </label>
   )
