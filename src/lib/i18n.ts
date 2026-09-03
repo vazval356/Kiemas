@@ -446,6 +446,26 @@ const es = {
   'settings.reasonInappropriate': 'Contenido inapropiado',
   'settings.reasonFake': 'Información falsa',
   'settings.reasonOther': 'Otro',
+  // El motivo que abre la denuncia del artículo 16 del Reglamento de Servicios
+  // Digitales. Se llama «ilícito» y no «ilegal» a propósito: es la palabra que
+  // usa la norma y la que aparece en las condiciones de uso, y que las dos
+  // coincidan es lo que permite a alguien encontrar el cauce del que le hablan.
+  'settings.reasonIllegal': 'Contenido ilícito',
+  'settings.illegalIntro':
+    'Esto no es un reporte normal: es una denuncia por contenido ilegal. La revisa una persona y se te contesta con la decisión y con lo que puedes hacer si no estás de acuerdo. Para poder tramitarla hacen falta estos datos.',
+  'settings.illegalWhat': 'Qué contenido denuncias',
+  'settings.illegalWhatHint': 'Dónde está exactamente: la foto, el comentario, la ficha del sitio…',
+  'settings.illegalWhy': 'Por qué crees que es ilegal',
+  'settings.illegalWhyHint': 'Explica en qué te basas. No hace falta citar ninguna ley.',
+  'settings.illegalEmail': 'Tu correo',
+  'settings.illegalEmailHint': 'Para contestarte',
+  'settings.illegalGoodFaith':
+    'Declaro de buena fe que lo que cuento es exacto y completo a mi leal saber y entender.',
+  'settings.illegalMissing': 'Faltan datos: los tres campos y la casilla son obligatorios.',
+  'settings.illegalSend': 'Enviar denuncia',
+  'settings.illegalSent': 'Denuncia recibida. Se revisa y se te contesta al correo que has dejado.',
+  'settings.illegalFoot':
+    'Denunciar a sabiendas un contenido que no es ilegal tiene consecuencias: si se repite, se dejan de tramitar tus avisos.',
   'settings.blockConfirm': '¿Bloquear a {name}?',
 
   // Calendario y planes (Fase 2)
@@ -682,7 +702,7 @@ const es = {
   'sub.viaPromo': 'Tienes {plan} con el código {code}',
   'sub.viaSubscription': 'Suscripción activa',
   'sub.viaLifetime':
-    'Tienes Kiemas para siempre. Un pago único, sin renovaciones y sin nada que cancelar.',
+    'Tienes Kiemas Pro. Un pago único, sin suscripción ni renovaciones y sin nada que cancelar.',
   'sub.usageTitle': 'Lo que llevas usado',
   'sub.usageHint': 'Se cuenta lo que has creado tú, sumando todos tus grupos.',
   'sub.until': 'Hasta el {date}',
@@ -701,7 +721,7 @@ const es = {
   'sub.upgradeTo': 'Pasar a {plan}',
   'sub.tagFree': 'Para empezar a organizarse',
   'sub.tagPlus': 'Para grupos que quedan a menudo',
-  'sub.tagPro': 'Todo sin límites, para siempre',
+  'sub.tagPro': 'Todo sin límites, con un solo pago',
   'sub.badgeForever': 'Un solo pago',
   'sub.oneTime': 'Pago único. Sin renovaciones y sin nada que cancelar.',
   'sub.priceSoon': 'Próximamente',
@@ -1255,6 +1275,23 @@ const en: Record<TranslationKey, string> = {
   'settings.reasonInappropriate': 'Inappropriate content',
   'settings.reasonFake': 'False information',
   'settings.reasonOther': 'Other',
+  'settings.reasonIllegal': 'Illegal content',
+  'settings.illegalIntro':
+    'This is not an ordinary report: it is a notice about unlawful content. A person reviews it and you are told the decision and what you can do if you disagree. These details are needed to process it.',
+  'settings.illegalWhat': 'What content are you reporting',
+  'settings.illegalWhatHint': 'Exactly where it is: the photo, the comment, the place page…',
+  'settings.illegalWhy': 'Why you believe it is unlawful',
+  'settings.illegalWhyHint': 'Explain what you base it on. No need to cite any law.',
+  'settings.illegalEmail': 'Your email',
+  'settings.illegalEmailHint': 'So we can reply',
+  'settings.illegalGoodFaith':
+    'I declare in good faith that what I report is accurate and complete to the best of my knowledge.',
+  'settings.illegalMissing': 'Missing details: the three fields and the box are all required.',
+  'settings.illegalSend': 'Send notice',
+  'settings.illegalSent':
+    'Notice received. It will be reviewed and you will get a reply at the address you left.',
+  'settings.illegalFoot':
+    'Knowingly reporting content that is not unlawful has consequences: if it is repeated, your notices stop being processed.',
   'settings.blockConfirm': 'Block {name}?',
 
   'plan.upcoming': 'Upcoming plans',
@@ -1479,7 +1516,7 @@ const en: Record<TranslationKey, string> = {
   'sub.viaPromo': 'You have {plan} from code {code}',
   'sub.viaSubscription': 'Subscription active',
   'sub.viaLifetime':
-    'You have Kiemas for life. A single payment, no renewals and nothing to cancel.',
+    'You have Kiemas Pro. A single payment, no subscription, no renewals, nothing to cancel.',
   'sub.usageTitle': 'What you have used',
   'sub.usageHint': 'It counts what you created, across all your groups.',
   'sub.until': 'Until {date}',
@@ -1498,7 +1535,7 @@ const en: Record<TranslationKey, string> = {
   'sub.upgradeTo': 'Upgrade to {plan}',
   'sub.tagFree': 'To get organised',
   'sub.tagPlus': 'For groups that meet often',
-  'sub.tagPro': 'Everything unlimited, forever',
+  'sub.tagPro': 'Everything unlimited, one payment',
   'sub.badgeForever': 'One payment',
   'sub.oneTime': 'A single payment. No renewals, nothing to cancel.',
   'sub.priceSoon': 'Coming soon',

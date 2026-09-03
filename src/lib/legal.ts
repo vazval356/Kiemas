@@ -13,10 +13,33 @@ import type { Locale } from './types'
  * actualizarlo: es la parte del repositorio que más fácil se queda obsoleta sin
  * que nada falle.
  *
- * NO son un documento revisado por un abogado. Cubren lo que exigen las tiendas
- * para publicar y lo que piden el RGPD, la LSSI-CE, el TRLGDCU y el Reglamento
- * de Servicios Digitales, pero antes de crecer conviene que los mire alguien con
- * criterio jurídico.
+ * Cubren lo que exigen las tiendas para publicar y lo que piden el RGPD, la
+ * LSSI-CE, el TRLGDCU y el Reglamento de Servicios Digitales.
+ *
+ * Las condiciones de uso las revisó un abogado el 26 de agosto de 2026 y de ahí
+ * salen los cambios de esta versión, apartado por apartado:
+ *
+ *   · Desistimiento. Decía que al activarse Pro en el acto se pierde el derecho.
+ *     Pro es un servicio digital, no un archivo que se entrega una vez, y la
+ *     regla de pérdida inmediata funciona distinto en servicios. Ya no se le
+ *     dice al consumidor que ha perdido un derecho que puede seguir teniendo.
+ *   · Tiendas. «El contrato lo cierras con Apple o Google, no con nosotros» era
+ *     cierto en cuanto al cobro y demasiado tajante en todo lo demás: quien
+ *     presta el servicio y responde de él sigue siendo Kiemas.
+ *   · «Para siempre» se cambia por «pago único, sin renovaciones», y la palabra
+ *     «garantía» por «compromiso»: en consumo «garantía» tiene un significado
+ *     concreto y no hace falta abrir ese melón para decir lo mismo.
+ *   · Contraseña. La responsabilidad del titular no puede ser absoluta si el
+ *     acceso vino de un fallo de seguridad de la propia aplicación.
+ *   · Permiso de uso «revocable» sin más: ahora la revocación va atada a causas
+ *     tasadas, que es lo mínimo cuando alguien ha pagado.
+ *   · Moderación. Se separa el reporte normal (spam, acoso…) de la denuncia de
+ *     contenido ilícito del artículo 16 del Reglamento, que exige identificar el
+ *     contenido y motivar por qué es ilegal, y se desarrolla la motivación del
+ *     artículo 17 para quien sufre la medida. Esto no es solo texto: el motivo
+ *     «Contenido ilícito» y sus campos están en `ReportDialog`.
+ *
+ * Queda pendiente que mire la privacidad y el aviso legal.
  *
  * Dos cosas que estaban mal y que se arreglan en esta revisión, por si vuelve la
  * tentación de copiar de una plantilla:
@@ -91,7 +114,7 @@ export const legalIdentityComplete = Boolean(LEGAL_CONTACT.nif && LEGAL_CONTACT.
 export const PRO_PRICE_ES = '2,99 €'
 
 /** Cuándo se revisaron por última vez. Se enseña al pie del documento. */
-export const LEGAL_UPDATED = '2026-08-17'
+export const LEGAL_UPDATED = '2026-09-03'
 
 export interface LegalSection {
   heading: string
@@ -124,7 +147,8 @@ const terminosEs: LegalDoc = {
       heading: 'Tu cuenta',
       body: [
         'Necesitas una cuenta para usarla, y tienes que tener al menos 14 años.',
-        'Eres responsable de mantener tu contraseña a salvo y de lo que ocurra desde tu cuenta. La sesión se queda abierta en el dispositivo hasta que cierres sesión, así que en un aparato compartido conviene cerrarla.',
+        'Eres responsable de mantener tu contraseña a salvo y de lo que se haga desde tu cuenta mientras el acceso dependa de ti. La sesión se queda abierta en el dispositivo hasta que cierres sesión, así que en un aparato compartido conviene cerrarla.',
+        'Eso tiene un límite: si alguien entra en tu cuenta por un fallo de seguridad de la propia aplicación, o por cualquier otra causa que no te sea imputable, no respondes tú de lo que se haga desde ahí. Si sospechas que ha pasado, cambia la contraseña y escríbenos: se mira y, si procede, se deshace lo que se hubiera hecho.',
         'Una persona, una cuenta. No se pueden crear cuentas de forma automatizada ni ceder la tuya a otra persona.',
         'Puedes cerrarla cuando quieras desde Ajustes, sin pedírnoslo y sin dar explicaciones.',
       ],
@@ -150,7 +174,8 @@ const terminosEs: LegalDoc = {
       heading: `Propiedad de ${BRAND_NAME}`,
       body: [
         `Todo lo que forma parte de ${BRAND_NAME} (el diseño de la aplicación y la web, el código fuente, la estructura, el logotipo, el nombre comercial y la marca) es propiedad exclusiva de su titular o cuenta con las licencias correspondientes.`,
-        'Te concedemos un permiso limitado, personal y revocable para usar la aplicación según estas condiciones, pero esto no te da derecho a copiarla, modificarla, distribuirla, revenderla ni intentar extraer su código fuente.',
+        'Te concedemos un permiso limitado y personal para usar la aplicación según estas condiciones, pero esto no te da derecho a copiarla, modificarla, distribuirla, revenderla ni intentar extraer su código fuente.',
+        'Ese permiso no se retira porque sí. Solo puede retirarse, del todo o en parte, si incumples estas condiciones, si hay un riesgo de seguridad que lo justifique, si lo impone una norma o una autoridad, o si el servicio deja de prestarse en los términos del apartado «Si el servicio cerrara». Cuando ocurra, se te dirá el motivo y podrás recurrirlo por el mismo cauce que cualquier otra decisión de moderación.',
       ],
     },
     {
@@ -169,15 +194,16 @@ const terminosEs: LegalDoc = {
         'Si el precio sube, la subida solo afecta a las compras nuevas. Una compra hecha no se vuelve a cobrar nunca, por nada.',
         'Pro va asociado a tu cuenta y a la cuenta de la tienda con la que pagaste. No se comparte con tu grupo, no se activa con «En familia» ni con «Family Sharing», y no se puede transferir, prestar ni revender. Si compras Pro, tu grupo no pasa a tener Pro.',
         'Si cambias de móvil o reinstalas, entra con la misma cuenta de Apple o de Google y pulsa «Restaurar compras» en tu perfil. No hay que pagar otra vez.',
-        `Qué desbloquea: sitios, planes y grupos sin límite. Y una garantía que va en serio: si algún día cambian los límites del plan gratuito o se reorganizan los planes, tu compra seguirá dándote al menos lo que desbloqueaba el día que la hiciste. No se va a poner detrás de un pago nuevo nada que ya hubieras pagado.`,
+        `Qué desbloquea: sitios, planes y grupos sin límite. Y un compromiso que se cumple: si algún día cambian los límites del plan gratuito o se reorganizan los planes, tu compra seguirá dándote al menos lo que desbloqueaba el día que la hiciste. No se va a poner detrás de un pago nuevo nada que ya hubieras pagado.`,
         'También puedes acceder a un nivel de pago con un código promocional. Un código no es una compra: no se cobra nada, no se renueva y caduca en la fecha que tuviera.',
-        '«Para siempre» significa mientras el servicio se siga prestando. Qué pasa si dejara de prestarse está escrito más abajo.',
+        'Pro no tiene fecha de caducidad: es un pago único, sin suscripción ni renovaciones, y dura mientras el servicio se siga prestando. Qué pasa si dejara de prestarse está escrito más abajo.',
       ],
     },
     {
       heading: 'Con quién compras: las tiendas',
       body: [
-        'El contrato de compra lo cierras con Apple o con Google, no con nosotros. Son quienes cobran, quienes emiten el justificante y quienes tramitan las devoluciones. Nosotros solo recibimos el aviso de que la compra existe, para activarte Pro.',
+        'La compra la gestionan App Store o Google Play: el contrato de compra se cierra con la tienda, que es quien cobra, quien emite el justificante y quien tramita las devoluciones. Nosotros solo recibimos el aviso de que la compra existe, para activarte Pro.',
+        `Eso no nos aparta de la relación contigo. Quien presta la aplicación y quien asume las obligaciones sobre el servicio —que funcione, que sea conforme con lo que se promete, la atención al usuario y todo lo que dicen estas condiciones— es ${BRAND_NAME}. Que el cobro pase por la tienda no cambia a quién reclamas por el servicio.`,
         'Estas condiciones son un acuerdo entre tú y el titular de la aplicación. Apple no es parte de este acuerdo.',
         'Apple no tiene ninguna obligación de prestarte soporte ni mantenimiento de la aplicación. Si necesitas ayuda, escríbenos a nosotros.',
         `Si la aplicación no cumple lo que promete, puedes avisar a Apple y Apple te devolverá el precio que pagaste; más allá de esa devolución, Apple no asume ninguna otra garantía sobre la aplicación.`,
@@ -192,7 +218,8 @@ const terminosEs: LegalDoc = {
       body: [
         'Si eres consumidor en la Unión Europea, dispones de catorce días naturales para desistir de una compra a distancia sin justificar el motivo.',
         'Como el contrato de compra lo cierras con App Store o con Google Play, ese derecho se ejerce ante ellas y siguiendo su procedimiento, que encontrarás en el apartado de compras de tu cuenta de la tienda.',
-        'Ten en cuenta una excepción que fija la propia ley: cuando aceptas que el contenido digital se entregue de inmediato —que es lo que ocurre al comprar Pro, porque se activa en el acto— reconoces perder el derecho de desistimiento una vez entregado. Aun así, las tiendas suelen conceder devoluciones por encima de lo que la ley les obliga.',
+        `${BRAND_NAME} Pro no es un archivo que se descarga una vez y se acaba: lo que pagas es poder seguir usando unas funcionalidades de la aplicación, es decir, un servicio digital. Por eso no te decimos que hayas perdido el derecho de desistimiento por el mero hecho de que Pro se active en el acto: la pérdida inmediata que la ley prevé para el contenido digital funciona de otra manera en los servicios, y aquí no se te pide renunciar a nada.`,
+        'Si quieres desistir dentro de esos catorce días, pídelo en la tienda. Las tiendas suelen conceder devoluciones incluso por encima de lo que la ley les obliga; si te la deniegan y crees que te correspondía, dínoslo y lo miramos contigo.',
         `Si crees que no se han respetado tus derechos como consumidor, escribe a ${LEGAL_CONTACT.email} antes de acudir a ninguna otra vía: casi todo se arregla ahí.`,
       ],
     },
@@ -201,9 +228,13 @@ const terminosEs: LegalDoc = {
       body: [
         `${BRAND_NAME} aloja contenido que suben sus usuarios y no lo revisa antes de que se publique. Lo que escribe o sube alguien es responsabilidad de quien lo hace.`,
         'Si ves algo que no debería estar ahí, avísanos. Desde la propia aplicación, en el perfil de la persona o en la ficha del sitio, está la opción de reportar: se elige un motivo (spam, acoso, contenido inapropiado, información falsa u otro) y se puede añadir una explicación. También sirve escribir al correo de contacto.',
-        'Qué pasa después: lo lee una persona. Si el contenido incumple la ley o estas condiciones, se retira; si no, se deja donde está. Se te contesta diciendo qué se ha decidido y por qué, tanto si eres quien avisó como si eres quien lo publicó.',
-        'Si no estás de acuerdo con la decisión, responde a ese mismo correo explicando por qué. Se vuelve a mirar con lo que aportes y se te contesta otra vez. No hace falta ninguna fórmula ni ningún plazo especial para pedirlo.',
+        'Si lo que has visto no es solo inapropiado, sino que crees que es ilegal, en esa misma pantalla está el motivo «Contenido ilícito», que abre un formulario distinto. Ahí se pide señalar exactamente qué contenido se denuncia y dónde está, explicar por qué crees que es ilegal, dejar un correo para poder contestarte y confirmar que lo que cuentas es cierto a tu leal saber y entender. Son los datos que pide el artículo 16 del Reglamento (UE) 2022/2065 para poder tratar el aviso como una denuncia de contenido ilícito. Si prefieres el correo, vale igual siempre que incluya esos mismos datos.',
+        'Una denuncia de contenido ilícito se acusa recibo en cuanto llega, se estudia sin dilación indebida y se te comunica la decisión junto con las vías que tienes para recurrirla. Si dejas correo, la respuesta va ahí.',
+        'Qué pasa después: lo lee una persona. No se retira nada por decisión automática de un programa. Si el contenido incumple la ley o estas condiciones, se retira; si no, se deja donde está. Se te contesta diciendo qué se ha decidido y por qué, tanto si eres quien avisó como si eres quien lo publicó.',
+        'Cuando la decisión te afecta a ti —se retira algo tuyo, se limita su visibilidad, se suspende tu cuenta o se cierra— recibes una explicación motivada que incluye: qué medida se ha tomado y hasta dónde llega; si afecta solo a ese contenido o también a tu cuenta; los hechos concretos en los que se basa; si salió de una denuncia de otra persona o de una comprobación propia; si se ha usado alguna herramienta automática para detectarlo; la norma legal o la condición exacta que se considera incumplida, con la razón; y cómo puedes recurrirlo. Es lo que exige el artículo 17 del mismo Reglamento.',
+        'Si no estás de acuerdo con la decisión, responde a ese mismo correo explicando por qué; tienes al menos seis meses desde que se te comunicó. Se vuelve a mirar con lo que aportes, lo revisa una persona y se te contesta otra vez. No hace falta ninguna fórmula. Recurrir aquí no te quita ninguna otra vía: puedes acudir igualmente a un órgano de resolución extrajudicial de litigios de los previstos en ese Reglamento o a los tribunales.',
         'Las medidas posibles, según la gravedad y según si se repite: un aviso, retirar el contenido, suspender la cuenta o cerrarla. Se elige la menos lesiva que resuelva el problema.',
+        'Al revés también cuenta: quien publique de forma reiterada contenido manifiestamente ilegal, o quien mande de forma reiterada denuncias manifiestamente infundadas, puede ver su cuenta suspendida o sus avisos dejados de tramitar durante un tiempo razonable. Antes se avisa.',
         'Puedes bloquear a otra persona desde su perfil. A partir de ahí no te aparece su contenido ni tú el suyo. Bloquear es una decisión tuya y privada: a la otra persona no se le avisa.',
         'El cierre de una cuenta por incumplir estas condiciones no da derecho a la devolución de Pro, salvo que la ley lo imponga. Antes de cerrarla podrás descargar tus datos.',
         `Punto de contacto para usuarios y autoridades, incluido lo que exige el Reglamento (UE) 2022/2065 de Servicios Digitales: ${LEGAL_CONTACT.email}. Se atiende en español y en inglés.`,
@@ -224,7 +255,7 @@ const terminosEs: LegalDoc = {
         'La intención es mantener el servicio. Pero un producto puede dejar de prestarse, y decirlo por adelantado vale más que prometer lo contrario.',
         'Si hubiera que cerrarlo, se avisaría dentro de la aplicación y por correo con al menos treinta días de antelación. Durante ese plazo podrás descargar todo lo que has aportado desde Ajustes.',
         `El importe de una compra de ${BRAND_NAME} Pro se reclama en la tienda donde se hizo, que es quien cobró y quien tramita las devoluciones. Tus derechos como consumidor siguen aplicándose ahí igual que en cualquier otra compra digital.`,
-        '«Para siempre» significa mientras el servicio se preste.',
+        'Dicho de otra manera: Pro no caduca en una fecha, pero no puede durar más que el propio servicio. Es la otra cara de lo que dice el apartado de Pro.',
       ],
     },
     {
@@ -271,7 +302,8 @@ const terminosEn: LegalDoc = {
       heading: 'Your account',
       body: [
         'You need an account to use it, and you must be at least 14 years old.',
-        'You are responsible for keeping your password safe and for what happens from your account. Your session stays open on the device until you sign out, so on a shared device it is worth signing out.',
+        'You are responsible for keeping your password safe and for what is done from your account for as long as access depends on you. Your session stays open on the device until you sign out, so on a shared device it is worth signing out.',
+        'That has a limit: if someone gets into your account through a security flaw in the app itself, or for any other reason not attributable to you, you are not the one answering for what is done from there. If you suspect it has happened, change your password and write to us: we look into it and, where appropriate, undo whatever was done.',
         'One person, one account. Accounts may not be created by automated means, and you may not hand yours over to someone else.',
         'You can close it whenever you like from Settings, without asking us and without giving a reason.',
       ],
@@ -297,7 +329,8 @@ const terminosEn: LegalDoc = {
       heading: `${BRAND_NAME} ownership`,
       body: [
         `Everything that makes up ${BRAND_NAME} (the app and web design, the source code, the structure, the logo, the trade name and the brand) belongs exclusively to its owner or is used under the corresponding licences.`,
-        'We grant you a limited, personal and revocable permission to use the app under these terms, but that does not give you the right to copy, modify, distribute or resell it, nor to attempt to extract its source code.',
+        'We grant you a limited, personal permission to use the app under these terms, but that does not give you the right to copy, modify, distribute or resell it, nor to attempt to extract its source code.',
+        'That permission is not withdrawn on a whim. It can only be withdrawn, in whole or in part, if you breach these terms, if there is a security risk that justifies it, if a law or an authority requires it, or if the service stops being provided under the terms of the “If the service were discontinued” section. When it happens you are told why, and you can challenge it through the same route as any other moderation decision.',
       ],
     },
     {
@@ -316,15 +349,16 @@ const terminosEn: LegalDoc = {
         'If the price goes up, the increase only affects new purchases. A completed purchase is never charged again, for any reason.',
         'Pro is tied to your account and to the store account you paid with. It is not shared with your group, it is not enabled through Family Sharing, and it cannot be transferred, lent or resold. If you buy Pro, your group does not get Pro.',
         'If you change phone or reinstall, sign in with the same Apple or Google account and tap “Restore purchases” in your profile. There is nothing to pay again.',
-        'What it unlocks: unlimited places, plans and groups. And a guarantee we mean: if the free tier limits ever change, or the tiers are reorganised, your purchase will keep giving you at least what it unlocked on the day you made it. Nothing you already paid for will be moved behind a new payment.',
+        'What it unlocks: unlimited places, plans and groups. And a commitment we keep: if the free tier limits ever change, or the tiers are reorganised, your purchase will keep giving you at least what it unlocked on the day you made it. Nothing you already paid for will be moved behind a new payment.',
         'You can also unlock a paid tier with a promotional code. A code is not a purchase: nothing is charged, it does not renew, and it expires on whatever date it carries.',
-        '“Forever” means for as long as the service is provided. What happens if it stops being provided is set out below.',
+        'Pro has no expiry date: it is a single payment, with no subscription and no renewals, and it lasts for as long as the service is provided. What happens if it stops being provided is set out below.',
       ],
     },
     {
       heading: 'Who you buy from: the stores',
       body: [
-        'The purchase contract is concluded with Apple or Google, not with us. They take the payment, issue the receipt and handle refunds. We only receive notice that the purchase exists, in order to enable Pro for you.',
+        'The purchase is handled by the App Store or Google Play: the purchase contract is concluded with the store, which takes the payment, issues the receipt and handles refunds. We only receive notice that the purchase exists, in order to enable Pro for you.',
+        `That does not take us out of the relationship with you. ${BRAND_NAME} is the one providing the app and taking on the obligations regarding the service — that it works, that it conforms to what is promised, user support and everything these terms say. Payment going through the store does not change who you claim from about the service.`,
         'These terms are an agreement between you and the owner of the app. Apple is not a party to this agreement.',
         'Apple has no obligation whatsoever to furnish any maintenance or support services for the app. If you need help, write to us.',
         'If the app fails to conform to any applicable warranty, you may notify Apple, and Apple will refund the purchase price to you; beyond that refund, Apple has no other warranty obligation with respect to the app.',
@@ -339,7 +373,8 @@ const terminosEn: LegalDoc = {
       body: [
         'If you are a consumer in the European Union, you have fourteen calendar days to withdraw from a distance purchase without giving a reason.',
         'Because the purchase contract is concluded with the App Store or Google Play, that right is exercised with them and through their procedure, which you will find in the purchases section of your store account.',
-        'Note an exception set by the law itself: when you agree that digital content should be supplied immediately — which is what happens when you buy Pro, since it activates at once — you acknowledge losing the right of withdrawal once it has been supplied. Even so, the stores usually grant refunds beyond what the law obliges them to.',
+        `${BRAND_NAME} Pro is not a file you download once and that is that: what you pay for is being able to go on using features of the app, in other words a digital service. So we do not tell you that you have lost your right of withdrawal merely because Pro activates at once: the immediate loss the law provides for digital content works differently for services, and you are not asked to give anything up here.`,
+        'If you want to withdraw within those fourteen days, ask the store. Stores usually grant refunds even beyond what the law obliges them to; if they turn you down and you believe you were entitled, tell us and we look at it with you.',
         `If you believe your consumer rights have not been respected, write to ${LEGAL_CONTACT.email} before pursuing any other route: almost everything gets sorted there.`,
       ],
     },
@@ -348,9 +383,13 @@ const terminosEn: LegalDoc = {
       body: [
         `${BRAND_NAME} hosts content uploaded by its users and does not review it before it is published. What someone writes or uploads is their responsibility.`,
         'If you see something that should not be there, tell us. Inside the app, on a person’s profile or on a place page, there is a report option: you pick a reason (spam, harassment, inappropriate content, false information or other) and can add an explanation. Writing to the contact address works too.',
-        'What happens next: a person reads it. If the content breaks the law or these terms, it is removed; if not, it stays. You are told what was decided and why, whether you are the person who reported it or the person who posted it.',
-        'If you disagree with the decision, reply to that same email explaining why. It is looked at again with whatever you add, and you get another answer. No particular form or deadline is needed to ask.',
+        'If what you saw is not just inappropriate but something you believe is illegal, that same screen has an “Illegal content” reason, which opens a different form. There you are asked to point to exactly which content you are reporting and where it is, to explain why you believe it is unlawful, to leave an email address so we can reply, and to confirm that what you say is accurate to the best of your knowledge. Those are the details Article 16 of Regulation (EU) 2022/2065 requires in order to treat the notice as a report of illegal content. Email works just as well, as long as it includes the same details.',
+        'A report of illegal content is acknowledged as soon as it arrives, examined without undue delay, and you are told the decision along with the ways you have to challenge it. If you leave an email address, the answer goes there.',
+        'What happens next: a person reads it. Nothing is removed by a program deciding on its own. If the content breaks the law or these terms, it is removed; if not, it stays. You are told what was decided and why, whether you are the person who reported it or the person who posted it.',
+        'When the decision affects you — something of yours is removed, its visibility restricted, your account suspended or closed — you get a statement of reasons that includes: what measure was taken and how far it goes; whether it affects only that content or your account too; the specific facts it is based on; whether it came from someone else’s report or from a check of our own; whether any automated tool was used to detect it; the exact legal provision or term considered breached, and why; and how you can challenge it. That is what Article 17 of the same Regulation requires.',
+        'If you disagree with the decision, reply to that same email explaining why; you have at least six months from when you were told. It is looked at again with whatever you add, a person reviews it, and you get another answer. No particular form is needed. Challenging it here takes no other route away from you: you can equally turn to an out-of-court dispute settlement body of the kind that Regulation provides for, or to the courts.',
         'The possible measures, depending on severity and on whether it is repeated: a warning, removing the content, suspending the account or closing it. The least intrusive one that solves the problem is the one used.',
+        'It cuts both ways: anyone who repeatedly posts manifestly illegal content, or who repeatedly sends manifestly unfounded reports, may have their account suspended or their notices left unprocessed for a reasonable period. You are warned first.',
         'You can block another person from their profile. From then on their content does not appear to you, nor yours to them. Blocking is your decision and it is private: the other person is not notified.',
         'Closing an account for breaching these terms does not entitle you to a refund of Pro, unless the law requires it. Before it is closed you will be able to download your data.',
         `Single point of contact for users and authorities, including as required by Regulation (EU) 2022/2065 on Digital Services: ${LEGAL_CONTACT.email}. Attended in Spanish and English.`,
@@ -371,7 +410,7 @@ const terminosEn: LegalDoc = {
         'The intention is to keep the service running. But a product can stop being provided, and saying so in advance is worth more than promising otherwise.',
         'If it had to be shut down, you would be told inside the app and by email at least thirty days in advance. During that period you can download everything you have contributed from Settings.',
         `The price paid for ${BRAND_NAME} Pro is claimed from the store where the purchase was made, which took the payment and handles refunds. Your consumer rights apply there as they do for any other digital purchase.`,
-        '“Forever” means for as long as the service is provided.',
+        'Put another way: Pro has no expiry date, but it cannot outlast the service itself. It is the other side of what the Pro section says.',
       ],
     },
     {
@@ -426,7 +465,7 @@ const privacidadEs: LegalDoc = {
         '· Si los añades tú: una foto de perfil, una frase de presentación y el idioma que prefieres.',
         '· Lo que aportas a la aplicación: los sitios que guardas (nombre, dirección, coordenadas, notas, fotos, precio y categoría), los planes que creas, tus respuestas a los planes, tus puntuaciones, tus comentarios, tus colecciones y los espacios de los que formas parte.',
         '· Tus votos: en un plan, la fecha y el sitio que votas; en una decisión del grupo, la opción que eliges. Se guardan con tu nombre y los ve el grupo, porque la gracia de votar aquí es precisamente que quede claro quién ha dicho qué.',
-        '· Si reportas algo: el motivo que eliges, el texto que escribas, a quién o a qué se refiere y la fecha. Si bloqueas a alguien, se guarda que lo has bloqueado; a esa persona no se le dice.',
+        '· Si reportas algo: el motivo que eliges, el texto que escribas, a quién o a qué se refiere y la fecha. Si lo que envías es una denuncia de contenido ilícito, además se guarda dónde está el contenido según lo describas, por qué crees que es ilegal, el correo que dejes para contestarte y que confirmaste que lo dicho es cierto; el Reglamento de Servicios Digitales exige esos datos para poder tramitarla. Si bloqueas a alguien, se guarda que lo has bloqueado; a esa persona no se le dice.',
         '· Si activas las notificaciones: un identificador que facilita el sistema operativo del móvil o el navegador, necesario para poder enviarlas. No incluye tu número de teléfono ni identifica el aparato de otra forma.',
         `· Si compras ${BRAND_NAME} Pro: que lo tienes, cuándo se activó y el identificador de la compra que devuelve la tienda. Nada más. Ni la tarjeta, ni la dirección, ni el nombre de facturación: eso se queda en Apple o en Google y no llega aquí en ningún momento.`,
         '· Si pulsas el botón de «mi ubicación» del mapa: tu posición aproximada, y solo mientras la pantalla está abierta. No se guarda, no se envía a ningún servidor y no queda registro de por dónde has estado. Sirve únicamente para centrar el mapa en tu dispositivo.',
@@ -554,7 +593,7 @@ const privacidadEn: LegalDoc = {
         '· If you add them: a profile photo, a short bio and your preferred language.',
         '· What you contribute: the places you save (name, address, coordinates, notes, photos, price and category), the plans you create, your responses to plans, your ratings, your comments, your collections and the spaces you belong to.',
         '· Your votes: in a plan, the date and the place you vote for; in a group decision, the option you pick. They are stored with your name and the group sees them, because the whole point of voting here is that it is clear who said what.',
-        '· If you report something: the reason you pick, the text you write, who or what it refers to, and the date. If you block someone, the block is stored; that person is not told.',
+        '· If you report something: the reason you pick, the text you write, who or what it refers to, and the date. If what you send is a report of illegal content, we also store where the content is as you describe it, why you believe it is unlawful, the email address you leave for the reply, and the fact that you confirmed the account is accurate; the Digital Services Act requires those details in order to process it. If you block someone, the block is stored; that person is not told.',
         '· If you enable notifications: an identifier provided by your phone’s operating system or your browser, needed to deliver them. It does not include your phone number or otherwise identify the device.',
         `· If you buy ${BRAND_NAME} Pro: that you have it, when it was activated, and the purchase identifier the store returns. Nothing else. Not the card, not the address, not the billing name: that stays with Apple or Google and never reaches us.`,
         '· If you tap the map’s “my location” button: your approximate position, and only while that screen is open. It is not stored, not sent to any server, and no record is kept of where you have been. It is used solely to centre the map on your device.',
@@ -727,8 +766,9 @@ const avisoEs: LegalDoc = {
       heading: 'Contenidos de los usuarios y retirada',
       body: [
         `${BRAND_NAME} es un servicio de alojamiento de datos en el sentido del Reglamento (UE) 2022/2065: los contenidos los aportan las personas que lo usan y no se revisan antes de publicarse.`,
-        `Cualquiera puede avisar de un contenido que considere ilícito, desde la opción de reportar de la propia aplicación o escribiendo a ${LEGAL_CONTACT.email}. Conviene indicar dónde está el contenido y por qué se considera ilícito, para poder valorarlo.`,
-        'Los avisos los revisa una persona. Si el contenido es ilícito o incumple las Condiciones de uso, se retira. Se comunica la decisión y su motivo a quien avisó y a quien publicó el contenido, y cualquiera de los dos puede pedir que se revise respondiendo a ese correo.',
+        `Cualquiera puede avisar de un contenido que considere ilícito: desde la opción «Contenido ilícito» de la pantalla de reportar de la aplicación, o escribiendo a ${LEGAL_CONTACT.email}, que no exige tener cuenta. Para poder tramitarlo como una denuncia del artículo 16 del Reglamento hay que indicar con precisión qué contenido se denuncia y dónde está, explicar de forma suficiente por qué se considera ilícito, dejar un medio de contacto y declarar de buena fe que la información es exacta. El formulario de la aplicación recoge esos datos.`,
+        'Los avisos los revisa una persona. Si el contenido es ilícito o incumple las Condiciones de uso, se retira. Se acusa recibo de la denuncia y se comunica la decisión a quien avisó y a quien publicó el contenido.',
+        'A quien sufre la medida —retirada de contenido, limitación de su visibilidad, suspensión o cierre de la cuenta— se le da una motivación conforme al artículo 17 del Reglamento: la medida y su alcance, los hechos en los que se basa, si procede de una denuncia o de una comprobación propia, si se usaron medios automatizados, el fundamento legal o contractual y las vías de recurso. Cualquiera de los dos puede pedir que se revise respondiendo a ese correo, durante al menos seis meses, sin perjuicio de la resolución extrajudicial de litigios y de la vía judicial.',
         'No se emplean medios automatizados para decidir sobre contenidos, ni sistemas de recomendación basados en perfiles.',
       ],
     },
@@ -786,8 +826,9 @@ const avisoEn: LegalDoc = {
       heading: 'User content and removal',
       body: [
         `${BRAND_NAME} is a hosting service within the meaning of Regulation (EU) 2022/2065: content is contributed by the people who use it and is not reviewed before publication.`,
-        `Anyone can report content they consider unlawful, using the report option in the app or by writing to ${LEGAL_CONTACT.email}. It helps to say where the content is and why it is considered unlawful, so it can be assessed.`,
-        'Reports are reviewed by a person. If the content is unlawful or breaches the Terms of Use, it is removed. The decision and its reasons are communicated to the person who reported it and to the person who posted it, and either of them can ask for a review by replying to that email.',
+        `Anyone can report content they consider unlawful: through the “Illegal content” option on the app’s report screen, or by writing to ${LEGAL_CONTACT.email}, which needs no account. For it to be handled as a notice under Article 16 of the Regulation, it must identify precisely which content is being reported and where it is, explain sufficiently why it is considered unlawful, leave a means of contact and declare in good faith that the information is accurate. The form in the app collects those details.`,
+        'Reports are reviewed by a person. If the content is unlawful or breaches the Terms of Use, it is removed. Receipt of the notice is acknowledged and the decision is communicated to the person who reported it and to the person who posted it.',
+        'Whoever the measure is applied to — content removal, restricted visibility, account suspension or closure — receives a statement of reasons in line with Article 17 of the Regulation: the measure and its scope, the facts it is based on, whether it stems from a report or from a check of our own, whether automated means were used, the legal or contractual ground, and the available redress. Either party can ask for a review by replying to that email, for at least six months, without prejudice to out-of-court dispute settlement and to the courts.',
         'No automated means are used to decide about content, and there are no profile-based recommender systems.',
       ],
     },

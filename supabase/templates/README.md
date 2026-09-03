@@ -7,6 +7,10 @@ Los dos únicos correos que la app puede provocar:
 | `confirmacion.html` | Al crear una cuenta | `supabase.auth.signUp()` |
 | `recuperacion.html` | Al pedir contraseña nueva | `supabase.auth.resetPasswordForEmail()` |
 
+Aparte va `moderacion.md`: los correos de moderación, que no los manda la app
+sino una persona desde el correo de contacto, y que tienen que incluir la
+motivación que exige el artículo 17 del Reglamento de Servicios Digitales.
+
 No hay plantilla de enlace mágico, de cambio de correo ni de invitación porque
 la app no usa ninguno de esos flujos: las invitaciones a un espacio van por
 códigos propios, no por el sistema de invitaciones de Supabase.

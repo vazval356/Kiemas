@@ -1632,6 +1632,14 @@ export const supabaseApi: DataApi = {
         target_place_id: input.targetPlaceId ?? null,
         reason: input.reason,
         details: input.details ?? '',
+        // Los cuatro datos que el artículo 16 del Reglamento de Servicios
+        // Digitales exige a una denuncia de contenido ilícito. Van siempre, y
+        // en un reporte corriente viajan vacíos: la restricción de la tabla
+        // solo los exige cuando el motivo es `illegal`.
+        content_ref: input.contentRef?.trim() ?? '',
+        illegal_reason: input.illegalReason?.trim() ?? '',
+        notifier_email: input.notifierEmail?.trim() ?? '',
+        good_faith: input.goodFaith ?? false,
       })
     )
   },

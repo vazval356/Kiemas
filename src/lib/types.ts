@@ -507,7 +507,17 @@ export interface YearInReview {
   myAvgRating: number | null
 }
 
-export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fake' | 'other'
+/**
+ * Motivos de un reporte.
+ *
+ * `illegal` no es uno más de la lista. Los otros cinco son moderación nuestra:
+ * los miramos y decidimos según las condiciones de uso. Ese significa que quien
+ * avisa sostiene que el contenido es ILEGAL, y el artículo 16 del Reglamento
+ * (UE) 2022/2065 le exige entonces un contenido mínimo —qué contenido, dónde,
+ * por qué es ilícito, un contacto y una declaración de buena fe— sin el cual el
+ * aviso no cuenta como denuncia. De ahí los campos de abajo.
+ */
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fake' | 'other' | 'illegal'
 
 export interface ReportInput {
   spaceId?: string | null
@@ -515,6 +525,14 @@ export interface ReportInput {
   targetPlaceId?: string | null
   reason: ReportReason
   details?: string
+  /** Dónde está el contenido denunciado. Obligatorio si `reason` es `illegal`. */
+  contentRef?: string
+  /** Por qué se considera ilícito. Obligatorio si `reason` es `illegal`. */
+  illegalReason?: string
+  /** Correo al que contestar. Obligatorio si `reason` es `illegal`. */
+  notifierEmail?: string
+  /** Declaración de buena fe. Tiene que ser `true` si `reason` es `illegal`. */
+  goodFaith?: boolean
 }
 
 // ── Suscripción (Fase 5) ────────────────────────────────────────────────────
