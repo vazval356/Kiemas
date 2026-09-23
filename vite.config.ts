@@ -102,6 +102,9 @@ export default defineConfig({
         //
         // Esa página la exige Google Play y la enlaza desde la ficha de la
         // tienda, así que tiene que abrirse siempre.
+        // Sin respaldo de navegación: las navegaciones las lleva la regla
+        // `NetworkFirst` de más abajo, que también funciona sin conexión.
+        navigateFallback: null,
         navigateFallbackDenylist: [
           /^\/eliminar-cuenta\.html$/,
           /^\/404\.html$/,
@@ -109,6 +112,21 @@ export default defineConfig({
         ],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
+          {
+            // El armazón, primero de la red y de la caché solo sin conexión.
+            //
+            // Servido siempre desde la caché, quien añadía la app a la pantalla
+            // de inicio podía recibir el `index.html` del despliegue anterior, y
+            // iOS copia de ESA página cómo pintar la barra de estado. Un cambio
+            // en esas etiquetas no llegaba a nadie que ya hubiera abierto la app.
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages',
+              networkTimeoutSeconds: 3,
+              expiration: { maxEntries: 4 },
+            },
+          },
           {
             // El motor de mapas, guardado la primera vez que se usa. Se
             // responde desde la caché y se comprueba por detrás si hay una
