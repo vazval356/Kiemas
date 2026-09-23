@@ -32,53 +32,31 @@ const tabs: { to: string; labelKey: TranslationKey; icon: typeof MapIcon; tour?:
 ]
 
 /**
- * Al estilo Instagram: solo iconos, sin rótulos ni pastilla. La pestaña activa
- * se distingue porque su icono pasa a relleno (o a trazo más grueso cuando el
- * dibujo no tiene relleno que tenga sentido), y el Perfil muestra tu foto.
- * El rótulo sigue ahí como `aria-label` para lectores de pantalla.
+ * Barra flotante en forma de píldora, separada de los bordes, como las de iOS.
+ * Solo iconos: la pestaña activa se marca con una píldora gris detrás del
+ * icono. El rótulo sigue ahí como `aria-label` para lectores de pantalla.
  */
 export function BottomNav() {
   const location = useLocation()
-  const { t, profile } = useApp()
-  const initial = (profile?.displayName ?? '?').slice(0, 1).toUpperCase()
+  const { t } = useApp()
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant/40 bg-surface-lowest pb-safe">
-      <div className="mx-auto flex h-12 max-w-md items-stretch justify-around">
+    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="pointer-events-auto mx-auto flex h-[58px] max-w-md items-stretch gap-1 rounded-full border border-outline-variant/40 bg-surface-lowest/90 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl">
         {tabs.map(({ to, labelKey, icon: Icon, tour }) => {
           // `/` casa con todo si se usa startsWith, así que la raíz se compara exacta.
           const active = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to)
-          const isProfile = to === '/profile'
           return (
             <NavLink
               key={to}
               to={to}
               data-tour={tour}
               aria-label={t(labelKey)}
-              className="flex flex-1 items-center justify-center text-on-surface squish"
+              className={`flex flex-1 items-center justify-center rounded-full text-on-surface transition-colors squish ${
+                active ? 'bg-on-surface/10' : ''
+              }`}
             >
-              {isProfile && profile?.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt=""
-                  className={`size-7 rounded-full object-cover ${
-                    active ? 'ring-2 ring-on-surface ring-offset-2 ring-offset-surface-lowest' : ''
-                  }`}
-                />
-              ) : isProfile && profile ? (
-                <span
-                  className={`flex size-7 items-center justify-center rounded-full bg-primary-fixed text-xs font-bold text-primary ${
-                    active ? 'ring-2 ring-on-surface ring-offset-2 ring-offset-surface-lowest' : ''
-                  }`}
-                >
-                  {initial}
-                </span>
-              ) : (
-                <Icon
-                  filled={active}
-                  className={`size-7 transition-[stroke-width] ${active ? 'stroke-[2.6]' : 'stroke-[1.8]'}`}
-                />
-              )}
+              <Icon className="size-6" />
             </NavLink>
           )
         })}
