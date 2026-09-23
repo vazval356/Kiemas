@@ -41,7 +41,7 @@ export function BottomNav() {
   const { t } = useApp()
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 bottom-[calc(0px-var(--kd-hueco,0px))] z-40 px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+    <nav className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       <div className="pointer-events-auto mx-auto flex h-[58px] max-w-md items-stretch gap-1 rounded-full border border-outline-variant/40 bg-surface-lowest/90 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.08)] backdrop-blur-xl">
         {tabs.map(({ to, labelKey, icon: Icon, tour }) => {
           // `/` casa con todo si se usa startsWith, así que la raíz se compara exacta.

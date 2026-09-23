@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { BusquedaProvider } from './state/busqueda'
-import { isNative } from './lib/appUrl'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PantallaDeArranque } from './components/PantallaDeArranque'
 import { TopBar } from './components/TopBar'
@@ -295,30 +294,7 @@ export default function App() {
       <Suspense fallback={<PantallaDeArranque />}>
         <Rutas />
       </Suspense>
-      {!isNative && <VeloDeLaBarraDeEstado />}
     </ErrorBoundary>
-  )
-}
-
-/**
- * Un velo oscuro y muy suave detrás de la hora y la batería.
- *
- * Instalada en el iPhone desde Safari, la app pide `black-translucent` para
- * que el mapa llegue hasta el borde de arriba. El precio es que iOS pinta la
- * barra de estado siempre en blanco, sin importar el fondo, y sobre el azul
- * claro de la app la hora desaparecía. El velo la hace legible sin poner una
- * franja sólida. Su alto sale de la zona segura: en escritorio y en Android
- * mide cero y no se ve.
- *
- * En la app nativa no hace falta: allí Capacitor pone la barra de estado con
- * iconos oscuros.
- */
-function VeloDeLaBarraDeEstado() {
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[calc(env(safe-area-inset-top)*1.5)] bg-gradient-to-b from-[rgb(17_28_45/0.4)] to-transparent"
-    />
   )
 }
 

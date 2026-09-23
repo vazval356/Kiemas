@@ -92,41 +92,6 @@ body,
   height: 100dvh;
 }
 
-/* ── La franja vacía de abajo en el iPhone ────────────────────────────────
-   Instalada desde Safari con la barra de estado translúcida, iOS deja que la
-   app empiece bajo la hora pero resta el alto de esa barra a `100dvh`, a
-   `100%` y al `bottom: 0` de lo fijo: todo acaba antes del borde de abajo.
-   Solo `100lvh` da el alto real de la pantalla, y la diferencia entre los dos
-   es justo la franja que falta.
-
-   Únicamente en la app instalada: en una pestaña de Safari `lvh` y `dvh`
-   difieren por las barras del navegador, y ahí no hay nada que compensar.
-   La raíz se alarga hasta el borde, y la barra de pestañas, los botones
-   flotantes y las capas a pantalla completa bajan lo mismo. */
-@media (display-mode: standalone) {
-  :root {
-    --kd-hueco: calc(100lvh - 100dvh);
-  }
-}
-#root {
-  height: calc(100dvh + var(--kd-hueco, 0px));
-}
-.fixed.inset-0 {
-  bottom: calc(0px - var(--kd-hueco, 0px));
-}
-/* La raíz alargada sobresale del visor corto. Fija y no con `overflow:
-   hidden` en el documento: ese recorte cortaba todo justo donde empieza la
-   franja, barra de pestañas incluida. Un elemento fijo sí se pinta fuera del
-   visor, y no hace desplazable la página. */
-@media (display-mode: standalone) {
-  #root {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-}
-
 body {
   font-family: var(--font-body);
   /* El fondo va tintado, no casi blanco.
