@@ -13,7 +13,12 @@ import { BellIcon, CloseIcon, GroupIcon, SearchIcon, UserIcon } from './icons'
  * el que estés, así que cuál es tiene que estar siempre visible — si no, no hay
  * forma de saber a qué grupo estás añadiendo un sitio.
  */
-export function TopBar() {
+/**
+ * `flotante`: la cabecera va encima del contenido en vez de apartarlo. Es la
+ * del mapa, que ocupa la pantalla entera. La fila no captura toques —solo sus
+ * botones—, para que el hueco entre la píldora y la lupa siga moviendo el mapa.
+ */
+export function TopBar({ flotante = false }: { flotante?: boolean }) {
   const { spaces, activeSpace, setActiveSpace, api, t } = useApp()
   const [open, setOpen] = useState(false)
   const busqueda = useBusqueda()
@@ -58,8 +63,15 @@ export function TopBar() {
   const conBusqueda = RUTAS_CON_BUSQUEDA.includes(pathname)
 
   return (
-    <div ref={boxRef} className="relative z-30 shrink-0">
-      <div className="relative flex h-14 items-center gap-2 px-4 pb-1.5 pt-1">
+    <div
+      ref={boxRef}
+      className={
+        flotante
+          ? 'pointer-events-none absolute inset-x-0 top-0 z-30 pt-safe'
+          : 'relative z-30 shrink-0'
+      }
+    >
+      <div className="relative flex h-14 items-center gap-2 px-4 pb-1.5 pt-1 [&>*]:pointer-events-auto">
         {/* El selector de espacio, en una píldora blanca. Solo mide lo que su
             nombre: estirado a todo el ancho parecía un campo de formulario. */}
         <button
@@ -163,7 +175,7 @@ export function TopBar() {
       </div>
 
       {open && (
-        <div className="absolute inset-x-4 top-full z-40 mt-1 overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)] animate-pop">
+        <div className="pointer-events-auto absolute inset-x-4 top-full z-40 mt-1 overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)] animate-pop">
           <ul className="max-h-80 overflow-y-auto py-1">
             {spaces.map((space) => (
               <li key={space.id}>

@@ -150,7 +150,13 @@ export function MapPage() {
       const bounds = new maplibregl.LngLatBounds()
       mappablePlaces.forEach((p) => bounds.extend([p.lng, p.lat]))
       if (position && hasValidCoords(position)) bounds.extend([position.lng, position.lat])
-      map.fitBounds(bounds, { padding: 80, maxZoom: 14, duration: 0 })
+      // Más margen arriba y abajo que a los lados: la cabecera y los chips
+      // flotan encima del mapa por arriba, y la barra de pestañas por abajo.
+      map.fitBounds(bounds, {
+        padding: { top: 150, bottom: 120, left: 60, right: 60 },
+        maxZoom: 14,
+        duration: 0,
+      })
     } catch (e) {
       console.warn('No se pudo encuadrar el mapa:', e)
     }
@@ -282,9 +288,10 @@ export function MapPage() {
           anularía un `absolute inset-0`. */}
       <div ref={containerRef} className="size-full" />
 
-      {/* Filtros flotantes. El buscador ya no vive aquí: es la lupa de la
-          cabecera, y el mapa se queda con toda la franja de arriba. */}
-      <div className="absolute inset-x-0 top-2 z-10 px-4">
+      {/* Filtros flotantes, justo debajo de la cabecera, que también flota
+          encima del mapa. El buscador ya no vive aquí: es la lupa de la
+          cabecera. */}
+      <div className="absolute inset-x-0 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 px-4">
         <CategoryChips
           categories={categories}
           selected={categoryFilter}

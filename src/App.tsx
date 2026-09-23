@@ -204,11 +204,15 @@ function Shell() {
   // listas públicas que tampoco. Setenta píxeles y una pregunta de más en cada
   // pantalla donde no significaba nada.
   const conCabecera = ['/', '/list', '/calendar'].includes(location.pathname)
+  const enMapa = location.pathname === '/'
 
   return (
     <BusquedaProvider>
-      <div className="pt-safe flex h-full flex-col">
-        {!isFullScreen && conCabecera && <TopBar />}
+      {/* En el mapa no hay margen arriba: el mapa llega hasta el borde, por
+          debajo de la hora y la batería, y la cabecera flota encima con su
+          propio margen de zona segura. */}
+      <div className={`${enMapa ? '' : 'pt-safe'} relative flex h-full flex-col`}>
+        {!isFullScreen && conCabecera && <TopBar flotante={enMapa} />}
         {/* El respaldo mientras llega el trozo de la pantalla. Va DENTRO del
           armazón, por debajo de la cabecera y por encima de la barra inferior:
           así lo único que parpadea es el contenido, y la navegación se queda
