@@ -24,7 +24,10 @@ Subirlo más adelante no da problema: las Condiciones dicen que una subida solo
 afecta a las compras nuevas y que una compra hecha no se vuelve a cobrar, y que
 Pro sigue dando al menos lo que desbloqueaba el día de la compra aunque cambien
 los límites del plan gratuito. Eso es lo que evita la reclamación de «pagué por
-"para siempre" y me lo habéis recortado».
+esto y me lo habéis recortado». Por lo mismo, la ficha no anuncia «para
+siempre»: un abogado lo señaló en agosto de 2026 y esa promesa se cambió por
+«pago único, sin suscripción ni renovaciones», que dice lo mismo sin generar una
+obligación indefinida. Si se toca la ficha en las tiendas, que no vuelva.
 
 ## Enlaces
 
@@ -92,7 +95,7 @@ Las notificaciones push avisan de planes nuevos y de cambios en el grupo.
 | Campo | Español | English |
 |---|---|---|
 | Nombre para mostrar (30) | `Kiemas Pro` | `Kiemas Pro` |
-| Descripción (45) | `Sin límites, para siempre. Pago único.` | `No limits, forever. One-time purchase.` |
+| Descripción (45) | `Sin límites. Pago único, sin suscripción.` | `No limits. One-time purchase, no renewals.` |
 
 **En familia: NO.** Repartiría una compra entre seis personas, que es lo contrario
 de las cuotas por persona. Se puede activar luego; desactivar, nunca.
@@ -127,7 +130,7 @@ El mapa de vuestros sitios y el calendario de vuestros planes.
 ### La compra Pro
 
 - Nombre: `Kiemas Pro`
-- Descripción (200): `Sitios, planes y grupos sin límite, en todos tus grupos. Un solo pago, para siempre.`
+- Descripción (200): `Sitios, planes y grupos sin límite, en todos tus grupos. Un solo pago, sin suscripción ni renovaciones.`
 - Categoría fiscal: Ventas de apps digitales · Clasificación: 13+ · Contenido digital
 - **Hay que activarlo**: en Play los productos nacen inactivos.
 
@@ -162,7 +165,7 @@ Publicad vuestras listas y seguid las de otros. "Bares de barrio en Madrid" le s
 
 GRATIS Y PRO
 Gratis: 2 grupos, 30 sitios y 3 planes a la vez. Da para usarla de verdad.
-Pro: sitios, planes y grupos sin límite. Un solo pago, para siempre. Sin suscripción.
+Pro: sitios, planes y grupos sin límite. Un solo pago, sin suscripción ni renovaciones.
 
 PRIVACIDAD
 Kiemas no vende datos ni muestra publicidad. Lo que guardáis en un grupo lo ve ese grupo y nadie más.
