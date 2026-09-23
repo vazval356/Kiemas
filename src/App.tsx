@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
+import { BusquedaProvider } from './state/busqueda'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PantallaDeArranque } from './components/PantallaDeArranque'
 import { TopBar } from './components/TopBar'
@@ -205,56 +206,62 @@ function Shell() {
   const conCabecera = ['/', '/list', '/calendar'].includes(location.pathname)
 
   return (
-    <div className="pt-safe flex h-full flex-col">
-      {!isFullScreen && conCabecera && <TopBar />}
-      {/* El respaldo mientras llega el trozo de la pantalla. Va DENTRO del
+    <BusquedaProvider>
+      <div className="pt-safe flex h-full flex-col">
+        {!isFullScreen && conCabecera && <TopBar />}
+        {/* El respaldo mientras llega el trozo de la pantalla. Va DENTRO del
           armazón, por debajo de la cabecera y por encima de la barra inferior:
           así lo único que parpadea es el contenido, y la navegación se queda
           quieta en su sitio. */}
-      <Suspense fallback={<PantallaDeArranque />}>
-        <Routes>
-          <Route path="/" element={<MapPage />} />
-          <Route path="/list" element={<ListPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/plan/new" element={<PlanFormPage />} />
-          <Route path="/plan/:id" element={<PlanDetailPage />} />
-          <Route path="/collections" element={<CollectionsPage />} />
-          <Route path="/collections/:id" element={<CollectionDetailPage />} />
-          <Route path="/activity" element={<ActivityPage />} />
-          <Route path="/following" element={<FollowedListsPage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          {/* La dirección sigue existiendo, pero fuera de diciembre no lleva a
+        <Suspense fallback={<PantallaDeArranque />}>
+          <Routes>
+            <Route path="/" element={<MapPage />} />
+            <Route path="/list" element={<ListPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/plan/new" element={<PlanFormPage />} />
+            <Route path="/plan/:id" element={<PlanDetailPage />} />
+            <Route path="/collections" element={<CollectionsPage />} />
+            <Route path="/collections/:id" element={<CollectionDetailPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/following" element={<FollowedListsPage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            {/* La dirección sigue existiendo, pero fuera de diciembre no lleva a
               ninguna parte: quien la tenga guardada acaba en su perfil en vez de
               en un resumen de dos meses. */}
-          <Route
-            path="/wrapped"
-            element={
-              resumenDelAnoDisponible() ? <YearInReviewPage /> : <Navigate to="/profile" replace />
-            }
-          />
-          <Route path="/spaces" element={<SpacesPage />} />
-          <Route path="/spaces/:id" element={<SpaceDetailPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/edit" element={<EditProfilePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/subscription" element={<SubscriptionPage />} />
-          <Route path="/add" element={<PlaceFormPage />} />
-          <Route path="/edit/:id" element={<PlaceFormPage />} />
-          <Route path="/place/:id" element={<PlaceDetailPage />} />
-          {/* Antes esto era un `Navigate` al mapa. Una dirección rota te dejaba
+            <Route
+              path="/wrapped"
+              element={
+                resumenDelAnoDisponible() ? (
+                  <YearInReviewPage />
+                ) : (
+                  <Navigate to="/profile" replace />
+                )
+              }
+            />
+            <Route path="/spaces" element={<SpacesPage />} />
+            <Route path="/spaces/:id" element={<SpaceDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/add" element={<PlaceFormPage />} />
+            <Route path="/edit/:id" element={<PlaceFormPage />} />
+            <Route path="/place/:id" element={<PlaceDetailPage />} />
+            {/* Antes esto era un `Navigate` al mapa. Una dirección rota te dejaba
               en la pantalla de siempre sin decir nada, y con `replace` ni
               siquiera quedaba en el historial la dirección que había fallado. */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
-      {!isFullScreen && <BottomNav />}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+        {!isFullScreen && <BottomNav />}
 
-      {/* Cada pantalla tiene su propio recorrido y decide él mismo si toca. No
+        {/* Cada pantalla tiene su propio recorrido y decide él mismo si toca. No
           en las de pila: ahí la persona ha entrado a hacer algo concreto, y las
           que tienen recorrido son destinos de la barra inferior. Al ir detrás de
           la bienvenida en el árbol, no puede aparecer encima de ella. */}
-      {!isFullScreen && <GuiaDeLaPantalla />}
-    </div>
+        {!isFullScreen && <GuiaDeLaPantalla />}
+      </div>
+    </BusquedaProvider>
   )
 }
 

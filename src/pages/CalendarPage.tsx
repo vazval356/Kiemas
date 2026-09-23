@@ -344,7 +344,7 @@ export function CalendarPage() {
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3">
-      <h2 className="shrink-0 text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+      <h2 className="shrink-0 text-sm font-bold text-on-surface">
         {children}
       </h2>
       <span className="h-px flex-1 bg-outline-variant" aria-hidden />

@@ -148,7 +148,7 @@ export function ExplorePage() {
         {!query && siguiendo.length > 0 && (
           <section className="mt-5">
             <div className="mb-2 flex items-baseline justify-between gap-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+              <h2 className="text-sm font-bold text-on-surface">
                 {t('followed.title')}
               </h2>
               {/* La tira solo enseña las primeras y no había forma de ver el
@@ -185,7 +185,7 @@ export function ExplorePage() {
             leían como una sola lista con dos formas distintas, y no quedaba claro
             dónde acababa lo tuyo y empezaba lo de los demás. */}
         <div className="mt-6 flex items-baseline justify-between gap-2 border-t border-outline-variant/50 pt-4">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <h2 className="text-sm font-bold text-on-surface">
             {query ? t('explore.results') : t('explore.publicTitle')}
           </h2>
           {!loading && lists.length > 0 && (

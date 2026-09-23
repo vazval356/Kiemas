@@ -482,7 +482,7 @@ export function SubscriptionPage() {
                 por delante retrasa lo que ha venido a ver. */}
             {mine && (mine.maxPlaces !== null || mine.maxActivePlans !== null) && (
               <section className="mt-5 rounded-card bg-surface-container px-4 py-3">
-                <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                <h2 className="mb-2 text-sm font-bold text-on-surface">
                   {t('sub.usageTitle')}
                 </h2>
                 <div className="flex flex-col gap-2.5">

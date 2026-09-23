@@ -201,7 +201,7 @@ export function PublicListPage() {
                     className="h-40 w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-24 items-center justify-center bg-gradient-to-br from-primary-fixed to-surface-highest text-4xl">
+                  <div className="flex h-24 items-center justify-center bg-surface-container text-4xl">
                     {place.emoji ?? '📍'}
                   </div>
                 )}

@@ -8,6 +8,7 @@ import type { Place, PlaceStatus } from '../lib/types'
 import { averageRating } from '../lib/utils'
 import { useApp } from '../state/appState'
 import { usePageTitle } from '../lib/seo'
+import { useBusqueda } from '../state/busqueda'
 
 type StatusFilter = 'all' | PlaceStatus
 type SortKey = 'recent' | 'name' | 'rating'
@@ -22,6 +23,7 @@ export function ListPage() {
   const [tagFilter, setTagFilter] = useState<string[]>([])
   const [sort, setSort] = useState<SortKey>('recent')
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const { texto: busqueda } = useBusqueda()
 
   // Cuántos filtros hay puestos de los que quedan escondidos. Sin este número,
   // esconderlos significa que alguien entra, ve tres sitios de veinte y no
@@ -36,7 +38,10 @@ export function ListPage() {
   }, [activeSpace?.id])
 
   const filtered = useMemo(() => {
+    const q = busqueda.trim().toLowerCase()
     const list = places.filter((p) => {
+      if (q && !p.name.toLowerCase().includes(q) && !p.address.toLowerCase().includes(q))
+        return false
       if (statusFilter !== 'all' && p.status !== statusFilter) return false
       if (categoryFilter && p.categoryId !== categoryFilter) return false
       if (onlyFavorites && !p.favorite) return false
@@ -50,7 +55,7 @@ export function ListPage() {
       if (sort === 'rating') return (averageRating(b) ?? -1) - (averageRating(a) ?? -1)
       return b.createdAt.localeCompare(a.createdAt)
     })
-  }, [places, statusFilter, categoryFilter, onlyFavorites, tagFilter, sort, locale])
+  }, [places, busqueda, statusFilter, categoryFilter, onlyFavorites, tagFilter, sort, locale])
 
   async function toggleFavorite(place: Place) {
     await api.updatePlace(place.id, { favorite: !place.favorite })
@@ -114,7 +119,7 @@ export function ListPage() {
             className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold squish ${
               extraCount > 0 || filtersOpen
                 ? 'bg-primary text-on-primary'
-                : 'bg-surface-container text-on-surface-variant'
+                : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
             }`}
           >
             {t('list.filters')}
@@ -263,8 +268,10 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold squish transition-colors ${
-        active ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'
+      className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium squish transition-colors ${
+        active
+          ? 'bg-primary text-on-primary'
+          : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
       }`}
     >
       {label}

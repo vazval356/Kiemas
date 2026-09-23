@@ -42,7 +42,7 @@ export function PhotoOrPlaceholder({
   }
   return (
     <div
-      className={`${className} flex items-center justify-center bg-gradient-to-br from-primary-fixed to-surface-highest`}
+      className={`${className} flex items-center justify-center bg-surface-container`}
     >
       <span className="text-5xl drop-shadow-sm">{emoji}</span>
     </div>

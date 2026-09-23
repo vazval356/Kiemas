@@ -39,7 +39,7 @@ export function RequisitosDeContrasena({
 
   return (
     <div id={id}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+      <p className="text-sm font-bold text-on-surface">
         {t('password.requirements')}
       </p>
       {/* En fila y no en columna. Kiemas se usa en el móvil, y ahí el alto es

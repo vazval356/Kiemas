@@ -9,8 +9,11 @@
  * usa el proyecto.
  */
 @theme {
-  --font-display: 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  /* Figtree y no Inter: Inter es la letra por defecto de media internet y
+     hacía que la app se leyera como una plantilla. Figtree tiene las formas
+     redondas y cálidas que pide el resto del diseño. */
+  --font-display: 'Figtree', system-ui, sans-serif;
+  --font-body: 'Figtree', system-ui, sans-serif;
 
   /* Superficies — azul muy desaturado, para que el mapa siga siendo lo que destaca */
   --color-surface: #f9f9ff;
@@ -66,13 +69,16 @@
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
 
-  /* Formas: 8px en controles, 24px en contenedores y bottom sheets */
-  --radius-card: 1.5rem;
-  --radius-control: 0.5rem;
+  /* Formas: 14px en controles, 28px en contenedores y bottom sheets */
+  --radius-card: 1.75rem;
+  --radius-control: 0.875rem;
 
-  /* Elevación ambiental sobre el mapa (niveles 1 y 2 del sistema de diseño) */
-  --shadow-surface: 0 4px 20px rgba(0, 0, 0, 0.05);
-  --shadow-float: 0 10px 25px rgba(70, 72, 212, 0.15);
+  /* Elevación. Cada nivel lleva un filo de 1px además de la sombra: las
+     tarjetas se separan del fondo por su contorno, como papel sobre la mesa,
+     y no por un halo difuso. La sombra flotante ya no va tintada de índigo:
+     un resplandor de color bajo cada botón era lo que más delataba plantilla. */
+  --shadow-surface: 0 0 0 1px rgb(17 28 45 / 0.07), 0 1px 2px rgb(17 28 45 / 0.04);
+  --shadow-float: 0 0 0 1px rgb(17 28 45 / 0.06), 0 8px 24px rgb(17 28 45 / 0.08);
 }
 
 html,
@@ -146,6 +152,27 @@ textarea {
 }
 .animate-pop {
   animation: kd-pop 0.25s ease-out;
+}
+
+/* El buscador de la cabecera: se despliega desde el botón de la lupa, que
+   está a la derecha, así que crece hacia la izquierda. */
+@keyframes kd-search-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 0 calc(100% - 2.75rem) round 999px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 999px);
+  }
+}
+.kd-search-in {
+  animation: kd-search-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kd-search-in {
+    animation: none;
+  }
 }
 
 /* Respeta la zona segura de iOS bajo la barra de navegación. */

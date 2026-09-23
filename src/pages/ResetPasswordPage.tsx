@@ -110,7 +110,7 @@ export function ResetPasswordPage() {
 
         <form onSubmit={submit} noValidate className="flex flex-col gap-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <span className="text-sm font-bold text-on-surface">
               {t('reset.newPassword')}
             </span>
             {/* El campo y el botón del ojo comparten el recuadro, así que el

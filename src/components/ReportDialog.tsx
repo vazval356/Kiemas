@@ -113,7 +113,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
           </p>
         ) : (
           <>
-            <label className="mb-2 mt-5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <label className="mb-2 mt-5 block text-sm font-bold text-on-surface">
               {t('settings.reportReason')}
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -141,7 +141,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
 
                 <label
                   htmlFor="denuncia-contenido"
-                  className="mb-1.5 mt-4 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant"
+                  className="mb-1.5 mt-4 block text-sm font-bold text-on-surface"
                 >
                   {t('settings.illegalWhat')}
                 </label>
@@ -156,7 +156,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
 
                 <label
                   htmlFor="denuncia-motivo"
-                  className="mb-1.5 mt-4 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant"
+                  className="mb-1.5 mt-4 block text-sm font-bold text-on-surface"
                 >
                   {t('settings.illegalWhy')}
                 </label>
@@ -171,7 +171,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
 
                 <label
                   htmlFor="denuncia-correo"
-                  className="mb-1.5 mt-4 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant"
+                  className="mb-1.5 mt-4 block text-sm font-bold text-on-surface"
                 >
                   {t('settings.illegalEmail')}
                 </label>

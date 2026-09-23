@@ -133,7 +133,7 @@ export function UsernameEditor() {
           esto, el rótulo era texto que da la casualidad de estar encima. */}
       <label
         htmlFor="usuario-arroba"
-        className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant"
+        className="text-sm font-bold text-on-surface"
       >
         {t('username.label')}
       </label>

@@ -110,7 +110,7 @@ export function EditProfilePage({
             disabled={busy}
             onClick={() => fileRef.current?.click()}
             className="relative rounded-full p-1 squish disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg, #4648d4, #b90538)' }}
+            style={{ background: 'var(--color-primary)' }}
           >
             {profile?.avatarUrl ? (
               <img
@@ -171,7 +171,7 @@ export function EditProfilePage({
 
         {/* ── Nombre ─────────────────────────────────────────────────────── */}
         <label className="mt-6 block">
-          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <span className="mb-1.5 block text-sm font-bold text-on-surface">
             {t('profile.displayName')}
           </span>
           <input
@@ -185,7 +185,7 @@ export function EditProfilePage({
 
         {/* ── @usuario ───────────────────────────────────────────────────── */}
         <div className="mt-5">
-          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <span className="mb-1.5 block text-sm font-bold text-on-surface">
             {t('profile.username')}
           </span>
           <div className="rounded-control bg-surface-container px-3 py-2.5">
@@ -200,7 +200,7 @@ export function EditProfilePage({
 
         {/* ── Frase ──────────────────────────────────────────────────────── */}
         <label className="mt-5 block">
-          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <span className="mb-1.5 block text-sm font-bold text-on-surface">
             {t('profile.bio')}
           </span>
           <textarea

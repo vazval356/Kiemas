@@ -32,10 +32,10 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold shadow-sm squish transition-colors ${
+      className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium squish transition-colors ${
         active
           ? 'bg-primary text-on-primary'
-          : 'border border-outline-variant/50 bg-surface-lowest/90 text-on-surface-variant'
+          : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
       }`}
     >
       {label}

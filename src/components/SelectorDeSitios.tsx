@@ -174,7 +174,7 @@ export function SelectorDeSitios({
           <div className="flex flex-col gap-3">
             {grupos.map((g) => (
               <div key={g.id ?? 'sueltos'}>
-                <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-wide text-on-surface-variant">
+                <p className="mb-1.5 px-1 text-sm font-bold text-on-surface">
                   {g.etiqueta}
                 </p>
                 <ul className="flex flex-col gap-1.5">{g.sitios.map(fila)}</ul>

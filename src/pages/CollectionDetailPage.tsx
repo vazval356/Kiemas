@@ -185,7 +185,7 @@ export function CollectionDetailPage() {
         {/* ── Sitios de la colección ─────────────────────────────────────── */}
         <section className="mt-6">
           <div className="mb-2 flex items-baseline justify-between gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <h2 className="text-sm font-bold text-on-surface">
               {t('collection.inCollection')}
             </h2>
             {inside.length > 0 && (

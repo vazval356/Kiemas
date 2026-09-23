@@ -77,7 +77,7 @@ export function DecisionsSection() {
   return (
     <section className="mb-4">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+        <h2 className="text-sm font-bold text-on-surface">
           {t('decision.title')}
         </h2>
         {!abriendo && (

@@ -88,7 +88,7 @@ export function LegalPage({ kind }: { kind: LegalKind }) {
 
         {/* Índice */}
         <nav className="mt-7 rounded-card bg-surface-container p-4">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <h2 className="mb-2 text-sm font-bold text-on-surface">
             {t('legal.contents')}
           </h2>
           <ol className="flex flex-col gap-1">

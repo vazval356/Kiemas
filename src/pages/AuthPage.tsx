@@ -519,7 +519,7 @@ export function AuthPage() {
                 <>
                   <div className="my-5 flex items-center gap-3">
                     <span className="h-px flex-1 bg-outline-variant" aria-hidden />
-                    <span className="text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+                    <span className="text-sm font-bold text-on-surface">
                       {t('auth.or')}
                     </span>
                     <span className="h-px flex-1 bg-outline-variant" aria-hidden />

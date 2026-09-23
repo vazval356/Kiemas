@@ -340,7 +340,7 @@ export function SpaceDetailPage() {
             <div
               className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-card"
               style={{
-                background: `linear-gradient(135deg, ${cols.solid}, ${cols.soft})`,
+                background: cols.soft,
               }}
             >
               {space.coverUrl && (
@@ -647,7 +647,7 @@ export function SpaceDetailPage() {
               </div>
             )}
 
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <label className="mb-1.5 block text-sm font-bold text-on-surface">
               {t('invite.expiry')}
             </label>
             <div className="mb-4 grid grid-cols-4 gap-1.5">
@@ -696,7 +696,7 @@ export function SpaceDetailPage() {
               {t('invite.create')}
             </button>
 
-            <h3 className="mb-2 mt-6 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <h3 className="mb-2 mt-6 text-sm font-bold text-on-surface">
               {t('invite.active')}
             </h3>
             {liveInvites.length === 0 ? (

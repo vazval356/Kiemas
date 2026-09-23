@@ -6,7 +6,8 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { RouletteModal } from '../components/RouletteModal'
-import { AddIcon, DiceIcon, HeartIcon, PinIcon, SearchIcon, StarIcon } from '../components/icons'
+import { AddIcon, DiceIcon, HeartIcon, PinIcon, StarIcon } from '../components/icons'
+import { useBusqueda } from '../state/busqueda'
 import type { Place } from '../lib/types'
 import {
   averageRating,
@@ -48,7 +49,7 @@ export function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [mapReady, setMapReady] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  const [query, setQuery] = useState('')
+  const { texto: query } = useBusqueda()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [rouletteOpen, setRouletteOpen] = useState(false)
 
@@ -281,29 +282,9 @@ export function MapPage() {
           anularía un `absolute inset-0`. */}
       <div ref={containerRef} className="size-full" />
 
-      {/* Buscador y filtros flotantes */}
-      <div className="absolute inset-x-3 top-3 z-10 space-y-2.5">
-        <div className="flex items-center gap-3 rounded-full bg-surface-lowest/95 py-2 pl-2 pr-4 shadow-[var(--shadow-float)] backdrop-blur">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-primary">
-            <SearchIcon />
-          </span>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('map.searchPlaceholder')}
-            aria-label={t('map.searchPlaceholder')}
-            className="flex-1 bg-transparent text-on-surface outline-none placeholder:text-on-surface-variant/60"
-          />
-          {query && (
-            <button
-              type="button"
-              className="text-sm font-semibold text-primary"
-              onClick={() => setQuery('')}
-            >
-              {t('map.clear')}
-            </button>
-          )}
-        </div>
+      {/* Filtros flotantes. El buscador ya no vive aquí: es la lupa de la
+          cabecera, y el mapa se queda con toda la franja de arriba. */}
+      <div className="absolute inset-x-0 top-2 z-10 px-4">
         <CategoryChips
           categories={categories}
           selected={categoryFilter}

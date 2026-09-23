@@ -56,7 +56,7 @@ export function ProfilePage() {
             className="relative rounded-full p-1 squish"
             // El anillo del diseño: un degradado que rodea el retrato. Va como
             // fondo del contenedor y el retrato deja ver un borde blanco.
-            style={{ background: 'linear-gradient(135deg, #4648d4, #b90538)' }}
+            style={{ background: 'var(--color-primary)' }}
           >
             {profile?.avatarUrl ? (
               <img
@@ -147,7 +147,7 @@ export function ProfilePage() {
             data-tour="cuota"
             className="mt-3 block rounded-card bg-surface-container px-4 py-3 squish"
           >
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <p className="mb-2 text-sm font-bold text-on-surface">
               {t('profile.quotaTitle', { plan: t(`sub.${entitlement}` as 'sub.free') })}
             </p>
             <div className="flex flex-col gap-2.5">
@@ -167,7 +167,7 @@ export function ProfilePage() {
 
         {/* ── Espacios ─────────────────────────────────────────────────── */}
         <section className="mt-8">
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+          <h2 className="mb-2 text-sm font-bold text-on-surface">
             {t('space.mine')}
           </h2>
           <ul className="flex flex-col gap-2">
@@ -278,12 +278,12 @@ export function ProfilePage() {
             huecos prometería un historial que nadie tiene todavía. */}
         {resumenDelAnoDisponible() && (
           <section className="mt-8">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+            <h2 className="mb-2 text-sm font-bold text-on-surface">
               {t('wrapped.title', { year: new Date().getFullYear() })}
             </h2>
             <Link
               to="/wrapped"
-              className="flex h-28 items-end rounded-card bg-gradient-to-br from-primary via-primary-container to-secondary p-4 shadow-[var(--shadow-float)] squish"
+              className="flex h-28 items-end rounded-card bg-primary p-4 squish"
             >
               <span>
                 <span className="block font-display text-2xl font-bold leading-none text-on-primary">
