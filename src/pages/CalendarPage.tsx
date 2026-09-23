@@ -330,7 +330,7 @@ export function CalendarPage() {
         <Link
           to="/plan/new"
           data-tour="plan-nuevo"
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
+          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom)-var(--kd-hueco,0px))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
           aria-label={t('plan.new')}
         >
           <AddIcon className="size-7" />

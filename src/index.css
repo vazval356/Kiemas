@@ -92,6 +92,27 @@ body,
   height: 100dvh;
 }
 
+/* ── La franja vacía de abajo en el iPhone ────────────────────────────────
+   `--kd-hueco` lo mide `lib/hueco.ts`: es lo que iOS le quita al visor en la
+   app instalada con la barra de estado translúcida. Fuera de ese caso vale 0
+   y nada de esto cambia nada. La raíz se alarga hasta el borde, y las capas
+   fijas a pantalla completa (modales, el recorrido) bajan lo mismo. */
+#root {
+  height: calc(100dvh + var(--kd-hueco, 0px));
+}
+.fixed.inset-0 {
+  bottom: calc(0px - var(--kd-hueco, 0px));
+}
+/* La raíz alargada sobresale del documento, que sigue midiendo el visor
+   corto: sin esto se podría arrastrar la app entera esos píxeles. Cada
+   pantalla tiene su propio desplazamiento, así que el documento no lo necesita. */
+@media (display-mode: standalone) {
+  html,
+  body {
+    overflow: hidden;
+  }
+}
+
 body {
   font-family: var(--font-body);
   /* El fondo va tintado, no casi blanco.
