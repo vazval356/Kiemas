@@ -93,10 +93,21 @@ body,
 }
 
 /* ── La franja vacía de abajo en el iPhone ────────────────────────────────
-   `--kd-hueco` lo mide `lib/hueco.ts`: es lo que iOS le quita al visor en la
-   app instalada con la barra de estado translúcida. Fuera de ese caso vale 0
-   y nada de esto cambia nada. La raíz se alarga hasta el borde, y las capas
-   fijas a pantalla completa (modales, el recorrido) bajan lo mismo. */
+   Instalada desde Safari con la barra de estado translúcida, iOS deja que la
+   app empiece bajo la hora pero resta el alto de esa barra a `100dvh`, a
+   `100%` y al `bottom: 0` de lo fijo: todo acaba antes del borde de abajo.
+   Solo `100lvh` da el alto real de la pantalla, y la diferencia entre los dos
+   es justo la franja que falta.
+
+   Únicamente en la app instalada: en una pestaña de Safari `lvh` y `dvh`
+   difieren por las barras del navegador, y ahí no hay nada que compensar.
+   La raíz se alarga hasta el borde, y la barra de pestañas, los botones
+   flotantes y las capas a pantalla completa bajan lo mismo. */
+@media (display-mode: standalone) {
+  :root {
+    --kd-hueco: calc(100lvh - 100dvh);
+  }
+}
 #root {
   height: calc(100dvh + var(--kd-hueco, 0px));
 }
