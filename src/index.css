@@ -69,16 +69,24 @@
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
 
-  /* Formas: 14px en controles, 28px en contenedores y bottom sheets */
-  --radius-card: 1.75rem;
+  /* Formas: 14px en controles, 16px en contenedores y bottom sheets.
+     Antes eran 28px de radio en las tarjetas — una curva tan cerrada que
+     cualquier caja se leía como burbuja de plantilla SaaS, sin relación con
+     el resto de la forma. 16px sigue siendo cálido pero ya se nota como una
+     esquina cortada, no como un blob. */
+  --radius-card: 1rem;
   --radius-control: 0.875rem;
 
-  /* Elevación. Cada nivel lleva un filo de 1px además de la sombra: las
-     tarjetas se separan del fondo por su contorno, como papel sobre la mesa,
-     y no por un halo difuso. La sombra flotante ya no va tintada de índigo:
-     un resplandor de color bajo cada botón era lo que más delataba plantilla. */
-  --shadow-surface: 0 0 0 1px rgb(17 28 45 / 0.07), 0 1px 2px rgb(17 28 45 / 0.04);
-  --shadow-float: 0 0 0 1px rgb(17 28 45 / 0.06), 0 8px 24px rgb(17 28 45 / 0.08);
+  /* Elevación de pegatina, no de plantilla SaaS.
+     Antes cada tarjeta llevaba el mismo halo gris difuminado — la sombra que
+     usa cualquier generador de interfaces por defecto, sin relación con el
+     resto del diseño. Ahora la sombra es sólida y desplazada, sin difuminar,
+     como el borde de una pegatina despegada del papel: un filo fino del
+     mismo tinte que el texto, y detrás su silueta plana desplazada. Sigue
+     siendo SOLO índigo/tinta —ningún color nuevo—, pero ya no se puede
+     confundir con la sombra por defecto de un framework. */
+  --shadow-surface: 0 0 0 1.5px var(--color-on-surface), 2px 2px 0 0 var(--color-on-surface);
+  --shadow-float: 0 0 0 1.5px var(--color-on-surface), 4px 5px 0 0 var(--color-on-surface);
 }
 
 html,
@@ -234,6 +242,13 @@ textarea {
    El sistema de diseño pide borde gris fino que pasa a 2px índigo al enfocar. */
 .kd-input {
   width: 100%;
+  /* Sin esto, un `.kd-input` dentro de una fila `flex` (las fechas de la
+     encuesta, con su botón de borrar al lado) no puede encoger más allá de
+     su contenido: el mínimo por defecto de un hijo flex es el ancho de ese
+     contenido, no cero. Con un campo de texto no se nota porque el texto
+     envuelve, pero el selector nativo de fecha no envuelve nada, y sin
+     `min-width: 0` empujaba la fila —y la pantalla entera— hacia el lado. */
+  min-width: 0;
   border-radius: var(--radius-control);
   border: 1px solid var(--color-outline-variant);
   background: var(--color-surface-lowest);
@@ -252,6 +267,18 @@ textarea {
 .kd-input::placeholder {
   color: var(--color-on-surface-variant);
   opacity: 0.7;
+}
+
+/* El selector nativo de fecha y hora («datetime-local») no es texto que
+   envuelva: es una fila de segmentos (día, mes, año, hora) de ancho fijo, y
+   si no cabe en el hueco no se encoge, se sale. Con el relleno normal de
+   `.kd-input` y el texto del sistema agrandado en iOS, se salía por el borde
+   de la pantalla. Menos relleno lateral —nunca el tamaño de letra: por debajo
+   de 16px Safari hace zoom en toda la página al enfocar el campo, que es
+   justo el movimiento que no queremos. */
+input[type='datetime-local'].kd-input {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
