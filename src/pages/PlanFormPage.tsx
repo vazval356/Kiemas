@@ -209,11 +209,17 @@ export function PlanFormPage() {
 
         {/* Las dos alternativas van superpuestas en la misma celda de grid, no
             una u otra por turnos: así la sección mide siempre lo que mide la
-            más alta —la encuesta, con varias filas—, y pasar de una a otra no
-            cambia la altura del formulario. Con un `if`/ternario normal, al
-            volver a «Fecha fija» el contenido se encoge de golpe y, si hacía
-            falta desplazarse para ver la encuesta, la página salta al dejar
-            de hacer falta: es justo lo que se nota como que «no está fija». */}
+            más alta, y pasar de una a otra no cambia la altura del formulario.
+            Con un `if`/ternario normal, al volver a «Fecha fija» el contenido
+            se encoge de golpe y, si hacía falta desplazarse para ver la
+            encuesta, la página salta al dejar de hacer falta: es justo lo que
+            se nota como que «no está fija».
+
+            La lista de opciones tiene además su propio scroll, acotado a
+            `max-h-40`: sin tope, cada fecha añadida agranda la encuesta sin
+            límite y, por la superposición de arriba, «Fecha fija» pasaría a
+            reservar ese mismo hueco cada vez más grande —una caja vacía más
+            alta que la pantalla— en vez de quedarse del tamaño de un campo. */}
         <div className="grid">
           <input
             type="datetime-local"
@@ -228,32 +234,34 @@ export function PlanFormPage() {
             className={`flex flex-col gap-2 [grid-area:1/1] ${mode === 'poll' ? '' : 'invisible'}`}
           >
             <p className="text-xs text-on-surface-variant">{t('plan.optionsHint')}</p>
-            {options.map((opt, i) => (
-              <div key={i} className="flex gap-2">
-                <input
-                  type="datetime-local"
-                  value={opt}
-                  onChange={(e) =>
-                    setOptions(options.map((o, j) => (i === j ? e.target.value : o)))
-                  }
-                  // Numerada: son varias fechas iguales en una fila, y sin el
-                  // número todas se anuncian «fecha y hora» y no hay forma de
-                  // saber en cuál está el cursor.
-                  aria-label={`${t('plan.when')} ${i + 1}`}
-                  className="kd-input flex-1"
-                />
-                {options.length > 2 && (
-                  <button
-                    type="button"
-                    onClick={() => setOptions(options.filter((_, j) => j !== i))}
-                    className="flex size-11 shrink-0 items-center justify-center rounded-control bg-surface-container text-error squish"
-                    aria-label={t('common.delete')}
-                  >
-                    <TrashIcon className="size-4" />
-                  </button>
-                )}
-              </div>
-            ))}
+            <div className="flex max-h-40 flex-col gap-2 overflow-y-auto pr-0.5">
+              {options.map((opt, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    type="datetime-local"
+                    value={opt}
+                    onChange={(e) =>
+                      setOptions(options.map((o, j) => (i === j ? e.target.value : o)))
+                    }
+                    // Numerada: son varias fechas iguales en una fila, y sin el
+                    // número todas se anuncian «fecha y hora» y no hay forma de
+                    // saber en cuál está el cursor.
+                    aria-label={`${t('plan.when')} ${i + 1}`}
+                    className="kd-input flex-1"
+                  />
+                  {options.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => setOptions(options.filter((_, j) => j !== i))}
+                      className="flex size-11 shrink-0 items-center justify-center rounded-control bg-surface-container text-error squish"
+                      aria-label={t('common.delete')}
+                    >
+                      <TrashIcon className="size-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
             <button
               type="button"
               onClick={() =>
