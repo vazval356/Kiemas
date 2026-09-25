@@ -1,3 +1,4 @@
+import { categoryLabel } from '../lib/categories'
 import type { Category } from '../lib/types'
 import { useApp } from '../state/appState'
 
@@ -16,7 +17,7 @@ export function CategoryChips({ categories, selected, onSelect, className = '' }
       {categories.map((c) => (
         <Chip
           key={c.id}
-          label={`${c.emoji} ${c.name}`}
+          label={`${c.emoji} ${categoryLabel(c, t)}`}
           active={selected === c.id}
           // Volver a pulsar la categoría activa la quita: es el gesto que espera
           // quien la ha pulsado por error.

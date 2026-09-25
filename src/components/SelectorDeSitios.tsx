@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import { CategoryChips } from './CategoryChips'
 import { SearchIcon } from './icons'
+import { categoryLabel } from '../lib/categories'
 import { useApp } from '../state/appState'
 
 interface Props {
@@ -87,7 +88,8 @@ export function SelectorDeSitios({
     const salida: { id: string | null; etiqueta: string; sitios: typeof visibles }[] = []
     for (const c of conSitios) {
       const suyos = visibles.filter((p) => p.categoryId === c.id)
-      if (suyos.length) salida.push({ id: c.id, etiqueta: `${c.emoji} ${c.name}`, sitios: suyos })
+      if (suyos.length)
+        salida.push({ id: c.id, etiqueta: `${c.emoji} ${categoryLabel(c, t)}`, sitios: suyos })
     }
     const sueltos = visibles.filter((p) => !conSitios.some((c) => c.id === p.categoryId))
     if (sueltos.length)

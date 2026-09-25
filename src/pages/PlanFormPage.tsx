@@ -207,16 +207,26 @@ export function PlanFormPage() {
           </button>
         </div>
 
-        {mode === 'fixed' ? (
+        {/* Las dos alternativas van superpuestas en la misma celda de grid, no
+            una u otra por turnos: así la sección mide siempre lo que mide la
+            más alta —la encuesta, con varias filas—, y pasar de una a otra no
+            cambia la altura del formulario. Con un `if`/ternario normal, al
+            volver a «Fecha fija» el contenido se encoge de golpe y, si hacía
+            falta desplazarse para ver la encuesta, la página salta al dejar
+            de hacer falta: es justo lo que se nota como que «no está fija». */}
+        <div className="grid">
           <input
             type="datetime-local"
             value={startsAt}
             onChange={(e) => setStartsAt(e.target.value)}
             aria-label={t('plan.when')}
-            className="kd-input"
+            inert={mode !== 'fixed'}
+            className={`kd-input [grid-area:1/1] ${mode === 'fixed' ? '' : 'invisible'}`}
           />
-        ) : (
-          <div className="flex flex-col gap-2">
+          <div
+            inert={mode !== 'poll'}
+            className={`flex flex-col gap-2 [grid-area:1/1] ${mode === 'poll' ? '' : 'invisible'}`}
+          >
             <p className="text-xs text-on-surface-variant">{t('plan.optionsHint')}</p>
             {options.map((opt, i) => (
               <div key={i} className="flex gap-2">
@@ -259,7 +269,7 @@ export function PlanFormPage() {
               {t('plan.addOption')}
             </button>
           </div>
-        )}
+        </div>
 
         {/* ── Quién ──────────────────────────────────────────────────────── */}
         {activeSpace?.kind === 'group' && others.length > 0 && (

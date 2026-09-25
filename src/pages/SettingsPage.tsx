@@ -14,6 +14,12 @@ import {
   pedirPermisoCalendario,
   retirarTodoDelCalendario,
 } from '../lib/calendar'
+import {
+  biometricAvailable,
+  isAppLockEnabled,
+  setAppLockEnabled,
+  verifyIdentity,
+} from '../lib/appLock'
 import type { Locale } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -132,6 +138,43 @@ export function SettingsPage() {
     }
   }
 
+  // ── Bloqueo con Face ID ──────────────────────────────────────────────────
+  //
+  // Activarlo pide Face ID en el momento: así se comprueba que funciona de
+  // verdad y sirve de consentimiento explícito, en vez de fiarse a ciegas de
+  // que el hardware está ahí. Desactivarlo no lo pide: es un candado de
+  // comodidad para cuando el teléfono está desbloqueado en una mesa, no una
+  // segunda contraseña, y exigir la cara para quitarlo no protege nada.
+  const [lockAvailable, setLockAvailable] = useState(false)
+  const [lockOn, setLockOn] = useState(false)
+  const [cambiandoLock, setCambiandoLock] = useState(false)
+
+  useEffect(() => {
+    void biometricAvailable().then(setLockAvailable)
+    setLockOn(isAppLockEnabled())
+  }, [])
+
+  async function alternarLock() {
+    setCambiandoLock(true)
+    setNotice('')
+    try {
+      if (lockOn) {
+        setAppLockEnabled(false)
+        setLockOn(false)
+      } else {
+        const ok = await verifyIdentity(t)
+        if (ok) {
+          setAppLockEnabled(true)
+          setLockOn(true)
+        } else {
+          setNotice(t('applock.failed'))
+        }
+      }
+    } finally {
+      setCambiandoLock(false)
+    }
+  }
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       <div className="mx-auto max-w-md px-4 pt-2">
@@ -191,6 +234,45 @@ export function SettingsPage() {
                   {t('push.howToUnblock')}
                 </p>
               )}
+            </div>
+          </section>
+        )}
+
+        {/* ── Bloqueo con Face ID ────────────────────────────────────────── */}
+        {/* Solo dentro de las apps y con hardware biométrico configurado: en
+            web no hay con qué comprobar la identidad, y ofrecer el interruptor
+            a quien no tiene Face ID ni huella solo acaba en un fallo confuso. */}
+        {lockAvailable && (
+          <section className="mt-6">
+            <h2 className="mb-2 font-display font-semibold text-on-surface">
+              {t('applock.title')}
+            </h2>
+            <div className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-on-surface">{t('applock.label')}</p>
+                  <p className="mt-0.5 text-sm text-on-surface-variant">
+                    {lockOn ? t('applock.on') : t('applock.off')}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={lockOn}
+                  disabled={cambiandoLock}
+                  onClick={() => void alternarLock()}
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+                    lockOn ? 'bg-primary' : 'bg-surface-container'
+                  }`}
+                  aria-label={t('applock.label')}
+                >
+                  <span
+                    className={`absolute top-1 size-5 rounded-full bg-surface-lowest shadow transition-all ${
+                      lockOn ? 'left-6' : 'left-1'
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </section>
         )}

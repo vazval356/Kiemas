@@ -11,6 +11,7 @@ import {
 } from '../lib/dates'
 import type { Category, Locale, Plan, SpaceMember } from '../lib/types'
 import type { Translate } from '../lib/i18n'
+import { categoryLabel } from '../lib/categories'
 import { AfterPlanCard } from '../components/AfterPlanCard'
 import { FalloAlCargar, ListaCargando } from '../components/EstadoDeSeccion'
 import { DecisionsSection } from '../components/DecisionsSection'
@@ -403,7 +404,7 @@ function PlanCard({
           {category ? (
             <>
               <span aria-hidden>{category.emoji}</span>
-              <span className="truncate">{category.name}</span>
+              <span className="truncate">{categoryLabel(category, t)}</span>
             </>
           ) : (
             <span aria-hidden>📅</span>

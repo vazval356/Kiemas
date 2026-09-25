@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
 import { PinIcon, SparkleIcon } from '../components/icons'
+import { categoryLabel } from '../lib/categories'
 import type { PlaceStatus } from '../lib/types'
 import { resolveMapsLink } from '../lib/mapsLink'
 import { parseOpeningHours } from '../lib/openingHours'
@@ -614,7 +615,7 @@ export function PlaceFormPage() {
                   : 'bg-surface-container text-on-surface-variant'
               }`}
             >
-              {c.emoji} {c.name}
+              {c.emoji} {categoryLabel(c, t)}
             </button>
           ))}
           <button

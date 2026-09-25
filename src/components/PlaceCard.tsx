@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { categoryLabel } from '../lib/categories'
 import type { Category, Place } from '../lib/types'
 import { averageRating, formatKm, formatRating, kmBetween, priceLabel } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -109,7 +110,7 @@ export function PlaceCard({ place, category, onToggleFavorite }: Props) {
         <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
           {category && (
             <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
-              {category.name}
+              {categoryLabel(category, t)}
             </span>
           )}
           {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}

@@ -8,6 +8,7 @@ import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { RouletteModal } from '../components/RouletteModal'
 import { AddIcon, DiceIcon, HeartIcon, PinIcon, StarIcon } from '../components/icons'
 import { useBusqueda } from '../state/busqueda'
+import { categoryLabel } from '../lib/categories'
 import type { Place } from '../lib/types'
 import {
   averageRating,
@@ -371,7 +372,7 @@ export function MapPage() {
               <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
                 {selectedCategory && (
                   <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs font-semibold">
-                    {selectedCategory.emoji} {selectedCategory.name}
+                    {selectedCategory.emoji} {categoryLabel(selectedCategory, t)}
                   </span>
                 )}
                 {selected.priceLevel && <span>{priceLabel(selected.priceLevel)}</span>}

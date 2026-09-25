@@ -30,6 +30,7 @@ import {
 } from '../lib/utils'
 import { RatingStars } from '../components/RatingStars'
 import { Cara } from '../components/Votantes'
+import { categoryLabel } from '../lib/categories'
 import { useApp } from '../state/appState'
 import { usePageTitle } from '../lib/seo'
 
@@ -226,7 +227,7 @@ export function PlaceDetailPage() {
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
           {category && (
             <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
-              {category.emoji} {category.name}
+              {category.emoji} {categoryLabel(category, t)}
             </span>
           )}
           {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}

@@ -67,6 +67,10 @@
     <string>Para guardar en tu calendario los planes que confirmáis, y corregirlos si cambian de hora o se cancelan.</string>
     <key>NSCameraUsageDescription</key>
     <string>Para hacer una foto de un sitio y añadirla a su galería.</string>
+    <!-- Solo se pide si activas el bloqueo con Face ID en Ajustes. Sin esta
+         clave, la primera llamada a Face ID cierra la app en el acto. -->
+    <key>NSFaceIDUsageDescription</key>
+    <string>Para pedir Face ID al abrir la app, si activas el bloqueo en Ajustes.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Para elegir fotos de tu carrete y añadirlas a un sitio, a un grupo o a tu perfil.</string>
     <!-- Kiemas solo usa HTTPS, que está exento. Sin declararlo, App Store

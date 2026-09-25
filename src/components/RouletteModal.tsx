@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Category, Place } from '../lib/types'
+import { categoryLabel } from '../lib/categories'
 import { useApp } from '../state/appState'
 import { CloseIcon } from './icons'
 
@@ -102,7 +103,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose }: 
           {usableCategories.map((c) => (
             <RouletteChip
               key={c.id}
-              label={`${c.emoji} ${c.name}`}
+              label={`${c.emoji} ${categoryLabel(c, t)}`}
               active={catFilter === c.id}
               onClick={() => setCatFilter(c.id)}
             />
