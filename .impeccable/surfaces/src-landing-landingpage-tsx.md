@@ -24,7 +24,7 @@ estático con una captura.
 OWN-WORLD: los tokens de `DESIGN.md` tal cual. Superficies Frost Paper, índigo
 para acción, rosa para confirmado, ámbar para «por decidir». Pines en gota,
 tarjetas de 16 px, píldoras, Figtree 800 con tracking cerrado en titulares.
-Un único bloque oscuro (`inverse-surface`) para el cierre.
+Secciones en bandas a todo el ancho que alternan tonos del sistema: `surface-low` (hero), `surface-high` (problema y precios), blanco (cómo funciona y casos de uso), lavanda `primary-fixed` (antes y después, el momento de la resolución) y un único bloque oscuro `inverse-surface` para el cierre. Rosa y ámbar nunca como fondo de sección: tienen trabajo fijo.
 
 STORY: reconoces el caos del chat de grupo, ves cómo Kiemas lo convierte en un
 plan (descubrir, compartir, votar, ir), entiendes que sirve para cualquier

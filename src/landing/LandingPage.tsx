@@ -56,20 +56,22 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         </section>
 
         {/* ── Problema ─────────────────────────────────────────────────── */}
-        <Revela
-          aria-labelledby="kl-problema"
-          className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24"
-        >
-          <div>
-            <h2 id="kl-problema" className={TITULO_SECCION}>
-              {t.problema.titulo}
-            </h2>
-            <p className="mt-4 max-w-[42ch] text-lg leading-relaxed text-on-surface-variant">
-              {t.problema.cuerpo}
-            </p>
-          </div>
-          <HiloDeChat hilo={t.problema.hilo} despues={t.problema.despues} />
-        </Revela>
+        <section aria-labelledby="kl-problema" className="bg-surface-high">
+          <Revela
+            as="div"
+            className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:py-24"
+          >
+            <div>
+              <h2 id="kl-problema" className={TITULO_SECCION}>
+                {t.problema.titulo}
+              </h2>
+              <p className="mt-4 max-w-[42ch] text-lg leading-relaxed text-on-surface-variant">
+                {t.problema.cuerpo}
+              </p>
+            </div>
+            <HiloDeChat hilo={t.problema.hilo} despues={t.problema.despues} />
+          </Revela>
+        </section>
 
         {/* ── Cómo funciona: la interfaz real, paso a paso ─────────────── */}
         <section aria-labelledby="kl-como" className="bg-surface-lowest">
@@ -80,22 +82,22 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             <ol className="mt-12 grid gap-x-12 gap-y-14 md:grid-cols-2">
               {t.como.pasos.map((paso, i) => (
                 <Revela as="li" key={paso.verbo}>
-                    <p className="flex items-center gap-2.5 text-sm font-bold text-primary">
-                      <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs text-on-primary">
-                        {i + 1}
-                      </span>
-                      {paso.verbo}
-                    </p>
-                    <h3 className="mt-3 font-display text-2xl font-bold leading-tight tracking-[-0.01em]">
-                      {paso.titulo}
-                    </h3>
-                    <p className="mt-2 max-w-[44ch] text-on-surface-variant">{paso.cuerpo}</p>
-                    <div className="mt-5 rounded-card bg-surface-low p-3 sm:p-4">
-                      {i === 0 && <PiezaDescubrir texto={t.como.descubrir} />}
-                      {i === 1 && <PiezaCompartir texto={t.como.compartir} />}
-                      {i === 2 && <PiezaVotar texto={t.como.votar} />}
-                      {i === 3 && <PiezaIr texto={t.como.ir} />}
-                    </div>
+                  <p className="flex items-center gap-2.5 text-sm font-bold text-primary">
+                    <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs text-on-primary">
+                      {i + 1}
+                    </span>
+                    {paso.verbo}
+                  </p>
+                  <h3 className="mt-3 font-display text-2xl font-bold leading-tight tracking-[-0.01em]">
+                    {paso.titulo}
+                  </h3>
+                  <p className="mt-2 max-w-[44ch] text-on-surface-variant">{paso.cuerpo}</p>
+                  <div className="mt-5 rounded-card bg-surface-low p-3 sm:p-4">
+                    {i === 0 && <PiezaDescubrir texto={t.como.descubrir} />}
+                    {i === 1 && <PiezaCompartir texto={t.como.compartir} />}
+                    {i === 2 && <PiezaVotar texto={t.como.votar} />}
+                    {i === 3 && <PiezaIr texto={t.como.ir} />}
+                  </div>
                 </Revela>
               ))}
             </ol>
@@ -103,121 +105,120 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         </section>
 
         {/* ── Antes y después ──────────────────────────────────────────── */}
-        <Revela
-          aria-labelledby="kl-antes"
-          className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24"
-        >
-          <h2 id="kl-antes" className={TITULO_SECCION}>
-            {t.antesDespues.titulo}
-          </h2>
-          <div className="mt-10 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-10">
-            <div>
-              <p className={ETIQUETA}>{t.antesDespues.antes}</p>
-              <div className="mt-4">
-                <Ruido lineas={t.antesDespues.ruido} />
+        <section aria-labelledby="kl-antes" className="bg-primary-fixed">
+          <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+            <h2 id="kl-antes" className={TITULO_SECCION}>
+              {t.antesDespues.titulo}
+            </h2>
+            <div className="mt-10 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-10">
+              <div>
+                <p className={ETIQUETA}>{t.antesDespues.antes}</p>
+                <div className="mt-4">
+                  <Ruido lineas={t.antesDespues.ruido} />
+                </div>
+              </div>
+              <span
+                aria-hidden
+                className="rotate-90 justify-self-center text-3xl text-primary md:rotate-0"
+              >
+                →
+              </span>
+              <div>
+                <p className={ETIQUETA}>{t.antesDespues.despues}</p>
+                <div className="mt-4">
+                  <TarjetaPlan plan={t.hero.plan} />
+                </div>
               </div>
             </div>
-            <span
-              aria-hidden
-              className="justify-self-center text-3xl text-outline md:rotate-0 rotate-90"
-            >
-              →
-            </span>
-            <div>
-              <p className={ETIQUETA}>{t.antesDespues.despues}</p>
-              <div className="mt-4">
-                <TarjetaPlan plan={t.hero.plan} />
-              </div>
-            </div>
-          </div>
-        </Revela>
+          </Revela>
+        </section>
 
         {/* ── Casos de uso ─────────────────────────────────────────────── */}
-        <Revela
-          aria-labelledby="kl-usos"
-          className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 md:pb-24"
-        >
-          <div className="grid gap-8 md:grid-cols-[1fr_1.4fr] md:gap-14">
-            <div>
-              <h2 id="kl-usos" className={TITULO_SECCION}>
-                {t.usos.titulo}
-              </h2>
-              <p className="mt-4 max-w-[36ch] text-lg text-on-surface-variant">{t.usos.cuerpo}</p>
-            </div>
-            <ul className="divide-y divide-outline-variant/60 border-y border-outline-variant/60">
-              {t.usos.casos.map((c) => (
-                <li key={c.categoria} className="flex items-center gap-4 py-4">
-                  <span
-                    aria-hidden
-                    className="flex size-11 shrink-0 items-center justify-center rounded-[50%_50%_50%_4px] bg-primary-fixed text-xl"
-                  >
-                    {c.emoji}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-display text-lg font-bold leading-snug text-on-surface">
-                      {c.plan}
+        <section aria-labelledby="kl-usos" className="bg-surface-lowest">
+          <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+            <div className="grid gap-8 md:grid-cols-[1fr_1.4fr] md:gap-14">
+              <div>
+                <h2 id="kl-usos" className={TITULO_SECCION}>
+                  {t.usos.titulo}
+                </h2>
+                <p className="mt-4 max-w-[36ch] text-lg text-on-surface-variant">{t.usos.cuerpo}</p>
+              </div>
+              <ul className="divide-y divide-outline-variant/60 border-y border-outline-variant/60">
+                {t.usos.casos.map((c) => (
+                  <li key={c.categoria} className="flex items-center gap-4 py-4">
+                    <span
+                      aria-hidden
+                      className="flex size-11 shrink-0 items-center justify-center rounded-[50%_50%_50%_4px] bg-primary-fixed text-xl"
+                    >
+                      {c.emoji}
                     </span>
-                    <span className="text-sm text-on-surface-variant">{c.categoria}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Revela>
-
-        {/* ── Precios ──────────────────────────────────────────────────── */}
-        <Revela
-          aria-labelledby="kl-precios"
-          className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 md:pb-24"
-        >
-          <h2 id="kl-precios" className={TITULO_SECCION}>
-            {t.precios.titulo}
-          </h2>
-          <p className="mt-3 text-lg text-on-surface-variant">{t.precios.subtitulo}</p>
-          <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
-            <div className="rounded-card bg-surface-lowest p-6 shadow-[var(--shadow-surface)]">
-              <p className="text-sm font-semibold text-on-surface-variant">
-                {t.precios.gratis.etiqueta}
-              </p>
-              <p className="mt-1 font-display text-4xl font-extrabold">{t.precios.gratis.precio}</p>
-              <ul className="mt-5 flex flex-col gap-2.5 text-sm">
-                {t.precios.gratis.puntos.map((p) => (
-                  <li key={p} className="flex items-center gap-2">
-                    <span aria-hidden className="font-bold text-primary">
-                      ✓
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-display text-lg font-bold leading-snug text-on-surface">
+                        {c.plan}
+                      </span>
+                      <span className="text-sm text-on-surface-variant">{c.categoria}</span>
                     </span>
-                    {p}
                   </li>
                 ))}
               </ul>
-              <a
-                href="/#/login?modo=signup"
-                className="squish mt-6 block rounded-full bg-primary py-3 text-center font-semibold text-on-primary"
-              >
-                {t.precios.gratis.cta}
-              </a>
             </div>
-            <div className="rounded-card border border-outline-variant bg-surface-low p-6">
-              <span className="inline-flex rounded-full bg-primary-fixed px-2.5 py-1 text-xs font-bold text-on-primary-fixed">
-                {t.precios.pro.insignia}
-              </span>
-              <p className="mt-3 text-sm font-semibold text-on-surface-variant">
-                {t.precios.pro.etiqueta}
-              </p>
-              <p className="mt-1 font-display text-3xl font-extrabold text-on-surface-variant sm:text-4xl">
-                {t.precios.pro.pronto}
-              </p>
-              <ul className="mt-5 text-sm">
-                <li className="flex items-center gap-2">
-                  <span aria-hidden className="font-bold text-primary">
-                    ✓
-                  </span>
-                  {t.precios.pro.punto}
-                </li>
-              </ul>
+          </Revela>
+        </section>
+
+        {/* ── Precios ──────────────────────────────────────────────────── */}
+        <section aria-labelledby="kl-precios" className="bg-surface-high">
+          <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+            <h2 id="kl-precios" className={TITULO_SECCION}>
+              {t.precios.titulo}
+            </h2>
+            <p className="mt-3 text-lg text-on-surface-variant">{t.precios.subtitulo}</p>
+            <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
+              <div className="rounded-card bg-surface-lowest p-6 shadow-[var(--shadow-surface)]">
+                <p className="text-sm font-semibold text-on-surface-variant">
+                  {t.precios.gratis.etiqueta}
+                </p>
+                <p className="mt-1 font-display text-4xl font-extrabold">
+                  {t.precios.gratis.precio}
+                </p>
+                <ul className="mt-5 flex flex-col gap-2.5 text-sm">
+                  {t.precios.gratis.puntos.map((p) => (
+                    <li key={p} className="flex items-center gap-2">
+                      <span aria-hidden className="font-bold text-primary">
+                        ✓
+                      </span>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="/#/login?modo=signup"
+                  className="squish mt-6 block rounded-full bg-primary py-3 text-center font-semibold text-on-primary"
+                >
+                  {t.precios.gratis.cta}
+                </a>
+              </div>
+              <div className="rounded-card border border-outline-variant bg-surface-low p-6">
+                <span className="inline-flex rounded-full bg-primary-fixed px-2.5 py-1 text-xs font-bold text-on-primary-fixed">
+                  {t.precios.pro.insignia}
+                </span>
+                <p className="mt-3 text-sm font-semibold text-on-surface-variant">
+                  {t.precios.pro.etiqueta}
+                </p>
+                <p className="mt-1 font-display text-3xl font-extrabold text-on-surface-variant sm:text-4xl">
+                  {t.precios.pro.pronto}
+                </p>
+                <ul className="mt-5 text-sm">
+                  <li className="flex items-center gap-2">
+                    <span aria-hidden className="font-bold text-primary">
+                      ✓
+                    </span>
+                    {t.precios.pro.punto}
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </Revela>
+          </Revela>
+        </section>
 
         {/* ── Cierre ───────────────────────────────────────────────────── */}
         <section aria-labelledby="kl-final" className="bg-inverse-surface text-inverse-on-surface">
@@ -264,7 +265,10 @@ function Cabecera({
   return (
     <header className="pt-safe">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-        <a href={`/${idioma}`} className="flex items-center gap-2.5 font-display text-xl font-extrabold">
+        <a
+          href={`/${idioma}`}
+          className="flex items-center gap-2.5 font-display text-xl font-extrabold"
+        >
           <img
             src="/icons/icon-192.png"
             alt=""
@@ -290,7 +294,10 @@ function Cabecera({
 
 function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiqueta: string }) {
   return (
-    <nav aria-label={etiqueta} className="flex rounded-full bg-surface-container p-0.5 text-xs font-bold">
+    <nav
+      aria-label={etiqueta}
+      className="flex rounded-full bg-surface-container p-0.5 text-xs font-bold"
+    >
       {(Object.keys(IDIOMAS_LANDING) as IdiomaLanding[]).map((id) => (
         <a
           key={id}
@@ -300,7 +307,9 @@ function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiquet
           aria-current={id === idioma ? 'page' : undefined}
           aria-label={IDIOMAS_LANDING[id].nombre}
           className={`rounded-full px-2.5 py-1.5 ${
-            id === idioma ? 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]' : 'text-on-surface-variant'
+            id === idioma
+              ? 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
+              : 'text-on-surface-variant'
           }`}
         >
           {IDIOMAS_LANDING[id].etiqueta}
@@ -310,10 +319,16 @@ function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiquet
   )
 }
 
-function HiloDeChat({ hilo, despues }: { hilo: { quien: string; texto: string }[]; despues: string }) {
+function HiloDeChat({
+  hilo,
+  despues,
+}: {
+  hilo: { quien: string; texto: string }[]
+  despues: string
+}) {
   const primero = hilo[0]?.quien
   return (
-    <div className="rounded-card bg-surface-container p-4 sm:p-5">
+    <div className="rounded-card bg-surface-low p-4 sm:p-5">
       <ul className="flex flex-col gap-2.5">
         {hilo.map((m, i) => {
           const mio = m.quien === primero
@@ -325,7 +340,11 @@ function HiloDeChat({ hilo, despues }: { hilo: { quien: string; texto: string }[
                   {despues}
                 </span>
               )}
-              {!mio && <span className="mb-0.5 px-1 text-xs font-semibold text-on-surface-variant">{m.quien}</span>}
+              {!mio && (
+                <span className="mb-0.5 px-1 text-xs font-semibold text-on-surface-variant">
+                  {m.quien}
+                </span>
+              )}
               <span
                 className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-[15px] ${
                   mio
