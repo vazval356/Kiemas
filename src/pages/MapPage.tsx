@@ -49,8 +49,12 @@ export function MapPage() {
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [mapReady, setMapReady] = useState(false)
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
-  const { texto: query } = useBusqueda()
+  const {
+    texto: query,
+    categoria: categoryFilter,
+    setCategoria: setCategoryFilter,
+    categoriasAbiertas,
+  } = useBusqueda()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [rouletteOpen, setRouletteOpen] = useState(false)
 
@@ -197,7 +201,7 @@ export function MapPage() {
   useEffect(() => {
     setSelectedId(null)
     setCategoryFilter(null)
-  }, [activeSpace?.id])
+  }, [activeSpace?.id, setCategoryFilter])
 
   // ── Sincronizar marcadores ───────────────────────────────────────────────
   useEffect(() => {
@@ -290,15 +294,17 @@ export function MapPage() {
       <div ref={containerRef} className="size-full" />
 
       {/* Filtros flotantes, justo debajo de la cabecera, que también flota
-          encima del mapa. El buscador ya no vive aquí: es la lupa de la
-          cabecera. */}
-      <div className="absolute inset-x-0 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 px-4">
-        <CategoryChips
-          categories={categories}
-          selected={categoryFilter}
-          onSelect={setCategoryFilter}
-        />
-      </div>
+          encima del mapa. Plegados por defecto: se abren con el botón de
+          categorías que hay junto a la lupa. */}
+      {categoriasAbiertas && (
+        <div className="absolute inset-x-0 top-[calc(env(safe-area-inset-top)+3.75rem)] z-10 px-4 animate-pop">
+          <CategoryChips
+            categories={categories}
+            selected={categoryFilter}
+            onSelect={setCategoryFilter}
+          />
+        </div>
+      )}
 
       {/* Acciones flotantes; se ocultan si hay tarjeta abierta para no taparla. */}
       <div

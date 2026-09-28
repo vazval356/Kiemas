@@ -156,6 +156,22 @@ export function SearchIcon({ className = 'w-5 h-5' }: IconProps) {
   )
 }
 
+/** Tres líneas de ancho decreciente: filtrar por categoría. */
+export function FilterIcon({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+    >
+      <path d="M4 7h16M7 12h10M10 17h4" />
+    </svg>
+  )
+}
+
 export function MenuIcon({ className = 'w-7 h-7' }: IconProps) {
   return (
     <svg

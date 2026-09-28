@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { spaceColors } from '../lib/spaceTheme'
 import { useApp } from '../state/appState'
-import { RUTAS_CON_BUSQUEDA, useBusqueda } from '../state/busqueda'
-import { BellIcon, CloseIcon, GroupIcon, SearchIcon, UserIcon } from './icons'
+import { RUTAS_CON_BUSQUEDA, RUTAS_CON_CATEGORIAS, useBusqueda } from '../state/busqueda'
+import { BellIcon, CloseIcon, FilterIcon, GroupIcon, SearchIcon, UserIcon } from './icons'
 
 /**
  * Barra superior con el selector de espacio.
@@ -61,6 +61,7 @@ export function TopBar({ flotante = false }: { flotante?: boolean }) {
   const cols = spaceColors(activeSpace.color)
 
   const conBusqueda = RUTAS_CON_BUSQUEDA.includes(pathname)
+  const conCategorias = RUTAS_CON_CATEGORIAS.includes(pathname)
 
   return (
     <div
@@ -110,6 +111,25 @@ export function TopBar({ flotante = false }: { flotante?: boolean }) {
         </button>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* Categorías: plegadas por defecto para que el mapa respire. En
+              relleno si están abiertas o si hay una filtrando, para que un
+              filtro escondido no deje el mapa medio vacío sin explicación. */}
+          {conCategorias && (
+            <button
+              type="button"
+              onClick={busqueda.alternarCategorias}
+              aria-label={t('map.categories')}
+              aria-expanded={busqueda.categoriasAbiertas}
+              className={`flex size-11 items-center justify-center rounded-full shadow-[var(--shadow-surface)] squish transition-colors ${
+                busqueda.categoriasAbiertas || busqueda.categoria
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-lowest text-on-surface'
+              }`}
+            >
+              <FilterIcon className="size-5" />
+            </button>
+          )}
+
           {conBusqueda && (
             <button
               type="button"

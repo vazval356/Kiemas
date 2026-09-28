@@ -16,6 +16,15 @@ interface Busqueda {
   abrir: () => void
   cerrar: () => void
   setTexto: (texto: string) => void
+  /**
+   * Los chips de categoría del mapa. Van plegados por defecto para dejar el
+   * mapa limpio, y se despliegan con el botón que hay junto a la lupa.
+   */
+  categoriasAbiertas: boolean
+  alternarCategorias: () => void
+  /** La categoría filtrada, para que el botón se vea activo aunque esté plegado. */
+  categoria: string | null
+  setCategoria: (id: string | null) => void
 }
 
 const Contexto = createContext<Busqueda | null>(null)
@@ -23,9 +32,14 @@ const Contexto = createContext<Busqueda | null>(null)
 /** Pantallas en las que la lupa tiene algo que filtrar. */
 export const RUTAS_CON_BUSQUEDA = ['/', '/list']
 
+/** Pantallas con el botón de categorías en la cabecera. */
+export const RUTAS_CON_CATEGORIAS = ['/']
+
 export function BusquedaProvider({ children }: { children: ReactNode }) {
   const [abierta, setAbierta] = useState(false)
   const [texto, setTexto] = useState('')
+  const [categoriasAbiertas, setCategoriasAbiertas] = useState(false)
+  const [categoria, setCategoria] = useState<string | null>(null)
   const { pathname } = useLocation()
 
   // Una búsqueda del mapa no debe llegar filtrada a la lista sin que se vea:
@@ -33,6 +47,8 @@ export function BusquedaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setAbierta(false)
     setTexto('')
+    setCategoriasAbiertas(false)
+    setCategoria(null)
   }, [pathname])
 
   return (
@@ -46,6 +62,10 @@ export function BusquedaProvider({ children }: { children: ReactNode }) {
           setAbierta(false)
           setTexto('')
         },
+        categoriasAbiertas,
+        alternarCategorias: () => setCategoriasAbiertas((v) => !v),
+        categoria,
+        setCategoria,
       }}
     >
       {children}
