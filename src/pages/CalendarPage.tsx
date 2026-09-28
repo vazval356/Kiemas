@@ -92,6 +92,20 @@ export function CalendarPage() {
     return map
   }, [dated])
 
+  // Los días que son candidatos de una encuesta de fecha: el punto hueco del
+  // calendario. Una encuesta no tiene UN día —por eso no vive en
+  // `plansByDay`—, pero cada opción que propone sí, y quien mira el mes
+  // quiere ver ahí «esto se está votando», no solo «esto ya está confirmado».
+  const pollDatesByDay = useMemo(() => {
+    const set = new Set<string>()
+    for (const plan of polls) {
+      for (const option of plan.dateOptions) {
+        set.add(startOfDay(new Date(option.startsAt)).toISOString())
+      }
+    }
+    return set
+  }, [polls])
+
   const visible = useMemo(() => {
     if (!selectedDay) return dated.filter((p) => new Date(p.startsAt!) >= startOfDay(new Date()))
     return dated.filter((p) => isSameDay(new Date(p.startsAt!), selectedDay))
@@ -196,7 +210,8 @@ export function CalendarPage() {
           >
             {days.map((day) => {
               const key = day.toISOString()
-              const count = plansByDay.get(key)?.length ?? 0
+              const hasConfirmed = (plansByDay.get(key)?.length ?? 0) > 0
+              const hasPoll = pollDatesByDay.has(key)
               const isSelected = selectedDay !== null && isSameDay(day, selectedDay)
               const isToday = daysBetween(new Date(), day) === 0
               return (
@@ -205,11 +220,11 @@ export function CalendarPage() {
                   type="button"
                   // Volver a pulsar el día activo quita el filtro.
                   onClick={() => setSelectedDay(isSelected ? null : day)}
-                  className={`relative flex w-14 shrink-0 flex-col items-center rounded-card py-3 squish transition-colors ${
+                  className={`flex w-14 shrink-0 flex-col items-center rounded-card py-3 squish transition-colors ${
                     isSelected
                       ? 'bg-primary text-on-primary shadow-[var(--shadow-float)]'
                       : isToday
-                        ? 'bg-primary-fixed text-on-primary-fixed'
+                        ? 'border-2 border-primary bg-surface-lowest text-on-surface'
                         : 'bg-surface-container text-on-surface-variant'
                   }`}
                 >
@@ -219,29 +234,38 @@ export function CalendarPage() {
                   <span className="font-display text-xl font-bold leading-tight">
                     {day.getDate()}
                   </span>
-                  {/* El punto de aviso va arriba a la derecha cuando el día no
-                      está activo, y debajo del número cuando sí: en el activo
-                      la esquina la ocupa el propio realce. */}
-                  {count > 0 && (
-                    <span
-                      aria-hidden
-                      className={`rounded-full ${
-                        isSelected
-                          ? 'mt-1 size-1.5 bg-on-primary'
-                          : 'absolute right-2 top-2 size-1.5 bg-secondary'
-                      }`}
-                    />
-                  )}
+                  {/* Punto lleno = plan confirmado; punto hueco = fecha que
+                      todavía se está votando. La misma distinción que ya
+                      hace la insignia de la tarjeta del plan, aquí en
+                      miniatura. */}
+                  <span className="mt-1 flex h-[5px] items-center justify-center gap-0.5">
+                    {hasConfirmed && (
+                      <span
+                        aria-hidden
+                        className={`size-1 rounded-full ${isSelected ? 'bg-on-primary' : 'bg-secondary'}`}
+                      />
+                    )}
+                    {hasPoll && (
+                      <span
+                        aria-hidden
+                        className={`size-1 rounded-full border ${
+                          isSelected ? 'border-on-primary/70' : 'border-tertiary'
+                        }`}
+                      />
+                    )}
+                  </span>
                 </button>
               )
             })}
           </div>
         ) : (
-          <div
-            data-tour="dias"
-            className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
-          >
-            <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase text-on-surface-variant">
+          <div data-tour="dias">
+            {/* Sin la caja blanca que envolvía toda la rejilla: los números
+                viven sobre el propio fondo de la pantalla, y una sola línea
+                fina bajo las iniciales separa la cabecera de los días. Con
+                un mes entero de números iguales, la caja no aportaba
+                jerarquía, solo un borde más que mirar. */}
+            <div className="grid grid-cols-7 border-b border-outline-variant/40 pb-2 text-center text-[10px] font-bold uppercase tracking-wide text-on-surface-variant">
               {/* Los nombres de día salen de una semana real para que los
                   traduzca el navegador, en vez de escribirlos en cada idioma. */}
               {Array.from({ length: 7 }, (_, i) => (
@@ -252,10 +276,12 @@ export function CalendarPage() {
                 </span>
               ))}
             </div>
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-y-2 pt-2">
               {monthCells.map((day, i) => {
                 if (!day) return <span key={`b${i}`} />
-                const count = plansByDay.get(startOfDay(day).toISOString())?.length ?? 0
+                const key = startOfDay(day).toISOString()
+                const hasConfirmed = (plansByDay.get(key)?.length ?? 0) > 0
+                const hasPoll = pollDatesByDay.has(key)
                 const isSelected = selectedDay !== null && isSameDay(day, selectedDay)
                 const isToday = daysBetween(new Date(), day) === 0
                 return (
@@ -263,23 +289,39 @@ export function CalendarPage() {
                     key={day.toISOString()}
                     type="button"
                     onClick={() => setSelectedDay(isSelected ? null : day)}
-                    className={`relative flex aspect-square flex-col items-center justify-center rounded-control text-sm font-semibold squish ${
-                      isSelected
-                        ? 'bg-primary text-on-primary'
-                        : isToday
-                          ? 'bg-primary-fixed text-on-primary-fixed'
-                          : 'text-on-surface'
-                    }`}
+                    className="flex h-[46px] flex-col items-center justify-center squish"
                   >
-                    {day.getDate()}
-                    {count > 0 && (
-                      <span
-                        aria-hidden
-                        className={`absolute bottom-1 size-1 rounded-full ${
-                          isSelected ? 'bg-on-primary' : 'bg-secondary'
-                        }`}
-                      />
-                    )}
+                    {/* Hoy es un anillo, no un relleno: si también fuera un
+                        color sólido, competiría con el día seleccionado por
+                        el mismo protagonismo y dejarían de distinguirse a
+                        golpe de vista. */}
+                    <span
+                      className={`flex size-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
+                        isSelected
+                          ? 'bg-primary text-on-primary shadow-sm'
+                          : isToday
+                            ? 'border-2 border-primary text-primary'
+                            : 'text-on-surface'
+                      }`}
+                    >
+                      {day.getDate()}
+                    </span>
+                    <span className="mt-0.5 flex h-[5px] items-center justify-center gap-0.5">
+                      {hasConfirmed && (
+                        <span
+                          aria-hidden
+                          className={`size-1 rounded-full ${isSelected ? 'bg-on-primary' : 'bg-secondary'}`}
+                        />
+                      )}
+                      {hasPoll && (
+                        <span
+                          aria-hidden
+                          className={`size-1 rounded-full border ${
+                            isSelected ? 'border-on-primary/70' : 'border-tertiary'
+                          }`}
+                        />
+                      )}
+                    </span>
                   </button>
                 )
               })}
