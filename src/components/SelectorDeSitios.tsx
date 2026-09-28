@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 
 import { CategoryChips } from './CategoryChips'
-import { SearchIcon } from './icons'
+import { DiceIcon, SearchIcon } from './icons'
+import { RouletteModal } from './RouletteModal'
 import { categoryLabel } from '../lib/categories'
 import { useApp } from '../state/appState'
 
@@ -64,6 +65,7 @@ export function SelectorDeSitios({
   const { places, categories, t } = useApp()
   const [query, setQuery] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
+  const [ruletaAbierta, setRuletaAbierta] = useState(false)
 
   const conSitios = useMemo(
     () => categories.filter((c) => places.some((p) => p.categoryId === c.id)),
@@ -138,24 +140,43 @@ export function SelectorDeSitios({
     )
   }
 
+  // La ruleta decide UN sitio, así que solo tiene sentido cuando se está
+  // eligiendo uno solo: en la propuesta de opciones para votar (`max` > 1) no
+  // hay «el» resultado que entregarle a `onAlternar`.
+  const conRuleta = max === 1 && places.length > 0
+
   return (
     <div>
-      <div className="flex items-center gap-2 rounded-full bg-surface-container px-3">
-        <SearchIcon className="size-4 shrink-0 text-on-surface-variant" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t('place.searchYours')}
-          aria-label={t('place.searchYours')}
-          className="flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-on-surface-variant/70"
-        />
-        {query && (
+      <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-surface-container px-3">
+          <SearchIcon className="size-4 shrink-0 text-on-surface-variant" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('place.searchYours')}
+            aria-label={t('place.searchYours')}
+            className="min-w-0 flex-1 bg-transparent py-2.5 text-sm outline-none placeholder:text-on-surface-variant/70"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => setQuery('')}
+              className="shrink-0 text-xs font-semibold text-primary"
+            >
+              {t('map.clear')}
+            </button>
+          )}
+        </div>
+        {conRuleta && (
           <button
             type="button"
-            onClick={() => setQuery('')}
-            className="shrink-0 text-xs font-semibold text-primary"
+            onClick={() => setRuletaAbierta(true)}
+            disabled={busy}
+            aria-label={t('place.decideRoulette')}
+            title={t('place.decideRoulette')}
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-container text-tertiary squish disabled:opacity-40"
           >
-            {t('map.clear')}
+            <DiceIcon className="size-5" />
           </button>
         )}
       </div>
@@ -192,6 +213,19 @@ export function SelectorDeSitios({
         <p className="mt-2 text-xs text-on-surface-variant">
           {t('place.chosenCount', { n: String(elegidos.length), max: String(max) })}
         </p>
+      )}
+
+      {ruletaAbierta && (
+        <RouletteModal
+          places={places}
+          categories={categories}
+          initialCategory={categoria}
+          onClose={() => setRuletaAbierta(false)}
+          onPick={(place) => {
+            setRuletaAbierta(false)
+            onAlternar(place.id)
+          }}
+        />
       )}
     </div>
   )

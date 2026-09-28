@@ -409,6 +409,7 @@ const es = {
   'roulette.options': '{count} opciones',
   'roulette.optionOne': '1 opción',
   'roulette.lets': '¡Vamos!',
+  'roulette.pickThis': 'Elegir este sitio',
   'roulette.noPlaces': 'No hay sitios guardados todavía. Añade alguno primero.',
   'roulette.alreadyVisited': '✓ Ya estuvimos aquí',
 
@@ -556,6 +557,7 @@ const es = {
   'place.searchYours': 'Busca en vuestros sitios',
   'place.noneMatch': 'Ningún sitio coincide',
   'place.noCategory': 'Sin categoría',
+  'place.decideRoulette': 'Que decida la ruleta',
   'place.chosenCount': 'Elegidos {n} de {max}',
   // Encuestas: recuento y quién ha votado.
   'poll.support': '{n} de {total}',
@@ -1258,6 +1260,7 @@ const en: Record<TranslationKey, string> = {
   'roulette.options': '{count} options',
   'roulette.optionOne': '1 option',
   'roulette.lets': "Let's go!",
+  'roulette.pickThis': 'Pick this place',
   'roulette.noPlaces': 'No places saved yet. Add one first.',
   'roulette.alreadyVisited': '✓ We already went here',
 
@@ -1396,6 +1399,7 @@ const en: Record<TranslationKey, string> = {
   'place.searchYours': 'Search your places',
   'place.noneMatch': 'No place matches',
   'place.noCategory': 'No category',
+  'place.decideRoulette': 'Let the wheel decide',
   'place.chosenCount': 'Chosen {n} of {max}',
   'poll.support': '{n} of {total}',
   'poll.maybeExtra': '+{n} maybe',

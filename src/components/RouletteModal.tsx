@@ -11,9 +11,15 @@ interface Props {
   categories: Category[]
   initialCategory: string | null
   onClose: () => void
+  /**
+   * Si se pasa, el botón final entrega el ganador aquí en vez de navegar a su
+   * ficha. Es el caso de elegir el sitio de un plan: la ruleta decide, pero
+   * quien la abrió sigue siendo el formulario, no la pantalla del sitio.
+   */
+  onPick?: (place: Place) => void
 }
 
-export function RouletteModal({ places, categories, initialCategory, onClose }: Props) {
+export function RouletteModal({ places, categories, initialCategory, onClose, onPick }: Props) {
   const navigate = useNavigate()
   const { t } = useApp()
 
@@ -177,11 +183,15 @@ export function RouletteModal({ places, categories, initialCategory, onClose }: 
               </button>
               <button
                 type="button"
-                onClick={() => winner && navigate(`/place/${winner.id}`)}
+                onClick={() => {
+                  if (!winner) return
+                  if (onPick) onPick(winner)
+                  else navigate(`/place/${winner.id}`)
+                }}
                 disabled={!winner}
                 className="flex-1 rounded-full bg-primary py-3 font-semibold text-on-primary squish disabled:opacity-50"
               >
-                {t('roulette.lets')}
+                {onPick ? t('roulette.pickThis') : t('roulette.lets')}
               </button>
             </div>
           </>
