@@ -80,13 +80,19 @@
   /* Elevación de pegatina, no de plantilla SaaS.
      Antes cada tarjeta llevaba el mismo halo gris difuminado — la sombra que
      usa cualquier generador de interfaces por defecto, sin relación con el
-     resto del diseño. Ahora la sombra es sólida y desplazada, sin difuminar,
-     como el borde de una pegatina despegada del papel: un filo fino del
-     mismo tinte que el texto, y detrás su silueta plana desplazada. Sigue
-     siendo SOLO índigo/tinta —ningún color nuevo—, pero ya no se puede
-     confundir con la sombra por defecto de un framework. */
-  --shadow-surface: 0 0 0 1.5px var(--color-on-surface), 2px 2px 0 0 var(--color-on-surface);
-  --shadow-float: 0 0 0 1.5px var(--color-on-surface), 4px 5px 0 0 var(--color-on-surface);
+     resto del diseño. Ahora la sombra es sólida y desplazada, sin difuminar:
+     una silueta plana del mismo tinte que el texto, desplazada bajo el
+     elemento. Sigue siendo SOLO índigo/tinta —ningún color nuevo—, pero ya
+     no se puede confundir con la sombra por defecto de un framework.
+
+     El anillo de contorno (el "reborde negro") se quitó de aquí: rodeando
+     cada tarjeta, chip y botón de la interfaz se leía como una plantilla de
+     cómic, no como el filo sutil que pedía el diseño. Se queda solo en
+     `--shadow-fab`, para los botones flotantes de abajo a la derecha, donde
+     sí hace falta que se lean como pulsables sobre el mapa o el contenido. */
+  --shadow-surface: 2px 2px 0 0 var(--color-on-surface);
+  --shadow-float: 4px 5px 0 0 var(--color-on-surface);
+  --shadow-fab: 0 0 0 1.5px var(--color-on-surface), 4px 5px 0 0 var(--color-on-surface);
 }
 
 html,

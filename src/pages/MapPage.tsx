@@ -313,7 +313,7 @@ export function MapPage() {
               if (p) mapRef.current?.easeTo({ center: [p.lng, p.lat], zoom: 14 })
             })
           }}
-          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-primary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-primary shadow-[var(--shadow-fab)] squish"
           aria-label={t('map.myLocation')}
         >
           <PinIcon className="size-5" />
@@ -325,7 +325,7 @@ export function MapPage() {
           // flotantes uno encima de otro con tres colores distintos compiten
           // entre sí; con el mismo tratamiento que el de ubicación, el único
           // que destaca es el de añadir, que es lo que se quiere.
-          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-tertiary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-tertiary shadow-[var(--shadow-fab)] squish"
           aria-label={t('roulette.title')}
         >
           <DiceIcon className="size-6" />
@@ -333,7 +333,7 @@ export function MapPage() {
         <Link
           to="/add"
           data-tour="anadir"
-          className="flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-float)] squish"
+          className="flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-fab)] squish"
           aria-label={t('place.add')}
         >
           <AddIcon className="size-6" />
