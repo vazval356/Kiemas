@@ -89,6 +89,11 @@
     <!-- El mapa necesita saber si hay conexión para no quedarse en blanco. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Avisos. Desde Android 13 hay que declararlo: sin esta línea el sistema
+         deniega el permiso sin enseñar el diálogo, y Ajustes decía «los tienes
+         bloqueados» a quien nunca había dicho que no. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- Guardar los planes confirmados en el calendario del móvil, que en
          Android es el de la cuenta de Google y sube solo.
 

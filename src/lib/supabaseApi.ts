@@ -12,6 +12,8 @@ import type {
   PlacePatch,
   PlaceOsmSync,
   CalendarLink,
+  AjustesDeAvisos,
+  TipoDeAviso,
   Plan,
   PlanInput,
   Profile,
@@ -678,6 +680,33 @@ export const supabaseApi: DataApi = {
     const uid = await myId()
     ok(
       await supabase.from('plan_calendar_events').delete().eq('user_id', uid).eq('plan_id', planId)
+    )
+  },
+
+  // ── Avisos a tu gusto ────────────────────────────────────────────────────
+
+  async getNotificationSettings(): Promise<AjustesDeAvisos> {
+    const { data, error } = await supabase
+      .from('notification_settings')
+      .select('muted_kinds, muted_spaces')
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    // Sin fila no se ha tocado nada todavía: llega todo.
+    return {
+      mutedKinds: ((data?.muted_kinds as string[] | null) ?? []) as TipoDeAviso[],
+      mutedSpaces: (data?.muted_spaces as string[] | null) ?? [],
+    }
+  },
+
+  async saveNotificationSettings(settings: AjustesDeAvisos): Promise<void> {
+    const uid = await myId()
+    ok(
+      await supabase.from('notification_settings').upsert({
+        user_id: uid,
+        muted_kinds: settings.mutedKinds,
+        muted_spaces: settings.mutedSpaces,
+        updated_at: new Date().toISOString(),
+      })
     )
   },
 

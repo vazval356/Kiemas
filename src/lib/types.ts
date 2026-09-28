@@ -77,6 +77,18 @@ export interface CalendarLink {
 }
 
 /**
+ * Los tipos de aviso que se pueden apagar uno a uno. Tienen que coincidir con
+ * los que manda la base de datos en `enqueue_notification`.
+ */
+export type TipoDeAviso = 'planes' | 'comentarios' | 'sitios' | 'preguntas' | 'grupo'
+
+/** Lo que cada persona ha silenciado. Lo que no aparece aquí, llega. */
+export interface AjustesDeAvisos {
+  mutedKinds: TipoDeAviso[]
+  mutedSpaces: string[]
+}
+
+/**
  * Por qué un @usuario se puede o no usar. Los mismos cuatro valores que
  * devuelve `public.username_status()` y con los que falla `set_username()`,
  * para que comprobar y guardar hablen el mismo idioma.

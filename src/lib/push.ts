@@ -23,11 +23,45 @@ import {
  */
 
 const STORED_TOKEN_KEY = storageKey('push-token')
+/**
+ * Marca que la persona los apagó desde Ajustes.
+ *
+ * Sin ella, el arranque veía el permiso concedido y volvía a registrar el
+ * móvil: los avisos apagados se encendían solos en la siguiente apertura.
+ */
+const OFF_KEY = storageKey('push-off')
+
+function apagadosAMano(): boolean {
+  try {
+    return window.localStorage.getItem(OFF_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function marcarApagados(off: boolean): void {
+  try {
+    if (off) window.localStorage.setItem(OFF_KEY, '1')
+    else window.localStorage.removeItem(OFF_KEY)
+  } catch {
+    // almacenamiento no disponible
+  }
+}
 
 let started = false
 
+/**
+ * Quien está esperando a que llegue el token.
+ *
+ * `register()` vuelve enseguida, pero el token llega después por el oyente
+ * `registration`. Ajustes miraba si había token nada más volver de `register()`
+ * y no lo había todavía, así que el interruptor se encendía y se volvía a
+ * apagar solo aunque el registro fuera bien.
+ */
+let esperandoRegistro: ((error: string | null) => void) | null = null
+
 export async function setupPush(onOpenRoute: (route: string) => void): Promise<void> {
-  if (!isNative || started) return
+  if (!isNative || started || apagadosAMano()) return
   started = true
 
   // Android 13 y posteriores exigen permiso explícito; antes se daba por hecho.
@@ -41,13 +75,24 @@ export async function setupPush(onOpenRoute: (route: string) => void): Promise<v
     return
   }
 
+  // Por si se llama más de una vez (apagar y volver a encender desde Ajustes):
+  // sin esto cada llamada sumaba otro juego de oyentes y el token se guardaba
+  // dos, tres veces.
+  await PushNotifications.removeAllListeners()
+
   await PushNotifications.addListener('registration', (token) => {
-    void registerToken(token.value)
+    void registerToken(token.value).then((error) => {
+      esperandoRegistro?.(error)
+      esperandoRegistro = null
+    })
   })
 
   await PushNotifications.addListener('registrationError', (err) => {
-    // Lo más habitual es que falte google-services.json en el proyecto Android.
+    // Lo más habitual es que falte google-services.json en Android, o en iOS
+    // la capacidad «Push Notifications» en Xcode.
     console.warn('No se pudo registrar para notificaciones:', err.error)
+    esperandoRegistro?.(err.error || 'registration_error')
+    esperandoRegistro = null
   })
 
   // Al tocar la notificación, ir a la pantalla concreta y no al mapa.
@@ -59,7 +104,8 @@ export async function setupPush(onOpenRoute: (route: string) => void): Promise<v
   await PushNotifications.register()
 }
 
-async function registerToken(token: string): Promise<void> {
+/** Devuelve el error si no se pudo guardar, o `null` si todo fue bien. */
+async function registerToken(token: string): Promise<string | null> {
   try {
     const { error } = await supabase.rpc('register_device_token', {
       p_token: token,
@@ -71,8 +117,10 @@ async function registerToken(token: string): Promise<void> {
     } catch {
       // almacenamiento no disponible
     }
+    return null
   } catch (e) {
     console.warn('No se pudo guardar el token del dispositivo:', e)
+    return e instanceof Error ? e.message : String(e)
   }
 }
 
@@ -134,6 +182,7 @@ export async function estadoDeAvisos(): Promise<EstadoAvisos> {
  * Devuelve el estado en el que se ha quedado, para poder decir qué pasó.
  */
 export async function activarAvisos(onOpenRoute: (route: string) => void): Promise<EstadoAvisos> {
+  marcarApagados(false)
   if (!isNative) {
     // La app instalada en la pantalla de inicio también recibe avisos: en
     // Android desde siempre y en iPhone desde iOS 16.4.
@@ -152,12 +201,36 @@ export async function activarAvisos(onOpenRoute: (route: string) => void): Promi
   // `started` bloquea el segundo montaje de los oyentes, y sin soltarlo apagar
   // y volver a encender desde aquí no registraba ningún token.
   started = false
+
+  // Se prepara la espera ANTES de registrar: en iOS el token puede llegar
+  // antes de que `setupPush` termine.
+  const registrado = new Promise<string | null>((resolve) => {
+    esperandoRegistro = resolve
+    // Si no llega nada en un rato es que el sistema no va a contestar (en iOS,
+    // típicamente, porque la app no tiene la capacidad de notificaciones).
+    window.setTimeout(() => {
+      if (esperandoRegistro === resolve) {
+        esperandoRegistro = null
+        resolve('timeout')
+      }
+    }, 15000)
+  })
+
   await setupPush(onOpenRoute)
-  return estadoDeAvisos()
+  const estado = await estadoDeAvisos()
+  if (estado !== 'concedido') {
+    esperandoRegistro = null
+    return estado
+  }
+
+  const error = await registrado
+  if (error) throw new Error(error)
+  return estado
 }
 
 /** Los apaga: se borra el token y deja de llegar nada, diga lo que diga el sistema. */
 export async function desactivarAvisos(): Promise<void> {
+  marcarApagados(true)
   if (!isNative) {
     await desactivarWebPush()
     return

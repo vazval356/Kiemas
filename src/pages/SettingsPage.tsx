@@ -20,7 +20,7 @@ import {
   setAppLockEnabled,
   verifyIdentity,
 } from '../lib/appLock'
-import type { Locale } from '../lib/types'
+import type { AjustesDeAvisos, Locale, TipoDeAviso } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
 import { useApp } from '../state/appState'
@@ -34,8 +34,11 @@ import { usePageTitle } from '../lib/seo'
  * cualquier app con cuentas permita borrarlas desde dentro de la propia app: sin
  * esto, la revisión de la App Store la rechaza.
  */
+/** En el orden en que se enseñan: de lo que más importa a lo que menos. */
+const TIPOS_DE_AVISO: TipoDeAviso[] = ['planes', 'comentarios', 'preguntas', 'sitios', 'grupo']
+
 export function SettingsPage() {
-  const { profile, locale, setLocale, refreshSpaces, api, t } = useApp()
+  const { profile, locale, setLocale, refreshSpaces, api, t, spaces } = useApp()
   usePageTitle(t('settings.title'))
 
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
@@ -132,11 +135,48 @@ export function SettingsPage() {
         if (r === 'denegado') setNotice(t('push.blocked'))
       }
     } catch (e) {
-      setError(errorMessage(e, t('common.error')))
+      console.warn('No se pudieron activar los avisos:', e)
+      setError(t('push.failed'))
     } finally {
       setCambiandoAvisos(false)
     }
   }
+
+  // Qué avisos llegan: por tipo y por grupo. Se carga aunque estén apagados,
+  // para que al encenderlos ya salga lo que se eligió la otra vez.
+  const [ajustesAvisos, setAjustesAvisos] = useState<AjustesDeAvisos>({
+    mutedKinds: [],
+    mutedSpaces: [],
+  })
+
+  useEffect(() => {
+    api
+      .getNotificationSettings()
+      .then(setAjustesAvisos)
+      .catch(() => {
+        // Sin preferencias guardadas se recibe todo, que es lo mismo que enseña.
+      })
+  }, [api])
+
+  function alternarEn<T>(lista: T[], valor: T): T[] {
+    return lista.includes(valor) ? lista.filter((v) => v !== valor) : [...lista, valor]
+  }
+
+  async function guardarAjustesAvisos(nuevos: AjustesDeAvisos) {
+    // Se pinta al momento y se deshace si falla: esperar a la red para mover
+    // un interruptor hace que parezca que no ha hecho caso.
+    const antes = ajustesAvisos
+    setAjustesAvisos(nuevos)
+    setError('')
+    try {
+      await api.saveNotificationSettings(nuevos)
+    } catch (e) {
+      setAjustesAvisos(antes)
+      setError(errorMessage(e, t('common.error')))
+    }
+  }
+
+  const gruposParaAvisos = spaces.filter((s) => s.kind === 'group')
 
   // ── Bloqueo con Face ID ──────────────────────────────────────────────────
   //
@@ -235,6 +275,54 @@ export function SettingsPage() {
                 </p>
               )}
             </div>
+
+            {avisosOn && permiso !== 'denegado' && (
+              <>
+                <h3 className="mb-2 mt-5 text-sm font-semibold text-on-surface-variant">
+                  {t('push.customTitle')}
+                </h3>
+                <div className="divide-y divide-surface-container rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
+                  {TIPOS_DE_AVISO.map((tipo) => (
+                    <Interruptor
+                      key={tipo}
+                      titulo={t(`push.kind.${tipo}`)}
+                      detalle={t(`push.kind.${tipo}.hint`)}
+                      encendido={!ajustesAvisos.mutedKinds.includes(tipo)}
+                      onCambiar={() =>
+                        void guardarAjustesAvisos({
+                          ...ajustesAvisos,
+                          mutedKinds: alternarEn(ajustesAvisos.mutedKinds, tipo),
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+
+                {gruposParaAvisos.length > 0 && (
+                  <>
+                    <h3 className="mb-1 mt-5 text-sm font-semibold text-on-surface-variant">
+                      {t('push.groupsTitle')}
+                    </h3>
+                    <p className="mb-2 text-sm text-on-surface-variant">{t('push.groupsHint')}</p>
+                    <div className="divide-y divide-surface-container rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
+                      {gruposParaAvisos.map((g) => (
+                        <Interruptor
+                          key={g.id}
+                          titulo={`${g.emoji} ${g.name}`.trim()}
+                          encendido={!ajustesAvisos.mutedSpaces.includes(g.id)}
+                          onCambiar={() =>
+                            void guardarAjustesAvisos({
+                              ...ajustesAvisos,
+                              mutedSpaces: alternarEn(ajustesAvisos.mutedSpaces, g.id),
+                            })
+                          }
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
           </section>
         )}
 
@@ -526,6 +614,44 @@ export function SettingsPage() {
           </p>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Una fila con texto y un interruptor, como el de encender los avisos. */
+function Interruptor({
+  titulo,
+  detalle,
+  encendido,
+  onCambiar,
+}: {
+  titulo: string
+  detalle?: string
+  encendido: boolean
+  onCambiar: () => void
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3">
+      <div className="min-w-0">
+        <p className="truncate font-medium text-on-surface">{titulo}</p>
+        {detalle && <p className="mt-0.5 text-sm text-on-surface-variant">{detalle}</p>}
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={encendido}
+        aria-label={titulo}
+        onClick={onCambiar}
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+          encendido ? 'bg-primary' : 'bg-surface-container'
+        }`}
+      >
+        <span
+          className={`absolute top-1 size-5 rounded-full bg-surface-lowest shadow transition-all ${
+            encendido ? 'left-6' : 'left-1'
+          }`}
+        />
+      </button>
     </div>
   )
 }

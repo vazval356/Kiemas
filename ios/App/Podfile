@@ -24,6 +24,9 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
+  # Convierte el token de Apple en uno de Firebase: la función de envío habla
+  # con FCM, y FCM no acepta un token de APNs tal cual.
+  pod 'FirebaseMessaging'
 end
 
 post_install do |installer|

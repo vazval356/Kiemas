@@ -299,6 +299,22 @@ const es = {
   'push.howToUnblock':
     'Abre los Ajustes del teléfono, busca Kiemas y activa las notificaciones. Desde aquí no se puede: cuando se deniegan, el sistema ya no vuelve a preguntar.',
 
+  'push.failed':
+    'No se han podido activar. Comprueba la conexión y vuelve a intentarlo en un momento.',
+  'push.customTitle': 'Qué te avisamos',
+  'push.kind.planes': 'Planes',
+  'push.kind.planes.hint': 'Propuestas nuevas, fechas y sitios decididos',
+  'push.kind.comentarios': 'Comentarios',
+  'push.kind.comentarios.hint': 'Lo que se escribe en los sitios',
+  'push.kind.sitios': 'Sitios nuevos',
+  'push.kind.sitios.hint': 'Cuando alguien guarda un sitio en el grupo',
+  'push.kind.preguntas': 'Preguntas',
+  'push.kind.preguntas.hint': 'Cuando alguien pregunta algo al grupo',
+  'push.kind.grupo': 'Gente nueva',
+  'push.kind.grupo.hint': 'Cuando alguien se une a un grupo',
+  'push.groupsTitle': 'Grupos',
+  'push.groupsHint': 'Silencia un grupo y no te llegará nada de él.',
+
   'applock.title': 'Face ID',
   'applock.label': 'Bloquear la app con Face ID',
   'applock.on': 'Hace falta Face ID (o tu huella) para entrar en la app.',
@@ -1177,6 +1193,21 @@ const en: Record<TranslationKey, string> = {
   'push.blocked': 'They are blocked in your phone settings.',
   'push.howToUnblock':
     'Open your phone Settings, find Kiemas and turn notifications on. It can’t be done from here: once denied, the system never asks again.',
+
+  'push.failed': 'They couldn’t be turned on. Check your connection and try again in a moment.',
+  'push.customTitle': 'What we tell you about',
+  'push.kind.planes': 'Plans',
+  'push.kind.planes.hint': 'New proposals, dates and places decided',
+  'push.kind.comentarios': 'Comments',
+  'push.kind.comentarios.hint': 'What people write on places',
+  'push.kind.sitios': 'New places',
+  'push.kind.sitios.hint': 'When someone saves a place in the group',
+  'push.kind.preguntas': 'Questions',
+  'push.kind.preguntas.hint': 'When someone asks the group something',
+  'push.kind.grupo': 'New people',
+  'push.kind.grupo.hint': 'When someone joins a group',
+  'push.groupsTitle': 'Groups',
+  'push.groupsHint': 'Mute a group and nothing from it will reach you.',
 
   'applock.title': 'Face ID',
   'applock.label': 'Lock the app with Face ID',

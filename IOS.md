@@ -148,6 +148,12 @@ para poder empujar.
    - **Push Notifications**
    - **Background Modes** → marca *Remote notifications*
 
+7. `GoogleService-Info.plist` ya está en el proyecto y el `Podfile` trae
+   `FirebaseMessaging`. Tras bajar los cambios basta con:
+   `npm run cap:sync && cd ios/App && pod install`.
+   `AppDelegate.swift` convierte el token de Apple en uno de Firebase y se lo
+   pasa a Capacitor; sin eso el interruptor de Ajustes no llega a encenderse.
+
 El `.p8` es una credencial: **no lo metas en el repositorio.**
 
 ---

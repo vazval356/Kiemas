@@ -1,5 +1,7 @@
 import UIKit
 import Capacitor
+import FirebaseCore
+import FirebaseMessaging
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -7,8 +9,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Lee GoogleService-Info.plist. Hace falta para pedirle a Firebase el
+        // token con el que la función `send-push` puede mandar avisos.
+        FirebaseApp.configure()
         return true
+    }
+
+    // ── Notificaciones ───────────────────────────────────────────────────────
+    //
+    // Sin estos dos métodos el plugin de Capacitor nunca se entera del token:
+    // `register()` pregunta a iOS, iOS contesta aquí, y si aquí no se reenvía,
+    // el oyente `registration` de la web no salta jamás. El interruptor de
+    // Ajustes se quedaba esperando y volvía a apagarse.
+    //
+    // Y no basta con reenviar el token de Apple: la función de envío habla con
+    // Firebase (FCM v1), que solo acepta tokens de Firebase. Se le da el de
+    // Apple a Firebase y se reenvía el que devuelve.
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+            } else if let token = token {
+                NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: token)
+            }
+        }
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

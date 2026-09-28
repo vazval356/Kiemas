@@ -7,6 +7,7 @@ import type {
   PlacePatch,
   PlaceOsmSync,
   CalendarLink,
+  AjustesDeAvisos,
   Plan,
   PlanInput,
   Profile,
@@ -95,6 +96,9 @@ export interface DataApi {
   listCalendarLinks(): Promise<CalendarLink[]>
   saveCalendarLink(link: CalendarLink): Promise<void>
   deleteCalendarLink(planId: string): Promise<void>
+  /** Qué avisos has apagado, por tipo y por grupo. */
+  getNotificationSettings(): Promise<AjustesDeAvisos>
+  saveNotificationSettings(settings: AjustesDeAvisos): Promise<void>
   /**
    * Tu color para un espacio. `null` lo devuelve al que eligió el grupo.
    *
