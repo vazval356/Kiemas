@@ -31,7 +31,10 @@ export function CoverCropper({
   onCancel,
   onDone,
 }: {
-  file: File
+  // `Blob` además de `File`: una foto que sale de la cámara o de la galería
+  // propias ya llega como blob, sin nombre de fichero ni las demás
+  // propiedades de un `File` que este componente nunca usa.
+  file: File | Blob
   aspect?: number
   /** Ventana redonda, para retratos. El recorte sigue siendo cuadrado. */
   round?: boolean

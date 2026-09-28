@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CardIcon, GroupIcon, LogoutIcon, SettingsIcon, UserIcon } from '../components/icons'
+import { PhotoViewer } from '../components/PhotoViewer'
 import { QuotaMeter } from '../components/QuotaMeter'
 import { spaceColors } from '../lib/spaceTheme'
 import type { Entitlement, MyEntitlement, MyStats } from '../lib/types'
@@ -29,6 +30,9 @@ export function ProfilePage() {
   const [nivel, setNivel] = useState<MyEntitlement | null>(null)
   const entitlement: Entitlement = nivel?.entitlement ?? 'free'
   const [error, setError] = useState('')
+  // Ver el retrato en grande. Solo tiene sentido si hay uno: sin foto, tocar
+  // el círculo lleva a ponerla, que es lo único que se puede hacer con él.
+  const [viendoRetrato, setViendoRetrato] = useState(false)
 
   useEffect(() => {
     // Los tres son adorno de la cabecera: si alguno falla, el resto del perfil
@@ -50,27 +54,40 @@ export function ProfilePage() {
       <div className="mx-auto max-w-md px-4 pb-32 pt-1">
         {/* ── Retrato ──────────────────────────────────────────────────── */}
         <header className="flex flex-col items-center text-center">
-          <Link
-            to="/profile/edit"
-            aria-label={t('profile.edit')}
-            className="relative rounded-full p-1 squish"
-            // El anillo del diseño: un degradado que rodea el retrato. Va como
-            // fondo del contenedor y el retrato deja ver un borde blanco.
-            style={{ background: 'var(--color-primary)' }}
-          >
-            {profile?.avatarUrl ? (
+          {/* Con foto, tocar el retrato lo enseña en grande —el gesto que ya
+              se conoce de cualquier otra app—; editar sigue teniendo su
+              propio botón debajo, así que el retrato no necesita seguir
+              haciendo también ese trabajo. Sin foto no hay nada que
+              enseñar: toca a editar, que es donde se pone una. */}
+          {profile?.avatarUrl ? (
+            <button
+              type="button"
+              onClick={() => setViendoRetrato(true)}
+              aria-label={t('profile.viewAvatar')}
+              className="relative rounded-full p-1 squish"
+              style={{ background: 'var(--color-primary)' }}
+            >
               <img
                 decoding="async"
                 src={profile.avatarUrl}
                 alt=""
                 className="size-24 rounded-full border-4 border-surface object-cover"
               />
-            ) : (
+            </button>
+          ) : (
+            <Link
+              to="/profile/edit"
+              aria-label={t('profile.edit')}
+              className="relative rounded-full p-1 squish"
+              // El anillo del diseño: un degradado que rodea el retrato. Va como
+              // fondo del contenedor y el retrato deja ver un borde blanco.
+              style={{ background: 'var(--color-primary)' }}
+            >
               <span className="flex size-24 items-center justify-center rounded-full border-4 border-surface bg-primary text-3xl font-bold text-on-primary">
                 {initial}
               </span>
-            )}
-          </Link>
+            </Link>
+          )}
           {/* Distintivo de nivel, montado sobre el retrato como en el diseño.
               Solo si hay algo que enseñar: una insignia que pone «GRATIS» no
               es un distintivo, es un recordatorio de lo que no tienes. */}
@@ -339,6 +356,15 @@ export function ProfilePage() {
           </button>
         </section>
       </div>
+
+      {viendoRetrato && profile?.avatarUrl && (
+        <PhotoViewer
+          fotos={[{ id: 'avatar', url: profile.avatarUrl }]}
+          abierta="avatar"
+          onCerrar={() => setViendoRetrato(false)}
+          nombreDe={() => profile.displayName ?? ''}
+        />
+      )}
     </div>
   )
 }

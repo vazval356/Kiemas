@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -98,4 +98,20 @@
          ejecución: el sistema pregunta, y solo cuando se enciende el ajuste. -->
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!-- Cámara propia (retrato, portadas, fotos de sitio). El plugin declara
+         RECORD_AUDIO en su propio manifest porque también sabe grabar vídeo,
+         pero la app solo hace fotos: `disableAudio: true` en cada arranque de
+         la cámara, y aquí se retira el permiso del manifest final para que no
+         se pida ni se liste algo que nunca se usa. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+
+    <!-- Selector de galería propio, en vez del de Android. READ_MEDIA_VIDEO
+         se retira: la librería solo pide imágenes (`includeVideos` no se
+         activa en ningún sitio), y pedir vídeo sin usarlo es un permiso de
+         más que justificar en la Play Store. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

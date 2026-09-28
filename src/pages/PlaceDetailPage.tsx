@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { CommentThread } from '../components/CommentThread'
 import {
@@ -7,6 +7,7 @@ import {
   semanaDe,
   useSincronizarOsm,
 } from '../components/OpeningHours'
+import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
 import { PhotoOrPlaceholder } from '../components/PlaceCard'
 import { PhotoViewer } from '../components/PhotoViewer'
 import { TagBadges } from '../components/TagPicker'
@@ -20,12 +21,14 @@ import {
   StarIcon,
   TrashIcon,
 } from '../components/icons'
+import { isNative } from '../lib/appUrl'
 import {
   averageRating,
   errorMessage,
   formatKm,
   formatRating,
   kmBetween,
+  MAX_FOTO_BYTES,
   priceLabel,
 } from '../lib/utils'
 import { RatingStars } from '../components/RatingStars'
@@ -45,7 +48,12 @@ import { usePageTitle } from '../lib/seo'
 export function PlaceDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { places, categories, activeSpace, spaces, profile, position, api, refresh, t } = useApp()
+  const { places, categories, activeSpace, spaces, profile, position, api, refresh, t, locale } =
+    useApp()
+  // Cámara y galería propias en el móvil; el selector nativo se guarda para
+  // la web. Ver `MultiPhotoPicker`.
+  const [pickingPhotos, setPickingPhotos] = useState(false)
+  const fotoInputRef = useRef<HTMLInputElement>(null)
 
   const place = places.find((p) => p.id === id)
   usePageTitle(place?.name)
@@ -109,6 +117,11 @@ export function PlaceDetailPage() {
     } finally {
       setBusy(false)
     }
+  }
+
+  function abrirSelectorFotos() {
+    if (isNative) setPickingPhotos(true)
+    else fotoInputRef.current?.click()
   }
 
   // Los demás espacios a los que se puede llevar: todos menos donde ya está.
@@ -497,6 +510,27 @@ export function PlaceDetailPage() {
             </p>
           )}
 
+          {/* Compartido por los dos botones de abajo —solo uno de los dos se ve
+              a la vez, según si ya hay fotos—, y solo en web: sin plugin
+              nativo, el selector propio se cae al de siempre. */}
+          {!isNative && (
+            <input
+              ref={fotoInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              disabled={busy}
+              onChange={(e) => {
+                const files = e.target.files ? Array.from(e.target.files) : []
+                // Se limpia para que volver a elegir la MISMA foto dispare el
+                // evento otra vez.
+                e.target.value = ''
+                if (files.length > 0) void run(() => api.addPhotos(place.id, files))
+              }}
+            />
+          )}
+
           {/* Tres por fila, cuadradas. Una tira horizontal obligaba a arrastrar
               para ver la cuarta, y en una galería de recuerdos lo que se quiere
               es abarcarlas de un vistazo. */}
@@ -508,44 +542,28 @@ export function PlaceDetailPage() {
               del color suave del sistema, para que acompañe a la cuadrícula en
               vez de competir con ella. */}
           {place.photos.length === 0 && (
-            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-card bg-surface-container py-4 text-sm font-semibold text-primary squish">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={abrirSelectorFotos}
+              className="flex items-center justify-center gap-2 rounded-card bg-surface-container py-4 text-sm font-semibold text-primary squish disabled:opacity-50"
+            >
               <span className="text-lg">📷</span>
               {t('form.addPhoto')}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                hidden
-                disabled={busy}
-                onChange={(e) => {
-                  const files = e.target.files ? Array.from(e.target.files) : []
-                  // Se limpia para que volver a elegir la MISMA foto dispare el
-                  // evento otra vez.
-                  e.target.value = ''
-                  if (files.length > 0) void run(() => api.addPhotos(place.id, files))
-                }}
-              />
-            </label>
+            </button>
           )}
 
           <div className="grid grid-cols-3 gap-1.5">
             {place.photos.length > 0 && (
-              <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-card bg-surface-container text-on-surface-variant squish">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={abrirSelectorFotos}
+                className="flex aspect-square flex-col items-center justify-center gap-1 rounded-card bg-surface-container text-on-surface-variant squish disabled:opacity-50"
+              >
                 <span className="text-xl">📷</span>
                 <span className="text-[11px] font-semibold">{t('form.addPhoto')}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  hidden
-                  disabled={busy}
-                  onChange={(e) => {
-                    const files = e.target.files ? Array.from(e.target.files) : []
-                    e.target.value = ''
-                    if (files.length > 0) void run(() => api.addPhotos(place.id, files))
-                  }}
-                />
-              </label>
+              </button>
             )}
 
             {place.photos.map((photo, indice) => {
@@ -639,6 +657,18 @@ export function PlaceDetailPage() {
           abierta={viendo}
           onCerrar={() => setViendo(null)}
           nombreDe={(id) => members.find((m) => m.userId === id)?.displayName ?? '—'}
+        />
+      )}
+
+      {pickingPhotos && (
+        <MultiPhotoPicker
+          maxBytes={MAX_FOTO_BYTES}
+          locale={locale}
+          onCancel={() => setPickingPhotos(false)}
+          onDone={(files) => {
+            setPickingPhotos(false)
+            void run(() => api.addPhotos(place.id, files))
+          }}
         />
       )}
     </div>

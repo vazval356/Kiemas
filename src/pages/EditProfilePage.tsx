@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BackButton } from '../components/BackButton'
 import { CoverCropper } from '../components/CoverCropper'
+import { PhotoPicker } from '../components/PhotoPicker'
 import { UsernameEditor } from '../components/UsernameEditor'
+import { isNative } from '../lib/appUrl'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -35,6 +37,9 @@ export function EditProfilePage({
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [cropping, setCropping] = useState<File | null>(null)
+  // Cámara y galería propias en el móvil; el selector nativo se guarda para
+  // la web, donde no hay plugin con quien hablar. Ver `PhotoPicker`.
+  const [picking, setPicking] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const setup = mode === 'setup'
@@ -53,6 +58,11 @@ export function EditProfilePage({
    * una foto donde no estás en el centro te deja fuera del círculo. La ventana
    * de recorte es redonda porque es como se va a ver.
    */
+  function abrirSelector() {
+    if (isNative) setPicking(true)
+    else fileRef.current?.click()
+  }
+
   async function guardarAvatar(blob: Blob) {
     setError('')
     setBusy(true)
@@ -108,7 +118,7 @@ export function EditProfilePage({
           <button
             type="button"
             disabled={busy}
-            onClick={() => fileRef.current?.click()}
+            onClick={abrirSelector}
             className="relative rounded-full p-1 squish disabled:opacity-50"
             style={{ background: 'var(--color-primary)' }}
           >
@@ -153,7 +163,7 @@ export function EditProfilePage({
           <button
             type="button"
             disabled={busy}
-            onClick={() => fileRef.current?.click()}
+            onClick={abrirSelector}
             className="mt-2 text-sm font-semibold text-primary squish disabled:opacity-50"
           >
             {profile?.avatarUrl ? t('profile.changeAvatar') : t('profile.addAvatar')}
@@ -238,6 +248,20 @@ export function EditProfilePage({
         )}
       </div>
 
+      {picking && (
+        <PhotoPicker
+          aspect={1}
+          round
+          onCancel={() => setPicking(false)}
+          onDone={(blob) => {
+            setPicking(false)
+            void guardarAvatar(blob)
+          }}
+        />
+      )}
+
+      {/* Solo en web: sin plugin nativo, el selector propio no tiene con qué
+          hablar y se cae al de siempre. */}
       {cropping && (
         <CoverCropper
           file={cropping}

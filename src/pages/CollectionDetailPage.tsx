@@ -2,7 +2,8 @@ import { useMemo, useRef, useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CopyIcon, CollectionIcon, ShareIcon, TrashIcon } from '../components/icons'
 import { CoverCropper } from '../components/CoverCropper'
-import { publicListUrl } from '../lib/appUrl'
+import { PhotoPicker } from '../components/PhotoPicker'
+import { isNative, publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -34,6 +35,9 @@ export function CollectionDetailPage() {
   const [expiry, setExpiry] = useState<InviteExpiry>(null)
   const [adding, setAdding] = useState(false)
   const [cropping, setCropping] = useState<File | null>(null)
+  // Cámara y galería propias en el móvil; el selector nativo se guarda para
+  // la web. Ver `PhotoPicker`.
+  const [picking, setPicking] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const collection = collections.find((c) => c.id === id)
@@ -163,7 +167,7 @@ export function CollectionDetailPage() {
             <button
               type="button"
               disabled={busy}
-              onClick={() => fileRef.current?.click()}
+              onClick={() => (isNative ? setPicking(true) : fileRef.current?.click())}
               className="rounded-full bg-surface-lowest/90 px-3 py-1.5 text-xs font-semibold text-on-surface squish disabled:opacity-50"
             >
               {t('collection.cover')}
@@ -415,6 +419,18 @@ export function CollectionDetailPage() {
         </button>
       </div>
 
+      {picking && (
+        <PhotoPicker
+          onCancel={() => setPicking(false)}
+          onDone={(blob) => {
+            setPicking(false)
+            void run(() => api.setCollectionCover(collection.id, activeSpace?.id ?? '', blob))
+          }}
+        />
+      )}
+
+      {/* Solo en web: sin plugin nativo, el selector propio se cae al de
+          siempre. */}
       {cropping && (
         <CoverCropper
           file={cropping}

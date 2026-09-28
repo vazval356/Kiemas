@@ -835,6 +835,7 @@ const es = {
   'profile.setupTitle': 'Crea tu perfil',
   'profile.setupHint': 'Ponle cara y nombre antes de empezar. Todo esto se puede cambiar después.',
   'profile.edit': 'Editar perfil',
+  'profile.viewAvatar': 'Ver foto de perfil',
   'profile.addAvatar': 'Añadir foto',
   'profile.avatarOptional': 'La foto es opcional',
   'profile.displayName': 'Nombre',
@@ -890,6 +891,23 @@ const es = {
   'photo.unreadable': 'No hemos podido leer «{nombre}». Prueba con otra foto.',
   'photo.ofPlace': 'Foto de {nombre}',
   'photo.number': 'Foto {n} de {total}',
+
+  // Selector de cámara y galería propio
+  'media.library': 'Biblioteca',
+  'media.recent': 'Recientes',
+  'media.loading': 'Cargando…',
+  'media.loadMore': 'Cargar más',
+  'media.permissionDenied': 'Kiemas no tiene acceso a tus fotos',
+  'media.permissionDeniedHint':
+    'Actívalo en Ajustes del sistema → Kiemas → Fotos para poder elegir una desde aquí.',
+  'media.empty': 'No hay fotos que enseñar',
+  'media.cameraError': 'No hemos podido abrir la cámara. Inténtalo otra vez.',
+  'media.flipCamera': 'Cambiar de cámara',
+  'media.shoot': 'Hacer la foto',
+  'media.useCamera': 'Cámara',
+  'media.selectedCount': '{n} seleccionadas',
+  'media.useSelected': 'Usar {n}',
+  'media.useSelected_one': 'Usar 1 foto',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -1667,6 +1685,7 @@ const en: Record<TranslationKey, string> = {
   'profile.setupHint':
     'Put a face and a name to it before you start. You can change all of this later.',
   'profile.edit': 'Edit profile',
+  'profile.viewAvatar': 'View profile photo',
   'profile.addAvatar': 'Add a photo',
   'profile.avatarOptional': 'The photo is optional',
   'profile.displayName': 'Name',
@@ -1722,6 +1741,23 @@ const en: Record<TranslationKey, string> = {
   'photo.unreadable': 'We could not read “{nombre}”. Try a different photo.',
   'photo.ofPlace': 'Photo of {nombre}',
   'photo.number': 'Photo {n} of {total}',
+
+  // Our own camera + gallery picker
+  'media.library': 'Library',
+  'media.recent': 'Recent',
+  'media.loading': 'Loading…',
+  'media.loadMore': 'Load more',
+  'media.permissionDenied': 'Kiemas has no access to your photos',
+  'media.permissionDeniedHint':
+    'Turn it on in Settings → Kiemas → Photos to be able to pick one from here.',
+  'media.empty': 'No photos to show',
+  'media.cameraError': 'We could not open the camera. Try again.',
+  'media.flipCamera': 'Switch camera',
+  'media.shoot': 'Take the photo',
+  'media.useCamera': 'Camera',
+  'media.selectedCount': '{n} selected',
+  'media.useSelected': 'Use {n}',
+  'media.useSelected_one': 'Use 1 photo',
 
   // Onboarding
 }

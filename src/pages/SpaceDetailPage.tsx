@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CoverCropper } from '../components/CoverCropper'
+import { PhotoPicker } from '../components/PhotoPicker'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
-import { inviteUrl } from '../lib/appUrl'
+import { inviteUrl, isNative } from '../lib/appUrl'
 import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
@@ -50,6 +51,9 @@ export function SpaceDetailPage() {
   const [emoji, setEmoji] = useState(space?.emoji ?? '👥')
   const [color, setColor] = useState(normalizeHex(space?.color))
   const coverRef = useRef<HTMLInputElement>(null)
+  // Cámara y galería propias en el móvil; el selector nativo se guarda para
+  // la web. Ver `PhotoPicker`.
+  const [picking, setPicking] = useState(false)
   // Foto elegida esperando encuadre. Hasta confirmar, no se sube nada.
   const [cropping, setCropping] = useState<File | null>(null)
   // El ajuste personal del color del grupo empieza plegado: lo usa poca
@@ -491,7 +495,7 @@ export function SpaceDetailPage() {
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
-                onClick={() => coverRef.current?.click()}
+                onClick={() => (isNative ? setPicking(true) : coverRef.current?.click())}
                 className="flex-1 rounded-control border border-outline-variant py-2.5 text-sm font-semibold text-on-surface squish"
               >
                 {space.coverUrl ? t('space.changeCover') : t('space.addCover')}
@@ -961,6 +965,21 @@ export function SpaceDetailPage() {
         )}
       </div>
 
+      {picking && (
+        <PhotoPicker
+          onCancel={() => setPicking(false)}
+          onDone={(blob) => {
+            setPicking(false)
+            void run(async () => {
+              await api.setSpaceCover(space.id, blob)
+              await refreshSpaces()
+            })
+          }}
+        />
+      )}
+
+      {/* Solo en web: sin plugin nativo, el selector propio se cae al de
+          siempre. */}
       {cropping && (
         <CoverCropper
           file={cropping}
