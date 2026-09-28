@@ -11,7 +11,8 @@ import { resumenDelAnoDisponible } from './lib/dates'
 import { recoveryTokens } from './lib/recovery'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
-import { LandingPage } from './pages/LandingPage'
+import { idiomaDelNavegador, idiomaDeRuta } from './landing/idiomas'
+import { isNative } from './lib/appUrl'
 import { SetupPage } from './pages/SetupPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
@@ -33,6 +34,13 @@ import { useApp } from './state/appState'
  * pantalla, importarla arrastraba la pantalla completa al paquete principal
  * para poder preguntar en qué mes estamos.
  */
+/**
+ * La landing también va aparte: la app con sesión no la necesita nunca, y
+ * dentro del contenedor nativo no se enseña. Ver `src/landing/LandingPage.tsx`.
+ */
+const LandingPage = lazy(() =>
+  import('./landing/LandingPage').then((m) => ({ default: m.LandingPage }))
+)
 const ActivityPage = lazy(() =>
   import('./pages/ActivityPage').then((m) => ({ default: m.ActivityPage }))
 )
@@ -194,8 +202,15 @@ function Shell() {
   // landing, no el formulario de entrar. Cualquier otra dirección —incluida
   // `/login`, y cualquier sitio del que se salga con «Salir» en el perfil—
   // sigue yendo directa al formulario, como siempre: solo cambia la raíz.
+  //
+  // En la app nativa no hay landing: quien la abre ya la tiene instalada y lo
+  // que busca es entrar, así que va directo al formulario.
   if (authStatus === 'signedOut') {
-    return location.pathname === '/' ? <LandingPage /> : <AuthPage />
+    return location.pathname === '/' && !isNative ? (
+      <LandingPage idioma={idiomaDelNavegador()} />
+    ) : (
+      <AuthPage />
+    )
   }
 
   // Cuenta nueva: la bienvenida va antes que nada. Se salta si ya se está en la
@@ -229,6 +244,9 @@ function Shell() {
           <Suspense fallback={<PantallaDeArranque />}>
             <Routes>
               <Route path="/" element={<MapPage />} />
+              {/* La landing enlaza a `/login` sin saber si hay sesión: con
+                  sesión, entrar es ya estar dentro. */}
+              <Route path="/login" element={<Navigate to="/" replace />} />
               <Route path="/list" element={<ListPage />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/plan/new" element={<PlanFormPage />} />
@@ -313,6 +331,12 @@ function Rutas() {
   // proveedor: hay sesión, pero es de recuperación, y arrancar la app entera
   // para una pantalla que solo pide una contraseña sobra.
   if (recoveryTokens) return <ResetPasswordPage />
+
+  // `/es`, `/en`: la landing en ese idioma, sin arrancar la app ni mirar si
+  // hay sesión. Son rutas de verdad (no `#/`) para que el buscador las vea
+  // como páginas distintas; `vercel.json` sirve `index.html` en ellas.
+  const idiomaLanding = isNative ? null : idiomaDeRuta(window.location.pathname)
+  if (idiomaLanding) return <LandingPage idioma={idiomaLanding} />
 
   return (
     <HashRouter>

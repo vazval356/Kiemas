@@ -1,0 +1,172 @@
+/*
+ * Movimiento de la landing.
+ *
+ * Solo `transform` y `opacity` (no hacen recalcular la maqueta), curvas
+ * `ease-out` fuertes en vez de las de CSS por defecto, y nada de `ease-in`.
+ * Un único momento fuerte —el hero— y como mucho tres piezas «vivas» más
+ * abajo (barras de voto y ruleta), según DESIGN.md.
+ *
+ * CSS y no GSAP: son animaciones fijas, y el CSS corre fuera del hilo
+ * principal, así que no da tirones mientras la página aún está cargando.
+ */
+
+.kl {
+  --kl-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --kl-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ── Hero: del chat al plan ─────────────────────────────────────────────── */
+
+.kl-burbuja {
+  animation:
+    kl-entra 320ms var(--kl-ease-out) calc(150ms + var(--i) * 130ms) both,
+    kl-se-va 260ms var(--kl-ease-out) 1450ms forwards;
+}
+
+.kl-velo {
+  animation: kl-desvela 420ms var(--kl-ease-out) 1400ms forwards;
+}
+
+.kl-pin {
+  animation: kl-cae 380ms var(--kl-ease-out) calc(1600ms + var(--i) * 70ms) both;
+}
+
+.kl-plan {
+  animation: kl-sube 440ms var(--kl-ease-out) 2150ms both;
+}
+
+.kl-estado-votando {
+  animation: kl-apaga 200ms var(--kl-ease-out) 2950ms forwards;
+}
+.kl-estado-confirmado {
+  animation: kl-enciende 220ms var(--kl-ease-out) 2950ms both;
+}
+
+@keyframes kl-entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}
+@keyframes kl-se-va {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+    filter: blur(2px);
+  }
+}
+@keyframes kl-desvela {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes kl-cae {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 12px)) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+@keyframes kl-sube {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+@keyframes kl-apaga {
+  to {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+@keyframes kl-enciende {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+/* Quieta hasta que se ve más de la mitad (ver `EscenaHero`). */
+.kl-escena :is(.kl-burbuja, .kl-velo, .kl-pin, .kl-plan, .kl-estado-votando, .kl-estado-confirmado) {
+  animation-play-state: paused;
+}
+.kl-escena.kl-activa :is(.kl-burbuja, .kl-velo, .kl-pin, .kl-plan, .kl-estado-votando, .kl-estado-confirmado) {
+  animation-play-state: running;
+}
+
+/* ── Aparecer al entrar en pantalla, una sola vez ───────────────────────── */
+
+.kl-revela {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--kl-ease-out),
+    transform 600ms var(--kl-ease-out);
+}
+.kl-revela.kl-dentro {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Barras de voto: se rellenan al verlas ──────────────────────────────── */
+
+.kl-barra {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 700ms var(--kl-ease-out) var(--d, 0ms);
+}
+.kl-dentro .kl-barra {
+  transform: scaleX(var(--p));
+}
+.kl-gana {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 220ms var(--kl-ease-out) 900ms,
+    transform 220ms var(--kl-ease-out) 900ms;
+}
+.kl-dentro .kl-gana {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Ruleta: el marco se rellena al decidir ─────────────────────────────── */
+
+.kl-ruleta-marco {
+  transition:
+    background-color 240ms var(--kl-ease-out),
+    border-color 240ms var(--kl-ease-out),
+    color 240ms var(--kl-ease-out);
+}
+
+/* ── Menos movimiento: todo en su sitio desde el principio ──────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-burbuja,
+  .kl-velo,
+  .kl-estado-votando {
+    display: none;
+  }
+  .kl-pin,
+  .kl-plan,
+  .kl-estado-confirmado {
+    animation: none;
+  }
+  .kl-pin {
+    transform: translate(-50%, -100%);
+  }
+  .kl-revela {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+  .kl-barra {
+    transition: none;
+  }
+  .kl-gana {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
+}

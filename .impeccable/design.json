@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-28T00:00:00.000Z",
+  "title": "Design System: Kiemas",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Electric Indigo", "tonalRamp": ["#07006c", "#2f2ebe", "#4648d4", "#494bd6", "#6063ee", "#c0c1ff", "#e1e0ff", "#f9f9ff"] },
+      "secondary": { "role": "secondary", "displayName": "Rose Glow", "tonalRamp": ["#40000d", "#92002a", "#b90538", "#dc2c4f", "#ffb2b7", "#ffdadb", "#fff0f0", "#fffbff"] },
+      "tertiary": { "role": "tertiary", "displayName": "Amber Flare", "tonalRamp": ["#2a1700", "#653e00", "#825100", "#a36700", "#ffb95f", "#ffddb8", "#fff0e0", "#fffbff"] },
+      "surface-low": { "role": "neutral", "displayName": "Frost Paper", "tonalRamp": ["#111c2d", "#263143", "#464554", "#767586", "#c7c4d7", "#d8e3fb", "#e7eeff", "#f0f3ff"] },
+      "surface-lowest": { "role": "neutral", "displayName": "Clean White" },
+      "surface-container": { "role": "neutral", "displayName": "Mist" },
+      "on-surface": { "role": "neutral", "displayName": "Night Ink" },
+      "on-surface-variant": { "role": "neutral", "displayName": "Slate" },
+      "outline-variant": { "role": "neutral", "displayName": "Hairline" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Titulares; Figtree 800. Escala formal TBD." },
+      "body": { "displayName": "Body", "purpose": "Todo el texto corriente; Figtree 400-500." }
+    },
+    "shadows": [
+      { "name": "surface", "value": "0 1px 2px 0 rgb(17 28 45 / 0.06), 0 1px 3px 0 rgb(17 28 45 / 0.08)", "purpose": "Tarjetas y chips." },
+      { "name": "float", "value": "0 2px 6px 0 rgb(17 28 45 / 0.08), 0 8px 20px -4px rgb(17 28 45 / 0.18)", "purpose": "Modales, tarjetas sobre el mapa, menús." },
+      { "name": "fab", "value": "0 0 0 1.5px #111c2d, 4px 5px 0 0 #111c2d", "purpose": "Solo botones flotantes sobre el mapa." }
+    ],
+    "motion": [
+      { "name": "squish", "value": "transform 100ms ease; scale(0.96) on :active", "purpose": "Feedback de toque estándar." },
+      { "name": "pop", "value": "250ms ease-out, scale 0.7 -> 1.05 -> 1", "purpose": "Entrada de tarjetas y modales." },
+      { "name": "search-in", "value": "320ms cubic-bezier(0.2, 0.9, 0.3, 1)", "purpose": "Despliegue del buscador desde la lupa." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal; píldora índigo con squish al pulsar.",
+      "html": "<button class=\"ds-btn-primary\">Crear plan</button>",
+      "css": ".ds-btn-primary { background: #4648d4; color: #fff; font-family: Figtree, system-ui, sans-serif; font-weight: 600; font-size: 16px; padding: 12px 24px; border: none; border-radius: 9999px; box-shadow: 0 2px 6px 0 rgb(17 28 45 / 0.08), 0 8px 20px -4px rgb(17 28 45 / 0.18); transition: transform 100ms ease; cursor: pointer; } .ds-btn-primary:active { transform: scale(0.96); } .ds-btn-primary:focus-visible { outline: 2px solid #4648d4; outline-offset: 3px; }"
+    },
+    {
+      "name": "Floating Action Button",
+      "kind": "button",
+      "refersTo": "button-fab-primary",
+      "description": "Añadir; el único componente con contorno sólido.",
+      "html": "<button class=\"ds-fab\" aria-label=\"Añadir\"><svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
+      "css": ".ds-fab { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: #4648d4; color: #fff; border: none; border-radius: 9999px; box-shadow: 0 0 0 1.5px #111c2d, 4px 5px 0 0 #111c2d; transition: transform 100ms ease; cursor: pointer; } .ds-fab:active { transform: scale(0.96); } .ds-fab:focus-visible { outline: 2px solid #4648d4; outline-offset: 4px; }"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtro de categoría; seleccionado en índigo.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-chip-on\">Todos</button><button class=\"ds-chip\">🍜 Restaurantes</button><button class=\"ds-chip\">🎭 Cultura</button></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; } .ds-chip { font-family: Figtree, system-ui, sans-serif; font-size: 14px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 9999px; background: #fff; color: #111c2d; box-shadow: 0 1px 2px 0 rgb(17 28 45 / 0.06), 0 1px 3px 0 rgb(17 28 45 / 0.08); transition: transform 100ms ease, background 150ms ease; cursor: pointer; } .ds-chip:active { transform: scale(0.96); } .ds-chip-on { background: #4648d4; color: #fff; box-shadow: none; }"
+    },
+    {
+      "name": "Status Badges",
+      "kind": "custom",
+      "description": "Abierto = borde; confirmado = rosa relleno.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge\">Votando fecha</span><span class=\"ds-badge ds-badge-done\">Confirmado</span></div>",
+      "css": ".ds-badges { display: flex; gap: 8px; } .ds-badge { font-family: Figtree, system-ui, sans-serif; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 9999px; border: 1px solid #c7c4d7; color: #464554; } .ds-badge-done { background: #b90538; border-color: #b90538; color: #fff; }"
+    },
+    {
+      "name": "Place Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tarjeta de sitio; foto real delante, esquinas de 16 px.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-photo\">🍜</div><div class=\"ds-card-body\"><h3>Casa Lola</h3><p>Restaurante · 1,2 km</p></div></article>",
+      "css": ".ds-card { display: flex; width: 320px; overflow: hidden; background: #fff; border-radius: 16px; box-shadow: 0 1px 2px 0 rgb(17 28 45 / 0.06), 0 1px 3px 0 rgb(17 28 45 / 0.08); font-family: Figtree, system-ui, sans-serif; } .ds-card-photo { width: 96px; display: flex; align-items: center; justify-content: center; font-size: 32px; background: #e7eeff; } .ds-card-body { padding: 14px; } .ds-card-body h3 { margin: 0; font-size: 18px; font-weight: 700; color: #111c2d; } .ds-card-body p { margin: 4px 0 0; font-size: 14px; color: #464554; }"
+    },
+    {
+      "name": "Map Marker",
+      "kind": "custom",
+      "description": "Gota con el emoji de la categoría, en el color del grupo.",
+      "html": "<div class=\"ds-marker\">🎭</div>",
+      "css": ".ds-marker { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #4648d4; border: 2px solid #fff; border-radius: 50% 50% 50% 4px; box-shadow: 0 2px 6px 0 rgb(17 28 45 / 0.08), 0 8px 20px -4px rgb(17 28 45 / 0.18); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El mapa compartido",
+    "overview": "Todo en Kiemas gira alrededor del sitio donde el grupo se encuentra: un mapa con los sitios de todos, sus fotos reales y los planes que salen de ahí. La interfaz es ese lugar común, no un panel de control. La interfaz es táctil y segura: se nota al pulsar, las formas son firmes y la respuesta es inmediata. El color no decora: cada uno tiene un trabajo fijo.",
+    "keyCharacteristics": [
+      "Una sola familia tipográfica (Figtree) para todo.",
+      "Tres colores de marca con trabajos fijos, sobre superficies neutras frías.",
+      "Esquinas firmes (14–16 px), píldoras para acciones y chips.",
+      "Elevación suave y difuminada; el contorno sólido solo en los botones flotantes.",
+      "Fotos reales del grupo, nunca de stock.",
+      "Movimiento corto y funcional; prefers-reduced-motion siempre respetado."
+    ],
+    "rules": [
+      { "name": "The Product-First Rule", "body": "Cada decisión visual ayuda a explicar el producto o mejora la experiencia.", "section": "overview" },
+      { "name": "The Own-Identity Rule", "body": "Kiemas no copia la estética de ninguna referencia; las herramientas aportan criterio, no identidad.", "section": "overview" },
+      { "name": "The No-Slop Rule", "body": "Nada de gradientes gigantes, blobs, glassmorphism por defecto, tarjetas flotantes repetitivas, exceso de píldoras, sombras genéricas, layouts SaaS intercambiables ni animaciones constantes.", "section": "overview" },
+      { "name": "The Intentional-Motion Rule", "body": "Una animación comunica estado, mejora la comprensión, da feedback o aporta personalidad; si no, no se anima.", "section": "overview" },
+      { "name": "The Mobile-First Rule", "body": "Todo se valida primero a 320, 375, 390 y 430 px.", "section": "overview" },
+      { "name": "The Localized-From-Day-One Rule", "body": "Contenido localizado desde el principio (/es, /en), con copy nativo en cada idioma.", "section": "overview" },
+      { "name": "The Fixed-Job Rule", "body": "Índigo acción, rosa social o confirmado, ámbar pendiente de decidir.", "section": "colors" },
+      { "name": "The Group-Color Rule", "body": "El color de cada grupo tiñe sus marcadores e insignia, nunca acciones ni estados.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Titulares y cuerpo en Figtree.", "section": "typography" },
+      { "name": "The One-Outline Rule", "body": "El contorno sólido solo en los botones flotantes.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar los tokens de src/index.css tal cual, también en la landing.",
+      "Do mantener el trabajo fijo de cada color (índigo acción, rosa social, ámbar decisión).",
+      "Do usar fotos reales y ejemplos de categorías variadas (no solo restaurantes).",
+      "Do reutilizar squish y animate-pop antes de crear animaciones nuevas.",
+      "Do validar cada pantalla a 320/375/390/430 px antes que en escritorio.",
+      "Do escribir el copy de forma nativa en cada idioma."
+    ],
+    "donts": [
+      "Don't poner contorno negro en tarjetas, chips o botones que no sean los flotantes.",
+      "Don't usar la sombra gris genérica de un framework; solo las tres de la tabla de elevación.",
+      "Don't volver a radios de 28 px en tarjetas.",
+      "Don't usar Inter ni añadir una segunda familia sin una decisión explícita.",
+      "Don't usar el selector nativo de fotos cuando hay alternativa propia.",
+      "Don't importar una librería de animación pesada fuera de la pantalla que la usa.",
+      "Don't usar gradientes gigantes, blobs, glassmorphism por defecto ni tarjetas flotantes repetitivas.",
+      "Don't enseñar un teléfono estático con una captura como pieza central de la landing."
+    ]
+  }
+}
