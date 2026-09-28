@@ -65,7 +65,7 @@ export function ListPage() {
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
       {/* pb-40 y no pb-32, igual que en el calendario: el botón flotante mide
-          56 px y arranca a 88 del borde, así que 128 de hueco no bastan. */}
+          48 px y arranca a 104 del borde, así que 128 de hueco no bastan. */}
       <div className="mx-auto max-w-md px-4 pb-40 pt-2">
         {/* ── Filtros ────────────────────────────────────────────────────────
             Tres filas siempre abiertas —estado, categorías y etiquetas— se
@@ -246,10 +246,10 @@ export function ListPage() {
 
       <Link
         to="/add"
-        className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-fab)] squish"
+        className="fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-fab)] squish"
         aria-label={t('place.add')}
       >
-        <AddIcon className="size-7" />
+        <AddIcon className="size-6" />
       </Link>
     </div>
   )

@@ -142,7 +142,7 @@ export function CalendarPage() {
 
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
-      {/* pb-40 y no pb-32: el botón flotante mide 56 px y arranca a 88 del
+      {/* pb-40 y no pb-32: el botón flotante mide 48 px y arranca a 104 del
           borde, así que con 128 de hueco se comía la última tarjeta. */}
       <div className="mx-auto max-w-md px-4 pb-40 pt-1">
         {/* Va lo primero, encima del calendario: es una pregunta con fecha de
@@ -343,10 +343,10 @@ export function CalendarPage() {
         <Link
           to="/plan/new"
           data-tour="plan-nuevo"
-          className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-fab)] squish"
+          className="fixed bottom-[calc(6.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-[var(--shadow-fab)] squish"
           aria-label={t('plan.new')}
         >
-          <AddIcon className="size-7" />
+          <AddIcon className="size-6" />
         </Link>
       )}
     </div>
