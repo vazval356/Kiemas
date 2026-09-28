@@ -11,6 +11,7 @@ import { resumenDelAnoDisponible } from './lib/dates'
 import { recoveryTokens } from './lib/recovery'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
+import { LandingPage } from './pages/LandingPage'
 import { SetupPage } from './pages/SetupPage'
 import { AppProvider } from './state/AppProvider'
 import { useApp } from './state/appState'
@@ -189,7 +190,13 @@ function Shell() {
 
   if (authStatus === 'loading') return <PantallaDeArranque />
 
-  if (authStatus === 'signedOut') return <AuthPage />
+  // Sin sesión, `/` a secas es kiemas.com: lo que hay que enseñar ahí es la
+  // landing, no el formulario de entrar. Cualquier otra dirección —incluida
+  // `/login`, y cualquier sitio del que se salga con «Salir» en el perfil—
+  // sigue yendo directa al formulario, como siempre: solo cambia la raíz.
+  if (authStatus === 'signedOut') {
+    return location.pathname === '/' ? <LandingPage /> : <AuthPage />
+  }
 
   // Cuenta nueva: la bienvenida va antes que nada. Se salta si ya se está en la
   // ruta que la enseña a propósito, para no montarla dos veces.

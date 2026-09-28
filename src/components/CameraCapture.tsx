@@ -53,10 +53,16 @@ export function CameraCapture({
       position: 'rear',
       toBack: true,
       disableAudio: true,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      x: 0,
-      y: 0,
+      // Sin `width`/`height`: el sensor no tiene la proporción de la
+      // pantalla entera (más cuadrado que un móvil, que es alto y
+      // estrecho), y forzar el preview al rectángulo exacto de la pantalla
+      // deja en manos del plugin decidir cómo encajarlo ahí —en algunos
+      // dispositivos, estirando la imagen en vez de recortarla. Con
+      // `aspectRatio` el plugin calcula él mismo un tamaño que respeta la
+      // proporción real de la cámara y lo centra; puede quedar más
+      // estrecho que la pantalla, pero nunca deformado.
+      aspectRatio: '4:3',
+      positioning: 'center',
     })
       .then(() => {
         if (!cancelado) setListo(true)

@@ -1,4 +1,5 @@
-import { useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   AppleIcon,
   EyeIcon,
@@ -50,7 +51,27 @@ export function AuthPage() {
   // El perfil todavía no existe, así que el idioma sale del navegador.
   const t = createTranslate(detectLocale())
 
-  const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgot'>('signIn')
+  // La landing enlaza aquí con `?modo=signup` cuando el botón que se toca dice
+  // «crear cuenta»: sin esto, todo el mundo caía en el formulario de entrar y
+  // tenía que darse cuenta de que hay una pestaña de registro debajo.
+  const [searchParams] = useSearchParams()
+  const modoUrl = searchParams.get('modo')
+  const [mode, setMode] = useState<'signIn' | 'signUp' | 'forgot'>(
+    modoUrl === 'signup' ? 'signUp' : 'signIn'
+  )
+  // Cubre el caso en el que esta pantalla YA estaba montada —el usuario ha
+  // vuelto atrás, o ha editado la dirección a mano— y no bastaría con el
+  // valor inicial de arriba, que solo se lee una vez al montar.
+  //
+  // La dependencia es la CADENA (`modoUrl`), no el objeto `searchParams`:
+  // `useSearchParams` puede devolver una instancia nueva en cada render que
+  // no tenga nada que ver con la URL, y con el objeto por dependencia el
+  // efecto se dispararía en cada uno de esos renders, incluido cada vez que
+  // se toca «entrar»/«crear cuenta» dentro del propio formulario —que cambia
+  // `mode` sin tocar la URL—, deshaciendo ese toque en el acto.
+  useEffect(() => {
+    setMode(modoUrl === 'signup' ? 'signUp' : 'signIn')
+  }, [modoUrl])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')

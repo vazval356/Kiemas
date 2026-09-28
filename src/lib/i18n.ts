@@ -908,6 +908,43 @@ const es = {
   'media.selectedCount': '{n} seleccionadas',
   'media.useSelected': 'Usar {n}',
   'media.useSelected_one': 'Usar 1 foto',
+
+  // Landing pública, en kiemas.com sin sesión iniciada
+  'landing.heroTitle': 'El mapa y el calendario que comparte tu grupo',
+  'landing.heroSubtitle':
+    'Guardáis los sitios, proponéis cuándo y votáis lo que haga falta. Si nadie se decide, decide la ruleta.',
+  'landing.heroCta': 'Empieza gratis',
+  'landing.heroNote': 'Sin tarjeta. Se usa desde el navegador, en cualquier móvil u ordenador.',
+  'landing.howTitle': 'Cómo funciona',
+  'landing.mapTitle': 'Un mapa, no una lista de guardados',
+  'landing.mapBody':
+    'Cada sitio queda guardado con su categoría, su estado —por ir o ya estuvimos— y las fotos de quien lo visitó. Se ve de un vistazo, no se busca en un hilo de mensajes.',
+  'landing.calendarTitle': 'Planes con fecha fija o a votar',
+  'landing.calendarBody':
+    'Proponéis un día o varias fechas para que el grupo elija. En el calendario se ve quién va, quién falta por responder, y qué sigue sin sitio.',
+  'landing.decisionsTitle': 'Decisiones, no solo fechas',
+  'landing.decisionsBody':
+    'Cambiar de apartamento, quién lleva el coche, dónde cenamos: se pregunta, se vota, y queda fijado lo que se decidió. Sin perderlo entre mensajes.',
+  'landing.rouletteTitle': 'Cuando nadie se decide',
+  'landing.rouletteBody':
+    'La ruleta elige entre vuestros sitios guardados, por categoría si hace falta. Rápido, y sin que nadie cargue con la decisión.',
+  'landing.pricingTitle': 'Gratis para empezar',
+  'landing.pricingSubtitle': 'Un pago único más adelante si os hace falta más sitio.',
+  'landing.freeTag': 'Para empezar a organizarse',
+  'landing.freeBulletSpaces': 'Hasta 2 grupos',
+  'landing.freeBulletMembers': 'Hasta 6 personas por grupo',
+  'landing.freeBulletPlaces': 'Hasta 30 sitios guardados',
+  'landing.freeBulletPlans': 'Hasta 3 planes a la vez',
+  'landing.freeCta': 'Crear cuenta gratis',
+  'landing.proTag': 'Todo sin límites, con un solo pago',
+  'landing.proBullet': 'Grupos, personas, sitios y planes sin tope',
+  'landing.proBadge': 'Pago único, para siempre',
+  'landing.proComingSoon': 'Próximamente',
+  'landing.finalTitle': '¿Quedáis esta semana?',
+  'landing.finalCta': 'Empieza gratis',
+  'landing.footerTagline': 'El mapa y el calendario que comparte tu grupo.',
+  'landing.footerRights': '© {year} Kiemas',
+  'landing.login': 'Entrar',
 } as const
 
 export type TranslationKey = keyof typeof es
@@ -1758,6 +1795,43 @@ const en: Record<TranslationKey, string> = {
   'media.selectedCount': '{n} selected',
   'media.useSelected': 'Use {n}',
   'media.useSelected_one': 'Use 1 photo',
+
+  // Public landing, at kiemas.com with no session
+  'landing.heroTitle': 'The map and calendar your group shares',
+  'landing.heroSubtitle':
+    'Save places, propose when, and vote on whatever needs deciding. If nobody picks, the wheel does.',
+  'landing.heroCta': 'Start for free',
+  'landing.heroNote': 'No card needed. Works from the browser, on any phone or computer.',
+  'landing.howTitle': 'How it works',
+  'landing.mapTitle': 'A map, not a list of bookmarks',
+  'landing.mapBody':
+    'Every place is saved with its category, its status — want to go or already went — and photos from whoever visited. Seen at a glance, not searched for in a message thread.',
+  'landing.calendarTitle': 'Plans with a fixed date, or a vote',
+  'landing.calendarBody':
+    'Propose one day, or a few dates for the group to pick from. The calendar shows who is going, who hasn’t answered yet, and what still has no place.',
+  'landing.decisionsTitle': 'Decisions, not just dates',
+  'landing.decisionsBody':
+    'Changing apartments, who drives, where to eat: ask, vote, and it stays fixed as what was decided. Never lost in a chat.',
+  'landing.rouletteTitle': 'When nobody can decide',
+  'landing.rouletteBody':
+    'The wheel picks from your saved places, by category if you want. Fast, and nobody has to be the one who chose.',
+  'landing.pricingTitle': 'Free to start',
+  'landing.pricingSubtitle': 'A one-time payment later, only if you need more room.',
+  'landing.freeTag': 'To get organised',
+  'landing.freeBulletSpaces': 'Up to 2 groups',
+  'landing.freeBulletMembers': 'Up to 6 people per group',
+  'landing.freeBulletPlaces': 'Up to 30 saved places',
+  'landing.freeBulletPlans': 'Up to 3 plans at once',
+  'landing.freeCta': 'Create a free account',
+  'landing.proTag': 'Everything unlimited, one payment',
+  'landing.proBullet': 'No limit on groups, people, places or plans',
+  'landing.proBadge': 'One-time payment, forever',
+  'landing.proComingSoon': 'Coming soon',
+  'landing.finalTitle': 'Going out this week?',
+  'landing.finalCta': 'Start for free',
+  'landing.footerTagline': 'The map and calendar your group shares.',
+  'landing.footerRights': '© {year} Kiemas',
+  'landing.login': 'Sign in',
 
   // Onboarding
 }
