@@ -242,7 +242,13 @@ export function DecisionsSection() {
                 {d.options.map((o) => {
                   const gana = d.chosenOptionId === o.id
                   const mia = miVoto?.id === o.id
-                  const pct = Math.round((o.voters.length / cuantos) * 100)
+                  // Un voto de alguien que ya no está en el grupo se queda en
+                  // `voters` —salir del grupo no borra los votos que dejó—,
+                  // así que sobre el número de miembros de ahora la cuenta
+                  // puede pasarse de 100. La barra se recorta ahí: seguir
+                  // enseñando un 140% no dice más que un 100% lleno, y sí
+                  // engaña.
+                  const pct = Math.min(100, Math.round((o.voters.length / cuantos) * 100))
                   return (
                     <li key={o.id}>
                       {/* La barra de apoyo detrás de la fila, no el bloque

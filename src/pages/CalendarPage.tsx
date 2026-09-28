@@ -210,7 +210,7 @@ export function CalendarPage() {
           >
             {days.map((day) => {
               const key = day.toISOString()
-              const hasConfirmed = (plansByDay.get(key)?.length ?? 0) > 0
+              const hasConfirmed = plansByDay.has(key)
               const hasPoll = pollDatesByDay.has(key)
               const isSelected = selectedDay !== null && isSameDay(day, selectedDay)
               const isToday = daysBetween(new Date(), day) === 0
@@ -238,22 +238,7 @@ export function CalendarPage() {
                       todavía se está votando. La misma distinción que ya
                       hace la insignia de la tarjeta del plan, aquí en
                       miniatura. */}
-                  <span className="mt-1 flex h-[5px] items-center justify-center gap-0.5">
-                    {hasConfirmed && (
-                      <span
-                        aria-hidden
-                        className={`size-1 rounded-full ${isSelected ? 'bg-on-primary' : 'bg-secondary'}`}
-                      />
-                    )}
-                    {hasPoll && (
-                      <span
-                        aria-hidden
-                        className={`size-1 rounded-full border ${
-                          isSelected ? 'border-on-primary/70' : 'border-tertiary'
-                        }`}
-                      />
-                    )}
-                  </span>
+                  <DayDots hasConfirmed={hasConfirmed} hasPoll={hasPoll} isSelected={isSelected} className="mt-1" />
                 </button>
               )
             })}
@@ -280,7 +265,7 @@ export function CalendarPage() {
               {monthCells.map((day, i) => {
                 if (!day) return <span key={`b${i}`} />
                 const key = startOfDay(day).toISOString()
-                const hasConfirmed = (plansByDay.get(key)?.length ?? 0) > 0
+                const hasConfirmed = plansByDay.has(key)
                 const hasPoll = pollDatesByDay.has(key)
                 const isSelected = selectedDay !== null && isSameDay(day, selectedDay)
                 const isToday = daysBetween(new Date(), day) === 0
@@ -306,22 +291,7 @@ export function CalendarPage() {
                     >
                       {day.getDate()}
                     </span>
-                    <span className="mt-0.5 flex h-[5px] items-center justify-center gap-0.5">
-                      {hasConfirmed && (
-                        <span
-                          aria-hidden
-                          className={`size-1 rounded-full ${isSelected ? 'bg-on-primary' : 'bg-secondary'}`}
-                        />
-                      )}
-                      {hasPoll && (
-                        <span
-                          aria-hidden
-                          className={`size-1 rounded-full border ${
-                            isSelected ? 'border-on-primary/70' : 'border-tertiary'
-                          }`}
-                        />
-                      )}
-                    </span>
+                    <DayDots hasConfirmed={hasConfirmed} hasPoll={hasPoll} isSelected={isSelected} className="mt-0.5" />
                   </button>
                 )
               })}
@@ -380,6 +350,41 @@ export function CalendarPage() {
         </Link>
       )}
     </div>
+  )
+}
+
+/**
+ * Los puntos de aviso bajo un día: lleno para plan confirmado, hueco para
+ * fecha que todavía se está votando. Compartido entre la franja de semana y
+ * la rejilla de mes para que un cambio de estilo no haya que hacerlo dos
+ * veces; `className` es lo único que varía entre una y otra (el margen).
+ */
+function DayDots({
+  hasConfirmed,
+  hasPoll,
+  isSelected,
+  className = '',
+}: {
+  hasConfirmed: boolean
+  hasPoll: boolean
+  isSelected: boolean
+  className?: string
+}) {
+  return (
+    <span className={`flex h-[5px] items-center justify-center gap-0.5 ${className}`}>
+      {hasConfirmed && (
+        <span
+          aria-hidden
+          className={`size-1 rounded-full ${isSelected ? 'bg-on-primary' : 'bg-secondary'}`}
+        />
+      )}
+      {hasPoll && (
+        <span
+          aria-hidden
+          className={`size-1 rounded-full border ${isSelected ? 'border-on-primary/70' : 'border-tertiary'}`}
+        />
+      )}
+    </span>
   )
 }
 

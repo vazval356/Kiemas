@@ -254,21 +254,30 @@ export function CoverCropper({
       </div>
 
       {/* El deslizador acompaña al pellizco: en un móvil sin dos dedos libres
-          —o con ratón— es la única forma cómoda de acercar. */}
-      <input
-        type="range"
-        min={1}
-        max={ZOOM_MAX}
-        step={0.01}
-        value={zoom}
-        onChange={(e) => {
-          const z = Number(e.target.value)
-          setZoom(z)
-          setOffset((o) => clamp(o, z))
-        }}
-        className="kd-range mx-auto mt-4 w-full max-w-lg"
-        aria-label={t('cover.zoom')}
-      />
+          —o con ratón— es la única forma cómoda de acercar.
+
+          El retrato no lo lleva: es el gesto que ya conoce quien ha puesto
+          una foto de perfil en cualquier otra app —pellizcar y arrastrar
+          directamente sobre la foto—, y una barra encima solo añade un
+          control más que aprender para algo que las dos manos ya saben
+          hacer. La portada, más ancha y menos frecuente de tocar, sí la
+          mantiene: ahí compensa tener una forma sin gestos. */}
+      {!round && (
+        <input
+          type="range"
+          min={1}
+          max={ZOOM_MAX}
+          step={0.01}
+          value={zoom}
+          onChange={(e) => {
+            const z = Number(e.target.value)
+            setZoom(z)
+            setOffset((o) => clamp(o, z))
+          }}
+          className="kd-range mx-auto mt-4 w-full max-w-lg"
+          aria-label={t('cover.zoom')}
+        />
+      )}
 
       <div className="mx-auto mt-4 flex w-full max-w-lg gap-2 pb-4">
         <button
