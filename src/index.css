@@ -77,21 +77,21 @@
   --radius-card: 1rem;
   --radius-control: 0.875rem;
 
-  /* Elevación de pegatina, no de plantilla SaaS.
-     Antes cada tarjeta llevaba el mismo halo gris difuminado — la sombra que
-     usa cualquier generador de interfaces por defecto, sin relación con el
-     resto del diseño. Ahora la sombra es sólida y desplazada, sin difuminar:
-     una silueta plana del mismo tinte que el texto, desplazada bajo el
-     elemento. Sigue siendo SOLO índigo/tinta —ningún color nuevo—, pero ya
-     no se puede confundir con la sombra por defecto de un framework.
+  /* Elevación suave, sin contorno.
+     Antes la sombra era sólida y sin difuminar —un filo plano del mismo
+     tinte que el texto, pegado al borde inferior de cada tarjeta—. Sin
+     desenfoque, ese filo se leía exactamente igual que un reborde negro
+     rodeando cada chip, tarjeta y botón de la interfaz, así que la sombra
+     ahora difumina y se aclara: la profundidad se nota sin dibujar un
+     contorno alrededor de nada.
 
-     El anillo de contorno (el "reborde negro") se quitó de aquí: rodeando
-     cada tarjeta, chip y botón de la interfaz se leía como una plantilla de
-     cómic, no como el filo sutil que pedía el diseño. Se queda solo en
-     `--shadow-fab`, para los botones flotantes de abajo a la derecha, donde
-     sí hace falta que se lean como pulsables sobre el mapa o el contenido. */
-  --shadow-surface: 2px 2px 0 0 var(--color-on-surface);
-  --shadow-float: 4px 5px 0 0 var(--color-on-surface);
+     El contorno sólido se queda solo en `--shadow-fab`, para los botones
+     flotantes de abajo a la derecha, donde sí hace falta que se lean como
+     pulsables sobre el mapa o el contenido. */
+  --shadow-surface:
+    0 1px 2px 0 rgb(17 28 45 / 0.06), 0 1px 3px 0 rgb(17 28 45 / 0.08);
+  --shadow-float:
+    0 2px 6px 0 rgb(17 28 45 / 0.08), 0 8px 20px -4px rgb(17 28 45 / 0.18);
   --shadow-fab: 0 0 0 1.5px var(--color-on-surface), 4px 5px 0 0 var(--color-on-surface);
 }
 
