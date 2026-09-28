@@ -11,12 +11,12 @@ import {
 } from '../components/icons'
 import { RequisitosDeContrasena } from '../components/RequisitosDeContrasena'
 import {
+  biometricAvailable,
   clearSavedLogin,
   hasSavedLogin,
   loginWithBiometrics,
-  markUnlocked,
   saveLoginCredentials,
-} from '../lib/appLock'
+} from '../lib/faceId'
 import { publicBaseUrl } from '../lib/appUrl'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { useHtmlLang, usePageTitle } from '../lib/seo'
@@ -182,15 +182,24 @@ export function AuthPage() {
   /**
    * Entrar con Face ID, sin escribir nada.
    *
-   * Se ofrece solo si hay contraseña guardada en el llavero (ver `appLock`), y
+   * Se ofrece solo si hay contraseña guardada en el llavero (ver `faceId`), y
    * se lanza sola al abrir la pantalla una vez: quien activó Face ID espera que
    * la app se lo pida, no buscar un botón. Si cancela, queda el botón y el
    * formulario de siempre.
    */
   const [conFaceId, setConFaceId] = useState(false)
   const faceIdLanzadoRef = useRef(false)
+  /** Si este móvil tiene Face ID o huella: solo entonces se ofrece la casilla. */
+  const [faceIdDisponible, setFaceIdDisponible] = useState(false)
+  /**
+   * «Usar Face ID para entrar». Marcada de serie: quien tiene Face ID casi
+   * siempre lo quiere, y quien no, la desmarca una vez y no se le vuelve a
+   * guardar la contraseña.
+   */
+  const [usarFaceId, setUsarFaceId] = useState(true)
 
   useEffect(() => {
+    void biometricAvailable().then(setFaceIdDisponible)
     void hasSavedLogin().then((ok) => {
       setConFaceId(ok)
       if (ok && !faceIdLanzadoRef.current) {
@@ -219,7 +228,6 @@ export function AuthPage() {
         password: cred.password,
       })
       if (err) throw err
-      markUnlocked()
     } catch (err) {
       // Lo más probable es que la contraseña haya cambiado desde otro sitio.
       // La guardada ya no sirve: se olvida, y la próxima vez que se entre
@@ -290,10 +298,12 @@ export function AuthPage() {
           password,
         })
         if (err) throw err
-        // Con esto, la próxima vez basta con Face ID. Y como acaba de escribir
-        // la contraseña, no se le bloquea la app nada más entrar.
-        await saveLoginCredentials(email.trim(), password)
-        markUnlocked()
+        // Con la casilla marcada, la próxima vez basta con Face ID. Desmarcada,
+        // se olvida lo que hubiera guardado de antes.
+        if (faceIdDisponible) {
+          if (usarFaceId) await saveLoginCredentials(email.trim(), password)
+          else await clearSavedLogin()
+        }
       } else {
         const { data, error: err } = await supabase.auth.signUp({
           email: email.trim(),
@@ -303,7 +313,6 @@ export function AuthPage() {
         if (err) throw err
         // Con la confirmación por correo activada no hay sesión todavía.
         if (!data.session) setNotice(t('auth.checkInbox'))
-        else markUnlocked()
       }
     } catch (err) {
       setError(mensajeDeError(err))
@@ -528,6 +537,18 @@ export function AuthPage() {
                       />
                       {t('auth.remember')}
                     </label>
+
+                    {mode === 'signIn' && faceIdDisponible && (
+                      <label className="flex items-center gap-2.5 text-sm text-on-surface-variant">
+                        <input
+                          type="checkbox"
+                          checked={usarFaceId}
+                          onChange={(e) => setUsarFaceId(e.target.checked)}
+                          className="size-4 accent-[var(--color-primary)]"
+                        />
+                        {t('auth.faceIdRemember')}
+                      </label>
+                    )}
 
                     {/* La casilla del diseño de alta. Los enlaces abren fuera:
                         si navegaran dentro, se perdería lo escrito. */}

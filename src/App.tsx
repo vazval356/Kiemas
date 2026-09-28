@@ -1,6 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { AppLockGate } from './components/AppLockGate'
 import { BottomNav } from './components/BottomNav'
 import { BusquedaProvider } from './state/busqueda'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -230,8 +229,7 @@ function Shell() {
   const enMapa = location.pathname === '/'
 
   return (
-    <AppLockGate>
-      <BusquedaProvider>
+    <BusquedaProvider>
         {/* En el mapa no hay margen arriba: el mapa llega hasta el borde, por
             debajo de la hora y la batería, y la cabecera flota encima con su
             propio margen de zona segura. */}
@@ -292,8 +290,7 @@ function Shell() {
             la bienvenida en el árbol, no puede aparecer encima de ella. */}
           {!isFullScreen && <GuiaDeLaPantalla />}
         </div>
-      </BusquedaProvider>
-    </AppLockGate>
+    </BusquedaProvider>
   )
 }
 

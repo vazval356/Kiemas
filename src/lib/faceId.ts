@@ -3,54 +3,21 @@ import type { Translate } from './i18n'
 import { isNative } from './appUrl'
 
 /**
- * Bloqueo de la app con Face ID / huella al abrirla.
+ * Entrar con Face ID / huella.
  *
- * Es un ajuste de este dispositivo, no de la cuenta: vive en `localStorage` y
- * no en el perfil de Supabase. Si viviera en el perfil, activarlo en un
- * iPhone lo activaría también en el iPad de la misma cuenta, que puede no
- * tener Face ID configurado o ser de otra persona de la casa.
- */
-const STORAGE_KEY = 'kd-app-lock'
-
-export function isAppLockEnabled(): boolean {
-  try {
-    return localStorage.getItem(STORAGE_KEY) === '1'
-  } catch {
-    return false
-  }
-}
-
-export function setAppLockEnabled(on: boolean): void {
-  try {
-    if (on) localStorage.setItem(STORAGE_KEY, '1')
-    else localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // Almacenamiento no disponible (modo privado, cuota llena): el ajuste no
-    // sobrevive a la sesión, pero no hay nada mejor que hacer aquí.
-  }
-  // Quien apaga el Face ID no quiere que su contraseña siga en el llavero.
-  if (!on) void clearSavedLogin()
-}
-
-/**
- * Recién desbloqueada.
+ * Face ID sirve SOLO para iniciar sesión: la app no se bloquea al abrirla ni
+ * al volver de segundo plano. Quien ya tiene la sesión abierta entra directo;
+ * Face ID aparece en la pantalla de entrada, en lugar de escribir la
+ * contraseña.
  *
- * Quien acaba de entrar —con Face ID o escribiendo la contraseña— ya ha
- * demostrado quién es: bloquearle la app en el mismo segundo y pedirle Face ID
- * otra vez es pedir lo mismo dos veces. La pantalla de entrada lo marca y la
- * de bloqueo lo consume al montarse. Vive en memoria a propósito: al cerrar
- * la app del todo se pierde, y la siguiente apertura sí vuelve a pedirlo.
+ * Hubo un bloqueo al abrir la app, con su interruptor en Ajustes. Se quitó:
+ * no era lo que se quería. Esta clave es la que usaba; se borra al cargar para
+ * no dejar restos en los móviles que lo tenían activado.
  */
-let recienDesbloqueada = false
-
-export function markUnlocked(): void {
-  recienDesbloqueada = true
-}
-
-export function consumeRecentUnlock(): boolean {
-  const r = recienDesbloqueada
-  recienDesbloqueada = false
-  return r
+try {
+  localStorage.removeItem('kd-app-lock')
+} catch {
+  // almacenamiento no disponible
 }
 
 // ── Entrar con Face ID ─────────────────────────────────────────────────────
@@ -59,8 +26,8 @@ export function consumeRecentUnlock(): boolean {
 // Kiemas. Para entrar sin escribir nada hace falta tener guardado con qué
 // entrar: el correo y la contraseña, en el llavero del sistema (Keychain en
 // iOS, almacén cifrado en Android), nunca en `localStorage`. Se guardan al
-// entrar con contraseña teniendo el Face ID activado, y solo entonces: al
-// activarlo en Ajustes la contraseña no está a mano.
+// entrar con contraseña si la casilla «Usar Face ID para entrar» está marcada,
+// que es el único momento en que la contraseña está a mano.
 //
 // Quien entra con Google o Apple no tiene contraseña que guardar; a esa
 // persona le sigue bastando con la sesión recordada.
@@ -68,9 +35,9 @@ export function consumeRecentUnlock(): boolean {
 /** Bajo qué nombre se guarda en el llavero. */
 const CREDENTIALS_SERVER = 'com.kiemas.app'
 
-/** Guarda con qué entrar, si esta persona usa Face ID en este dispositivo. */
+/** Guarda con qué entrar, para que la próxima vez baste con Face ID. */
 export async function saveLoginCredentials(email: string, password: string): Promise<void> {
-  if (!isNative || !isAppLockEnabled()) return
+  if (!isNative) return
   try {
     await NativeBiometric.setCredentials({
       username: email,
@@ -85,7 +52,7 @@ export async function saveLoginCredentials(email: string, password: string): Pro
 
 /** Si la pantalla de entrada puede ofrecer «Entrar con Face ID». */
 export async function hasSavedLogin(): Promise<boolean> {
-  if (!isNative || !isAppLockEnabled()) return false
+  if (!(await biometricAvailable())) return false
   try {
     const { isSaved } = await NativeBiometric.isCredentialsSaved({ server: CREDENTIALS_SERVER })
     return isSaved
@@ -110,7 +77,7 @@ export async function loginWithBiometrics(
   }
 }
 
-/** Olvida la contraseña guardada: se apagó el Face ID o dejó de ser válida. */
+/** Olvida la contraseña guardada: se desmarcó la casilla o dejó de ser válida. */
 export async function clearSavedLogin(): Promise<void> {
   if (!isNative) return
   try {
@@ -140,8 +107,7 @@ export async function biometricAvailable(): Promise<boolean> {
  * Pide Face ID / huella y dice si la persona ha demostrado ser quien dice.
  *
  * Cualquier fallo —cancelado, demasiados intentos, hardware ocupado— cuenta
- * como «no»: quien active el bloqueo espera que negarse a algo lo deje fuera,
- * no que un error a medias le abra la app igual.
+ * como «no»: un error a medias no puede dar acceso a la cuenta.
  */
 export async function verifyIdentity(t: Translate): Promise<boolean> {
   try {
