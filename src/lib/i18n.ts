@@ -49,6 +49,8 @@ const es = {
   // Autenticación
   'auth.tagline': 'El mapa y el calendario de tu grupo',
   'auth.signIn': 'Entrar',
+  'auth.faceIdSignIn': 'Entrar con Face ID',
+  'auth.faceIdExpired': 'Tu contraseña ha cambiado. Escribe la nueva y Face ID volverá a funcionar.',
   'auth.signUp': 'Crear cuenta',
   'auth.email': 'Correo electrónico',
   'auth.password': 'Contraseña',
@@ -982,6 +984,8 @@ const en: Record<TranslationKey, string> = {
 
   'auth.tagline': "Your group's map and calendar",
   'auth.signIn': 'Sign in',
+  'auth.faceIdSignIn': 'Sign in with Face ID',
+  'auth.faceIdExpired': 'Your password has changed. Type the new one and Face ID will work again.',
   'auth.signUp': 'Create account',
   'auth.email': 'Email',
   'auth.password': 'Password',

@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   AppleIcon,
@@ -10,6 +10,13 @@ import {
   UserIcon,
 } from '../components/icons'
 import { RequisitosDeContrasena } from '../components/RequisitosDeContrasena'
+import {
+  clearSavedLogin,
+  hasSavedLogin,
+  loginWithBiometrics,
+  markUnlocked,
+  saveLoginCredentials,
+} from '../lib/appLock'
 import { publicBaseUrl } from '../lib/appUrl'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { useHtmlLang, usePageTitle } from '../lib/seo'
@@ -172,6 +179,64 @@ export function AuthPage() {
     }
   }
 
+  /**
+   * Entrar con Face ID, sin escribir nada.
+   *
+   * Se ofrece solo si hay contraseña guardada en el llavero (ver `appLock`), y
+   * se lanza sola al abrir la pantalla una vez: quien activó Face ID espera que
+   * la app se lo pida, no buscar un botón. Si cancela, queda el botón y el
+   * formulario de siempre.
+   */
+  const [conFaceId, setConFaceId] = useState(false)
+  const faceIdLanzadoRef = useRef(false)
+
+  useEffect(() => {
+    void hasSavedLogin().then((ok) => {
+      setConFaceId(ok)
+      if (ok && !faceIdLanzadoRef.current) {
+        faceIdLanzadoRef.current = true
+        void entrarConFaceId()
+      }
+    })
+    // Solo al montar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function entrarConFaceId() {
+    setError(null)
+    setNotice(null)
+    const cred = await loginWithBiometrics(t)
+    if (!cred) return
+    try {
+      window.localStorage.setItem(REMEMBER_KEY, 'true')
+    } catch {
+      // almacenamiento no disponible
+    }
+    setBusy(true)
+    try {
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email: cred.email,
+        password: cred.password,
+      })
+      if (err) throw err
+      markUnlocked()
+    } catch (err) {
+      // Lo más probable es que la contraseña haya cambiado desde otro sitio.
+      // La guardada ya no sirve: se olvida, y la próxima vez que se entre
+      // escribiéndola se guardará la nueva.
+      if (/invalid login credentials/i.test(err instanceof Error ? err.message : String(err))) {
+        await clearSavedLogin()
+        setConFaceId(false)
+        setEmail(cred.email)
+        setError(t('auth.faceIdExpired'))
+      } else {
+        setError(mensajeDeError(err))
+      }
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
@@ -225,6 +290,10 @@ export function AuthPage() {
           password,
         })
         if (err) throw err
+        // Con esto, la próxima vez basta con Face ID. Y como acaba de escribir
+        // la contraseña, no se le bloquea la app nada más entrar.
+        await saveLoginCredentials(email.trim(), password)
+        markUnlocked()
       } else {
         const { data, error: err } = await supabase.auth.signUp({
           email: email.trim(),
@@ -234,6 +303,7 @@ export function AuthPage() {
         if (err) throw err
         // Con la confirmación por correo activada no hay sesión todavía.
         if (!data.session) setNotice(t('auth.checkInbox'))
+        else markUnlocked()
       }
     } catch (err) {
       setError(mensajeDeError(err))
@@ -297,6 +367,18 @@ export function AuthPage() {
                       : t('auth.tagline')}
                 </p>
               </header>
+
+              {conFaceId && mode === 'signIn' && (
+                <button
+                  type="button"
+                  onClick={() => void entrarConFaceId()}
+                  disabled={busy}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 font-display font-semibold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-50"
+                >
+                  <LockIcon className="size-5" />
+                  {t('auth.faceIdSignIn')}
+                </button>
+              )}
 
               <form onSubmit={handleSubmit} noValidate className="mt-6 flex flex-col gap-3">
                 {mode === 'signUp' && (

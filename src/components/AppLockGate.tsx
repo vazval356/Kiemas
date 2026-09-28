@@ -1,6 +1,6 @@
 import { App } from '@capacitor/app'
 import { useEffect, useState, type ReactNode } from 'react'
-import { isAppLockEnabled, verifyIdentity } from '../lib/appLock'
+import { consumeRecentUnlock, isAppLockEnabled, verifyIdentity } from '../lib/appLock'
 import { isNative } from '../lib/appUrl'
 import { useApp } from '../state/appState'
 import { LockIcon } from './icons'
@@ -19,7 +19,11 @@ import { LockIcon } from './icons'
  */
 export function AppLockGate({ children }: { children: ReactNode }) {
   const { t } = useApp()
-  const [locked, setLocked] = useState(() => isNative && isAppLockEnabled())
+  // Si se acaba de entrar desde la pantalla de entrada, no se bloquea: ya se
+  // ha pedido Face ID (o la contraseña) hace un segundo.
+  const [locked, setLocked] = useState(
+    () => isNative && isAppLockEnabled() && !consumeRecentUnlock()
+  )
   const [checking, setChecking] = useState(false)
   const [failed, setFailed] = useState(false)
 

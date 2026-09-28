@@ -28,6 +28,96 @@ export function setAppLockEnabled(on: boolean): void {
     // Almacenamiento no disponible (modo privado, cuota llena): el ajuste no
     // sobrevive a la sesión, pero no hay nada mejor que hacer aquí.
   }
+  // Quien apaga el Face ID no quiere que su contraseña siga en el llavero.
+  if (!on) void clearSavedLogin()
+}
+
+/**
+ * Recién desbloqueada.
+ *
+ * Quien acaba de entrar —con Face ID o escribiendo la contraseña— ya ha
+ * demostrado quién es: bloquearle la app en el mismo segundo y pedirle Face ID
+ * otra vez es pedir lo mismo dos veces. La pantalla de entrada lo marca y la
+ * de bloqueo lo consume al montarse. Vive en memoria a propósito: al cerrar
+ * la app del todo se pierde, y la siguiente apertura sí vuelve a pedirlo.
+ */
+let recienDesbloqueada = false
+
+export function markUnlocked(): void {
+  recienDesbloqueada = true
+}
+
+export function consumeRecentUnlock(): boolean {
+  const r = recienDesbloqueada
+  recienDesbloqueada = false
+  return r
+}
+
+// ── Entrar con Face ID ─────────────────────────────────────────────────────
+//
+// Face ID solo dice «es la persona dueña de este iPhone», no quién es en
+// Kiemas. Para entrar sin escribir nada hace falta tener guardado con qué
+// entrar: el correo y la contraseña, en el llavero del sistema (Keychain en
+// iOS, almacén cifrado en Android), nunca en `localStorage`. Se guardan al
+// entrar con contraseña teniendo el Face ID activado, y solo entonces: al
+// activarlo en Ajustes la contraseña no está a mano.
+//
+// Quien entra con Google o Apple no tiene contraseña que guardar; a esa
+// persona le sigue bastando con la sesión recordada.
+
+/** Bajo qué nombre se guarda en el llavero. */
+const CREDENTIALS_SERVER = 'com.kiemas.app'
+
+/** Guarda con qué entrar, si esta persona usa Face ID en este dispositivo. */
+export async function saveLoginCredentials(email: string, password: string): Promise<void> {
+  if (!isNative || !isAppLockEnabled()) return
+  try {
+    await NativeBiometric.setCredentials({
+      username: email,
+      password,
+      server: CREDENTIALS_SERVER,
+    })
+  } catch (e) {
+    // Sin llavero se sigue entrando con contraseña, como antes.
+    console.warn('[kiemas] no se han podido guardar las credenciales:', e)
+  }
+}
+
+/** Si la pantalla de entrada puede ofrecer «Entrar con Face ID». */
+export async function hasSavedLogin(): Promise<boolean> {
+  if (!isNative || !isAppLockEnabled()) return false
+  try {
+    const { isSaved } = await NativeBiometric.isCredentialsSaved({ server: CREDENTIALS_SERVER })
+    return isSaved
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Pide Face ID y, si pasa, devuelve con qué entrar. `null` si la persona lo
+ * cancela o no se reconoce: entonces toca escribir la contraseña.
+ */
+export async function loginWithBiometrics(
+  t: Translate
+): Promise<{ email: string; password: string } | null> {
+  if (!(await verifyIdentity(t))) return null
+  try {
+    const c = await NativeBiometric.getCredentials({ server: CREDENTIALS_SERVER })
+    return { email: c.username, password: c.password }
+  } catch {
+    return null
+  }
+}
+
+/** Olvida la contraseña guardada: se apagó el Face ID o dejó de ser válida. */
+export async function clearSavedLogin(): Promise<void> {
+  if (!isNative) return
+  try {
+    await NativeBiometric.deleteCredentials({ server: CREDENTIALS_SERVER })
+  } catch {
+    // No había nada guardado.
+  }
 }
 
 /**
