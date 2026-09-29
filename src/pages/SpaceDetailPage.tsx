@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { CoverCropper } from '../components/CoverCropper'
 import { PhotoPicker } from '../components/PhotoPicker'
 import { ReportDialog } from '../components/ReportDialog'
@@ -36,6 +36,22 @@ export function SpaceDetailPage() {
 
   const space = spaces.find((s) => s.id === id)
   usePageTitle(space?.name)
+
+  // Las filas de gestión del perfil llegan aquí con `?ver=miembros|invitar|
+  // aspecto`: la pantalla se abre ya en esa sección, y la de aspecto desplegada.
+  // Va antes de cualquier `return` de la función: es un gancho.
+  const [params] = useSearchParams()
+  const ver = params.get('ver')
+  useEffect(() => {
+    if (!ver || !space) return
+    const el = document.getElementById(`sec-${ver}`)
+    if (!el) return
+    if (el instanceof HTMLDetailsElement) el.open = true
+    el.scrollIntoView({ block: 'start' })
+    // Solo al llegar: refrescos posteriores del espacio no deben volver a
+    // mover la pantalla mientras se escribe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ver, space?.id])
 
   const [invites, setInvites] = useState<Invite[]>([])
   const [expiry, setExpiry] = useState<InviteExpiry>('24 hours')
@@ -292,7 +308,7 @@ export function SpaceDetailPage() {
             enlace que casi siempre se crea con los valores de siempre, así que
             van plegadas. */}
         {isAdmin && !isPersonal && (
-          <section className="mt-5">
+          <section id="sec-invitar" className="mt-5 scroll-mt-4">
             <div className="rounded-card bg-primary p-4 text-on-primary shadow-[var(--shadow-float)]">
               <h2 className="font-display text-lg font-bold">{t('invite.title')}</h2>
               <p className="mt-0.5 text-sm opacity-90">{t('invite.shareLinkHint')}</p>
@@ -494,7 +510,7 @@ export function SpaceDetailPage() {
         )}
         {/* ── Miembros ───────────────────────────────────────────────────── */}
         {!isPersonal && (
-          <section className="mt-6">
+          <section id="sec-miembros" className="mt-6 scroll-mt-4">
             <h2 className="mb-3 font-display font-semibold text-on-surface">
               {t('space.members')}{' '}
               <span className="font-normal text-on-surface-variant">({space.members.length})</span>
@@ -679,7 +695,10 @@ export function SpaceDetailPage() {
             una vez, y desplegados empujaban a los miembros a la tercera
             pantalla de scroll. */}
         {(isAdmin || !isPersonal) && (
-          <details className="group mt-6 rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
+          <details
+            id="sec-aspecto"
+            className="group mt-6 scroll-mt-4 rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]"
+          >
             <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3.5 font-semibold text-on-surface [&::-webkit-details-marker]:hidden">
               <span
                 className="flex size-9 items-center justify-center rounded-control bg-primary-fixed text-lg"

@@ -50,6 +50,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https" android:host="kiemas.com" />
                 <data android:scheme="https" android:host="kopasymas.vercel.app" />
+                <!--
+                  Solo la raíz. Las invitaciones son `/#/spaces?code=…`, y el
+                  fragmento no cuenta para el filtro, así que su ruta es `/`.
+                  Lo demás (`/l/<token>`, `/es`, `/en`, las páginas legales) se
+                  abre en el navegador: una lista pública tiene que verse en la
+                  web aunque la app esté instalada.
+                -->
+                <data android:path="/" />
             </intent-filter>
         </activity>
 

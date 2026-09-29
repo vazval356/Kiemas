@@ -41,9 +41,21 @@ export function publicBaseUrl(): string {
   return window.location.origin
 }
 
-/** Enlace a una lista pública compartida. */
+/**
+ * Enlace a una lista pública compartida.
+ *
+ * Es una ruta propia (`/l/<token>`) y no `/#/l/<token>`, y no es un capricho: las
+ * dos apps (iOS y Android) reclaman el dominio para abrir invitaciones, y ese
+ * reclamo solo mira la ruta, nunca el fragmento. Con `/#/l/…` la ruta es `/` y un
+ * móvil con Kiemas instalada abría la lista dentro de la app; con `/l/…` la
+ * ruta queda excluida de la app y se abre siempre en la web, que es lo que
+ * espera quien recibe un enlace de alguien.
+ *
+ * La web traslada `/l/<token>` a la ruta interna (ver `Rutas` en `App.tsx`).
+ * Los enlaces antiguos, con `#/l/`, siguen funcionando.
+ */
 export function publicListUrl(token: string): string {
-  return `${publicBaseUrl()}/#/l/${token}`
+  return `${publicBaseUrl()}/l/${token}`
 }
 
 /** Enlace de invitación a un espacio. */

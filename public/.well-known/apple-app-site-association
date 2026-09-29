@@ -3,7 +3,14 @@
     "details": [
       {
         "appIDs": ["G65Z9AK5GX.com.kiemas.app"],
-        "components": [{ "/": "*" }]
+        "components": [
+          {
+            "/": "/l/*",
+            "exclude": true,
+            "comment": "Las listas públicas se abren siempre en la web, aunque la app esté instalada."
+          },
+          { "/": "*" }
+        ]
       }
     ]
   }

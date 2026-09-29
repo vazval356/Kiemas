@@ -230,66 +230,66 @@ function Shell() {
 
   return (
     <BusquedaProvider>
-        {/* En el mapa no hay margen arriba: el mapa llega hasta el borde, por
+      {/* En el mapa no hay margen arriba: el mapa llega hasta el borde, por
             debajo de la hora y la batería, y la cabecera flota encima con su
             propio margen de zona segura. */}
-        <div className={`${enMapa ? '' : 'pt-safe'} relative flex h-full flex-col`}>
-          {!isFullScreen && conCabecera && <TopBar flotante={enMapa} />}
-          {/* El respaldo mientras llega el trozo de la pantalla. Va DENTRO del
+      <div className={`${enMapa ? '' : 'pt-safe'} relative flex h-full flex-col`}>
+        {!isFullScreen && conCabecera && <TopBar flotante={enMapa} />}
+        {/* El respaldo mientras llega el trozo de la pantalla. Va DENTRO del
             armazón, por debajo de la cabecera y por encima de la barra inferior:
             así lo único que parpadea es el contenido, y la navegación se queda
             quieta en su sitio. */}
-          <Suspense fallback={<PantallaDeArranque />}>
-            <Routes>
-              <Route path="/" element={<MapPage />} />
-              {/* La landing enlaza a `/login` sin saber si hay sesión: con
+        <Suspense fallback={<PantallaDeArranque />}>
+          <Routes>
+            <Route path="/" element={<MapPage />} />
+            {/* La landing enlaza a `/login` sin saber si hay sesión: con
                   sesión, entrar es ya estar dentro. */}
-              <Route path="/login" element={<Navigate to="/" replace />} />
-              <Route path="/list" element={<ListPage />} />
-              <Route path="/calendar" element={<CalendarPage />} />
-              <Route path="/plan/new" element={<PlanFormPage />} />
-              <Route path="/plan/:id" element={<PlanDetailPage />} />
-              <Route path="/collections" element={<CollectionsPage />} />
-              <Route path="/collections/:id" element={<CollectionDetailPage />} />
-              <Route path="/activity" element={<ActivityPage />} />
-              <Route path="/following" element={<FollowedListsPage />} />
-              <Route path="/explore" element={<ExplorePage />} />
-              {/* La dirección sigue existiendo, pero fuera de diciembre no lleva a
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/list" element={<ListPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/plan/new" element={<PlanFormPage />} />
+            <Route path="/plan/:id" element={<PlanDetailPage />} />
+            <Route path="/collections" element={<CollectionsPage />} />
+            <Route path="/collections/:id" element={<CollectionDetailPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/following" element={<FollowedListsPage />} />
+            <Route path="/explore" element={<ExplorePage />} />
+            {/* La dirección sigue existiendo, pero fuera de diciembre no lleva a
                 ninguna parte: quien la tenga guardada acaba en su perfil en vez de
                 en un resumen de dos meses. */}
-              <Route
-                path="/wrapped"
-                element={
-                  resumenDelAnoDisponible() ? (
-                    <YearInReviewPage />
-                  ) : (
-                    <Navigate to="/profile" replace />
-                  )
-                }
-              />
-              <Route path="/spaces" element={<SpacesPage />} />
-              <Route path="/spaces/:id" element={<SpaceDetailPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profile/edit" element={<EditProfilePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/subscription" element={<SubscriptionPage />} />
-              <Route path="/add" element={<PlaceFormPage />} />
-              <Route path="/edit/:id" element={<PlaceFormPage />} />
-              <Route path="/place/:id" element={<PlaceDetailPage />} />
-              {/* Antes esto era un `Navigate` al mapa. Una dirección rota te dejaba
+            <Route
+              path="/wrapped"
+              element={
+                resumenDelAnoDisponible() ? (
+                  <YearInReviewPage />
+                ) : (
+                  <Navigate to="/profile" replace />
+                )
+              }
+            />
+            <Route path="/spaces" element={<SpacesPage />} />
+            <Route path="/spaces/:id" element={<SpaceDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<EditProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/subscription" element={<SubscriptionPage />} />
+            <Route path="/add" element={<PlaceFormPage />} />
+            <Route path="/edit/:id" element={<PlaceFormPage />} />
+            <Route path="/place/:id" element={<PlaceDetailPage />} />
+            {/* Antes esto era un `Navigate` al mapa. Una dirección rota te dejaba
                 en la pantalla de siempre sin decir nada, y con `replace` ni
                 siquiera quedaba en el historial la dirección que había fallado. */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-          {!isFullScreen && <BottomNav />}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+        {!isFullScreen && <BottomNav />}
 
-          {/* Cada pantalla tiene su propio recorrido y decide él mismo si toca. No
+        {/* Cada pantalla tiene su propio recorrido y decide él mismo si toca. No
             en las de pila: ahí la persona ha entrado a hacer algo concreto, y las
             que tienen recorrido son destinos de la barra inferior. Al ir detrás de
             la bienvenida en el árbol, no puede aparecer encima de ella. */}
-          {!isFullScreen && <GuiaDeLaPantalla />}
-        </div>
+        {!isFullScreen && <GuiaDeLaPantalla />}
+      </div>
     </BusquedaProvider>
   )
 }
@@ -323,6 +323,14 @@ export default function App() {
   )
 }
 
+/** Traslada `/l/<token>` a `/#/l/<token>` y deja la pantalla de arranque mientras tanto. */
+function IrALista({ token }: { token: string }) {
+  useEffect(() => {
+    window.location.replace(`/#/l/${token}`)
+  }, [token])
+  return <PantallaDeArranque />
+}
+
 function Rutas() {
   // Se ha llegado desde el correo de recuperación. Va antes del router y del
   // proveedor: hay sesión, pero es de recuperación, y arrancar la app entera
@@ -334,6 +342,14 @@ function Rutas() {
   // como páginas distintas; `vercel.json` sirve `index.html` en ellas.
   const idiomaLanding = isNative ? null : idiomaDeRuta(window.location.pathname)
   if (idiomaLanding) return <LandingPage idioma={idiomaLanding} />
+
+  // `/l/<token>`: el enlace de una lista pública, tal como se comparte. Es una
+  // ruta de verdad para que las apps no la reclamen (ver `publicListUrl`), y
+  // aquí se pasa a la interna de HashRouter. Es un salto dentro de la propia
+  // página, no una navegación desde fuera, así que no dispara ningún enlace
+  // universal: se queda en la web.
+  const rutaLista = isNative ? null : /^\/l\/([a-z0-9]+)\/?$/i.exec(window.location.pathname)
+  if (rutaLista) return <IrALista token={rutaLista[1]} />
 
   return (
     <HashRouter>
