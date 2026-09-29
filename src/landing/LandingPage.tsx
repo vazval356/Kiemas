@@ -168,22 +168,32 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         {/* ── Precios ──────────────────────────────────────────────────── */}
         <section aria-labelledby="kl-precios" className="bg-surface-high">
           <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-            <h2 id="kl-precios" className={TITULO_SECCION}>
+            <h2 id="kl-precios" className={`${TITULO_SECCION} text-center`}>
               {t.precios.titulo}
             </h2>
-            <p className="mt-3 text-lg text-on-surface-variant">{t.precios.subtitulo}</p>
-            <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
-              <div className="rounded-card bg-surface-lowest p-6 shadow-[var(--shadow-surface)]">
+            <p className="mx-auto mt-3 max-w-[46ch] text-center text-lg text-on-surface-variant">
+              {t.precios.subtitulo}
+            </p>
+            {/* Las dos tarjetas comparten estructura fila a fila (título, precio,
+                nota, puntos, botón) para que el precio quede a la misma altura y
+                con el mismo tamaño en ambas. La insignia de Pro va flotando
+                fuera del flujo, así no desplaza nada. */}
+            <div className="mx-auto mt-12 grid max-w-3xl gap-8 sm:grid-cols-2 sm:gap-6">
+              <div className="flex flex-col rounded-card bg-surface-lowest p-6 shadow-[var(--shadow-surface)] sm:p-8">
                 <p className="text-sm font-semibold text-on-surface-variant">
                   {t.precios.gratis.etiqueta}
                 </p>
-                <p className="mt-1 font-display text-4xl font-extrabold">
+                <p className="mt-2 font-display text-5xl font-extrabold leading-none">
                   {t.precios.gratis.precio}
                 </p>
-                <ul className="mt-5 flex flex-col gap-2.5 text-sm">
+                <p className="mt-2 min-h-10 text-sm text-on-surface-variant" aria-hidden />
+                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
                   {t.precios.gratis.puntos.map((p) => (
-                    <li key={p} className="flex items-center gap-2">
-                      <span aria-hidden className="font-bold text-primary">
+                    <li key={p} className="flex items-center gap-2.5">
+                      <span
+                        aria-hidden
+                        className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-xs font-bold text-primary"
+                      >
                         ✓
                       </span>
                       {p}
@@ -192,25 +202,28 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 </ul>
                 <a
                   href="/#/login?modo=signup"
-                  className="squish mt-6 block rounded-full bg-primary py-3 text-center font-semibold text-on-primary"
+                  className="squish mt-8 block rounded-full border-2 border-primary py-3 text-center font-semibold text-primary"
                 >
                   {t.precios.gratis.cta}
                 </a>
               </div>
-              <div className="rounded-card border border-outline-variant bg-surface-low p-6">
-                <span className="inline-flex rounded-full bg-primary-fixed px-2.5 py-1 text-xs font-bold text-on-primary-fixed">
+              <div className="relative flex flex-col rounded-card bg-primary p-6 text-on-primary shadow-[var(--shadow-float)] ring-4 ring-primary/15 sm:p-8">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-secondary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-secondary shadow-md">
                   {t.precios.pro.insignia}
                 </span>
-                <p className="mt-3 text-sm font-semibold text-on-surface-variant">
+                <p className="text-sm font-semibold text-on-primary/80">
                   {t.precios.pro.etiqueta}
                 </p>
-                <p className="mt-1 font-display text-4xl font-extrabold">
+                <p className="mt-2 font-display text-5xl font-extrabold leading-none">
                   {t.precios.pro.precio}
                 </p>
-                <p className="mt-1 text-sm text-on-surface-variant">{t.precios.pro.nota}</p>
-                <ul className="mt-5 text-sm">
-                  <li className="flex items-center gap-2">
-                    <span aria-hidden className="font-bold text-primary">
+                <p className="mt-2 min-h-10 text-sm text-on-primary/80">{t.precios.pro.nota}</p>
+                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
+                  <li className="flex items-center gap-2.5">
+                    <span
+                      aria-hidden
+                      className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white"
+                    >
                       ✓
                     </span>
                     {t.precios.pro.punto}
@@ -218,7 +231,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 </ul>
                 <a
                   href="/#/login?modo=signup"
-                  className="squish mt-6 block rounded-full border-2 border-primary py-3 text-center font-semibold text-primary"
+                  className="squish mt-8 block rounded-full bg-white py-3 text-center font-semibold text-primary shadow-lg"
                 >
                   {t.precios.pro.cta}
                 </a>
