@@ -6,6 +6,7 @@ import { getPublicList, rpcErrorCode, supabaseApi } from '../lib/supabaseApi'
 import { supabase } from '../lib/supabaseClient'
 import type { PublicList, Space } from '../lib/types'
 import { errorMessage, priceLabel } from '../lib/utils'
+import { PortadaLista } from '../components/PortadaLista'
 import { BackIcon } from '../components/icons'
 
 /**
@@ -156,120 +157,59 @@ export function PublicListPage() {
     )
   }
 
+  // Sin portada propia, la de la lista es la foto del primer sitio que tenga
+  // una; si ninguno la tiene, se genera. Así una lista con fotos se abre con
+  // una imagen y no con un bloque de color.
+  const portadaUrl = list.places.find((p) => p.photos.length > 0)?.photos[0] ?? null
+  const numSitios =
+    list.places.length === 1
+      ? t('collection.countOne')
+      : t('collection.count', { count: list.places.length })
+
   return (
     <div className="pt-safe h-full overflow-y-auto bg-surface">
-      <div className="mx-auto max-w-md px-4 pb-12 pt-3">
+      {/* ── La cara de la lista ───────────────────────────────────────────── */}
+      <div className="relative">
+        <PortadaLista
+          name={list.name}
+          url={portadaUrl}
+          className="h-56 w-full"
+          inicialClass="text-[14rem]"
+          velo
+        />
+
         {/* Solo si se ha llegado navegando por dentro. Quien abre el enlace
             desde fuera no tiene adonde volver, y un botón que lleva a una
-            pantalla en blanco es peor que no tenerlo. */}
+            pantalla en blanco es peor que no tenerlo. Va suelto y redondo sobre
+            la foto: con la palabra «Volver» al lado no cabe. */}
         {seLlegoDesdeDentro && (
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="-ml-2 mb-2 flex items-center gap-1 rounded-control p-2 text-on-surface-variant squish"
+            aria-label={t('common.back')}
+            className="absolute left-3 top-3 z-10 flex size-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur squish"
           >
             <BackIcon className="size-5" />
-            <span className="text-sm font-medium">{t('common.back')}</span>
           </button>
         )}
 
-        <header className="text-center">
-          <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface">
-            {list.name}
-          </h1>
-          {list.description && <p className="mt-1.5 text-on-surface-variant">{list.description}</p>}
-          <p className="mt-2 text-sm text-on-surface-variant">
-            {t('public.by', { space: list.spaceName })}
-          </p>
-        </header>
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <div className="mx-auto max-w-md">
+            <h1 className="font-display text-3xl font-extrabold leading-tight tracking-tight text-white">
+              {list.name}
+            </h1>
+            <p className="mt-1 text-sm text-white/85">
+              {t('public.by', { space: list.spaceName })} · {numSitios}
+            </p>
+          </div>
+        </div>
+      </div>
 
-        {list.places.length === 0 ? (
-          <p className="mt-10 text-center text-on-surface-variant">{t('public.empty')}</p>
-        ) : (
-          <ul className="mt-6 flex flex-col gap-3">
-            {list.places.map((place) => (
-              <li
-                key={place.id}
-                className="overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]"
-              >
-                {place.photos.length > 0 ? (
-                  <img
-                    loading="lazy"
-                    decoding="async"
-                    src={place.photos[0]}
-                    alt={place.name}
-                    className="h-40 w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-24 items-center justify-center bg-surface-container text-4xl">
-                    {place.emoji ?? '📍'}
-                  </div>
-                )}
-                <div className="p-4">
-                  <h2 className="font-display text-lg font-semibold text-on-surface">
-                    {place.name}
-                  </h2>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
-                    {place.category && (
-                      <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
-                        {place.emoji} {place.category}
-                      </span>
-                    )}
-                    {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}
-                  </div>
+      <div className="mx-auto max-w-md px-4 pb-12">
+        {list.description && <p className="mt-4 text-on-surface-variant">{list.description}</p>}
 
-                  {place.tags.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {place.tags.map((tag) => (
-                        <span
-                          key={tag.name}
-                          className="rounded-full px-2 py-0.5 text-xs font-semibold"
-                          style={{ backgroundColor: tag.color, color: '#fff' }}
-                        >
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {place.address && (
-                    <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>
-                  )}
-
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-block rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary squish"
-                    >
-                      {t('public.openInMaps')}
-                    </a>
-
-                    {/* Solo con sesión: sin cuenta no hay mapa al que añadirlo,
-                        y un botón que lleva a «inicia sesión» desde una lista
-                        que se abrió sin cuenta es una promesa a medias. */}
-                    {signedIn &&
-                      (guardados[place.id] ? (
-                        <span className="text-sm font-semibold text-tertiary">
-                          {t('public.saved', { space: guardados[place.id] })}
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => void abrirSelector(place)}
-                          className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
-                        >
-                          {t('public.saveToMap')}
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-
+        {/* Seguir va arriba, justo debajo de la portada. Estaba al final de la
+            lista, y en una lista larga nadie llegaba a verlo. */}
         {signedIn && token && (
           <button
             type="button"
@@ -284,19 +224,112 @@ export function PublicListPage() {
                 .catch(() => {})
                 .finally(() => setFollowBusy(false))
             }}
-            className={`mt-8 w-full rounded-full py-3.5 font-semibold squish disabled:opacity-50 ${
+            className={`mt-4 w-full rounded-full py-3.5 font-semibold squish disabled:opacity-50 ${
               following
-                ? 'border border-outline-variant text-on-surface-variant'
-                : 'bg-primary text-on-primary'
+                ? 'border-2 border-outline-variant text-on-surface-variant'
+                : 'bg-primary text-on-primary shadow-[var(--shadow-float)]'
             }`}
           >
-            {following ? t('public.following') : t('public.follow')}
+            {following ? `✓ ${t('public.following')}` : t('public.follow')}
           </button>
         )}
         {signedIn === false && (
-          <p className="mt-8 rounded-card bg-surface-container px-4 py-3 text-center text-sm text-on-surface-variant">
+          <p className="mt-4 rounded-card bg-surface-container px-4 py-3 text-center text-sm text-on-surface-variant">
             {t('public.needAccount')}
           </p>
+        )}
+
+        {list.places.length === 0 ? (
+          <p className="mt-10 text-center text-on-surface-variant">{t('public.empty')}</p>
+        ) : (
+          <ul className="mt-6 flex flex-col gap-3">
+            {list.places.map((place) => (
+              <li
+                key={place.id}
+                className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+              >
+                <div className="flex gap-3">
+                  {place.photos.length > 0 ? (
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      src={place.photos[0]}
+                      alt={place.name}
+                      className="size-24 shrink-0 rounded-2xl object-cover"
+                    />
+                  ) : (
+                    <div className="flex size-24 shrink-0 items-center justify-center rounded-2xl bg-primary-fixed text-4xl">
+                      {place.emoji ?? '📍'}
+                    </div>
+                  )}
+
+                  <div className="min-w-0 flex-1">
+                    <h2 className="font-display text-lg font-bold leading-tight text-on-surface">
+                      {place.name}
+                    </h2>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-on-surface-variant">
+                      {place.category && (
+                        <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
+                          {place.emoji} {place.category}
+                        </span>
+                      )}
+                      {place.priceLevel && (
+                        <span className="font-semibold">{priceLabel(place.priceLevel)}</span>
+                      )}
+                    </div>
+                    {place.address && (
+                      <p className="mt-1.5 line-clamp-2 text-xs text-on-surface-variant">
+                        📍 {place.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {place.tags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {place.tags.map((tag) => (
+                      <span
+                        key={tag.name}
+                        className="rounded-full px-2 py-0.5 text-xs font-semibold"
+                        style={{ backgroundColor: tag.color, color: '#fff' }}
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-3 flex items-center gap-2">
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 rounded-full bg-primary py-2.5 text-center text-sm font-semibold text-on-primary squish"
+                  >
+                    {t('public.openInMaps')}
+                  </a>
+
+                  {/* Solo con sesión: sin cuenta no hay mapa al que añadirlo,
+                      y un botón que lleva a «inicia sesión» desde una lista
+                      que se abrió sin cuenta es una promesa a medias. */}
+                  {signedIn &&
+                    (guardados[place.id] ? (
+                      <span className="flex-1 text-center text-sm font-semibold text-tertiary">
+                        {t('public.saved', { space: guardados[place.id] })}
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => void abrirSelector(place)}
+                        className="flex-1 rounded-full border-2 border-outline-variant py-2.5 text-sm font-semibold text-on-surface-variant squish"
+                      >
+                        {t('public.saveToMap')}
+                      </button>
+                    ))}
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
 
         <footer className="mt-10 text-center">

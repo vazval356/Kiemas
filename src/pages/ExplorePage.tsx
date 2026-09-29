@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { PortadaLista } from '../components/PortadaLista'
 import { SearchIcon } from '../components/icons'
 import type { ExploreList, FollowedList } from '../lib/types'
 import { errorMessage, formatKm, kmBetween } from '../lib/utils'
@@ -149,7 +150,7 @@ export function ExplorePage() {
           {n}
         </span>
       )}
-      <Portada
+      <PortadaLista
         name={list.name}
         url={list.coverUrl}
         className="pointer-events-none size-16 shrink-0 rounded-2xl"
@@ -173,7 +174,7 @@ export function ExplorePage() {
   const filaSeguida = (l: FollowedList) => (
     <li key={l.token} className="relative flex items-center gap-3 py-2.5">
       <Link to={`/l/${l.token}`} className="absolute inset-0 z-0" aria-label={l.name} />
-      <Portada
+      <PortadaLista
         name={l.name}
         url={null}
         className="pointer-events-none size-16 shrink-0 rounded-2xl"
@@ -199,7 +200,7 @@ export function ExplorePage() {
           className="absolute inset-0 z-0 block squish"
           aria-label={list.name}
         >
-          <Portada
+          <PortadaLista
             name={list.name}
             url={list.coverUrl}
             className="size-full rounded-3xl"
@@ -356,11 +357,11 @@ export function ExplorePage() {
                     {t('common.seeAll')}
                   </Link>
                 )}
-                <ul className="-mx-4 flex gap-3.5 overflow-x-auto px-4 pb-1 hide-scrollbar">
+                <ul className="-mx-4 flex gap-3.5 overflow-x-auto px-5 py-1.5 hide-scrollbar">
                   {siguiendo.map((l) => (
                     <li key={l.token} className="w-16 shrink-0 text-center">
                       <Link to={`/l/${l.token}`} className="block squish">
-                        <Portada
+                        <PortadaLista
                           name={l.name}
                           url={null}
                           className="mx-auto size-14 rounded-full outline outline-2 outline-offset-2 outline-primary"
@@ -395,69 +396,6 @@ export function ExplorePage() {
           </>
         )}
       </div>
-    </div>
-  )
-}
-
-/** Degradados de las portadas generadas. */
-const DEGRADADOS = [
-  ['#3a3fb8', '#d9246f'],
-  ['#0f7a6b', '#4648d4'],
-  ['#b45309', '#b90538'],
-  ['#7c3aed', '#0b6fa8'],
-  ['#15803d', '#0b6fa8'],
-  ['#d9246f', '#7f5300'],
-  ['#0b6fa8', '#7c3aed'],
-]
-
-/**
- * La portada de una lista, o una generada si no tiene foto.
- *
- * Antes una lista sin foto enseñaba un cuadrado lila con un icono, igual para
- * todas: la pantalla parecía vacía justo cuando más falta hacía que se
- * distinguieran. El color sale del nombre, así que una misma lista se ve igual
- * siempre y dos listas distintas casi nunca se confunden.
- */
-function Portada({
-  name,
-  url,
-  className,
-  inicialClass,
-  velo,
-}: {
-  name: string
-  url: string | null
-  className: string
-  inicialClass: string
-  /** Sombra de abajo arriba para poner texto encima. */
-  velo?: boolean
-}) {
-  const suma = [...name].reduce((n, c) => n + c.charCodeAt(0), 0)
-  const [a, b] = DEGRADADOS[suma % DEGRADADOS.length]
-  return (
-    <div
-      className={`relative overflow-hidden ${className}`}
-      style={{ background: `linear-gradient(140deg, ${a}, ${b})` }}
-    >
-      {url ? (
-        <img
-          decoding="async"
-          src={url}
-          alt=""
-          loading="lazy"
-          className="absolute inset-0 size-full object-cover"
-        />
-      ) : (
-        <span
-          aria-hidden
-          className={`absolute -bottom-[0.18em] -right-[0.05em] font-display font-extrabold leading-none text-white/20 ${inicialClass}`}
-        >
-          {name.slice(0, 1).toUpperCase()}
-        </span>
-      )}
-      {velo && (
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-      )}
     </div>
   )
 }

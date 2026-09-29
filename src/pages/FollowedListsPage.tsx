@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
-import { CollectionIcon } from '../components/icons'
+import { PortadaLista } from '../components/PortadaLista'
 import type { FollowedList } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -51,89 +52,93 @@ export function FollowedListsPage() {
       <div className="mx-auto max-w-md px-4 pt-2">
         <BackButton to="/profile" />
 
-        <h1 className="mb-4 font-display text-2xl font-bold text-on-surface">
-          {t('followed.title')}
-        </h1>
+        <h1 className="font-display text-2xl font-bold text-on-surface">{t('followed.title')}</h1>
+        {!loading && lists.length > 0 && (
+          <p className="mt-0.5 text-sm text-on-surface-variant">
+            {lists.length === 1
+              ? t('collection.countOne')
+              : t('collection.count', { count: lists.length })}
+          </p>
+        )}
 
         {error && (
-          <p className="mb-3 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
+          <p className="mt-3 rounded-control bg-error-container px-3 py-2 text-sm text-on-error-container">
             {error}
           </p>
         )}
 
         {loading ? (
-          <p className="text-sm text-on-surface-variant">{t('common.loading')}</p>
+          <p className="mt-4 text-sm text-on-surface-variant">{t('common.loading')}</p>
         ) : lists.length === 0 ? (
-          <div className="rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
+          <div className="mt-4 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
             <div className="mb-2 text-4xl">🔖</div>
             <p className="font-medium text-on-surface">{t('followed.none')}</p>
             <p className="mt-1 text-sm text-on-surface-variant">{t('followed.noneHint')}</p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="mt-4 flex flex-col gap-3">
             {lists.map((list) => (
               <li
                 key={list.token}
-                className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)]"
+                className={`relative flex items-center gap-3 rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] ${
+                  list.available ? '' : 'opacity-70'
+                }`}
               >
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`flex size-11 shrink-0 items-center justify-center rounded-full ${
-                      list.available
-                        ? 'bg-primary-fixed text-primary'
-                        : 'bg-surface-container text-on-surface-variant'
-                    }`}
-                  >
-                    <CollectionIcon className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-on-surface">
-                      {list.name}
-                    </span>
-                    <span className="block truncate text-sm text-on-surface-variant">
-                      {t('followed.bySpace', { space: list.spaceName })}
-                      {' · '}
-                      {list.places === 1
-                        ? t('collection.countOne')
-                        : t('collection.count', { count: list.places })}
-                    </span>
-                  </span>
-                </div>
-
-                {/* Una lista revocada se marca en vez de desaparecer: que deje de
-                    estar disponible es información, y quitarla en silencio
-                    dejaría a la persona dudando de si llegó a seguirla. */}
-                {!list.available && (
-                  <p className="mt-2 rounded-control bg-surface-container px-2.5 py-1.5 text-xs text-on-surface-variant">
-                    {t('followed.unavailable')}
-                  </p>
+                {/* Toda la tarjeta abre la lista; el botón de dejar de seguir
+                    queda por encima. Antes había un «Entrar» aparte que ocupaba
+                    media tarjeta para hacer lo que ya hace tocarla. */}
+                {list.available && (
+                  <Link
+                    to={`/l/${list.token}`}
+                    className="absolute inset-0 z-0 rounded-card"
+                    aria-label={list.name}
+                  />
                 )}
 
-                <div className="mt-2 flex gap-2">
-                  {list.available && (
-                    <a
-                      href={`#/l/${list.token}`}
-                      className="flex-1 rounded-full bg-primary py-2 text-center text-sm font-semibold text-on-primary squish"
-                    >
-                      {t('space.enter')}
-                    </a>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => void unfollow(list.token)}
-                    className="flex-1 rounded-full border border-outline-variant py-2 text-sm font-semibold text-on-surface-variant squish"
-                  >
-                    {t('followed.unfollow')}
-                  </button>
-                </div>
+                <PortadaLista
+                  name={list.name}
+                  url={null}
+                  className="pointer-events-none size-16 shrink-0 rounded-2xl"
+                  inicialClass="text-5xl"
+                />
 
-                <p className="mt-1.5 text-xs text-on-surface-variant">
-                  {new Date(list.followedAt).toLocaleDateString(locale, {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </p>
+                <span className="pointer-events-none min-w-0 flex-1">
+                  <span className="block truncate font-display font-bold text-on-surface">
+                    {list.name}
+                  </span>
+                  <span className="block truncate text-xs text-on-surface-variant">
+                    {t('followed.bySpace', { space: list.spaceName })}
+                    {' · '}
+                    {list.places === 1
+                      ? t('collection.countOne')
+                      : t('collection.count', { count: list.places })}
+                  </span>
+                  {/* Una lista revocada se marca en vez de desaparecer: que deje
+                      de estar disponible es información, y quitarla en silencio
+                      dejaría a la persona dudando de si llegó a seguirla. */}
+                  {list.available ? (
+                    <span className="block text-xs text-on-surface-variant/80">
+                      {new Date(list.followedAt).toLocaleDateString(locale, {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </span>
+                  ) : (
+                    <span className="mt-0.5 inline-block rounded-full bg-surface-container px-2 py-0.5 text-[11px] font-semibold text-on-surface-variant">
+                      {t('followed.unavailable')}
+                    </span>
+                  )}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => void unfollow(list.token)}
+                  aria-label={t('followed.unfollow')}
+                  className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-lg font-bold text-on-surface-variant ring-2 ring-inset ring-outline-variant squish"
+                >
+                  ✓
+                </button>
               </li>
             ))}
           </ul>
