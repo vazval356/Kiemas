@@ -59,9 +59,18 @@ function setupBackButton(): void {
  * Enlaces externos al navegador del sistema.
  *
  * Un `target="_blank"` dentro del contenedor abre la página en la misma vista
- * web, sin barra de direcciones ni botón de volver: quien pulse «Ir» a Google
- * Maps se queda atrapado y tiene que matar la app. Se interceptan en captura y
- * se mandan al navegador, que sí tiene forma de volver.
+ * web, sin barra de direcciones ni botón de volver: quien pulse un enlace
+ * cualquiera se queda atrapado y tiene que matar la app. Se interceptan en
+ * captura y se mandan al navegador integrado, que sí tiene forma de volver.
+ *
+ * Los enlaces de mapas son la excepción, y a propósito: se dejan pasar sin
+ * interceptar. Ese navegador integrado (una vista de Safari o una pestaña de
+ * Chrome dentro de la app) no cede el paso a otras apps, así que «Ir» acababa
+ * abriendo la web de Google Maps aunque la persona tuviera la app instalada. Sin
+ * interceptar, lo resuelve el sistema —iOS con `UIApplication.open`, Android con
+ * un `ACTION_VIEW`—: abre la app de Google Maps si está, y si no, el navegador
+ * que la persona tenga por defecto. No hace falta plugin ni permisos, y el
+ * fallback viene incluido: es lo que hace un enlace web normal.
  */
 function setupExternalLinks(): void {
   document.addEventListener(
@@ -75,12 +84,32 @@ function setupExternalLinks(): void {
       // Las rutas internas son de HashRouter y empiezan por '#'.
       if (href.startsWith('#') || href.startsWith('/')) return
       if (!/^https?:/i.test(href)) return
+      if (esEnlaceDeMapas(href)) return
 
       event.preventDefault()
       void Browser.open({ url: href })
     },
     true
   )
+}
+
+/**
+ * Si el enlace es de un servicio de mapas, que sabe abrirse en su propia app.
+ *
+ * Solo hosts y rutas de mapas: `google.com` a secas también es la búsqueda, y esa
+ * sí se queda en el navegador integrado.
+ */
+function esEnlaceDeMapas(href: string): boolean {
+  try {
+    const url = new URL(href)
+    const host = url.hostname.replace(/^www\./, '')
+    if (host === 'maps.google.com' || host === 'maps.app.goo.gl' || host === 'maps.apple.com') {
+      return true
+    }
+    return host === 'google.com' && url.pathname.startsWith('/maps')
+  } catch {
+    return false
+  }
 }
 
 /**
