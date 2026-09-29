@@ -480,3 +480,9 @@ input[type='range'].kd-range::-moz-range-thumb {
     animation: none;
   }
 }
+
+/* El mapa de la cabecera de una ficha queda tapado por abajo por la tarjeta del
+   sitio. La atribución sube para no quedar debajo. */
+.kd-mini .maplibregl-ctrl-bottom-right {
+  bottom: 2rem;
+}

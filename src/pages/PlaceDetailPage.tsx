@@ -8,20 +8,24 @@ import {
   useSincronizarOsm,
 } from '../components/OpeningHours'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
-import { PhotoOrPlaceholder } from '../components/PlaceCard'
+import { PlaceMiniMap } from '../components/PlaceMiniMap'
 import { PhotoViewer } from '../components/PhotoViewer'
 import { TagBadges } from '../components/TagPicker'
 import {
   BackIcon,
+  CheckIcon,
+  ClockIcon,
   EditIcon,
   HeartIcon,
   NavigateIcon,
   PhoneIcon,
+  PinIcon,
   SendIcon,
   StarIcon,
   TrashIcon,
 } from '../components/icons'
 import { isNative } from '../lib/appUrl'
+import type { Place } from '../lib/types'
 import { abrirRuta, urlWebDeRuta } from '../lib/abrirRuta'
 import {
   averageRating,
@@ -139,11 +143,48 @@ export function PlaceDetailPage() {
     })
   }
 
+  const visited = place.status === 'visited'
+  const hayHorario = semanaDe(place) !== null
+  const emoji = category?.emoji ?? '📍'
+
+  /** Qué hace tocar una foto: depende del modo en que esté la galería. */
+  function alTocarFoto(photo: Place['photos'][number]) {
+    if (!place) return
+    // El servidor manda igual; saberlo aquí evita ofrecer un borrado que va a
+    // rebotar.
+    const puedoBorrar = photo.uploadedBy === profile?.id || activeSpace?.myRole === 'admin'
+    if (modoFoto === 'cover') {
+      setModoFoto(null)
+      void run(() => api.setPlaceCover(place.id, photo.id))
+    } else if (modoFoto === 'delete') {
+      if (!puedoBorrar) return
+      // Se pregunta aunque el modo ya sea explícito: una foto de una noche
+      // concreta no se recupera, y el modo se arma con un toque que puede
+      // haber sido a tientas.
+      if (!window.confirm(t('detail.photoDeleteConfirm'))) return
+      setModoFoto(null)
+      void run(() => api.removePhoto(place.id, photo.id))
+    } else {
+      // Sin modo, tocar una foto la abre grande. Es lo que espera cualquiera,
+      // y antes la borraba.
+      setViendo(photo.id)
+    }
+  }
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-10">
-      {/* Cabecera con la foto y los controles superpuestos */}
+      {/* ── Cabecera: el mapa ────────────────────────────────────────────────
+          Antes mandaba la foto, y un sitio sin foto dejaba arriba un hueco
+          enorme con un emoji. El mapa existe siempre, así que la cabecera no
+          se rompe: la foto pasa a la tarjeta de debajo. */}
       <div className="relative">
-        <PhotoOrPlaceholder place={place} emoji={category?.emoji ?? '📍'} className="h-64 w-full" />
+        <PlaceMiniMap
+          lat={place.lat}
+          lng={place.lng}
+          emoji={emoji}
+          visited={visited}
+          className="h-52 w-full"
+        />
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -160,20 +201,10 @@ export function PlaceDetailPage() {
               place.favorite ? 'text-secondary' : 'text-on-surface-variant'
             }`}
             aria-label={t('place.favorite')}
+            aria-pressed={place.favorite}
           >
             <HeartIcon className="size-5" filled={place.favorite} />
           </button>
-          {otrosEspacios.length > 0 && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => setCopiando(true)}
-              className="flex size-10 items-center justify-center rounded-full bg-surface-lowest/90 text-on-surface-variant shadow squish disabled:opacity-50"
-              aria-label={t('detail.copyTo')}
-            >
-              <SendIcon className="size-5" />
-            </button>
-          )}
           <Link
             to={`/edit/${place.id}`}
             className="flex size-10 items-center justify-center rounded-full bg-surface-lowest/90 text-on-surface-variant shadow squish"
@@ -233,71 +264,281 @@ export function PlaceDetailPage() {
         </p>
       )}
 
-      <div className="mx-auto max-w-md px-5 pt-4">
-        <h1 className="font-display text-2xl font-bold leading-tight text-on-surface">
-          {place.name}
-        </h1>
-
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
-          {category && (
-            <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
-              {category.emoji} {categoryLabel(category, t)}
-            </span>
+      {/* ── Tarjeta del sitio: fotos, nombre y acciones ────────────────────── */}
+      <div className="relative z-10 mx-auto -mt-8 max-w-md px-3">
+        <div className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-float)]">
+          {/* Compartido por los botones de añadir de abajo —solo se ve uno a la
+              vez—, y solo en web: sin plugin nativo, el selector propio se cae
+              al de siempre. */}
+          {!isNative && (
+            <input
+              ref={fotoInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              disabled={busy}
+              onChange={(e) => {
+                const files = e.target.files ? Array.from(e.target.files) : []
+                // Se limpia para que volver a elegir la MISMA foto dispare el
+                // evento otra vez.
+                e.target.value = ''
+                if (files.length > 0) void run(() => api.addPhotos(place.id, files))
+              }}
+            />
           )}
-          {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}
-          {distance !== null && <span>· {formatKm(distance)}</span>}
-          {avg !== null && (
-            <span className="flex items-center gap-1 font-semibold text-on-surface">
-              <StarIcon className="size-4 text-tertiary" />
-              {formatRating(avg)}
-            </span>
+
+          {/* Sin fotos, una sola pieza a lo ancho con el emoji de la categoría:
+              un cuadrado punteado suelto se lee como un hueco roto. Con fotos,
+              una tira que se desliza y, al final, la casilla de añadir. */}
+          {place.photos.length === 0 ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={abrirSelectorFotos}
+              className="flex h-32 w-full flex-col items-center justify-center gap-1 rounded-card bg-surface-container text-primary squish disabled:opacity-50"
+            >
+              <span className="text-4xl">{emoji}</span>
+              <span className="text-sm font-semibold">📷 {t('form.addPhoto')}</span>
+            </button>
+          ) : (
+            <div className="hide-scrollbar -mx-3 flex snap-x snap-mandatory gap-2 overflow-x-auto px-3">
+              {place.photos.map((photo, indice) => {
+                const esPortada = place.coverPath === photo.id
+                const puedoBorrar =
+                  photo.uploadedBy === profile?.id || activeSpace?.myRole === 'admin'
+                return (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => alTocarFoto(photo)}
+                    // El botón ES la miniatura: sin esto se anunciaba como
+                    // «botón» a secas. Se sitúa por número, que es lo único que
+                    // sabemos de ella.
+                    aria-label={t('photo.number', { n: indice + 1, total: place.photos.length })}
+                    className={`relative h-40 shrink-0 snap-start overflow-hidden rounded-card squish ${
+                      place.photos.length === 1 ? 'w-64' : 'w-56'
+                    } ${modoFoto === 'delete' && !puedoBorrar ? 'opacity-40' : ''}`}
+                  >
+                    {/* `alt=""` a propósito: la miniatura vive dentro de un
+                        botón que ya se anuncia con su propio nombre.
+                        `decoding="async"` para que descodificar nueve fotos no
+                        bloquee el desplazamiento de la ficha. */}
+                    <img
+                      src={photo.url}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover"
+                    />
+                    {esPortada && (
+                      <span className="absolute left-2 top-2 rounded-full bg-primary px-2.5 py-0.5 text-xs font-bold text-on-primary">
+                        {t('detail.cover')}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={abrirSelectorFotos}
+                className="flex h-40 w-28 shrink-0 snap-start flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish disabled:opacity-50"
+              >
+                <span className="text-2xl">📷</span>
+                <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
+              </button>
+            </div>
+          )}
+
+          {/* Portada y borrar viven aquí, en una fila, y no debajo de cada foto:
+              con un botón por miniatura eran más botones que fotos. Se entra en
+              un modo, se toca la foto, y se sale. */}
+          {place.photos.length > 0 && (
+            <div className="mt-1 flex items-center gap-1">
+              <p className="flex-1 pl-1 text-sm font-medium text-primary">
+                {modoFoto === 'cover'
+                  ? t('detail.pickCover')
+                  : modoFoto === 'delete'
+                    ? t('detail.pickToDelete')
+                    : ''}
+              </p>
+              <button
+                type="button"
+                onClick={() => setModoFoto(modoFoto === 'cover' ? null : 'cover')}
+                aria-label={t('detail.makeCover')}
+                aria-pressed={modoFoto === 'cover'}
+                className={`rounded-full p-2 squish ${
+                  modoFoto === 'cover' ? 'bg-primary-fixed text-primary' : 'text-on-surface-variant'
+                }`}
+              >
+                <StarIcon className="size-5" filled={false} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setModoFoto(modoFoto === 'delete' ? null : 'delete')}
+                aria-label={t('common.delete')}
+                aria-pressed={modoFoto === 'delete'}
+                className={`rounded-full p-2 squish ${
+                  modoFoto === 'delete' ? 'bg-error-container text-error' : 'text-on-surface-variant'
+                }`}
+              >
+                <TrashIcon className="size-5" />
+              </button>
+            </div>
+          )}
+
+          <div className="px-1 pt-3">
+            <h1 className="font-display text-2xl font-bold leading-tight text-on-surface">
+              {place.name}
+            </h1>
+
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-on-surface-variant">
+              {category && (
+                <span className="rounded-full bg-surface-container px-2.5 py-0.5 font-semibold">
+                  {category.emoji} {categoryLabel(category, t)}
+                </span>
+              )}
+              {place.priceLevel && <span>{priceLabel(place.priceLevel)}</span>}
+              {distance !== null && <span>· {formatKm(distance)}</span>}
+              {avg !== null && (
+                <span className="flex items-center gap-1 font-semibold text-on-surface">
+                  <StarIcon className="size-4 text-tertiary" />
+                  {formatRating(avg)}
+                </span>
+              )}
+            </div>
+
+            <TagBadges tagIds={place.tagIds} className="mt-2" />
+
+            {creator && (
+              <p className="mt-2 text-xs text-on-surface-variant">
+                {t('detail.addedBy', { name: creator.displayName })}
+              </p>
+            )}
+          </div>
+
+          {/* Tres acciones del mismo tamaño y la misma forma. Antes «Ir» era una
+              píldora pequeña y «Marcar como visitado» una barra ancha de otro
+              estilo: competían en vez de leerse juntas. */}
+          <div
+            className={`mt-4 grid gap-2 ${otrosEspacios.length > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}
+          >
+            {/* En la web es un enlace normal. Dentro de la app se abre la de
+                Google Maps si está (ver `abrirRuta`): un enlace web, en iOS,
+                acababa siempre en Safari. */}
+            <a
+              href={urlWebDeRuta(place.lat, place.lng)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => {
+                if (!isNative) return
+                e.preventDefault()
+                abrirRuta(place.lat, place.lng)
+              }}
+              className="flex flex-col items-center gap-1 rounded-card bg-primary py-3 text-sm font-bold text-on-primary squish"
+            >
+              <NavigateIcon className="size-5" />
+              {t('place.navigate')}
+            </a>
+            <button
+              type="button"
+              disabled={busy}
+              aria-pressed={visited}
+              title={visited ? t('detail.markWantToGo') : t('detail.markVisited')}
+              onClick={() =>
+                void run(() =>
+                  api.updatePlace(place.id, {
+                    status: visited ? 'want_to_go' : 'visited',
+                    visitedAt: visited ? null : new Date().toISOString(),
+                  })
+                )
+              }
+              className={`flex flex-col items-center gap-1 rounded-card py-3 text-sm font-bold squish disabled:opacity-50 ${
+                visited ? 'bg-secondary text-on-secondary' : 'bg-surface-low text-on-surface'
+              }`}
+            >
+              <CheckIcon className="size-5" />
+              {t('place.visited')}
+            </button>
+            {otrosEspacios.length > 0 && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setCopiando(true)}
+                className="flex flex-col items-center gap-1 rounded-card bg-surface-low py-3 text-sm font-bold text-on-surface squish disabled:opacity-50"
+              >
+                <SendIcon className="size-5" />
+                {t('detail.copyShort')}
+              </button>
+            )}
+          </div>
+          {visited && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() =>
+                void run(() =>
+                  api.updatePlace(place.id, { status: 'want_to_go', visitedAt: null })
+                )
+              }
+              className="mt-2 w-full py-1 text-center text-xs font-semibold text-on-surface-variant underline underline-offset-2"
+            >
+              {t('detail.markWantToGo')}
+            </button>
           )}
         </div>
+      </div>
 
-        <TagBadges tagIds={place.tagIds} className="mt-2" />
-
-        {place.address && (
-          <p className="mt-2 text-sm text-on-surface-variant">📍 {place.address}</p>
-        )}
-        {/* Lo primero que se pregunta quien mira esto de noche. Va pegado a la
-            dirección porque es la otra mitad de «¿puedo ir ahora?». */}
-        {semanaDe(place) ? (
-          <OpeningBadge place={place} className="mt-2" />
-        ) : (
-          consultandoHorario && (
-            <p className="mt-2 text-sm text-on-surface-variant">{t('hours.checking')}</p>
-          )
-        )}
-        {creator && (
-          <p className="mt-1 text-xs text-on-surface-variant">
-            {t('detail.addedBy', { name: creator.displayName })}
-          </p>
-        )}
-
-        {/* Acciones rápidas */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {/* En la web es un enlace normal. Dentro de la app se abre la de Google
-              Maps si está (ver `abrirRuta`): un enlace web, en iOS, acababa
-              siempre en Safari. */}
-          <a
-            href={urlWebDeRuta(place.lat, place.lng)}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => {
-              if (!isNative) return
-              e.preventDefault()
-              abrirRuta(place.lat, place.lng)
-            }}
-            className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary squish"
-          >
-            <NavigateIcon className="size-4" /> {t('place.navigate')}
-          </a>
+      <div className="mx-auto max-w-md px-3 pt-3">
+        {/* ── Datos: dirección, horario, teléfono y web ───────────────────────
+            Lo que falta se dice con su enlace para completarlo, en la misma
+            fila, y no como una frase suelta más abajo. */}
+        <div className="divide-y divide-outline-variant/40 rounded-card bg-surface-lowest px-4 shadow-[var(--shadow-surface)]">
+          <div className="flex items-center gap-3 py-3">
+            <PinIcon className="size-5 shrink-0 text-primary" />
+            {place.address ? (
+              <span className="min-w-0 flex-1 text-on-surface">{place.address}</span>
+            ) : (
+              <>
+                <span className="min-w-0 flex-1 text-on-surface-variant">
+                  {t('detail.noAddress')}
+                </span>
+                <Link
+                  to={`/edit/${place.id}`}
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  {t('detail.addAddress')}
+                </Link>
+              </>
+            )}
+          </div>
+          {/* Lo primero que se pregunta quien mira esto de noche: «¿puedo ir
+              ahora?». Si no hay horario ni se está consultando, se ofrece
+              escribirlo, que es lo único que puede arreglarlo. */}
+          <div className="flex items-center gap-3 py-3">
+            <ClockIcon className="size-5 shrink-0 text-primary" />
+            {hayHorario ? (
+              <OpeningBadge place={place} />
+            ) : consultandoHorario ? (
+              <span className="text-on-surface-variant">{t('hours.checking')}</span>
+            ) : (
+              <>
+                <span className="min-w-0 flex-1 text-on-surface-variant">{t('hours.unknown')}</span>
+                <Link
+                  to={`/edit/${place.id}`}
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  {t('hours.addYours')}
+                </Link>
+              </>
+            )}
+          </div>
           {place.phone && (
-            <a
-              href={`tel:${place.phone}`}
-              className="flex items-center gap-1.5 rounded-full bg-surface-container px-4 py-2.5 text-sm font-semibold text-on-surface-variant squish"
-            >
-              <PhoneIcon className="size-4" /> {place.phone}
+            <a href={`tel:${place.phone}`} className="flex items-center gap-3 py-3 text-on-surface">
+              <PhoneIcon className="size-5 shrink-0 text-primary" />
+              <span className="min-w-0 flex-1 truncate">{place.phone}</span>
             </a>
           )}
           {place.website && (
@@ -305,51 +546,22 @@ export function PlaceDetailPage() {
               href={place.website}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full bg-surface-container px-4 py-2.5 text-sm font-semibold text-on-surface-variant squish"
+              className="flex items-center gap-3 py-3 text-on-surface"
             >
-              🌐 {t('place.website')}
+              <span className="w-5 shrink-0 text-center">🌐</span>
+              <span className="min-w-0 flex-1 truncate">{place.website.replace(/^https?:\/\//, '')}</span>
             </a>
           )}
         </div>
 
-        {/* Estado */}
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() =>
-            void run(() =>
-              api.updatePlace(place.id, {
-                status: place.status === 'visited' ? 'want_to_go' : 'visited',
-                visitedAt: place.status === 'visited' ? null : new Date().toISOString(),
-              })
-            )
-          }
-          className="mt-4 w-full rounded-full border border-outline-variant py-3 font-semibold text-on-surface squish disabled:opacity-50"
-        >
-          {place.status === 'visited' ? t('detail.markWantToGo') : t('detail.markVisited')}
-        </button>
-
         {/* El horario entero. Responde a «¿y el domingo?», que es la pregunta
-            que decide un plan; la línea de arriba solo responde por hoy. */}
-        <OpeningHoursSection place={place} />
+            que decide un plan; la fila de arriba solo responde por hoy. */}
+        <div className="px-1">
+          <OpeningHoursSection place={place} />
+        </div>
 
-        {/* OpenStreetMap tiene el horario de uno de cada seis bares. En los
-            otros cinco no se deja un hueco mudo: se dice que no se sabe y se
-            ofrece escribirlo, que es lo único que puede arreglarlo. */}
-        {!semanaDe(place) && !consultandoHorario && (
-          <p className="mt-6 text-sm text-on-surface-variant">
-            {t('hours.unknown')}{' '}
-            <Link
-              to={`/edit/${place.id}`}
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              {t('hours.addYours')}
-            </Link>
-          </p>
-        )}
-
-        {/* Mi puntuación */}
-        <section className="mt-6">
+        {/* ── Puntuaciones ─────────────────────────────────────────────────── */}
+        <section className="mt-3 rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="font-display font-semibold text-on-surface">{t('detail.myRating')}</h2>
             <span className="font-mono text-lg font-bold text-primary">
@@ -358,79 +570,68 @@ export function PlaceDetailPage() {
           </div>
           {/* Estrellas en lugar del deslizador. Puntuar pasa a ser un toque en
               vez de un arrastre con puntería, y «sin puntuar» se ve de un
-              vistazo: ninguna encendida. El deslizador siempre tenía el tirador
-              en algún sitio, así que había que atenuarlo para que no pareciera
-              un cinco puesto a propósito. */}
+              vistazo: ninguna encendida. */}
           <RatingStars
             value={myRating}
             disabled={busy}
             onChange={(next) => void run(() => api.setRating(place.id, next))}
           />
+
+          {/* Puntuaciones del grupo. En un espacio personal solo hay una, así
+              que la lista sobra. */}
+          {activeSpace?.kind === 'group' && (
+            <div className="mt-4 border-t border-outline-variant/40 pt-4">
+              <h2 className="mb-2 font-display font-semibold text-on-surface">
+                {t('detail.groupRatings')}
+              </h2>
+              {/* La media del grupo, en estrellas. Aquí no se redondea al entero
+                  como al puntuar: una media de 7,4 tiene sentido a mitades, y
+                  redondearla la haría parecer un ocho. */}
+              {avg !== null && (
+                <div className="mb-3 flex items-center gap-3 rounded-card bg-surface-container px-4 py-3">
+                  <span className="font-mono text-2xl font-bold leading-none text-primary">
+                    {formatRating(avg)}
+                  </span>
+                  <RatingStars value={avg} size="sm" soloLectura />
+                  <span className="ml-auto text-xs text-on-surface-variant">
+                    {place.ratings.length === 1
+                      ? t('detail.ratedByOne')
+                      : t('detail.ratedBy', { count: place.ratings.length })}
+                  </span>
+                </div>
+              )}
+              {place.ratings.length === 0 ? (
+                <p className="text-sm text-on-surface-variant">{t('detail.noRatings')}</p>
+              ) : (
+                <ul className="flex flex-col gap-1.5">
+                  {place.ratings.map((r) => {
+                    const member = members.find((m) => m.userId === r.userId)
+                    return (
+                      <li key={r.userId} className="flex items-center gap-3 py-1">
+                        {/* La cara de cada uno, como en las votaciones: un punto
+                            de color obliga a recordar de quién es cada color. */}
+                        <Cara miembro={member} lado={24} anillo="ring-transparent" />
+                        <span className="flex-1 truncate text-on-surface">
+                          {member?.displayName ?? '—'}
+                        </span>
+                        <span className="font-mono font-bold text-on-surface">
+                          {formatRating(r.score)}
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+          )}
         </section>
 
-        {/* Puntuaciones del grupo. En un espacio personal solo hay una, así que
-            la lista sobra. */}
-        {activeSpace?.kind === 'group' && (
-          <section className="mt-6">
-            <h2 className="mb-2 font-display font-semibold text-on-surface">
-              {t('detail.groupRatings')}
-            </h2>
-            {/* La media del grupo, en estrellas.
-                Estaba solo como número suelto arriba, junto a la categoría y el
-                precio, y la única fila de estrellas de la pantalla era la de
-                puntuar: es decir, la tuya. Así que las estrellas que se veían de
-                un sitio eran las de una persona, no las del grupo, que es justo
-                lo contrario de para qué está un mapa compartido.
-
-                Aquí no se redondea al entero como al puntuar: una media de 7,4
-                tiene sentido a mitades, y redondearla la haría parecer un ocho. */}
-            {avg !== null && (
-              <div className="mb-3 flex items-center gap-3 rounded-card bg-surface-container px-4 py-3">
-                <span className="font-mono text-2xl font-bold leading-none text-primary">
-                  {formatRating(avg)}
-                </span>
-                <RatingStars value={avg} size="sm" soloLectura />
-                <span className="ml-auto text-xs text-on-surface-variant">
-                  {place.ratings.length === 1
-                    ? t('detail.ratedByOne')
-                    : t('detail.ratedBy', { count: place.ratings.length })}
-                </span>
-              </div>
-            )}
-            {place.ratings.length === 0 ? (
-              <p className="text-sm text-on-surface-variant">{t('detail.noRatings')}</p>
-            ) : (
-              <ul className="flex flex-col gap-1.5">
-                {place.ratings.map((r) => {
-                  const member = members.find((m) => m.userId === r.userId)
-                  return (
-                    <li
-                      key={r.userId}
-                      className="flex items-center gap-3 rounded-md bg-surface-lowest px-3 py-2 shadow-[var(--shadow-surface)]"
-                    >
-                      {/* La cara de cada uno, como en las votaciones: un punto
-                          de color obliga a recordar de quién es cada color. */}
-                      <Cara miembro={member} lado={24} anillo="ring-transparent" />
-                      <span className="flex-1 truncate text-on-surface">
-                        {member?.displayName ?? '—'}
-                      </span>
-                      <span className="font-mono font-bold text-on-surface">
-                        {formatRating(r.score)}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </section>
-        )}
-
-        {/* Notas compartidas */}
-        <section className="mt-6">
+        {/* ── Notas compartidas ────────────────────────────────────────────── */}
+        <section className="mt-3 rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
           <h2 className="mb-2 font-display font-semibold text-on-surface">{t('place.notes')}</h2>
           <textarea
             value={notes}
-            rows={4}
+            rows={3}
             placeholder={t('detail.notesPlaceholder')}
             // El nombre corto de la sección, no la frase larga de invitación:
             // el marcador de posición anima a escribir, pero como nombre del
@@ -465,181 +666,15 @@ export function PlaceDetailPage() {
           {notesSaved && <p className="mt-2 text-sm text-primary">{t('detail.notesSaved')}</p>}
         </section>
 
-        {/* ── Fotos ────────────────────────────────────────────────────────
-            La sección se pinta SIEMPRE, aunque no haya ninguna. Antes se
-            escondía cuando el sitio no tenía fotos, y como el único sitio
-            donde se podían añadir era el formulario de edición, quien había
-            subido una al crear el sitio no encontraba por dónde subir la
-            segunda.
+        <div className="px-1">
+          <CommentThread placeId={place.id} />
+        </div>
 
-            Las acciones viven en la cabecera y no debajo de cada foto. Con un
-            «Poner de portada» y un «Borrar» bajo cada miniatura, la galería
-            eran más botones que fotos y lo que se miraba era el texto. Aquí se
-            entra en un modo, se toca la foto, y se sale. */}
-        <section className="mt-6">
-          <div className="mb-2 flex items-center gap-1">
-            <h2 className="flex-1 font-display font-semibold text-on-surface">
-              {t('place.photos')}
-            </h2>
-            {place.photos.length > 0 && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setModoFoto(modoFoto === 'cover' ? null : 'cover')}
-                  aria-label={t('detail.makeCover')}
-                  aria-pressed={modoFoto === 'cover'}
-                  className={`rounded-full p-2 squish ${
-                    modoFoto === 'cover'
-                      ? 'bg-primary-fixed text-primary'
-                      : 'text-on-surface-variant'
-                  }`}
-                >
-                  <StarIcon className="size-5" filled={false} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModoFoto(modoFoto === 'delete' ? null : 'delete')}
-                  aria-label={t('common.delete')}
-                  aria-pressed={modoFoto === 'delete'}
-                  className={`rounded-full p-2 squish ${
-                    modoFoto === 'delete'
-                      ? 'bg-error-container text-error'
-                      : 'text-on-surface-variant'
-                  }`}
-                >
-                  <TrashIcon className="size-5" />
-                </button>
-              </>
-            )}
-          </div>
+        {error && <p className="mt-4 px-1 text-sm font-semibold text-error">{error}</p>}
 
-          {modoFoto && (
-            <p className="mb-2 text-sm font-medium text-primary">
-              {modoFoto === 'cover' ? t('detail.pickCover') : t('detail.pickToDelete')}
-            </p>
-          )}
-
-          {/* Compartido por los dos botones de abajo —solo uno de los dos se ve
-              a la vez, según si ya hay fotos—, y solo en web: sin plugin
-              nativo, el selector propio se cae al de siempre. */}
-          {!isNative && (
-            <input
-              ref={fotoInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              hidden
-              disabled={busy}
-              onChange={(e) => {
-                const files = e.target.files ? Array.from(e.target.files) : []
-                // Se limpia para que volver a elegir la MISMA foto dispare el
-                // evento otra vez.
-                e.target.value = ''
-                if (files.length > 0) void run(() => api.addPhotos(place.id, files))
-              }}
-            />
-          )}
-
-          {/* Tres por fila, cuadradas. Una tira horizontal obligaba a arrastrar
-              para ver la cuarta, y en una galería de recuerdos lo que se quiere
-              es abarcarlas de un vistazo. */}
-          {/* Sin fotos, el botón va a lo ancho y no como una casilla suelta en
-              una cuadrícula vacía: un cuadrado punteado solo en la esquina se
-              lee como un hueco roto, no como algo que se puede pulsar.
-
-              Con fotos, se convierte en una baldosa más — sin borde punteado,
-              del color suave del sistema, para que acompañe a la cuadrícula en
-              vez de competir con ella. */}
-          {place.photos.length === 0 && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={abrirSelectorFotos}
-              className="flex items-center justify-center gap-2 rounded-card bg-surface-container py-4 text-sm font-semibold text-primary squish disabled:opacity-50"
-            >
-              <span className="text-lg">📷</span>
-              {t('form.addPhoto')}
-            </button>
-          )}
-
-          <div className="grid grid-cols-3 gap-1.5">
-            {place.photos.length > 0 && (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={abrirSelectorFotos}
-                className="flex aspect-square flex-col items-center justify-center gap-1 rounded-card bg-surface-container text-on-surface-variant squish disabled:opacity-50"
-              >
-                <span className="text-xl">📷</span>
-                <span className="text-[11px] font-semibold">{t('form.addPhoto')}</span>
-              </button>
-            )}
-
-            {place.photos.map((photo, indice) => {
-              const esPortada = place.coverPath === photo.id
-              // El servidor manda igual; saberlo aquí evita ofrecer un borrado
-              // que va a rebotar.
-              const puedoBorrar =
-                photo.uploadedBy === profile?.id || activeSpace?.myRole === 'admin'
-
-              return (
-                <button
-                  key={photo.id}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    if (modoFoto === 'cover') {
-                      setModoFoto(null)
-                      void run(() => api.setPlaceCover(place.id, photo.id))
-                    } else if (modoFoto === 'delete') {
-                      if (!puedoBorrar) return
-                      // Se pregunta aunque el modo ya sea explícito: una foto
-                      // de una noche concreta no se recupera, y el modo se
-                      // arma con un toque que puede haber sido a tientas.
-                      if (!window.confirm(t('detail.photoDeleteConfirm'))) return
-                      setModoFoto(null)
-                      void run(() => api.removePhoto(place.id, photo.id))
-                    } else {
-                      // Sin modo, tocar una foto la abre grande. Es lo que
-                      // espera cualquiera, y antes la borraba.
-                      setViendo(photo.id)
-                    }
-                  }}
-                  // El botón ES la miniatura, así que sin esto se anunciaba
-                  // como «botón» a secas: ni qué foto es ni cuántas hay. Se
-                  // sitúa por número, que es lo único que sabemos de ella.
-                  aria-label={t('photo.number', { n: indice + 1, total: place.photos.length })}
-                  className={`relative aspect-square overflow-hidden rounded-card squish ${
-                    modoFoto === 'delete' && !puedoBorrar ? 'opacity-40' : ''
-                  }`}
-                >
-                  {/* `alt=""` a propósito: la miniatura vive dentro de un
-                      botón que ya se anuncia con su propio nombre, y repetirla
-                      haría que el lector de pantalla dijera lo mismo dos
-                      veces. `decoding="async"` para que descodificar nueve
-                      fotos no bloquee el desplazamiento de la ficha. */}
-                  <img
-                    src={photo.url}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="size-full object-cover"
-                  />
-                  {esPortada && (
-                    <span className="absolute left-1 top-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary">
-                      {t('detail.cover')}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-
-        <CommentThread placeId={place.id} />
-
-        {error && <p className="mt-4 text-sm font-semibold text-error">{error}</p>}
-
+        {/* Borrar es texto y no una barra a lo ancho: al final de la ficha, un
+            botón grande con borde invita a pulsarlo sin querer. Sigue
+            preguntando antes de hacerlo. */}
         <button
           type="button"
           disabled={busy}
@@ -650,9 +685,9 @@ export function PlaceDetailPage() {
               navigate('/')
             })
           }}
-          className="mt-8 flex w-full items-center justify-center gap-2 rounded-full border border-error/40 py-3 font-semibold text-error squish disabled:opacity-50"
+          className="mx-auto mt-8 flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-error squish disabled:opacity-50"
         >
-          <TrashIcon className="size-5" /> {t('common.delete')}
+          <TrashIcon className="size-4" /> {t('common.delete')}
         </button>
       </div>
 

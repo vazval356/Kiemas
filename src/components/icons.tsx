@@ -614,3 +614,21 @@ export function CheckIcon({ className = 'w-6 h-6' }: IconProps) {
     </svg>
   )
 }
+
+/** El horario en la ficha de un sitio. */
+export function ClockIcon({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 7.5V12l3 2" />
+    </svg>
+  )
+}

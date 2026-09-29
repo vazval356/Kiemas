@@ -415,6 +415,13 @@ const es = {
   'wiz.next': 'Siguiente',
   'wiz.step': 'Paso {n} de {total}',
   'wiz.located': 'Punto marcado en el mapa',
+  'detail.copyShort': 'Llevar a…',
+  'detail.noAddress': 'Dirección sin añadir',
+  'detail.addAddress': 'Escribirla',
+  'form.address': 'Dirección',
+  'form.addressPlaceholder': 'Calle, número y ciudad',
+  'form.addressLocate': 'Situar en el mapa',
+  'form.addressNotFound': 'No hemos encontrado esa dirección. Marca el punto en el mapa a mano.',
 
   // Detalle del sitio
   'detail.myRating': 'Tu puntuación',
@@ -1370,6 +1377,13 @@ const en: Record<TranslationKey, string> = {
   'wiz.next': 'Next',
   'wiz.step': 'Step {n} of {total}',
   'wiz.located': 'Spot marked on the map',
+  'detail.copyShort': 'Copy to…',
+  'detail.noAddress': 'No address yet',
+  'detail.addAddress': 'Add it',
+  'form.address': 'Address',
+  'form.addressPlaceholder': 'Street, number and city',
+  'form.addressLocate': 'Find on map',
+  'form.addressNotFound': "We couldn't find that address. Mark the spot on the map by hand.",
 
   'detail.myRating': 'Your rating',
   'detail.ratedBy': 'from {count} people',

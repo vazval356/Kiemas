@@ -111,6 +111,9 @@ export function PlaceFormPage() {
   const [smart, setSmart] = useState('')
   const advanceTimer = useRef<number>(0)
   const scrollRef = useRef<HTMLDivElement>(null)
+  // Dirección escrita a mano
+  const [locating, setLocating] = useState(false)
+  const [addrMsg, setAddrMsg] = useState('')
   useEffect(() => () => window.clearTimeout(advanceTimer.current), [])
   // El mapa se queda montado al cambiar de pantalla, pero oculto mide cero:
   // al volver a la primera hay que decirle que recalcule su tamaño.
@@ -447,7 +450,72 @@ export function PlaceFormPage() {
     }
   }
 
+  /**
+   * Sitúa en el mapa la dirección escrita a mano.
+   *
+   * El texto se queda como lo escribió la persona: solo se usa para colocar el
+   * pin. Sustituirlo por lo que devuelva el geocodificador sería volver a la
+   * dirección inventada que ya dio problemas con los enlaces de Google. El
+   * local de OpenStreetMap se descarta: una calle no identifica un negocio.
+   */
+  async function locateAddress() {
+    const texto = address.trim()
+    if (texto.length < 3 || locating) return
+    setLocating(true)
+    setAddrMsg('')
+    try {
+      const res = await searchAddress(texto, position ?? undefined, locale)
+      if (res.length === 0) {
+        setAddrMsg(t('form.addressNotFound'))
+        return
+      }
+      setCoords({ lat: res[0].lat, lng: res[0].lng })
+      setOsm({ osmType: null, osmId: null })
+      moveTo(res[0].lat, res[0].lng)
+    } catch {
+      setAddrMsg(t('form.addressNotFound'))
+    } finally {
+      setLocating(false)
+    }
+  }
+
   // Trozos que comparten el asistente de «Nuevo sitio» y el formulario de edición.
+  const addressBlock = (
+    <div className="mt-4">
+      <Label htmlFor="sitio-direccion">{t('form.address')}</Label>
+      <div className="flex gap-2">
+        <input
+          id="sitio-direccion"
+          value={address}
+          onChange={(e) => {
+            setAddress(e.target.value)
+            setAddrMsg('')
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              void locateAddress()
+            }
+          }}
+          placeholder={t('form.addressPlaceholder')}
+          autoComplete="street-address"
+          className="kd-input flex-1"
+        />
+        {address.trim().length >= 3 && (
+          <button
+            type="button"
+            onClick={() => void locateAddress()}
+            disabled={locating}
+            className="shrink-0 rounded-control border border-outline-variant px-4 text-sm font-semibold text-primary squish disabled:opacity-40"
+          >
+            {locating ? t('form.searching') : t('form.addressLocate')}
+          </button>
+        )}
+      </div>
+      {addrMsg && <p className="mt-1.5 text-sm text-on-surface-variant">{addrMsg}</p>}
+    </div>
+  )
+
   const photosBlock = (
     <div className="flex flex-wrap gap-2">
       <button
@@ -836,8 +904,9 @@ export function PlaceFormPage() {
                   className="mt-4 h-48 overflow-hidden rounded-card border border-outline-variant/50"
                 />
                 <p className="mt-1.5 text-xs text-on-surface-variant">
-                  {coords ? `✓ ${address || t('wiz.located')}` : t('form.mapHint')}
+                  {coords ? `✓ ${t('wiz.located')}` : t('form.mapHint')}
                 </p>
+                {addressBlock}
 
                 <Label className="mt-5" htmlFor="sitio-nombre">
                   {t('place.name')}
@@ -1226,13 +1295,13 @@ export function PlaceFormPage() {
         {noResults && !searching && query.trim().length >= 3 && (
           <p className="mt-2 text-sm text-on-surface-variant">{t('form.noResults', { query })}</p>
         )}
-        {address && <p className="mt-2 text-sm text-on-surface-variant">📍 {address}</p>}
 
         <div
           ref={mapContainerRef}
           className="mt-3 h-52 overflow-hidden rounded-card border border-outline-variant/50"
         />
         <p className="mt-1.5 text-xs text-on-surface-variant">{t('form.mapHint')}</p>
+        {addressBlock}
 
         <Label className="mt-5">{t('place.category')}</Label>
         <div className="flex flex-wrap gap-2">
