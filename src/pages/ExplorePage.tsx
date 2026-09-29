@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { CollectionIcon, SearchIcon } from '../components/icons'
+import { SearchIcon } from '../components/icons'
 import type { ExploreList, FollowedList } from '../lib/types'
 import { errorMessage, formatKm, kmBetween } from '../lib/utils'
 import { useApp } from '../state/appState'
@@ -96,18 +96,159 @@ export function ExplorePage() {
     }
   }
 
+  type Filtro = 'todo' | 'cerca' | 'seguidas' | 'siguiendo'
+  const [filtro, setFiltro] = useState<Filtro>('todo')
+
+  const km = (list: ExploreList): number | null => {
+    if (!position || !list.center) return null
+    return kmBetween(position.lat, position.lng, list.center.lat, list.center.lng)
+  }
+
+  const porSeguidores = useMemo(
+    () => [...lists].sort((a, b) => b.followers - a.followers || b.views - a.views),
+    [lists]
+  )
+  // Solo las que tienen distancia: ordenar por «cerca» sin saber dónde caen
+  // metería al final las que no se pueden comparar, mezcladas con las lejanas.
+  const cercanas = useMemo(
+    () =>
+      lists
+        .map((l) => ({ l, d: km(l) }))
+        .filter((x): x is { l: ExploreList; d: number } => x.d !== null)
+        .sort((a, b) => a.d - b.d)
+        .map((x) => x.l),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lists, position]
+  )
+
+  const filtros: { id: Filtro; label: string }[] = [
+    { id: 'todo', label: t('explore.chipAll') },
+    ...(cercanas.length > 0 ? [{ id: 'cerca' as const, label: t('explore.chipNear') }] : []),
+    { id: 'seguidas', label: t('explore.chipTop') },
+    { id: 'siguiendo', label: t('public.following') },
+  ]
+  // Si el filtro elegido deja de existir (p. ej. se quita la ubicación), vuelve
+  // a «Todo» en vez de dejar la pantalla vacía.
+  const activo = filtros.some((f) => f.id === filtro) ? filtro : 'todo'
+
+  const followers = (l: ExploreList) =>
+    l.followers === 1 ? t('explore.followerOne') : t('explore.followers', { count: l.followers })
+
+  const cabecera = (titulo: string, extra?: React.ReactNode) => (
+    <div className="mb-2.5 mt-6 flex items-baseline justify-between gap-2">
+      <h2 className="font-display text-lg font-bold text-on-surface">{titulo}</h2>
+      {extra}
+    </div>
+  )
+
+  const fila = (list: ExploreList, n?: number) => (
+    <li key={list.token} className="relative flex items-center gap-3 py-2.5">
+      <Link to={`/l/${list.token}`} className="absolute inset-0 z-0" aria-label={list.name} />
+      {n !== undefined && (
+        <span className="pointer-events-none w-5 shrink-0 text-center font-display text-lg font-extrabold text-primary">
+          {n}
+        </span>
+      )}
+      <Portada
+        name={list.name}
+        url={list.coverUrl}
+        className="pointer-events-none size-16 shrink-0 rounded-2xl"
+        inicialClass="text-5xl"
+      />
+      <span className="pointer-events-none min-w-0 flex-1">
+        <span className="block truncate font-display font-bold text-on-surface">{list.name}</span>
+        {list.preview.length > 0 && (
+          <span className="block truncate text-xs text-on-surface-variant">
+            {list.preview.join(' · ')}
+          </span>
+        )}
+        <span className="block truncate text-xs text-on-surface-variant">
+          {list.author ? `@${list.author}` : list.spaceName} · {followers(list)}
+        </span>
+      </span>
+      <BotonSeguir list={list} working={working === list.token} onToggle={toggleFollow} t={t} />
+    </li>
+  )
+
+  const filaSeguida = (l: FollowedList) => (
+    <li key={l.token} className="relative flex items-center gap-3 py-2.5">
+      <Link to={`/l/${l.token}`} className="absolute inset-0 z-0" aria-label={l.name} />
+      <Portada
+        name={l.name}
+        url={null}
+        className="pointer-events-none size-16 shrink-0 rounded-2xl"
+        inicialClass="text-5xl"
+      />
+      <span className="pointer-events-none min-w-0 flex-1">
+        <span className="block truncate font-display font-bold text-on-surface">{l.name}</span>
+        <span className="block truncate text-xs text-on-surface-variant">
+          {l.places === 1 ? t('collection.countOne') : t('collection.count', { count: l.places })}
+          {' · '}
+          {l.spaceName}
+        </span>
+      </span>
+    </li>
+  )
+
+  const tarjetaAlta = (list: ExploreList) => {
+    const d = km(list)
+    return (
+      <li key={list.token} className="relative h-60 w-44 shrink-0 snap-start">
+        <Link
+          to={`/l/${list.token}`}
+          className="absolute inset-0 z-0 block squish"
+          aria-label={list.name}
+        >
+          <Portada
+            name={list.name}
+            url={list.coverUrl}
+            className="size-full rounded-3xl"
+            inicialClass="text-[8rem]"
+            velo
+          />
+        </Link>
+        <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-3 text-white">
+          <div className="flex items-start justify-between gap-2">
+            {d !== null ? (
+              <span className="rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-semibold backdrop-blur">
+                📍 {formatKm(d)}
+              </span>
+            ) : (
+              <span />
+            )}
+            <BotonSeguir
+              list={list}
+              working={working === list.token}
+              onToggle={toggleFollow}
+              t={t}
+              sobreFoto
+            />
+          </div>
+          <div>
+            <p className="line-clamp-2 font-display text-lg font-extrabold leading-tight">
+              {list.name}
+            </p>
+            <p className="mt-1 text-xs text-white/85">
+              {list.places === 1
+                ? t('collection.countOne')
+                : t('collection.count', { count: list.places })}
+              {' · '}
+              {followers(list)}
+            </p>
+          </div>
+        </div>
+      </li>
+    )
+  }
+
+  const buscando = query.trim() !== ''
+
   return (
     <div className="min-h-0 flex-1 overflow-y-auto pb-32">
       {/* Sin botón de volver: esto dejó de ser una pantalla de pila colgada del
           perfil y pasó a ser una pestaña. Un «volver» en un destino de la barra
           inferior no tiene a dónde ir. */}
       <div className="mx-auto max-w-md px-4 pt-4">
-        {/* Título y botón de publicar en la misma línea.
-            Antes el título llevaba debajo un subtítulo que repetía lo que ya
-            dicen las secciones —«listas que otros grupos han hecho públicas»— y
-            el botón de publicar era una tarjeta a todo el ancho metida entre las
-            listas que sigues y las públicas, justo donde rompía la comparación
-            entre las dos. Arriba y pequeño ocupa una esquina que estaba vacía. */}
         <div className="flex items-center justify-between gap-3">
           <h1 className="font-display text-2xl font-bold text-on-surface">{t('explore.title')}</h1>
           <Link
@@ -140,158 +281,229 @@ export function ExplorePage() {
           </p>
         )}
 
-        {/* ── Las que sigues ──────────────────────────────────────────────
-            En tira horizontal y no en cuadrícula: son pocas y ya las conoces,
-            así que no compiten con el descubrimiento — lo acompañan. Solo
-            aparecen si no estás buscando: durante una búsqueda, todo lo que no
-            sea el resultado estorba. */}
-        {!query && siguiendo.length > 0 && (
-          <section className="mt-5">
-            <div className="mb-2 flex items-baseline justify-between gap-2">
-              <h2 className="text-sm font-bold text-on-surface">
-                {t('followed.title')}
-              </h2>
-              {/* La tira solo enseña las primeras y no había forma de ver el
-                  resto: la pantalla que las lista todas existía sin puerta. */}
-              <Link to="/following" className="text-xs font-semibold text-primary squish">
-                {t('common.seeAll')}
-              </Link>
-            </div>
-            <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 hide-scrollbar">
-              {siguiendo.map((l) => (
-                <li key={l.token} className="w-36 shrink-0">
-                  <Link
-                    to={`/l/${l.token}`}
-                    className="flex h-full flex-col rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-surface)] squish"
-                  >
-                    <span className="mb-1 flex size-9 items-center justify-center rounded-control bg-primary-fixed text-lg text-primary">
-                      🔖
-                    </span>
-                    <span className="truncate font-semibold text-on-surface">{l.name}</span>
-                    <span className="truncate text-xs text-on-surface-variant">
-                      {l.places === 1
-                        ? t('collection.countOne')
-                        : t('collection.count', { count: l.places })}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
+        {/* Los filtros solo aparecen sin búsqueda: durante una búsqueda todo lo
+            que no sea el resultado estorba. */}
+        {!buscando && (
+          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 hide-scrollbar">
+            {filtros.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                aria-pressed={activo === f.id}
+                onClick={() => setFiltro(f.id)}
+                className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold squish ${
+                  activo === f.id
+                    ? 'bg-on-surface text-surface-lowest'
+                    : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         )}
-
-        {/* Separador y cabecera propia para las públicas.
-            Sin esto, la tira de las que sigues y la cuadrícula de las públicas se
-            leían como una sola lista con dos formas distintas, y no quedaba claro
-            dónde acababa lo tuyo y empezaba lo de los demás. */}
-        <div className="mt-6 flex items-baseline justify-between gap-2 border-t border-outline-variant/50 pt-4">
-          <h2 className="text-sm font-bold text-on-surface">
-            {query ? t('explore.results') : t('explore.publicTitle')}
-          </h2>
-          {!loading && lists.length > 0 && (
-            <span className="text-xs text-on-surface-variant">{lists.length}</span>
-          )}
-        </div>
 
         {loading ? (
-          <p className="mt-3 text-sm text-on-surface-variant">{t('common.loading')}</p>
-        ) : lists.length === 0 ? (
-          <div className="mt-3 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
-            <div className="mb-2 text-4xl">🧭</div>
-            <p className="font-medium text-on-surface">
-              {query ? t('explore.noResults') : t('explore.empty')}
-            </p>
-            {!query && (
-              <p className="mt-1 text-sm text-on-surface-variant">{t('explore.emptyHint')}</p>
-            )}
-          </div>
-        ) : (
-          <ul className="mt-3 grid grid-cols-2 gap-3">
-            {lists.map((list) => {
-              const lejos = distancia(list)
-              return (
-                <li
-                  key={list.token}
-                  className="flex flex-col overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]"
-                >
-                  <Link to={`/l/${list.token}`} className="block squish">
-                    <div className="relative flex aspect-square items-center justify-center bg-primary-fixed">
-                      {list.coverUrl ? (
-                        <img
-                          decoding="async"
-                          src={list.coverUrl}
-                          alt=""
-                          loading="lazy"
-                          className="absolute inset-0 size-full object-cover"
-                        />
-                      ) : (
-                        <CollectionIcon className="size-8 text-primary" />
-                      )}
-                      <span className="absolute right-2 top-2 rounded-full bg-surface-lowest/90 px-2 py-0.5 text-[11px] font-bold text-on-surface">
-                        {list.places}
-                      </span>
-                      {lejos && (
-                        <span className="absolute bottom-2 left-2 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-semibold text-white">
-                          {lejos}
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-
-                  <div className="flex flex-1 flex-col p-3">
-                    <Link to={`/l/${list.token}`} className="block">
-                      <h2 className="truncate font-display font-bold text-on-surface">
-                        {list.name}
-                      </h2>
-                    </Link>
-
-                    <div className="mt-1 flex items-center gap-1.5">
-                      {list.authorAvatarUrl ? (
-                        <img
-                          decoding="async"
-                          src={list.authorAvatarUrl}
-                          alt=""
-                          loading="lazy"
-                          className="size-4 shrink-0 rounded-full object-cover"
-                        />
-                      ) : (
-                        <span className="flex size-4 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-[9px] font-bold text-primary">
-                          {(list.author ?? list.spaceName).slice(0, 1).toUpperCase()}
-                        </span>
-                      )}
-                      <span className="truncate text-xs text-on-surface-variant">
-                        {list.author ? `@${list.author}` : list.spaceName}
-                      </span>
-                    </div>
-
-                    {/* En dos columnas no cabe la enumeración entera, así que
-                        se corta a una línea. Sigue diciendo de qué va la lista
-                        mejor que su título. */}
-                    {list.preview.length > 0 && (
-                      <p className="mt-1 truncate text-xs text-on-surface-variant">
-                        {list.preview.join(' · ')}
-                      </p>
-                    )}
-
-                    <button
-                      type="button"
-                      disabled={working === list.token}
-                      onClick={() => void toggleFollow(list)}
-                      className={`mt-3 w-full rounded-full py-2 text-sm font-semibold squish disabled:opacity-50 ${
-                        list.following
-                          ? 'border border-outline-variant text-on-surface-variant'
-                          : 'bg-primary text-on-primary'
-                      }`}
-                    >
-                      {list.following ? t('public.following') : t('public.follow')}
-                    </button>
-                  </div>
-                </li>
+          <p className="mt-6 text-sm text-on-surface-variant">{t('common.loading')}</p>
+        ) : buscando ? (
+          <>
+            {cabecera(
+              t('explore.results'),
+              lists.length > 0 && (
+                <span className="text-xs text-on-surface-variant">{lists.length}</span>
               )
-            })}
-          </ul>
+            )}
+            {lists.length === 0 ? (
+              <Vacio texto={t('explore.noResults')} />
+            ) : (
+              <ul>{porSeguidores.map((l) => fila(l))}</ul>
+            )}
+          </>
+        ) : activo === 'siguiendo' ? (
+          <>
+            {cabecera(t('followed.title'))}
+            {siguiendo.length === 0 ? (
+              <Vacio texto={t('explore.noFollowed')} />
+            ) : (
+              <ul>{siguiendo.map(filaSeguida)}</ul>
+            )}
+          </>
+        ) : lists.length === 0 ? (
+          <Vacio texto={t('explore.empty')} pista={t('explore.emptyHint')} />
+        ) : activo === 'cerca' ? (
+          <>
+            {cabecera(
+              t('explore.chipNear'),
+              <span className="text-xs text-on-surface-variant">{t('explore.byDistance')}</span>
+            )}
+            <ul>{cercanas.map((l) => fila(l))}</ul>
+          </>
+        ) : activo === 'seguidas' ? (
+          <>
+            {cabecera(t('explore.chipTop'))}
+            <ul>{porSeguidores.map((l, i) => fila(l, i + 1))}</ul>
+          </>
+        ) : (
+          <>
+            {/* ── Las que sigues ──────────────────────────────────────────
+                Círculos pequeños arriba: ya las conoces, así que acompañan y
+                no compiten con el descubrimiento. */}
+            {siguiendo.length > 0 && (
+              <section>
+                {cabecera(
+                  t('followed.title'),
+                  <Link to="/following" className="text-xs font-semibold text-primary squish">
+                    {t('common.seeAll')}
+                  </Link>
+                )}
+                <ul className="-mx-4 flex gap-3.5 overflow-x-auto px-4 pb-1 hide-scrollbar">
+                  {siguiendo.map((l) => (
+                    <li key={l.token} className="w-16 shrink-0 text-center">
+                      <Link to={`/l/${l.token}`} className="block squish">
+                        <Portada
+                          name={l.name}
+                          url={null}
+                          className="mx-auto size-14 rounded-full outline outline-2 outline-offset-2 outline-primary"
+                          inicialClass="text-3xl"
+                        />
+                        <span className="mt-1.5 block truncate text-xs font-semibold text-on-surface">
+                          {l.name}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {cercanas.length > 0 && (
+              <section>
+                {cabecera(
+                  t('explore.chipNear'),
+                  <span className="text-xs text-on-surface-variant">{t('explore.byDistance')}</span>
+                )}
+                <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 hide-scrollbar">
+                  {cercanas.slice(0, 5).map(tarjetaAlta)}
+                </ul>
+              </section>
+            )}
+
+            <section>
+              {cabecera(t('explore.chipTop'))}
+              <ul>{porSeguidores.slice(0, 5).map((l, i) => fila(l, i + 1))}</ul>
+            </section>
+          </>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Degradados de las portadas generadas. */
+const DEGRADADOS = [
+  ['#3a3fb8', '#d9246f'],
+  ['#0f7a6b', '#4648d4'],
+  ['#b45309', '#b90538'],
+  ['#7c3aed', '#0b6fa8'],
+  ['#15803d', '#0b6fa8'],
+  ['#d9246f', '#7f5300'],
+  ['#0b6fa8', '#7c3aed'],
+]
+
+/**
+ * La portada de una lista, o una generada si no tiene foto.
+ *
+ * Antes una lista sin foto enseñaba un cuadrado lila con un icono, igual para
+ * todas: la pantalla parecía vacía justo cuando más falta hacía que se
+ * distinguieran. El color sale del nombre, así que una misma lista se ve igual
+ * siempre y dos listas distintas casi nunca se confunden.
+ */
+function Portada({
+  name,
+  url,
+  className,
+  inicialClass,
+  velo,
+}: {
+  name: string
+  url: string | null
+  className: string
+  inicialClass: string
+  /** Sombra de abajo arriba para poner texto encima. */
+  velo?: boolean
+}) {
+  const suma = [...name].reduce((n, c) => n + c.charCodeAt(0), 0)
+  const [a, b] = DEGRADADOS[suma % DEGRADADOS.length]
+  return (
+    <div
+      className={`relative overflow-hidden ${className}`}
+      style={{ background: `linear-gradient(140deg, ${a}, ${b})` }}
+    >
+      {url ? (
+        <img
+          decoding="async"
+          src={url}
+          alt=""
+          loading="lazy"
+          className="absolute inset-0 size-full object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className={`absolute -bottom-[0.18em] -right-[0.05em] font-display font-extrabold leading-none text-white/20 ${inicialClass}`}
+        >
+          {name.slice(0, 1).toUpperCase()}
+        </span>
+      )}
+      {velo && (
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+      )}
+    </div>
+  )
+}
+
+/** Seguir o dejar de seguir, en un botón redondo de un toque. */
+function BotonSeguir({
+  list,
+  working,
+  onToggle,
+  t,
+  sobreFoto,
+}: {
+  list: ExploreList
+  working: boolean
+  onToggle: (l: ExploreList) => void
+  t: ReturnType<typeof useApp>['t']
+  sobreFoto?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      disabled={working}
+      onClick={() => onToggle(list)}
+      aria-pressed={list.following}
+      aria-label={list.following ? t('public.following') : t('public.follow')}
+      className={`pointer-events-auto relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full text-lg font-bold squish disabled:opacity-50 ${
+        list.following
+          ? sobreFoto
+            ? 'bg-white/25 text-white backdrop-blur'
+            : 'text-on-surface-variant ring-2 ring-inset ring-outline-variant'
+          : sobreFoto
+            ? 'bg-white text-primary'
+            : 'bg-primary text-on-primary'
+      }`}
+    >
+      {list.following ? '✓' : '+'}
+    </button>
+  )
+}
+
+function Vacio({ texto, pista }: { texto: string; pista?: string }) {
+  return (
+    <div className="mt-6 rounded-card bg-surface-lowest px-4 py-10 text-center shadow-[var(--shadow-surface)]">
+      <div className="mb-2 text-4xl">🧭</div>
+      <p className="font-medium text-on-surface">{texto}</p>
+      {pista && <p className="mt-1 text-sm text-on-surface-variant">{pista}</p>}
     </div>
   )
 }

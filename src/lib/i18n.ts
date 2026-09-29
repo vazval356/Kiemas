@@ -686,6 +686,11 @@ const es = {
   'explore.empty': 'Todavía no hay listas publicadas',
   'explore.emptyHint': 'Publica una de las tuyas y será la primera.',
   'explore.noResults': 'Nada con esa búsqueda',
+  'explore.chipAll': 'Todo',
+  'explore.chipNear': 'Cerca de ti',
+  'explore.chipTop': 'Más seguidas',
+  'explore.byDistance': 'por distancia',
+  'explore.noFollowed': 'Todavía no sigues ninguna lista.',
   'explore.listIt': 'Aparecer en Explorar',
   'explore.listItHint':
     'Compartir da un enlace para quien tú quieras. Aparecer aquí la hace pública y buscable para cualquiera con cuenta.',
@@ -1556,6 +1561,11 @@ const en: Record<TranslationKey, string> = {
   'explore.empty': 'No lists published yet',
   'explore.emptyHint': 'Publish one of yours and it will be the first.',
   'explore.noResults': 'Nothing matches that search',
+  'explore.chipAll': 'All',
+  'explore.chipNear': 'Near you',
+  'explore.chipTop': 'Most followed',
+  'explore.byDistance': 'by distance',
+  'explore.noFollowed': "You don't follow any list yet.",
   'explore.listIt': 'Show in Explore',
   'explore.listItHint':
     'Sharing gives a link for whoever you choose. Showing it here makes it public and searchable for anyone with an account.',
