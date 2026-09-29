@@ -22,9 +22,23 @@ interface Props {
 /** Alto de cada fila del carrete, en píxeles. La ventana enseña tres. */
 const FILA = 62
 
-/** Cuánto dura la animación. Con un solo sitio no hay nada que sortear: rápido. */
-const DURACION_MS = 3800
-const DURACION_UNICA_MS = 1800
+/**
+ * Cuánto dura el giro y cuántas filas recorre.
+ *
+ * Antes eran 3,8 s, 30 filas y una curva que gastaba casi todo el recorrido en el
+ * primer segundo y se arrastraba el resto: 5/8 del tiempo para las dos últimas
+ * filas, que es lo que se sentía lento. Ahora son 48 filas en 3 s con una curva
+ * que arranca muy rápido y frena de forma escalonada —cada octavo del tiempo
+ * recorre la mitad que el anterior—, así que hasta el último instante se ve
+ * pasar un nombre cada vez más despacio.
+ *
+ * Con un solo sitio no hay nada que sortear: corto.
+ */
+const DURACION_MS = 3000
+const DURACION_UNICA_MS = 1300
+const VUELTAS = 48
+const VUELTAS_UNICA = 8
+const CURVA = 'cubic-bezier(0.15, 0.65, 0.25, 1)'
 
 const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
 
@@ -47,14 +61,13 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
   const [includeVisited, setIncludeVisited] = useState(false)
   const [spinning, setSpinning] = useState(false)
   const [secuencia, setSecuencia] = useState<Place[]>([])
-  const [borroso, setBorroso] = useState(false)
   /** Con «reducir movimiento»: solo tres filas que cambian de sitio, sin deslizar. */
   const [ventana, setVentana] = useState<Place[] | null>(null)
   const [winner, setWinner] = useState<Place | null>(null)
 
   const tiraRef = useRef<HTMLDivElement>(null)
   const confetiRef = useRef<HTMLDivElement>(null)
-  const animacion = useRef<Animation | null>(null)
+  const animaciones = useRef<Animation[]>([])
   /**
    * Número de giro vigente. Cada sorteo lo incrementa, y las esperas del anterior
    * miran si siguen siendo las suyas antes de tocar nada: si se cambia de filtro
@@ -117,10 +130,9 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
 
   async function spin() {
     const mio = ++giro.current
-    animacion.current?.cancel()
-    animacion.current = null
+    animaciones.current.forEach((a) => a.cancel())
+    animaciones.current = []
     setWinner(null)
-    setBorroso(false)
     if (candidates.length === 0) {
       setSecuencia([])
       setVentana(null)
@@ -166,7 +178,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
 
     // La tira: vueltas a la lista y, al final, el ganador. Sus dos vecinos no
     // pueden ser él mismo, o se vería dos veces seguidas y parecería un fallo.
-    const vueltas = n === 1 ? 10 : 30
+    const vueltas = n === 1 ? VUELTAS_UNICA : VUELTAS
     const seq: Place[] = []
     let k = Math.floor(Math.random() * n)
     for (let i = 0; i < vueltas + 2; i++) seq.push(candidates[k++ % n])
@@ -194,18 +206,28 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
     // depende de nada de eso.
     const dur = n === 1 ? DURACION_UNICA_MS : DURACION_MS
     const destino = `translateY(${-(vueltas - 1) * FILA}px)`
-    setBorroso(true)
-    animacion.current = el.animate(
-      [{ transform: 'translateY(0)' }, { transform: destino }],
-      // La fila del ganador queda en el centro de la ventana de tres.
-      { duration: dur, easing: 'cubic-bezier(.16,.86,.2,1.03)', fill: 'forwards' }
+    // La fila del ganador queda en el centro de la ventana de tres.
+    const deslizar = el.animate([{ transform: 'translateY(0)' }, { transform: destino }], {
+      duration: dur,
+      easing: CURVA,
+      fill: 'forwards',
+    })
+    // El desenfoque baja con la velocidad: a tope mientras corre y a cero antes de
+    // parar, para poder leer dónde cae. Va en otra animación porque necesita su
+    // propio ritmo (`easing` lineal entre marcas) y no el de la tira.
+    const desenfocar = el.animate(
+      [
+        { filter: 'blur(3px)' },
+        { filter: 'blur(2.4px)', offset: 0.3 },
+        { filter: 'blur(0px)', offset: 0.75 },
+        { filter: 'blur(0px)' },
+      ],
+      { duration: dur, easing: 'linear', fill: 'forwards' }
     )
 
-    // Borroso mientras corre; nítido en el último tramo, para poder leer dónde cae.
-    await esperar(dur * 0.72)
-    if (mio !== giro.current) return
-    setBorroso(false)
-    await esperar(dur * 0.28 + 200)
+    animaciones.current = [deslizar, desenfocar]
+
+    await esperar(dur + 120)
     if (mio !== giro.current) return
 
     setWinner(chosen)
@@ -218,7 +240,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
     void spin()
     return () => {
       giro.current++
-      animacion.current?.cancel()
+      animaciones.current.forEach((a) => a.cancel())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [catFilter, includeVisited])
@@ -318,12 +340,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
                 className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-surface-lowest to-transparent"
                 style={{ height: FILA }}
               />
-              <div
-                ref={tiraRef}
-                className={`absolute inset-x-0 top-0 z-[1] will-change-transform ${
-                  borroso ? 'blur-[1.4px]' : ''
-                }`}
-              >
+              <div ref={tiraRef} className="absolute inset-x-0 top-0 z-[1] will-change-transform">
                 {filas.map((p, i) => (
                   <div
                     key={`${i}-${p.id}`}
