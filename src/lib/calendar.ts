@@ -202,11 +202,20 @@ export async function sincronizarCalendario(options: {
 
   const porPlan = new Map(links.map((l) => [l.planId, l]))
   const ahora = Date.now()
+  // Desde cuándo se crean eventos NUEVOS: desde ayer, como siempre.
+  //
+  // Antes la app solo cargaba los planes de ayer en adelante y esto salía solo.
+  // Ahora se cargan también los ya hechos, para que no desaparezcan de la
+  // pantalla; sin este corte, activar el calendario del móvil metería en la
+  // agenda todo el historial del grupo de una vez. Un evento que ya existe sí se
+  // sigue corrigiendo aunque el plan sea viejo.
+  const desdeAyer = ahora - 24 * 60 * 60 * 1000
 
   // ── Crear y corregir ────────────────────────────────────────────────────
   for (const plan of plans) {
     const enlace = porPlan.get(plan.id)
     if (!debeEstar(plan, myUserId)) continue
+    if (!enlace && new Date(plan.startsAt!).getTime() < desdeAyer) continue
 
     const lugar = lugarDe(plan, places)
     const firma = firmaDe(plan, lugar)

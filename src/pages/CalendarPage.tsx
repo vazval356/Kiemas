@@ -7,7 +7,7 @@ import type { Translate } from '../lib/i18n'
 import { categoryLabel } from '../lib/categories'
 import { AfterPlanCard } from '../components/AfterPlanCard'
 import { FalloAlCargar, ListaCargando } from '../components/EstadoDeSeccion'
-import { DecisionsSection, useDecisionesAbiertas } from '../components/DecisionsSection'
+import { DecisionsSection, useDecisiones } from '../components/DecisionsSection'
 import { useApp } from '../state/appState'
 import { usePageTitle } from '../lib/seo'
 
@@ -37,9 +37,11 @@ export function CalendarPage() {
   // Las decisiones ya no ocupan la parte de arriba de la pantalla: un aviso si
   // hay alguna abierta, y una hoja con todo cuando se toca. `nueva` abre la hoja
   // ya con el formulario de una decisión nueva.
-  const { abiertas, recargar, esGrupo } = useDecisionesAbiertas()
+  const { abiertas, cerradas, recargar, esGrupo } = useDecisiones()
   const [hoja, setHoja] = useState<null | 'ver' | 'nueva'>(null)
   const [menuNuevo, setMenuNuevo] = useState(false)
+  /** Los planes ya hechos salen recogidos (los últimos) y se despliegan del todo. */
+  const [verPasados, setVerPasados] = useState(false)
 
   const placeById = useMemo(() => new Map(places.map((p) => [p.id, p])), [places])
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
@@ -133,6 +135,21 @@ export function CalendarPage() {
     return dated.filter((p) => isSameDay(new Date(p.startsAt!), selectedDay))
   }, [dated, selectedDay])
 
+  /**
+   * Los planes que ya han pasado, el más reciente primero.
+   *
+   * Un plan hecho no desaparece: es parte de lo que el grupo ha vivido, y quien
+   * abre el calendario quiere poder volver a «aquella cena» y ver quién fue. Se
+   * cuenta desde el principio de hoy, así que lo de esta mañana sigue en la
+   * agenda de hoy y no salta a esta lista hasta mañana.
+   */
+  const pasados = useMemo(() => {
+    const hoy = startOfDay(new Date())
+    return dated
+      .filter((p) => new Date(p.startsAt!) < hoy)
+      .sort((a, b) => b.startsAt!.localeCompare(a.startsAt!))
+  }, [dated])
+
   function myResponse(plan: Plan) {
     return plan.attendees.find((a) => a.userId === profile?.id)?.response ?? 'pending'
   }
@@ -173,6 +190,25 @@ export function CalendarPage() {
   }
   const fechaLarga = (day: Date) =>
     day.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' })
+
+  const pasadosVisibles = verPasados ? pasados : pasados.slice(0, 3)
+  const seccionPasados =
+    dataStatus === 'ready' && pasados.length > 0 ? (
+      <section className="mt-7">
+        <SectionTitle>{t('plan.past')}</SectionTitle>
+        <ul className="mt-2 flex flex-col gap-3">{pasadosVisibles.map((p) => planCard(p))}</ul>
+        {pasados.length > 3 && (
+          <button
+            type="button"
+            onClick={() => setVerPasados((v) => !v)}
+            aria-expanded={verPasados}
+            className="mt-2 text-sm font-semibold text-primary squish"
+          >
+            {verPasados ? t('plan.pastLess') : `${t('common.seeAll')} (${pasados.length})`}
+          </button>
+        )}
+      </section>
+    ) : null
 
   return (
     <div className="relative min-h-0 flex-1 overflow-y-auto">
@@ -256,61 +292,121 @@ export function CalendarPage() {
         )}
 
         {view === 'agenda' ? (
-          <div data-tour="dias">
-            {/* ── Por decidir ─────────────────────────────────────────────── */}
-            {polls.length > 0 && (
-              <section className="mt-5">
-                <SectionTitle>{t('plan.isPoll')}</SectionTitle>
-                <ul className="mt-2 flex flex-col gap-3">{polls.map((p) => planCard(p))}</ul>
+          <>
+            <div data-tour="dias">
+              {/* ── Por decidir ─────────────────────────────────────────────── */}
+              {polls.length > 0 && (
+                <section className="mt-5">
+                  <SectionTitle>{t('plan.isPoll')}</SectionTitle>
+                  <ul className="mt-2 flex flex-col gap-3">{polls.map((p) => planCard(p))}</ul>
+                </section>
+              )}
+
+              {/* ── Día a día ───────────────────────────────────────────────── */}
+              {dataStatus === 'loading' ? (
+                <div className="mt-5">
+                  <ListaCargando filas={2} />
+                </div>
+              ) : dataStatus === 'error' ? (
+                <div className="mt-5">
+                  <FalloAlCargar />
+                </div>
+              ) : !hayAlgo ? (
+                <div className="mt-5 rounded-card bg-surface-lowest px-4 py-8 text-center shadow-[var(--shadow-surface)]">
+                  <div className="mb-2 text-3xl" aria-hidden>
+                    📅
+                  </div>
+                  <p className="font-medium text-on-surface">{t('plan.none')}</p>
+                  <p className="mt-1 text-sm text-on-surface-variant">{t('plan.noneHint')}</p>
+                </div>
+              ) : (
+                <div className="mt-2 ml-1.5 border-l-2 border-surface-container pl-3.5">
+                  {agenda.map(({ day, plans: delDia }) => {
+                    const cercano = daysBetween(new Date(), day) <= 1
+                    return (
+                      <section key={day.toISOString()}>
+                        <div className="mb-2 mt-5 flex items-baseline gap-2">
+                          <h2 className="font-display text-base font-bold text-on-surface first-letter:uppercase">
+                            {nombreDeDia(day)}
+                          </h2>
+                          {cercano && (
+                            <span className="text-xs text-on-surface-variant first-letter:uppercase">
+                              {fechaLarga(day)}
+                            </span>
+                          )}
+                        </div>
+                        {delDia.length === 0 ? (
+                          <p className="text-sm text-on-surface-variant">{t('calendar.free')}</p>
+                        ) : (
+                          <ul className="flex flex-col gap-3">
+                            {delDia.map((p) => planCard(p, false))}
+                          </ul>
+                        )}
+                      </section>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            {seccionPasados}
+
+            {/* ── Decididas ──────────────────────────────────────────────────
+              Lo que el grupo ya votó y dejó fijado. Antes solo se llegaba a
+              ello si había otra decisión abierta, porque el aviso de arriba
+              cuenta las abiertas; ahora tienen su sitio. Las tres últimas, con
+              el resultado a la vista; tocar cualquiera abre la hoja con todas,
+              donde quien administra puede borrarlas. */}
+            {esGrupo && cerradas.length > 0 && (
+              <section className="mt-7">
+                <div className="flex items-baseline justify-between gap-2">
+                  <SectionTitle>{t('decision.closedSection')}</SectionTitle>
+                </div>
+                <ul className="mt-2 flex flex-col gap-2">
+                  {cerradas.slice(0, 3).map((d) => {
+                    const ganadora = d.options.find((o) => o.id === d.chosenOptionId)
+                    return (
+                      <li key={d.id}>
+                        <button
+                          type="button"
+                          onClick={() => setHoja('ver')}
+                          className="flex w-full items-center gap-3 rounded-card bg-surface-lowest px-4 py-3 text-left shadow-[var(--shadow-surface)] squish"
+                        >
+                          <span aria-hidden className="text-xl">
+                            🗳️
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-semibold text-on-surface">
+                              {d.title}
+                            </span>
+                            <span className="block truncate text-xs text-on-surface-variant">
+                              {ganadora ? `✓ ${ganadora.label} · ` : ''}
+                              {new Date(d.closedAt!).toLocaleDateString(locale, {
+                                day: 'numeric',
+                                month: 'short',
+                              })}
+                            </span>
+                          </span>
+                          <span className="text-on-surface-variant" aria-hidden>
+                            ›
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+                {cerradas.length > 3 && (
+                  <button
+                    type="button"
+                    onClick={() => setHoja('ver')}
+                    className="mt-2 text-sm font-semibold text-primary squish"
+                  >
+                    {t('common.seeAll')} ({cerradas.length})
+                  </button>
+                )}
               </section>
             )}
-
-            {/* ── Día a día ───────────────────────────────────────────────── */}
-            {dataStatus === 'loading' ? (
-              <div className="mt-5">
-                <ListaCargando filas={2} />
-              </div>
-            ) : dataStatus === 'error' ? (
-              <div className="mt-5">
-                <FalloAlCargar />
-              </div>
-            ) : !hayAlgo ? (
-              <div className="mt-5 rounded-card bg-surface-lowest px-4 py-8 text-center shadow-[var(--shadow-surface)]">
-                <div className="mb-2 text-3xl" aria-hidden>
-                  📅
-                </div>
-                <p className="font-medium text-on-surface">{t('plan.none')}</p>
-                <p className="mt-1 text-sm text-on-surface-variant">{t('plan.noneHint')}</p>
-              </div>
-            ) : (
-              <div className="mt-2 ml-1.5 border-l-2 border-surface-container pl-3.5">
-                {agenda.map(({ day, plans: delDia }) => {
-                  const cercano = daysBetween(new Date(), day) <= 1
-                  return (
-                    <section key={day.toISOString()}>
-                      <div className="mb-2 mt-5 flex items-baseline gap-2">
-                        <h2 className="font-display text-base font-bold text-on-surface first-letter:uppercase">
-                          {nombreDeDia(day)}
-                        </h2>
-                        {cercano && (
-                          <span className="text-xs text-on-surface-variant first-letter:uppercase">
-                            {fechaLarga(day)}
-                          </span>
-                        )}
-                      </div>
-                      {delDia.length === 0 ? (
-                        <p className="text-sm text-on-surface-variant">{t('calendar.free')}</p>
-                      ) : (
-                        <ul className="flex flex-col gap-3">
-                          {delDia.map((p) => planCard(p, false))}
-                        </ul>
-                      )}
-                    </section>
-                  )
-                })}
-              </div>
-            )}
-          </div>
+          </>
         ) : (
           <>
             <div data-tour="dias">
@@ -405,6 +501,7 @@ export function CalendarPage() {
                 <ul className="mt-2 flex flex-col gap-3">{visible.map((p) => planCard(p))}</ul>
               )}
             </section>
+            {!selectedDay && seccionPasados}
           </>
         )}
       </div>

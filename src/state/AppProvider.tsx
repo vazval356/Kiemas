@@ -97,17 +97,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const primeraVez = cargadoRef.current !== activeSpace.id
     if (primeraVez) setDataStatus('loading')
 
-    // Los planes se piden desde ayer, no desde ahora: uno que empezó hace dos
-    // horas sigue siendo el plan de esta noche y desaparecer de la lista a mitad
-    // de la cena sería absurdo.
-    const since = new Date()
-    since.setDate(since.getDate() - 1)
-
+    // Los planes se piden TODOS, también los que ya han pasado.
+    //
+    // Antes se pedían solo desde ayer, y los planes hechos desaparecían de la
+    // aplicación al día siguiente: no estaban en el calendario ni en ningún otro
+    // sitio, como si nunca hubieran ocurrido. Cada pantalla decide qué enseña —el
+    // calendario separa «próximos» de «pasados», el widget solo mira los que
+    // faltan— y la sincronización con el calendario del móvil no crea eventos de
+    // planes viejos (ver `sincronizarCalendario`).
     try {
       const [cats, pls, plns, tgs, cols] = await Promise.all([
         api.listCategories(activeSpace.id),
         api.listPlaces(activeSpace.id),
-        api.listPlans(activeSpace.id, since),
+        api.listPlans(activeSpace.id),
         api.listTags(activeSpace.id),
         api.listCollections(activeSpace.id),
       ])
