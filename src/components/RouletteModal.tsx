@@ -25,19 +25,22 @@ const FILA = 62
 /**
  * Cuánto dura el giro y cuántas filas recorre.
  *
- * Antes eran 3,8 s, 30 filas y una curva que gastaba casi todo el recorrido en el
- * primer segundo y se arrastraba el resto: 5/8 del tiempo para las dos últimas
- * filas, que es lo que se sentía lento. Ahora son 48 filas en 3 s con una curva
- * que arranca muy rápido y frena de forma escalonada —cada octavo del tiempo
- * recorre la mitad que el anterior—, así que hasta el último instante se ve
- * pasar un nombre cada vez más despacio.
+ * Son 100 filas en 4,5 s con una curva que arranca muy fuerte y frena de forma
+ * escalonada —cada tramo recorre bastante menos que el anterior—, así que el
+ * final es largo pero nunca se queda quieto: hasta el último instante se ve pasar
+ * un nombre, cada vez más despacio. Al principio son unas 95 filas por segundo;
+ * en el último segundo, poco más de una fila.
+ *
+ * Antes eran 30 filas en 3,8 s con una curva que gastaba casi todo el recorrido
+ * en el primer segundo y se arrastraba el resto, y después 48 en 3 s: seguía
+ * quedándose corto tanto de velocidad como de duración.
  *
  * Con un solo sitio no hay nada que sortear: corto.
  */
 const DURACION_MS = 4500
 const DURACION_UNICA_MS = 1300
-const VUELTAS = 53
-const VUELTAS_UNICA = 12
+const VUELTAS = 100
+const VUELTAS_UNICA = 8
 const CURVA = 'cubic-bezier(0.15, 0.65, 0.25, 1)'
 
 const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
