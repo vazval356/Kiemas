@@ -1,4 +1,6 @@
 import { BRAND_NAME } from './brand'
+import { elegirIdioma, idiomasDelNavegador } from './elegirIdioma'
+import { idiomaDelMovil } from './idiomaDelMovil'
 import type { Locale } from './types'
 
 /**
@@ -51,7 +53,8 @@ const es = {
   'auth.signIn': 'Entrar',
   'auth.faceIdSignIn': 'Entrar con Face ID',
   'auth.faceIdRemember': 'Usar Face ID para entrar la próxima vez',
-  'auth.faceIdExpired': 'Tu contraseña ha cambiado. Escribe la nueva y Face ID volverá a funcionar.',
+  'auth.faceIdExpired':
+    'Tu contraseña ha cambiado. Escribe la nueva y Face ID volverá a funcionar.',
   'auth.signUp': 'Crear cuenta',
   'auth.email': 'Correo electrónico',
   'auth.password': 'Contraseña',
@@ -1907,8 +1910,13 @@ export function createTranslate(locale: Locale): Translate {
   }
 }
 
-/** Idioma del navegador si lo tenemos traducido; castellano en caso contrario. */
+/**
+ * El idioma del teléfono si lo tenemos traducido; castellano en caso contrario.
+ *
+ * Primero el idioma que da el sistema (solo dentro de la app nativa, ver
+ * `idiomaDelMovil`) y detrás los del navegador, en su orden: el primero de toda
+ * la lista que esté traducido, no solo el primero de todos.
+ */
 export function detectLocale(): Locale {
-  const nav = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : 'es'
-  return nav.startsWith('en') ? 'en' : 'es'
+  return elegirIdioma([idiomaDelMovil(), ...idiomasDelNavegador()])
 }

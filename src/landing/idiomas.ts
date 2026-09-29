@@ -1,3 +1,4 @@
+import { elegirIdioma, idiomasDelNavegador } from '../lib/elegirIdioma'
 import { en } from './copy/en'
 import { es } from './copy/es'
 import type { TextoLanding } from './copy/tipos'
@@ -18,7 +19,10 @@ import type { TextoLanding } from './copy/tipos'
 export const IDIOMAS_LANDING = {
   es: { texto: es, etiqueta: 'ES', nombre: 'Español', ogLocale: 'es_ES' },
   en: { texto: en, etiqueta: 'EN', nombre: 'English', ogLocale: 'en_GB' },
-} as const satisfies Record<string, { texto: TextoLanding; etiqueta: string; nombre: string; ogLocale: string }>
+} as const satisfies Record<
+  string,
+  { texto: TextoLanding; etiqueta: string; nombre: string; ogLocale: string }
+>
 
 export type IdiomaLanding = keyof typeof IDIOMAS_LANDING
 
@@ -31,9 +35,11 @@ export function idiomaDeRuta(pathname: string): IdiomaLanding | null {
   return null
 }
 
-/** El idioma del navegador, si la landing lo tiene; si no, español. */
+/**
+ * El primer idioma del navegador, de toda su lista, que la landing tenga; si no,
+ * español. Mira la lista entera y no solo el primero: con el navegador en
+ * francés e inglés de segundo idioma, la landing sale en inglés.
+ */
 export function idiomaDelNavegador(): IdiomaLanding {
-  const nav = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : 'es'
-  const base = nav.split('-')[0]
-  return base in IDIOMAS_LANDING ? (base as IdiomaLanding) : 'es'
+  return elegirIdioma(idiomasDelNavegador())
 }

@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import { setupAnalytics } from './lib/analytics'
+import { leerIdiomaDelMovil } from './lib/idiomaDelMovil'
 import { setupNative } from './lib/native'
 import './index.css'
 
@@ -15,8 +16,15 @@ void setupNative()
 // Los pasos están en la cabecera de `lib/analytics.ts`.
 setupAnalytics()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-)
+// Se pinta cuando ya se sabe el idioma del teléfono. `detectLocale()` se llama en
+// pleno pintado, de forma síncrona, y dentro de la app nativa el idioma solo lo
+// da el sistema mediante una llamada asíncrona: sin esperarla, la primera
+// pantalla —el login— salía en el idioma equivocado. En web no espera nada, y en
+// nativo son unos milisegundos con un tope (ver `leerIdiomaDelMovil`).
+void leerIdiomaDelMovil().then(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  )
+})
