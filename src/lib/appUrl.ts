@@ -28,9 +28,15 @@ export const isNative = Capacitor.isNativePlatform()
 export function publicBaseUrl(): string {
   if (CONFIGURED) return CONFIGURED
   if (isNative) {
+    // Antes esto caía a `window.location.origin`, que dentro del contenedor vale
+    // `capacitor://localhost`: un compilado sin la variable repartía enlaces
+    // que no abren en ningún otro móvil, sin avisar a nadie. Con el dominio de
+    // producción como respaldo el enlace funciona igualmente; el aviso queda
+    // para que se defina bien en el siguiente compilado.
     console.warn(
-      'VITE_PUBLIC_URL no está definida: los enlaces compartidos desde la app apuntarán a localhost y no funcionarán fuera del dispositivo.'
+      'VITE_PUBLIC_URL no está definida: se usa https://kiemas.com para los enlaces compartidos.'
     )
+    return 'https://kiemas.com'
   }
   return window.location.origin
 }

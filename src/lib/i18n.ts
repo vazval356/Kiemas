@@ -694,6 +694,10 @@ const es = {
   'explore.chipTop': 'Más seguidas',
   'explore.byDistance': 'por distancia',
   'explore.noFollowed': 'Todavía no sigues ninguna lista.',
+  'explore.adminOnly': 'Solo quien administra el grupo puede publicarla en Explorar.',
+  'explore.needPlaces': 'Añade algún sitio a la colección para poder publicarla.',
+  'share.copyFailed': 'No se ha podido copiar. Mantén pulsado el enlace para copiarlo a mano.',
+  'share.send': 'Compartir',
   'explore.listIt': 'Aparecer en Explorar',
   'explore.listItHint':
     'Compartir da un enlace para quien tú quieras. Aparecer aquí la hace pública y buscable para cualquiera con cuenta.',
@@ -1572,6 +1576,10 @@ const en: Record<TranslationKey, string> = {
   'explore.chipTop': 'Most followed',
   'explore.byDistance': 'by distance',
   'explore.noFollowed': "You don't follow any list yet.",
+  'explore.adminOnly': 'Only group admins can publish it on Explore.',
+  'explore.needPlaces': 'Add a place to the collection to be able to publish it.',
+  'share.copyFailed': 'Could not copy it. Press and hold the link to copy it by hand.',
+  'share.send': 'Share',
   'explore.listIt': 'Show in Explore',
   'explore.listItHint':
     'Sharing gives a link for whoever you choose. Showing it here makes it public and searchable for anyone with an account.',

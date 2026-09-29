@@ -17,6 +17,28 @@ const EXPIRY_OPTIONS: { value: InviteExpiry; labelKey: TranslationKey }[] = [
 ]
 
 /**
+ * Copia con el método antiguo (`execCommand`), para cuando el portapapeles
+ * asíncrono se rechaza. Devuelve si ha funcionado.
+ */
+function copiarSeleccionando(texto: string): boolean {
+  const campo = document.createElement('textarea')
+  campo.value = texto
+  campo.setAttribute('readonly', '')
+  campo.style.position = 'fixed'
+  campo.style.opacity = '0'
+  document.body.appendChild(campo)
+  campo.select()
+  campo.setSelectionRange(0, texto.length)
+  try {
+    return document.execCommand('copy')
+  } catch {
+    return false
+  } finally {
+    document.body.removeChild(campo)
+  }
+}
+
+/**
  * Una colección: qué sitios tiene y si está publicada.
  *
  * El aviso de qué se comparte y qué no está a la vista antes de crear el
@@ -32,6 +54,7 @@ export function CollectionDetailPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
   const [expiry, setExpiry] = useState<InviteExpiry>(null)
   const [adding, setAdding] = useState(false)
   const [cropping, setCropping] = useState<File | null>(null)
@@ -44,6 +67,7 @@ export function CollectionDetailPage() {
   usePageTitle(collection?.name)
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories])
   const share = collection?.share && !collection.share.revokedAt ? collection.share : null
+  const esAdmin = activeSpace?.myRole === 'admin'
 
   // Estos dos hooks van AQUÍ, por encima del `return` de abajo, y no junto al
   // interruptor que gobiernan.
@@ -98,13 +122,42 @@ export function CollectionDetailPage() {
     }
   }
 
+  /**
+   * Copia el enlace y avisa de si ha ido bien.
+   *
+   * Antes un fallo del portapapeles se tragaba en silencio, y el enlace se
+   * enseñaba cortado con puntos suspensivos: quien pulsaba «copiar» no recibía
+   * ningún aviso, no tenía nada en el portapapeles y tampoco podía leer el
+   * enlace entero. En el contenedor del móvil el portapapeles asíncrono puede
+   * rechazarse, así que hay un segundo intento con el método antiguo y, si
+   * tampoco vale, un mensaje que lo dice.
+   */
   async function copyLink() {
+    setCopyFailed(false)
+    let ok = false
     try {
       await navigator.clipboard.writeText(publicUrl)
+      ok = true
+    } catch {
+      ok = copiarSeleccionando(publicUrl)
+    }
+    if (ok) {
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // El portapapeles puede estar bloqueado; el enlace está a la vista igual.
+    } else {
+      setCopyFailed(true)
+    }
+  }
+
+  // La hoja de compartir del sistema, cuando existe: es lo que se espera en el
+  // móvil y evita pasar por el portapapeles.
+  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+  async function shareLink() {
+    try {
+      await navigator.share({ title: collection?.name, url: publicUrl })
+    } catch (e) {
+      // Cerrar la hoja sin enviar lanza AbortError: no es un fallo.
+      if ((e as { name?: string }).name !== 'AbortError') setCopyFailed(true)
     }
   }
 
@@ -189,9 +242,7 @@ export function CollectionDetailPage() {
         {/* ── Sitios de la colección ─────────────────────────────────────── */}
         <section className="mt-6">
           <div className="mb-2 flex items-baseline justify-between gap-2">
-            <h2 className="text-sm font-bold text-on-surface">
-              {t('collection.inCollection')}
-            </h2>
+            <h2 className="text-sm font-bold text-on-surface">{t('collection.inCollection')}</h2>
             {inside.length > 0 && (
               <span className="text-xs font-semibold text-primary">
                 {inside.length === 1
@@ -328,8 +379,10 @@ export function CollectionDetailPage() {
             </>
           ) : (
             <>
-              <div className="mt-3 flex items-center gap-2">
-                <code className="min-w-0 flex-1 truncate rounded-control bg-surface-container px-3 py-2.5 font-mono text-xs text-on-surface">
+              {/* El enlace entero y seleccionable, no cortado: si copiar falla,
+                  hay que poder leerlo y copiarlo a mano. */}
+              <div className="mt-3 flex items-start gap-2">
+                <code className="min-w-0 flex-1 select-all break-all rounded-control bg-surface-container px-3 py-2.5 font-mono text-xs text-on-surface">
                   {publicUrl}
                 </code>
                 <button
@@ -341,8 +394,23 @@ export function CollectionDetailPage() {
                   <CopyIcon className="size-4" />
                 </button>
               </div>
+              {canShare && (
+                <button
+                  type="button"
+                  onClick={() => void shareLink()}
+                  className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-primary py-2.5 text-sm font-semibold text-primary squish"
+                >
+                  <ShareIcon className="size-4" />
+                  {t('share.send')}
+                </button>
+              )}
               {copied && (
                 <p className="mt-1.5 text-xs font-medium text-primary">{t('share.copied')}</p>
+              )}
+              {copyFailed && (
+                <p role="alert" className="mt-1.5 text-xs font-medium text-error">
+                  {t('share.copyFailed')}
+                </p>
               )}
               <p className="mt-1.5 text-xs text-on-surface-variant">
                 {t('share.views', { count: share.viewCount })}
@@ -355,42 +423,6 @@ export function CollectionDetailPage() {
                     })}`
                   : ` · ${t('invite.neverExpires')}`}
               </p>
-              {/* ── Aparecer en Explorar ────────────────────────────────────
-                  Decisión aparte de compartir, y por eso está aquí dentro pero
-                  con su propio interruptor: quien manda el enlace a cinco
-                  amigos no ha consentido salir en un directorio buscable. El
-                  aviso lo dice sin rodeos antes de que nadie lo active. */}
-              <div className="mt-4 rounded-card bg-surface-container p-3">
-                <label className="flex items-start gap-2.5">
-                  <input
-                    type="checkbox"
-                    checked={listed}
-                    disabled={busy}
-                    onChange={(e) => {
-                      const next = e.target.checked
-                      setListed(next)
-                      void run(async () => {
-                        try {
-                          await api.setListListed(collection.id, next)
-                        } catch (err) {
-                          setListed(!next)
-                          throw err
-                        }
-                      })
-                    }}
-                    className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
-                  />
-                  <span>
-                    <span className="block font-semibold text-on-surface">
-                      {t('explore.listIt')}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-on-surface-variant">
-                      {t('explore.listItHint')}
-                    </span>
-                  </span>
-                </label>
-              </div>
-
               <button
                 type="button"
                 disabled={busy}
@@ -401,6 +433,63 @@ export function CollectionDetailPage() {
               </button>
             </>
           )}
+
+          {/* ── Aparecer en Explorar ──────────────────────────────────────
+              Decisión aparte de compartir, con su propio interruptor: quien
+              manda el enlace a cinco amigos no ha consentido salir en un
+              directorio buscable. El aviso lo dice sin rodeos antes de que
+              nadie lo active.
+
+              Antes solo existía DESPUÉS de crear el enlace, así que publicar
+              en Explorar eran dos pasos y el segundo estaba escondido hasta
+              cumplir el primero. Ahora se puede activar directamente: si aún
+              no hay enlace, se crea sin caducidad —una lista del directorio que
+              se apagara sola a las 24 horas no tendría sentido— y se lista.
+
+              Solo administra quien puede: el servidor rechaza a los demás con
+              `not_an_admin`, y un interruptor que va a fallar es peor que uno
+              apagado con la razón al lado. Una lista vacía tampoco se publica:
+              Explorar no enseña listas sin sitios. */}
+          <div className="mt-4 rounded-card bg-surface-container p-3">
+            <label className="flex items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={listed}
+                disabled={busy || !esAdmin || inside.length === 0}
+                onChange={(e) => {
+                  const next = e.target.checked
+                  setListed(next)
+                  void run(async () => {
+                    try {
+                      if (next && !share) await api.shareCollection(collection.id, null)
+                      await api.setListListed(collection.id, next)
+                    } catch (err) {
+                      setListed(!next)
+                      throw err
+                    }
+                  })
+                }}
+                className="mt-0.5 size-4 shrink-0 accent-[var(--color-primary)]"
+              />
+              <span>
+                <span className="block font-semibold text-on-surface">{t('explore.listIt')}</span>
+                <span className="mt-0.5 block text-xs text-on-surface-variant">
+                  {t('explore.listItHint')}
+                </span>
+                {!esAdmin ? (
+                  <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                    {t('explore.adminOnly')}
+                  </span>
+                ) : (
+                  inside.length === 0 && (
+                    <span className="mt-1 block text-xs font-medium text-on-surface-variant">
+                      {t('explore.needPlaces')}
+                    </span>
+                  )
+                )}
+              </span>
+            </label>
+          </div>
         </section>
 
         <button
