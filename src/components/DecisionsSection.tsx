@@ -6,6 +6,37 @@ import { errorMessage } from '../lib/utils'
 import { useApp } from '../state/appState'
 
 /**
+ * Las decisiones abiertas del grupo activo, para quien solo necesita saber
+ * cuántas hay (el aviso del calendario) sin pintar la lista entera.
+ *
+ * En el espacio personal no hay con quién decidir: la lista sale vacía y
+ * `esGrupo` dice que no se ofrezca nada.
+ */
+export function useDecisionesAbiertas() {
+  const { api, activeSpace } = useApp()
+  const [todas, setTodas] = useState<Decision[]>([])
+  const spaceId = activeSpace?.id
+  const esGrupo = activeSpace?.kind === 'group'
+
+  const recargar = useCallback(() => {
+    if (!spaceId || !esGrupo) {
+      setTodas([])
+      return
+    }
+    api
+      .listDecisions(spaceId)
+      .then(setTodas)
+      .catch(() => setTodas([]))
+  }, [api, spaceId, esGrupo])
+
+  useEffect(() => {
+    recargar()
+  }, [recargar])
+
+  return { abiertas: todas.filter((d) => d.closedAt === null), recargar, esGrupo }
+}
+
+/**
  * Decisiones del grupo: una pregunta con opciones y su respuesta.
  *
  * Existe porque la app solo sabía preguntar «¿qué día quedamos?». Todo lo demás
@@ -16,11 +47,19 @@ import { useApp } from '../state/appState'
  * No es un chat. Lo que WhatsApp hace bien no hace falta repetirlo; lo que no
  * sabe hacer es dejar fijado QUÉ se decidió y CUÁNDO.
  */
-export function DecisionsSection() {
+export function DecisionsSection({
+  abrirNueva = false,
+  onCambio,
+}: {
+  /** Arranca con el formulario de una decisión nueva ya abierto. */
+  abrirNueva?: boolean
+  /** Avisa de que algo cambió (se votó, se creó, se cerró), para quien cuente. */
+  onCambio?: () => void
+} = {}) {
   const { api, activeSpace, profile, t, locale } = useApp()
 
   const [decisiones, setDecisiones] = useState<Decision[]>([])
-  const [abriendo, setAbriendo] = useState(false)
+  const [abriendo, setAbriendo] = useState(abrirNueva)
   const [titulo, setTitulo] = useState('')
   const [opciones, setOpciones] = useState(['', ''])
   const [busy, setBusy] = useState(false)
@@ -56,6 +95,7 @@ export function DecisionsSection() {
     try {
       await accion()
       cargar()
+      onCambio?.()
     } catch (e) {
       setError(errorMessage(e, t('common.error')))
     } finally {
@@ -77,9 +117,7 @@ export function DecisionsSection() {
   return (
     <section className="mb-4">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="text-sm font-bold text-on-surface">
-          {t('decision.title')}
-        </h2>
+        <h2 className="text-sm font-bold text-on-surface">{t('decision.title')}</h2>
         {!abriendo && (
           <button
             type="button"

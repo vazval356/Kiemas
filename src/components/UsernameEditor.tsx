@@ -31,10 +31,18 @@ const DEBOUNCE_MS = 400
  *    decide es el índice único de la base de datos, y por eso el error de
  *    guardado se trata igual de en serio que el de la comprobación.
  */
-export function UsernameEditor() {
+export function UsernameEditor({
+  empezarEditando = false,
+  onListo,
+}: {
+  /** Arranca ya con el campo abierto, sin pasar por el «Cambiar». */
+  empezarEditando?: boolean
+  /** Se llama al guardar o al cancelar, para quien lo tenga dentro de una hoja. */
+  onListo?: () => void
+} = {}) {
   const { profile, refreshSpaces, api, t } = useApp()
 
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(empezarEditando)
   const [value, setValue] = useState(profile?.username ?? '')
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
   const [saving, setSaving] = useState(false)
@@ -87,6 +95,7 @@ export function UsernameEditor() {
       await refreshSpaces()
       setStatus({ kind: 'saved' })
       setEditing(false)
+      onListo?.()
     } catch (e) {
       // La carrera se resuelve aquí: la comprobación pudo decir «disponible»
       // y aun así el índice único rechazarlo.
@@ -131,10 +140,7 @@ export function UsernameEditor() {
       {/* `htmlFor` porque el campo no va dentro del rótulo sino dos niveles
           más abajo, envuelto en la caja que le pone la arroba delante. Sin
           esto, el rótulo era texto que da la casualidad de estar encima. */}
-      <label
-        htmlFor="usuario-arroba"
-        className="text-sm font-bold text-on-surface"
-      >
+      <label htmlFor="usuario-arroba" className="text-sm font-bold text-on-surface">
         {t('username.label')}
       </label>
 
@@ -158,7 +164,10 @@ export function UsernameEditor() {
             onChange={(e) => setValue(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && canSave) void save()
-              if (e.key === 'Escape') setEditing(false)
+              if (e.key === 'Escape') {
+                setEditing(false)
+                onListo?.()
+              }
             }}
             className="w-full rounded-control border border-outline-variant bg-surface-lowest py-2.5 pl-7 pr-3
                        text-base text-on-surface outline-none transition
@@ -177,7 +186,10 @@ export function UsernameEditor() {
         </button>
         <button
           type="button"
-          onClick={() => setEditing(false)}
+          onClick={() => {
+            setEditing(false)
+            onListo?.()
+          }}
           className="rounded-control border border-outline-variant px-3 py-2.5 text-sm text-on-surface-variant"
         >
           {t('common.cancel')}

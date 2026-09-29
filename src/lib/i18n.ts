@@ -107,15 +107,15 @@ const es = {
   'tour.profileBody':
     'Desde aquí invitas a alguien con un código, cambias de grupo y activas los avisos. Ya está: a guardar sitios.',
   // El calendario, cuando se entra en él por primera vez.
-  'tour.daysTitle': 'Vuestro mes',
+  'tour.daysTitle': 'Vuestra agenda',
   'tour.daysBody':
-    'Los días que tienen algo salen marcados. Toca uno y abajo se queda solo lo de ese día; vuelve a tocarlo para verlo todo.',
+    'Los planes, día a día. Arriba, lo que todavía hay que decidir; los días sin nada salen como «Libre». Cambia a Mes para ver el calendario entero.',
   'tour.newPlanTitle': 'Crea un plan',
   'tour.newPlanBody':
     'Pones qué es y quién está invitado. Si no tenéis fecha, se proponen varias y cada uno vota las que le vienen bien.',
   'tour.decisionTitle': 'Decisiones del grupo',
   'tour.decisionBody':
-    '¿Cambiamos el apartamento? ¿Quién lleva el coche? Se pregunta aquí y queda escrito quién votó qué, en vez de perderse en el chat.',
+    'Pulsa + y elige «Nueva decisión». ¿Cambiamos el apartamento? ¿Quién lleva el coche? Se pregunta y queda escrito quién votó qué, en vez de perderse en el chat.',
   // La lista.
   'tour.filterTitle': 'Los mismos sitios, en lista',
   'tour.filterBody':
@@ -593,6 +593,11 @@ const es = {
   'plan.timezone': 'Las horas van en {tz}',
   'calendar.week': 'Semana',
   'calendar.month': 'Mes',
+  'calendar.agenda': 'Agenda',
+  'calendar.free': 'Libre',
+  'calendar.newDecision': 'Nueva decisión',
+  'decision.bannerOne': 'Decisión abierta: {title}',
+  'decision.bannerMany': '{count} decisiones abiertas',
   'calendar.prevMonth': 'Mes anterior',
   'calendar.nextMonth': 'Mes siguiente',
 
@@ -872,6 +877,8 @@ const es = {
   'profile.changeAvatar': 'Cambiar foto',
   'profile.viewAll': 'Ver todas',
   'profile.manageHint': 'Elige uno para verlo y gestionarlo',
+  'profile.usernameRow': '@usuario',
+  'profile.autoSaved': 'Cada cambio se guarda al momento.',
   'profile.active': 'Activo',
   'profile.manageSpace': 'Gestionar este espacio',
   'profile.manageMine': 'Gestionar mi espacio',
@@ -1050,15 +1057,15 @@ const en: Record<TranslationKey, string> = {
   'tour.profileTitle': 'Your groups and settings',
   'tour.profileBody':
     'From here you invite someone with a code, switch group and turn notifications on. That’s it — go save some places.',
-  'tour.daysTitle': 'Your month',
+  'tour.daysTitle': 'Your agenda',
   'tour.daysBody':
-    'Days with something on are marked. Tap one and the list below shows only that day; tap again to see everything.',
+    'Your plans, day by day. What still needs deciding comes first, and empty days show as "Free". Switch to Month to see the whole calendar.',
   'tour.newPlanTitle': 'Create a plan',
   'tour.newPlanBody':
     'You set what it is and who is invited. If you have no date, several are proposed and everyone votes for the ones that suit them.',
   'tour.decisionTitle': 'Group decisions',
   'tour.decisionBody':
-    'Change the apartment? Who is driving? You ask here and it stays in writing, with who voted what, instead of getting lost in the chat.',
+    'Tap + and choose "New decision". Change the apartment? Who is driving? You ask and it stays in writing, with who voted what, instead of getting lost in the chat.',
   'tour.filterTitle': 'The same places, as a list',
   'tour.filterBody':
     'Filter by category, by price or by whether you have been. And right next to it you change the order: by rating, by name, or by what you added last.',
@@ -1507,6 +1514,11 @@ const en: Record<TranslationKey, string> = {
   'plan.timezone': 'Times are in {tz}',
   'calendar.week': 'Week',
   'calendar.month': 'Month',
+  'calendar.agenda': 'Agenda',
+  'calendar.free': 'Free',
+  'calendar.newDecision': 'New decision',
+  'decision.bannerOne': 'Open decision: {title}',
+  'decision.bannerMany': '{count} open decisions',
   'calendar.prevMonth': 'Previous month',
   'calendar.nextMonth': 'Next month',
 
@@ -1775,6 +1787,8 @@ const en: Record<TranslationKey, string> = {
   'profile.changeAvatar': 'Change photo',
   'profile.viewAll': 'View all',
   'profile.manageHint': 'Pick one to see and manage it',
+  'profile.usernameRow': '@username',
+  'profile.autoSaved': 'Every change is saved right away.',
   'profile.active': 'Active',
   'profile.manageSpace': 'Manage this space',
   'profile.manageMine': 'Manage my space',

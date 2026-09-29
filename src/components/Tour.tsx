@@ -46,6 +46,9 @@ const RECORRIDOS: Record<string, Paso[]> = {
   calendario: [
     { objetivo: 'dias', titulo: 'tour.daysTitle', texto: 'tour.daysBody' },
     { objetivo: 'plan-nuevo', titulo: 'tour.newPlanTitle', texto: 'tour.newPlanBody' },
+    // El mismo botón «+» con otro texto: las decisiones ya no tienen botón
+    // propio. `decision-nueva` solo existe en un grupo (en el espacio personal
+    // no hay con quién decidir), así que allí este paso se salta como antes.
     { objetivo: 'decision-nueva', titulo: 'tour.decisionTitle', texto: 'tour.decisionBody' },
   ],
   explorar: [
