@@ -55,6 +55,15 @@ export function CoverCropper({
   /** Punteros activos, para distinguir arrastrar de pellizcar. */
   const pointers = useRef(new Map<number, { x: number; y: number }>())
   const pinchStart = useRef<{ dist: number; zoom: number } | null>(null)
+  /**
+   * Zoom y desplazamiento vigentes, en una referencia además de en el estado.
+   *
+   * Un gesto dispara decenas de eventos antes de que React vuelva a pintar, y
+   * cada uno leía el `zoom` y el `offset` del último pintado: los cálculos se
+   * apoyaban en valores viejos y la foto daba saltos. Con la referencia, cada
+   * evento parte de lo que dejó el anterior.
+   */
+  const vista = useRef({ zoom: 1, x: 0, y: 0 })
 
   useEffect(() => {
     const url = URL.createObjectURL(file)
@@ -108,16 +117,61 @@ export function CoverCropper({
     [img, baseScale, frameW, frameH]
   )
 
+  /** Fija zoom y desplazamiento a la vez, dentro de lo permitido. */
+  const aplicar = useCallback(
+    (z: number, next: { x: number; y: number }) => {
+      const c = clamp(next, z)
+      vista.current = { zoom: z, x: c.x, y: c.y }
+      setZoom(z)
+      setOffset(c)
+    },
+    [clamp]
+  )
+
+  /**
+   * Cambia el zoom dejando quieto el punto `(fx, fy)`, en coordenadas de la
+   * ventana de recorte.
+   *
+   * Antes el zoom crecía desde la esquina superior izquierda de la foto, así que
+   * al pellizcar el contenido se escapaba hacia abajo y a la derecha en lugar
+   * de crecer bajo los dedos. Se calcula qué punto de la foto está bajo el foco
+   * y se recoloca la foto para que siga ahí con la escala nueva.
+   */
+  const zoomEn = useCallback(
+    (nuevo: number, fx: number, fy: number) => {
+      if (!img || frameW === 0) return
+      const z = Math.min(ZOOM_MAX, Math.max(1, nuevo))
+      const { zoom: z0, x, y } = vista.current
+      const s0 = baseScale() * z0
+      const s1 = baseScale() * z
+      const px = (fx - x) / s0
+      const py = (fy - y) / s0
+      aplicar(z, { x: fx - px * s1, y: fy - py * s1 })
+    },
+    [img, frameW, baseScale, aplicar]
+  )
+
+  /** De coordenadas de pantalla a coordenadas de la ventana de recorte. */
+  function enVentana(clientX: number, clientY: number) {
+    const r = stageRef.current?.getBoundingClientRect()
+    return { x: clientX - (r?.left ?? 0) - frameX, y: clientY - (r?.top ?? 0) - frameY }
+  }
+
   // Al cargar la foto se centra dentro de la ventana.
   useEffect(() => {
     if (!img || frameW === 0) return
     const s = baseScale()
-    setOffset({ x: (frameW - img.width * s) / 2, y: (frameH - img.height * s) / 2 })
+    const centrada = { x: (frameW - img.width * s) / 2, y: (frameH - img.height * s) / 2 }
+    vista.current = { zoom: vista.current.zoom, x: centrada.x, y: centrada.y }
+    setOffset(centrada)
   }, [img, baseScale, frameW, frameH])
 
   function onPointerDown(e: React.PointerEvent) {
     ;(e.target as Element).setPointerCapture?.(e.pointerId)
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    // Al posar un dedo nuevo el pellizco vuelve a medirse desde cero: si no, la
+    // distancia de referencia era la del pellizco anterior y la foto saltaba.
+    pinchStart.current = null
   }
 
   function onPointerMove(e: React.PointerEvent) {
@@ -128,36 +182,34 @@ export function CoverCropper({
     const puntos = [...pointers.current.values()]
 
     if (puntos.length >= 2) {
-      // Pellizco: la separación entre los dos dedos manda sobre el acercamiento.
+      // Pellizco: la separación entre los dos dedos manda sobre el acercamiento,
+      // y el punto medio entre ellos es el que se queda quieto.
       const dist = Math.hypot(puntos[0].x - puntos[1].x, puntos[0].y - puntos[1].y)
+      if (dist === 0) return
       if (!pinchStart.current) {
-        pinchStart.current = { dist, zoom }
+        pinchStart.current = { dist, zoom: vista.current.zoom }
         return
       }
-      const z = Math.min(
-        ZOOM_MAX,
-        Math.max(1, (pinchStart.current.zoom * dist) / pinchStart.current.dist)
-      )
-      setZoom(z)
-      setOffset((o) => clamp(o, z))
+      const foco = enVentana((puntos[0].x + puntos[1].x) / 2, (puntos[0].y + puntos[1].y) / 2)
+      zoomEn((pinchStart.current.zoom * dist) / pinchStart.current.dist, foco.x, foco.y)
       return
     }
 
     pinchStart.current = null
     const dx = e.clientX - previo.x
     const dy = e.clientY - previo.y
-    setOffset((o) => clamp({ x: o.x + dx, y: o.y + dy }, zoom))
+    const { zoom: z, x, y } = vista.current
+    aplicar(z, { x: x + dx, y: y + dy })
   }
 
   function onPointerUp(e: React.PointerEvent) {
     pointers.current.delete(e.pointerId)
-    if (pointers.current.size < 2) pinchStart.current = null
+    pinchStart.current = null
   }
 
   function onWheel(e: React.WheelEvent) {
-    const z = Math.min(ZOOM_MAX, Math.max(1, zoom * (e.deltaY < 0 ? 1.12 : 0.89)))
-    setZoom(z)
-    setOffset((o) => clamp(o, z))
+    const foco = enVentana(e.clientX, e.clientY)
+    zoomEn(vista.current.zoom * (e.deltaY < 0 ? 1.12 : 0.89), foco.x, foco.y)
   }
 
   /**
@@ -226,7 +278,14 @@ export function CoverCropper({
             src={img.src}
             alt=""
             draggable={false}
-            className="absolute origin-top-left select-none"
+            // `max-w-none` y `max-h-none` NO son un detalle: el CSS base de
+            // Tailwind da a toda `img` `max-width: 100%`. Con el zoom, el ancho
+            // calculado pasaba del ancho del escenario y el navegador lo
+            // recortaba a ese tope mientras el alto (fijado en línea) seguía
+            // creciendo: la foto se estiraba solo hacia abajo, las caras se
+            // alargaban, y lo que se veía dejaba de coincidir con lo que se
+            // guardaba, porque `confirmar` calcula el recorte con escala uniforme.
+            className="absolute max-h-none max-w-none origin-top-left select-none"
             style={{
               width: img.width * s,
               height: img.height * s,
@@ -272,11 +331,8 @@ export function CoverCropper({
           max={ZOOM_MAX}
           step={0.01}
           value={zoom}
-          onChange={(e) => {
-            const z = Number(e.target.value)
-            setZoom(z)
-            setOffset((o) => clamp(o, z))
-          }}
+          // Sin dedos que sirvan de foco, se acerca hacia el centro de la ventana.
+          onChange={(e) => zoomEn(Number(e.target.value), frameW / 2, frameH / 2)}
           className="kd-range mx-auto mt-4 w-full max-w-lg"
           aria-label={t('cover.zoom')}
         />
