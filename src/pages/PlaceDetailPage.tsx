@@ -22,6 +22,7 @@ import {
   TrashIcon,
 } from '../components/icons'
 import { isNative } from '../lib/appUrl'
+import { abrirRuta, urlWebDeRuta } from '../lib/abrirRuta'
 import {
   averageRating,
   errorMessage,
@@ -275,10 +276,18 @@ export function PlaceDetailPage() {
 
         {/* Acciones rápidas */}
         <div className="mt-4 flex flex-wrap gap-2">
+          {/* En la web es un enlace normal. Dentro de la app se abre la de Google
+              Maps si está (ver `abrirRuta`): un enlace web, en iOS, acababa
+              siempre en Safari. */}
           <a
-            href={`https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`}
+            href={urlWebDeRuta(place.lat, place.lng)}
             target="_blank"
             rel="noreferrer"
+            onClick={(e) => {
+              if (!isNative) return
+              e.preventDefault()
+              abrirRuta(place.lat, place.lng)
+            }}
             className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary squish"
           >
             <NavigateIcon className="size-4" /> {t('place.navigate')}
