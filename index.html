@@ -67,12 +67,16 @@
     />
     <meta name="twitter:image" content="https://kiemas.com/og.png" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- La tipografía (Figtree) va incluida en la propia aplicación: se importa
+         en `src/main.tsx` desde el paquete `@fontsource/figtree` y sale de este
+         mismo dominio.
+
+         Aquí había un enlace a Google Fonts. Cargar la fuente desde sus
+         servidores manda la dirección IP de cada visitante a Google en cuanto
+         abre la página, sin que haga nada y sin pedirle permiso: un tribunal
+         alemán (LG München I, 3 O 17493/20, enero de 2022) lo consideró una
+         cesión ilícita de datos personales y condenó a quien lo hacía. Ningún
+         diseño justifica ese riesgo cuando la fuente se puede servir desde casa. -->
 
     <!-- Datos estructurados.
          La app entera vive detrás de `#/`, así que Google solo llega a indexar

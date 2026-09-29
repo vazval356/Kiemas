@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { BusquedaProvider } from './state/busqueda'
+import { EdadGate } from './components/EdadGate'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { PantallaDeArranque } from './components/PantallaDeArranque'
 import { TopBar } from './components/TopBar'
@@ -211,6 +212,11 @@ function Shell() {
       <AuthPage />
     )
   }
+
+  // La edad mínima va antes que la bienvenida y que todo lo demás. Cubre lo que
+  // no pasa por el formulario de registro: entrar con Google o Apple y las
+  // cuentas de antes de que se preguntara. Ver `EdadGate`.
+  if (profile !== null && !profile.ageConfirmedAt) return <EdadGate />
 
   // Cuenta nueva: la bienvenida va antes que nada. Se salta si ya se está en la
   // ruta que la enseña a propósito, para no montarla dos veces.

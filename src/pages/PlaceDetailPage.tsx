@@ -9,7 +9,9 @@ import {
 } from '../components/OpeningHours'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
 import { PlaceMiniMap } from '../components/PlaceMiniMap'
+import { PhotoRightsNote } from '../components/PhotoRightsNote'
 import { PhotoViewer } from '../components/PhotoViewer'
+import { ReportDialog } from '../components/ReportDialog'
 import { TagBadges } from '../components/TagPicker'
 import {
   BackIcon,
@@ -83,6 +85,8 @@ export function PlaceDetailPage() {
   const [modoFoto, setModoFoto] = useState<'cover' | 'delete' | null>(null)
   /** Ruta de la foto abierta a pantalla completa. */
   const [viendo, setViendo] = useState<string | null>(null)
+  /** El identificador de la foto que se está denunciando. */
+  const [denunciando, setDenunciando] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [copiando, setCopiando] = useState(false)
   const [copiado, setCopiado] = useState('')
@@ -388,6 +392,8 @@ export function PlaceDetailPage() {
               </button>
             </div>
           )}
+
+          <PhotoRightsNote className="mt-2 px-1" />
 
           <div className="px-1 pt-3">
             <h1 className="font-display text-2xl font-bold leading-tight text-on-surface">
@@ -701,6 +707,34 @@ export function PlaceDetailPage() {
           abierta={viendo}
           onCerrar={() => setViendo(null)}
           nombreDe={(id) => members.find((m) => m.userId === id)?.displayName ?? '—'}
+          // Se cierra el visor y se abre el formulario: los dos son pantalla
+          // completa y uno encima del otro no se leen.
+          onDenunciar={(foto) => {
+            setViendo(null)
+            setDenunciando(foto.id)
+          }}
+        />
+      )}
+
+      {/* Denunciar una foto. Cualquiera del grupo puede, y ofrece además el
+          motivo de derechos de autor: es donde más fácil es que aparezca una
+          foto ajena. */}
+      {denunciando && (
+        <ReportDialog
+          spaceId={place.spaceId}
+          targetPlaceId={place.id}
+          targetPhotoId={denunciando}
+          targetName={t('photo.reportName', {
+            n: place.photos.findIndex((f) => f.id === denunciando) + 1,
+            total: place.photos.length,
+            place: place.name,
+          })}
+          contentRefDefault={t('photo.reportName', {
+            n: place.photos.findIndex((f) => f.id === denunciando) + 1,
+            total: place.photos.length,
+            place: place.name,
+          })}
+          onClose={() => setDenunciando(null)}
         />
       )}
 

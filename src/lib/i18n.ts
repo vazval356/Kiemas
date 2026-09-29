@@ -415,6 +415,45 @@ const es = {
   'wiz.next': 'Siguiente',
   'wiz.step': 'Paso {n} de {total}',
   'wiz.located': 'Punto marcado en el mapa',
+
+  // Edad mínima
+  'age.label': 'Fecha de nacimiento',
+  'age.hint': 'Solo para comprobar que tienes al menos {min} años. No la guardamos.',
+  'age.required': 'Indica tu fecha de nacimiento.',
+  'age.invalid': 'Esa fecha no es válida.',
+  'age.tooYoung': 'Tienes que tener al menos {min} años para crear una cuenta.',
+  'age.gateTitle': 'Antes de empezar',
+  'age.gateBody': 'Necesitamos comprobar tu edad y que aceptas las condiciones. Se pregunta una sola vez.',
+  'age.gateContinue': 'Continuar',
+  'age.underageGone':
+    'Hay que tener al menos {min} años para usar la aplicación, así que hemos eliminado la cuenta que acabas de crear.',
+
+  // Fotos: derechos y denuncias
+  'photo.rights':
+    'Sube solo fotos que hayas hecho tú o que tengas permiso para usar. Cualquier foto se puede denunciar.',
+  'photo.rightsMore': 'Condiciones de uso',
+  'photo.report': 'Denunciar foto',
+  'photo.reportName': 'Foto {n} de {total} · {place}',
+  'settings.reasonCopyright': 'Es mi foto o tiene derechos de autor',
+  'settings.copyrightIntro':
+    'Si esta foto es tuya, o de otra persona que no ha dado permiso para que esté aquí, cuéntanoslo. Una persona lo revisa y, si procede, la foto se retira. Necesitamos estos datos para poder tramitarlo.',
+  'settings.copyrightWhy': 'Por qué infringe derechos de autor',
+  'settings.copyrightWhyHint':
+    'Por ejemplo: «La hice yo. El original está en este enlace: …» o «Es de la web del local y no han dado permiso».',
+
+  // Estadísticas de uso
+  'settings.analyticsTitle': 'Estadísticas anónimas',
+  'settings.analyticsBody':
+    'Nos ayudan a saber qué pantallas se usan. Solo cuentan visitas: no graban tu pantalla ni lo que escribes, y no te identifican. Están apagadas hasta que las actives, y puedes cambiarlo cuando quieras.',
+  'settings.analyticsToggle': 'Permitir estadísticas anónimas',
+
+  // Pago
+  'sub.legalPre': 'Al comprar aceptas las',
+  'sub.legalTerms': 'condiciones de uso',
+  'sub.legalMid': 'y la',
+  'sub.legalPrivacy': 'política de privacidad',
+  'sub.legalPost':
+    'Es un pago único, sin renovaciones. La tienda te enseña el precio final, con impuestos, antes de confirmar.',
   'detail.copyShort': 'Llevar a…',
   'detail.noAddress': 'Dirección sin añadir',
   'detail.addAddress': 'Escribirla',
@@ -1377,6 +1416,45 @@ const en: Record<TranslationKey, string> = {
   'wiz.next': 'Next',
   'wiz.step': 'Step {n} of {total}',
   'wiz.located': 'Spot marked on the map',
+
+  // Minimum age
+  'age.label': 'Date of birth',
+  'age.hint': 'Only to check that you are at least {min}. We do not store it.',
+  'age.required': 'Enter your date of birth.',
+  'age.invalid': 'That date is not valid.',
+  'age.tooYoung': 'You must be at least {min} to create an account.',
+  'age.gateTitle': 'Before you start',
+  'age.gateBody': 'We need to check your age and that you accept the terms. You are only asked once.',
+  'age.gateContinue': 'Continue',
+  'age.underageGone':
+    'You must be at least {min} to use the app, so we have deleted the account you just created.',
+
+  // Photos: rights and reports
+  'photo.rights':
+    'Only upload photos you took or have permission to use. Any photo can be reported.',
+  'photo.rightsMore': 'Terms of use',
+  'photo.report': 'Report photo',
+  'photo.reportName': 'Photo {n} of {total} · {place}',
+  'settings.reasonCopyright': 'It is my photo or it is copyrighted',
+  'settings.copyrightIntro':
+    'If this photo is yours, or belongs to someone who has not given permission for it to be here, tell us. A person reviews it and, if appropriate, the photo is removed. We need these details to be able to handle it.',
+  'settings.copyrightWhy': 'Why it infringes copyright',
+  'settings.copyrightWhyHint':
+    'For example: “I took it. The original is at this link: …” or “It is from the venue’s website and they have not given permission”.',
+
+  // Usage statistics
+  'settings.analyticsTitle': 'Anonymous statistics',
+  'settings.analyticsBody':
+    'They help us see which screens get used. They only count visits: they do not record your screen or what you type, and they do not identify you. They are off until you turn them on, and you can change it any time.',
+  'settings.analyticsToggle': 'Allow anonymous statistics',
+
+  // Payment
+  'sub.legalPre': 'By buying you accept the',
+  'sub.legalTerms': 'terms of use',
+  'sub.legalMid': 'and the',
+  'sub.legalPrivacy': 'privacy policy',
+  'sub.legalPost':
+    'It is a one-time payment with no renewals. The store shows you the final price, taxes included, before you confirm.',
   'detail.copyShort': 'Copy to…',
   'detail.noAddress': 'No address yet',
   'detail.addAddress': 'Add it',

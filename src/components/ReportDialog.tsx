@@ -12,12 +12,22 @@ const REASONS: { value: ReportReason; labelKey: TranslationKey }[] = [
   { value: 'fake', labelKey: 'settings.reasonFake' },
   { value: 'other', labelKey: 'settings.reasonOther' },
   { value: 'illegal', labelKey: 'settings.reasonIllegal' },
+  { value: 'copyright', labelKey: 'settings.reasonCopyright' },
 ]
 
 interface Props {
   spaceId?: string | null
   targetUserId?: string | null
   targetPlaceId?: string | null
+  /** La foto concreta que se denuncia, si es una foto. Va con `targetPlaceId`. */
+  targetPhotoId?: string | null
+  /**
+   * Cómo se identifica el contenido denunciado, para rellenar de antemano el
+   * campo «qué contenido». En una foto ya se sabe cuál es y dónde está; pedirle
+   * a quien denuncia que lo vuelva a escribir es una vía para que lo deje a
+   * medias.
+   */
+  contentRefDefault?: string
   targetName: string
   onClose: () => void
 }
@@ -42,11 +52,19 @@ interface Props {
  * plazo corre. La base de datos tiene la misma restricción: si el motivo es
  * `illegal`, los cuatro campos van llenos o la fila no entra.
  */
-export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName, onClose }: Props) {
+export function ReportDialog({
+  spaceId,
+  targetUserId,
+  targetPlaceId,
+  targetPhotoId,
+  contentRefDefault,
+  targetName,
+  onClose,
+}: Props) {
   const { api, t } = useApp()
   const [reason, setReason] = useState<ReportReason>('inappropriate')
   const [details, setDetails] = useState('')
-  const [contentRef, setContentRef] = useState('')
+  const [contentRef, setContentRef] = useState(contentRefDefault ?? '')
   const [illegalReason, setIllegalReason] = useState('')
   const [notifierEmail, setNotifierEmail] = useState('')
   const [goodFaith, setGoodFaith] = useState(false)
@@ -54,7 +72,16 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
 
-  const esIlicito = reason === 'illegal'
+  // «Derechos de autor» se tramita como una denuncia de contenido ilícito, con
+  // los mismos cuatro datos: identificar la obra, explicar por qué, dejar un
+  // contacto y declarar de buena fe. Un aviso de copyright a medias no se puede
+  // resolver, y a quien lo manda le interesa más que a nadie que se pueda.
+  const esAutor = reason === 'copyright'
+  const esIlicito = reason === 'illegal' || esAutor
+  // Solo se ofrece cuando lo denunciado es un sitio o una foto: es donde puede
+  // haber una obra ajena. Reportar a una persona por derechos de autor no tiene
+  // sentido.
+  const motivos = REASONS.filter((r) => r.value !== 'copyright' || Boolean(targetPlaceId))
 
   // El botón no se bloquea con los campos a medias: se avisa al pulsar, que es
   // cuando la persona está mirando el formulario y no antes.
@@ -74,6 +101,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
         spaceId,
         targetUserId,
         targetPlaceId,
+        targetPhotoId,
         reason,
         details,
         contentRef: esIlicito ? contentRef : '',
@@ -117,7 +145,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
               {t('settings.reportReason')}
             </label>
             <div className="flex flex-wrap gap-1.5">
-              {REASONS.map((r) => (
+              {motivos.map((r) => (
                 <button
                   key={r.value}
                   type="button"
@@ -136,7 +164,7 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
             {esIlicito ? (
               <>
                 <p className="mt-4 rounded-control bg-surface-container px-3 py-3 text-sm text-on-surface-variant">
-                  {t('settings.illegalIntro')}
+                  {t(esAutor ? 'settings.copyrightIntro' : 'settings.illegalIntro')}
                 </p>
 
                 <label
@@ -158,14 +186,14 @@ export function ReportDialog({ spaceId, targetUserId, targetPlaceId, targetName,
                   htmlFor="denuncia-motivo"
                   className="mb-1.5 mt-4 block text-sm font-bold text-on-surface"
                 >
-                  {t('settings.illegalWhy')}
+                  {t(esAutor ? 'settings.copyrightWhy' : 'settings.illegalWhy')}
                 </label>
                 <textarea
                   id="denuncia-motivo"
                   value={illegalReason}
                   onChange={(e) => setIllegalReason(e.target.value)}
                   rows={3}
-                  placeholder={t('settings.illegalWhyHint')}
+                  placeholder={t(esAutor ? 'settings.copyrightWhyHint' : 'settings.illegalWhyHint')}
                   className="kd-input resize-none"
                 />
 

@@ -41,6 +41,15 @@ export interface Profile {
    */
   onboardedAt: string | null
   /**
+   * Cuándo se comprobó que la persona tiene la edad mínima.
+   *
+   * `null` es una cuenta sin comprobar: las que entran con Google o Apple, que
+   * no pasan por el formulario de registro, y las anteriores a que se pidiera.
+   * La aplicación no las deja pasar de la pantalla de «antes de empezar» hasta
+   * que se rellena. La fecha de nacimiento no se guarda: solo esto.
+   */
+  ageConfirmedAt: string | null
+  /**
    * Si los planes confirmados se copian al calendario del móvil.
    *
    * Apagado de salida: escribir en la agenda de alguien es meterse en su vida
@@ -529,21 +538,30 @@ export interface YearInReview {
  * por qué es ilícito, un contacto y una declaración de buena fe— sin el cual el
  * aviso no cuenta como denuncia. De ahí los campos de abajo.
  */
-export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'fake' | 'other' | 'illegal'
+export type ReportReason =
+  | 'spam'
+  | 'harassment'
+  | 'inappropriate'
+  | 'fake'
+  | 'other'
+  | 'illegal'
+  | 'copyright'
 
 export interface ReportInput {
   spaceId?: string | null
   targetUserId?: string | null
   targetPlaceId?: string | null
+  /** La foto concreta que se denuncia. Va siempre con `targetPlaceId`. */
+  targetPhotoId?: string | null
   reason: ReportReason
   details?: string
-  /** Dónde está el contenido denunciado. Obligatorio si `reason` es `illegal`. */
+  /** Dónde está el contenido denunciado. Obligatorio si `reason` es `illegal` o `copyright`. */
   contentRef?: string
-  /** Por qué se considera ilícito. Obligatorio si `reason` es `illegal`. */
+  /** Por qué se considera ilícito. Obligatorio si `reason` es `illegal` o `copyright`. */
   illegalReason?: string
-  /** Correo al que contestar. Obligatorio si `reason` es `illegal`. */
+  /** Correo al que contestar. Obligatorio si `reason` es `illegal` o `copyright`. */
   notifierEmail?: string
-  /** Declaración de buena fe. Tiene que ser `true` si `reason` es `illegal`. */
+  /** Declaración de buena fe. Tiene que ser `true` si `reason` es `illegal` o `copyright`. */
   goodFaith?: boolean
 }
 

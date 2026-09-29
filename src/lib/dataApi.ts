@@ -312,6 +312,14 @@ export interface DataApi {
    */
   completeOnboarding(): Promise<string>
 
+  /**
+   * Comprueba la edad mínima con la fecha de nacimiento (`AAAA-MM-DD`).
+   *
+   * El servidor decide y no guarda la fecha: solo deja anotado que se comprobó.
+   * Falla con `underage` si la persona es menor.
+   */
+  confirmAge(birthDate: string): Promise<void>
+
   // ── Suscripción (Fase 5) ─────────────────────────────────────────────────
   /**
    * Nivel actual, de dónde viene y qué topes impone.

@@ -352,7 +352,7 @@ export const supabaseApi: DataApi = {
       await supabase
         .from('profiles')
         .select(
-          'id, display_name, username, avatar_url, bio, locale, onboarded_at, mirror_to_personal, calendar_sync'
+          'id, display_name, username, avatar_url, bio, locale, onboarded_at, age_confirmed_at, mirror_to_personal, calendar_sync'
         )
         .eq('id', uid)
         .single()
@@ -366,6 +366,7 @@ export const supabaseApi: DataApi = {
       locale: row.locale as Locale,
       mirrorToPersonal: Boolean(row.mirror_to_personal),
       onboardedAt: row.onboarded_at,
+      ageConfirmedAt: row.age_confirmed_at ?? null,
       calendarSync: Boolean(row.calendar_sync),
     }
   },
@@ -379,6 +380,11 @@ export const supabaseApi: DataApi = {
       groups: Number(d.groups ?? 0),
       plans: Number(d.plans ?? 0),
     }
+  },
+
+  async confirmAge(birthDate: string): Promise<void> {
+    const res = await supabase.rpc('confirm_age', { p_birth_date: birthDate })
+    if (res.error) throw new Error(res.error.message)
   },
 
   async completeOnboarding(): Promise<string> {
@@ -1659,6 +1665,7 @@ export const supabaseApi: DataApi = {
         space_id: input.spaceId ?? null,
         target_user_id: input.targetUserId ?? null,
         target_place_id: input.targetPlaceId ?? null,
+        target_photo_id: input.targetPhotoId ?? null,
         reason: input.reason,
         details: input.details ?? '',
         // Los cuatro datos que el artículo 16 del Reglamento de Servicios

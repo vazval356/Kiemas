@@ -23,8 +23,11 @@
  * dos pestañas. Es el error más repetido del push web, y solo se ve en un móvil
  * de verdad.
  */
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js')
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js')
+// Los dos ficheros del SDK van copiados en /vendor/firebase, no cargados desde
+// gstatic.com: importarlos de Google manda la IP del visitante a sus servidores.
+// Se actualizan con `npm run vendor:firebase`.
+importScripts('./vendor/firebase/firebase-app-compat.js')
+importScripts('./vendor/firebase/firebase-messaging-compat.js')
 
 const params = new URL(self.location.href).searchParams
 const config = {

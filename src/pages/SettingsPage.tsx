@@ -17,6 +17,11 @@ import {
 import type { AjustesDeAvisos, Locale, TipoDeAviso } from '../lib/types'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
+import {
+  analyticsConsentida,
+  analyticsDisponible,
+  setAnalyticsConsent,
+} from '../lib/analytics'
 import { BellIcon, CalendarIcon, PinIcon, TrashIcon } from '../components/icons'
 import { useApp } from '../state/appState'
 import { usePageTitle } from '../lib/seo'
@@ -52,6 +57,8 @@ export function SettingsPage() {
   const [blocked, setBlocked] = useState<{ id: string }[]>([])
   const [busy, setBusy] = useState(false)
   const [mirrorBusy, setMirrorBusy] = useState(false)
+  // Estadísticas anónimas: apagadas de serie, y solo existen en la web.
+  const [estadisticas, setEstadisticas] = useState(analyticsConsentida)
   const [calendarBusy, setCalendarBusy] = useState(false)
   /** Se enseña cuando el sistema ha dicho que no: sin esto, el interruptor
       volvería solo a su sitio y nadie sabría por qué. */
@@ -309,6 +316,20 @@ export function SettingsPage() {
             </Grupo>
 
             <Grupo titulo={t('settings.groupPrivacy')}>
+              {/* Solo si hay medición que activar. Pedir permiso para algo que no
+                  se hace sería una pregunta sin objeto. */}
+              {analyticsDisponible && (
+                <FilaInterruptor
+                  icono={<Glifo d="M4 19V9m6 10V5m6 14v-7m4 7H2" />}
+                  titulo={t('settings.analyticsToggle')}
+                  detalle={t('settings.analyticsBody')}
+                  encendido={estadisticas}
+                  onCambiar={(on) => {
+                    setAnalyticsConsent(on)
+                    setEstadisticas(on)
+                  }}
+                />
+              )}
               <FilaBoton
                 onClick={() => void exportData()}
                 deshabilitado={busy}

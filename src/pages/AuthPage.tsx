@@ -18,6 +18,8 @@ import {
   saveLoginCredentials,
 } from '../lib/faceId'
 import { publicBaseUrl } from '../lib/appUrl'
+import { FechaNacimiento } from '../components/FechaNacimiento'
+import { comprobarEdad, EDAD_MINIMA, MENOR_KEY } from '../lib/edad'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { useHtmlLang, usePageTitle } from '../lib/seo'
 import { oauthProviders, signInWith, type OAuthProvider } from '../lib/oauth'
@@ -82,11 +84,27 @@ export function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [nacimiento, setNacimiento] = useState('')
   const [remember, setRemember] = useState(true)
   const [accepted, setAccepted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+
+  // Si se acaba de borrar una cuenta por ser de un menor, se dice aquí: al
+  // borrarla se cierra la sesión y se vuelve a este formulario sin más.
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(MENOR_KEY)) {
+        window.sessionStorage.removeItem(MENOR_KEY)
+        setError(t('age.underageGone', { min: EDAD_MINIMA }))
+      }
+    } catch {
+      // almacenamiento no disponible
+    }
+    // Una sola vez, al montar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   /** La contraseña a la vista. Se apaga al cambiar de modo, nunca se recuerda. */
   const [verPassword, setVerPassword] = useState(false)
@@ -100,7 +118,12 @@ export function AuthPage() {
    * —credenciales incorrectas, correo ya registrado, sin conexión—, que no
    * pertenecen a ningún campo en particular.
    */
-  const [fallos, setFallos] = useState<{ nombre?: string; email?: string; password?: string }>({})
+  const [fallos, setFallos] = useState<{
+    nombre?: string
+    email?: string
+    password?: string
+    nacimiento?: string
+  }>({})
 
   /**
    * Identificadores de los mensajes, para colgarlos de cada campo con
@@ -144,8 +167,8 @@ export function AuthPage() {
    * el mismo `handleSubmit`: leer el estado recién puesto no funcionaría,
    * porque React no lo actualiza hasta el siguiente pintado.
    */
-  function revisar(): { nombre?: string; email?: string; password?: string } {
-    const nuevos: { nombre?: string; email?: string; password?: string } = {}
+  function revisar(): { nombre?: string; email?: string; password?: string; nacimiento?: string } {
+    const nuevos: { nombre?: string; email?: string; password?: string; nacimiento?: string } = {}
 
     if (email.trim().length === 0) nuevos.email = t('auth.emailRequired')
     // Deliberadamente laxa: «algo@algo.algo». Las expresiones exhaustivas para
@@ -156,6 +179,18 @@ export function AuthPage() {
     if (mode === 'forgot') return nuevos
 
     if (mode === 'signUp' && displayName.trim().length === 0) nuevos.nombre = t('auth.nameRequired')
+
+    // La edad mínima se pregunta al crear la cuenta. Esto solo avisa sin
+    // esperar a la red: quien decide es el servidor, que además comprueba la
+    // fecha en el alta y no la guarda.
+    if (mode === 'signUp') {
+      if (!nacimiento) nuevos.nacimiento = t('age.required')
+      else {
+        const edad = comprobarEdad(nacimiento)
+        if (edad === 'invalida') nuevos.nacimiento = t('age.invalid')
+        else if (edad === 'menor') nuevos.nacimiento = t('age.tooYoung', { min: EDAD_MINIMA })
+      }
+    }
 
     if (password.length === 0) nuevos.password = t('auth.passwordTooShort')
     // Las reglas solo se exigen al CREAR la contraseña. Al entrar se manda lo
@@ -308,7 +343,15 @@ export function AuthPage() {
         const { data, error: err } = await supabase.auth.signUp({
           email: email.trim(),
           password,
-          options: { data: { display_name: displayName.trim(), locale: detectLocale() } },
+          options: {
+            data: {
+              display_name: displayName.trim(),
+              locale: detectLocale(),
+              // La lee el alta en el servidor, comprueba la edad y la borra de
+              // los metadatos. No se guarda.
+              birth_date: nacimiento,
+            },
+          },
         })
         if (err) throw err
         // Con la confirmación por correo activada no hay sesión todavía.
@@ -413,6 +456,15 @@ export function AuthPage() {
                       className={ENTRADA}
                     />
                   </Campo>
+                )}
+
+                {mode === 'signUp' && (
+                  <FechaNacimiento
+                    id="alta-nacimiento"
+                    value={nacimiento}
+                    onChange={setNacimiento}
+                    error={fallos.nacimiento}
+                  />
                 )}
 
                 <Campo

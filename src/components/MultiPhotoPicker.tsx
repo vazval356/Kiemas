@@ -106,6 +106,9 @@ export function MultiPhotoPicker({
         </p>
         <span className="size-9" aria-hidden />
       </div>
+      <p className="px-6 pt-2 text-center text-xs leading-relaxed text-white/60">
+        {t('photo.rights')}
+      </p>
 
       <div className="min-h-0 flex-1 overflow-y-auto pt-3">
         {estado === 'denegado' ? (

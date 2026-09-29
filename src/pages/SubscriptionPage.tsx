@@ -12,6 +12,7 @@ import {
   purchasesAvailable,
   restorePurchases,
 } from '../lib/purchases'
+import { publicBaseUrl } from '../lib/appUrl'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import type { Entitlement, MyEntitlement, PlanLimits } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -465,6 +466,37 @@ export function SubscriptionPage() {
                 )
               })}
             </div>
+
+            {/* Las condiciones, a la vista justo donde se paga.
+                Antes de comprar hay que poder leer a qué se compromete uno, y
+                la tienda lo exige además en cualquier pantalla de compra. Van
+                a las páginas ESTÁTICAS, como en el formulario de registro: la
+                ruta interna no se abre desde la app nativa. Decir que es un pago
+                único y sin renovaciones evita el error más caro en esta pantalla,
+                que es que alguien crea que se suscribe. */}
+            {canBuy && (
+              <p className="mt-4 text-center text-xs leading-relaxed text-on-surface-variant">
+                {t('sub.legalPre')}{' '}
+                <a
+                  href={`${publicBaseUrl()}/terminos.html`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  {t('sub.legalTerms')}
+                </a>{' '}
+                {t('sub.legalMid')}{' '}
+                <a
+                  href={`${publicBaseUrl()}/privacidad.html`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-primary underline underline-offset-2"
+                >
+                  {t('sub.legalPrivacy')}
+                </a>
+                . {t('sub.legalPost')}
+              </p>
+            )}
 
             {/* De dónde viene el nivel actual. Quien lo tiene por un código
                 necesita saber que se le acaba; quien paga, que no. */}

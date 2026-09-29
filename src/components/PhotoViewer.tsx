@@ -16,6 +16,14 @@ interface Props {
   onCerrar: () => void
   /** Cómo se llama quien la subió, para el pie. */
   nombreDe: (userId: string | null | undefined) => string
+  /**
+   * Si se pasa, cada foto ofrece «Denunciar». La pantalla que abre el visor
+   * decide qué hacer: cerrarlo y abrir el formulario de denuncia.
+   *
+   * Es opcional porque el visor se usa también con fotos que no son de nadie del
+   * grupo —las de una lista pública—, donde no hay a quién avisar desde aquí.
+   */
+  onDenunciar?: (foto: FotoVisible) => void
 }
 
 /**
@@ -29,7 +37,7 @@ interface Props {
  * los cursores del teclado, que salen gratis y evitan tener que arrastrar con
  * el ratón, que es incómodo.
  */
-export function PhotoViewer({ fotos, abierta, onCerrar, nombreDe }: Props) {
+export function PhotoViewer({ fotos, abierta, onCerrar, nombreDe, onDenunciar }: Props) {
   const { t } = useApp()
 
   const inicial = Math.max(
@@ -348,6 +356,23 @@ export function PhotoViewer({ fotos, abierta, onCerrar, nombreDe }: Props) {
           </>
         )}
       </p>
+
+      {/* Cualquiera puede denunciar una foto, no solo quien la subió ni quien
+          administra: el que ve algo ajeno o que no debería estar es el que
+          avisa, y pedirle antes permisos o dar la vuelta por ajustes es
+          justo lo que hace que no se avise. */}
+      {onDenunciar && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDenunciar(foto)
+          }}
+          className="mt-2 px-4 py-1.5 text-sm font-semibold text-white/80 underline underline-offset-2 squish"
+        >
+          {t('photo.report')}
+        </button>
+      )}
 
       <button
         type="button"

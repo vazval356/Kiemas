@@ -1,4 +1,5 @@
 import { BRAND_NAME } from './brand'
+import { EDAD_MINIMA } from './edad'
 import type { Locale } from './types'
 
 /**
@@ -146,7 +147,7 @@ const terminosEs: LegalDoc = {
     {
       heading: 'Tu cuenta',
       body: [
-        'Necesitas una cuenta para usarla, y tienes que tener al menos 14 años.',
+        `Necesitas una cuenta para usarla, y tienes que tener al menos ${EDAD_MINIMA} años. Al crear la cuenta se te pide la fecha de nacimiento solo para comprobarlo: no se guarda, solo queda anotado que se comprobó. Si eres menor, no se puede crear la cuenta, y si se detecta una, se elimina.`,
         'Eres responsable de mantener tu contraseña a salvo y de lo que se haga desde tu cuenta mientras el acceso dependa de ti. La sesión se queda abierta en el dispositivo hasta que cierres sesión, así que en un aparato compartido conviene cerrarla.',
         'Eso tiene un límite: si alguien entra en tu cuenta por un fallo de seguridad de la propia aplicación, o por cualquier otra causa que no te sea imputable, no respondes tú de lo que se haga desde ahí. Si sospechas que ha pasado, cambia la contraseña y escríbenos: se mira y, si procede, se deshace lo que se hubiera hecho.',
         'Una persona, una cuenta. No se pueden crear cuentas de forma automatizada ni ceder la tuya a otra persona.',
@@ -168,6 +169,19 @@ const terminosEs: LegalDoc = {
         'El contenido que subes sigue siendo tuyo. Al aportarlo a un espacio, autorizas a que se muestre a las personas de ese espacio, y si publicas una lista, a quien tenga el enlace o la consulte en Explorar.',
         'Eres responsable de tener derecho a subir lo que subes, en particular las fotografías, opiniones y enlaces.',
         'Un sitio se puede copiar a otro de tus grupos. Al hacerlo, los datos del sitio (nombre, dirección, categoría y poco más) pasan a ese otro grupo y los ven sus miembros. Las notas, las fotos y las puntuaciones no viajan con la copia.',
+      ],
+    },
+    {
+      heading: 'Fotografías y derechos de autor',
+      body: [
+        'Sube solo fotos que hayas hecho tú o para las que tengas permiso de quien las hizo o de quien tenga los derechos. No subas imágenes sacadas de la web de un local, de redes sociales, de otras aplicaciones o de un buscador, ni fotos de personas que no saben que las estás subiendo o que no quieren aparecer.',
+        'Al subir una foto declaras que tienes derecho a hacerlo y que no vulnera derechos de nadie: autoría, imagen, intimidad, marcas u otros.',
+        `${BRAND_NAME} aloja las fotos que suben las personas usuarias: no las revisa antes de que se publiquen ni las hace suyas. Quien responde de una foto es quien la sube. Eso no quita lo que la ley nos exige como servicio de alojamiento: actuar con diligencia para retirar lo que sea ilícito en cuanto tengamos conocimiento efectivo de ello.`,
+        'La licencia que nos das al subirla es la mínima necesaria: mostrar la foto dentro de la aplicación a las personas que tú decidas, según la privacidad que hayas elegido, y nada más.',
+        `Cualquier persona puede denunciar una foto. Al verla en grande, pulsa «Denunciar foto» y elige el motivo «Es mi foto o tiene derechos de autor» (o «Contenido ilícito», si es otra cosa). La foto ya queda identificada; hay que explicar por qué se infringen los derechos —por ejemplo, dónde está el original—, dejar un correo para contestar y confirmar de buena fe que lo que se cuenta es exacto. También sirve escribir a ${LEGAL_CONTACT.email} con esos mismos datos, sin necesidad de tener cuenta.`,
+        'Qué pasa después: la revisa una persona sin dilación indebida. Si la foto infringe derechos ajenos o incumple estas condiciones, se retira, y se avisa a quien la subió explicándole el motivo y cómo puede recurrir. Si quien la subió sostiene que tiene derecho a ella, puede responder aportando lo que lo demuestre, y se vuelve a mirar. Si el aviso no tiene fundamento, la foto se queda.',
+        'Quien suba de forma reiterada fotos que infringen derechos de otras personas puede ver su cuenta suspendida o cerrada, después de un aviso. Lo mismo vale para quien denuncie fotos de forma reiterada y sin fundamento.',
+        'Nada de esto te quita las vías que la ley te da: puedes reclamar directamente a quien subió la foto o acudir a los tribunales.',
       ],
     },
     {
@@ -227,8 +241,8 @@ const terminosEs: LegalDoc = {
       heading: 'Contenido de otras personas, reportes y moderación',
       body: [
         `${BRAND_NAME} aloja contenido que suben sus usuarios y no lo revisa antes de que se publique. Lo que escribe o sube alguien es responsabilidad de quien lo hace.`,
-        'Si ves algo que no debería estar ahí, avísanos. Desde la propia aplicación, en el perfil de la persona o en la ficha del sitio, está la opción de reportar: se elige un motivo (spam, acoso, contenido inapropiado, información falsa u otro) y se puede añadir una explicación. También sirve escribir al correo de contacto.',
-        'Si lo que has visto no es solo inapropiado, sino que crees que es ilegal, en esa misma pantalla está el motivo «Contenido ilícito», que abre un formulario distinto. Ahí se pide señalar exactamente qué contenido se denuncia y dónde está, explicar por qué crees que es ilegal, dejar un correo para poder contestarte y confirmar que lo que cuentas es cierto a tu leal saber y entender. Son los datos que pide el artículo 16 del Reglamento (UE) 2022/2065 para poder tratar el aviso como una denuncia de contenido ilícito. Si prefieres el correo, vale igual siempre que incluya esos mismos datos.',
+        'Si ves algo que no debería estar ahí, avísanos. Desde la propia aplicación, en el perfil de la persona, en la ficha del sitio o en cada foto (al verla en grande, «Denunciar foto»), está la opción de reportar: se elige un motivo (spam, acoso, contenido inapropiado, información falsa u otro) y se puede añadir una explicación. También sirve escribir al correo de contacto.',
+        'Si lo que has visto no es solo inapropiado, sino que crees que es ilegal, en esa misma pantalla está el motivo «Contenido ilícito», que abre un formulario distinto. En las fotos hay además el motivo «Es mi foto o tiene derechos de autor», que pide los mismos datos. Ahí se pide señalar exactamente qué contenido se denuncia y dónde está, explicar por qué crees que es ilegal, dejar un correo para poder contestarte y confirmar que lo que cuentas es cierto a tu leal saber y entender. Son los datos que pide el artículo 16 del Reglamento (UE) 2022/2065 para poder tratar el aviso como una denuncia de contenido ilícito. Si prefieres el correo, vale igual siempre que incluya esos mismos datos.',
         'Una denuncia de contenido ilícito se acusa recibo en cuanto llega, se estudia sin dilación indebida y se te comunica la decisión junto con las vías que tienes para recurrirla. Si dejas correo, la respuesta va ahí.',
         'Qué pasa después: lo lee una persona. No se retira nada por decisión automática de un programa. Si el contenido incumple la ley o estas condiciones, se retira; si no, se deja donde está. Se te contesta diciendo qué se ha decidido y por qué, tanto si eres quien avisó como si eres quien lo publicó.',
         'Cuando la decisión te afecta a ti —se retira algo tuyo, se limita su visibilidad, se suspende tu cuenta o se cierra— recibes una explicación motivada que incluye: qué medida se ha tomado y hasta dónde llega; si afecta solo a ese contenido o también a tu cuenta; los hechos concretos en los que se basa; si salió de una denuncia de otra persona o de una comprobación propia; si se ha usado alguna herramienta automática para detectarlo; la norma legal o la condición exacta que se considera incumplida, con la razón; y cómo puedes recurrirlo. Es lo que exige el artículo 17 del mismo Reglamento.',
@@ -301,7 +315,7 @@ const terminosEn: LegalDoc = {
     {
       heading: 'Your account',
       body: [
-        'You need an account to use it, and you must be at least 14 years old.',
+        `You need an account to use it, and you must be at least ${EDAD_MINIMA} years old. When you create the account you are asked for your date of birth only to check that: it is not stored, only the fact that it was checked is recorded. If you are under that age the account cannot be created, and if one is found it is deleted.`,
         'You are responsible for keeping your password safe and for what is done from your account for as long as access depends on you. Your session stays open on the device until you sign out, so on a shared device it is worth signing out.',
         'That has a limit: if someone gets into your account through a security flaw in the app itself, or for any other reason not attributable to you, you are not the one answering for what is done from there. If you suspect it has happened, change your password and write to us: we look into it and, where appropriate, undo whatever was done.',
         'One person, one account. Accounts may not be created by automated means, and you may not hand yours over to someone else.',
@@ -323,6 +337,19 @@ const terminosEn: LegalDoc = {
         'The content you upload remains yours. By contributing it to a space, you allow it to be shown to the people in that space, and if you publish a list, to anyone with the link or who finds it in Explore.',
         'You are responsible for having the right to upload what you upload, in particular photographs, opinions and links.',
         'A place can be copied to another of your groups. When you do that, the place details (name, address, category and little else) go to that other group and its members can see them. Notes, photos and ratings do not travel with the copy.',
+      ],
+    },
+    {
+      heading: 'Photographs and copyright',
+      body: [
+        'Only upload photos you took yourself or for which you have permission from whoever took them or holds the rights. Do not upload images taken from a venue’s website, social networks, other apps or a search engine, or photos of people who do not know you are uploading them or who do not want to appear.',
+        'By uploading a photo you declare that you have the right to do so and that it does not infringe anyone’s rights: authorship, image, privacy, trade marks or others.',
+        `${BRAND_NAME} hosts the photos its users upload: it does not review them before they are published and does not make them its own. Whoever uploads a photo is responsible for it. That does not remove what the law requires of us as a hosting service: to act diligently to remove anything unlawful as soon as we have actual knowledge of it.`,
+        'The licence you give us when you upload it is the minimum necessary: to show the photo inside the app to the people you decide, according to the privacy you have chosen, and nothing else.',
+        `Anyone can report a photo. When you view it full size, tap “Report photo” and choose the reason “It is my photo or it is copyrighted” (or “Illegal content”, if it is something else). The photo is already identified; you need to explain why rights are being infringed —for example, where the original is—, leave an email address for the reply and confirm in good faith that what you say is accurate. Writing to ${LEGAL_CONTACT.email} with the same details also works, and needs no account.`,
+        'What happens next: a person reviews it without undue delay. If the photo infringes other people’s rights or breaks these terms, it is removed, and whoever uploaded it is told the reason and how to challenge it. If that person maintains they have the right to it, they can reply with whatever shows it, and it is looked at again. If the report has no basis, the photo stays.',
+        'Anyone who repeatedly uploads photos that infringe other people’s rights may have their account suspended or closed, after a warning. The same applies to anyone who repeatedly reports photos without basis.',
+        'None of this takes away the routes the law gives you: you can claim directly against whoever uploaded the photo or go to court.',
       ],
     },
     {
@@ -382,8 +409,8 @@ const terminosEn: LegalDoc = {
       heading: 'Other people’s content, reports and moderation',
       body: [
         `${BRAND_NAME} hosts content uploaded by its users and does not review it before it is published. What someone writes or uploads is their responsibility.`,
-        'If you see something that should not be there, tell us. Inside the app, on a person’s profile or on a place page, there is a report option: you pick a reason (spam, harassment, inappropriate content, false information or other) and can add an explanation. Writing to the contact address works too.',
-        'If what you saw is not just inappropriate but something you believe is illegal, that same screen has an “Illegal content” reason, which opens a different form. There you are asked to point to exactly which content you are reporting and where it is, to explain why you believe it is unlawful, to leave an email address so we can reply, and to confirm that what you say is accurate to the best of your knowledge. Those are the details Article 16 of Regulation (EU) 2022/2065 requires in order to treat the notice as a report of illegal content. Email works just as well, as long as it includes the same details.',
+        'If you see something that should not be there, tell us. Inside the app, on a person’s profile, on a place page or on each photo (when viewing it full size, “Report photo”), there is a report option: you pick a reason (spam, harassment, inappropriate content, false information or other) and can add an explanation. Writing to the contact address works too.',
+        'If what you saw is not just inappropriate but something you believe is illegal, that same screen has an “Illegal content” reason, which opens a different form. For photos there is also the reason “It is my photo or it is copyrighted”, which asks for the same details. There you are asked to point to exactly which content you are reporting and where it is, to explain why you believe it is unlawful, to leave an email address so we can reply, and to confirm that what you say is accurate to the best of your knowledge. Those are the details Article 16 of Regulation (EU) 2022/2065 requires in order to treat the notice as a report of illegal content. Email works just as well, as long as it includes the same details.',
         'A report of illegal content is acknowledged as soon as it arrives, examined without undue delay, and you are told the decision along with the ways you have to challenge it. If you leave an email address, the answer goes there.',
         'What happens next: a person reads it. Nothing is removed by a program deciding on its own. If the content breaks the law or these terms, it is removed; if not, it stays. You are told what was decided and why, whether you are the person who reported it or the person who posted it.',
         'When the decision affects you — something of yours is removed, its visibility restricted, your account suspended or closed — you get a statement of reasons that includes: what measure was taken and how far it goes; whether it affects only that content or your account too; the specific facts it is based on; whether it came from someone else’s report or from a check of our own; whether any automated tool was used to detect it; the exact legal provision or term considered breached, and why; and how you can challenge it. That is what Article 17 of the same Regulation requires.',
@@ -462,15 +489,16 @@ const privacidadEs: LegalDoc = {
       heading: 'Qué datos se guardan',
       body: [
         '· Al crear una cuenta: tu correo electrónico, tu nombre visible y un identificador de usuario. El correo lo gestiona el sistema de autenticación; la contraseña no se guarda nunca en claro ni es accesible para nosotros.',
+        `· Tu edad: al registrarte se te pregunta la fecha de nacimiento para comprobar que tienes al menos ${EDAD_MINIMA} años. La fecha no se guarda: solo queda apuntado que se comprobó y cuándo.`,
         '· Si los añades tú: una foto de perfil, una frase de presentación y el idioma que prefieres.',
         '· Lo que aportas a la aplicación: los sitios que guardas (nombre, dirección, coordenadas, notas, fotos, precio y categoría), los planes que creas, tus respuestas a los planes, tus puntuaciones, tus comentarios, tus colecciones y los espacios de los que formas parte.',
         '· Tus votos: en un plan, la fecha y el sitio que votas; en una decisión del grupo, la opción que eliges. Se guardan con tu nombre y los ve el grupo, porque la gracia de votar aquí es precisamente que quede claro quién ha dicho qué.',
-        '· Si reportas algo: el motivo que eliges, el texto que escribas, a quién o a qué se refiere y la fecha. Si lo que envías es una denuncia de contenido ilícito, además se guarda dónde está el contenido según lo describas, por qué crees que es ilegal, el correo que dejes para contestarte y que confirmaste que lo dicho es cierto; el Reglamento de Servicios Digitales exige esos datos para poder tramitarla. Si bloqueas a alguien, se guarda que lo has bloqueado; a esa persona no se le dice.',
+        '· Si reportas algo: el motivo que eliges, el texto que escribas, a quién o a qué se refiere (si es una foto, cuál; se guarda también una copia de su ruta, por si se borra) y la fecha. Si lo que envías es una denuncia de contenido ilícito, además se guarda dónde está el contenido según lo describas, por qué crees que es ilegal, el correo que dejes para contestarte y que confirmaste que lo dicho es cierto; el Reglamento de Servicios Digitales exige esos datos para poder tramitarla. Si bloqueas a alguien, se guarda que lo has bloqueado; a esa persona no se le dice.',
         '· Si activas las notificaciones: un identificador que facilita el sistema operativo del móvil o el navegador, necesario para poder enviarlas. No incluye tu número de teléfono ni identifica el aparato de otra forma.',
         `· Si compras ${BRAND_NAME} Pro: que lo tienes, cuándo se activó y el identificador de la compra que devuelve la tienda. Nada más. Ni la tarjeta, ni la dirección, ni el nombre de facturación: eso se queda en Apple o en Google y no llega aquí en ningún momento.`,
         '· Si pulsas el botón de «mi ubicación» del mapa: tu posición aproximada, y solo mientras la pantalla está abierta. No se guarda, no se envía a ningún servidor y no queda registro de por dónde has estado. Sirve únicamente para centrar el mapa en tu dispositivo.',
         '· Registros técnicos de la conexión: los proveedores de infraestructura apuntan en sus registros la dirección IP, la fecha y la hora y datos del dispositivo o del navegador, como hace cualquier servidor. Sirven para detectar abusos y para diagnosticar averías. No se cruzan con tu actividad en la aplicación para hacer perfiles, y se conservan durante un tiempo limitado.',
-        'No se usan cookies de seguimiento, ni perfilado publicitario, ni herramientas de analítica de terceros. Tus datos no se venden ni se ceden a nadie con fines comerciales.',
+        'No se usan cookies de seguimiento ni perfilado publicitario, y tus datos no se venden ni se ceden a nadie con fines comerciales. Solo en la web y solo si tú lo activas en Ajustes, puede haber una medición opcional de visitas: cuenta qué pantallas se abren, sin cookies ni identificador persistente, con Vercel Web Analytics (el mismo proveedor que aloja la web). Viene apagada, se puede retirar en cualquier momento y, mientras no la actives, no se carga ni se envía nada. No se graba la pantalla ni lo que escribes, no se hacen repeticiones de sesión y no se manda el título de las páginas, solo su ruta. En la aplicación móvil no existe.',
       ],
     },
     {
@@ -493,13 +521,13 @@ const privacidadEs: LegalDoc = {
         'Publicar esa lista en «Explorar» es una decisión aparte, que tienes que activar tú. Compartir da un enlace que funciona para quien lo tenga; publicarla la mete en un directorio buscable, donde cualquier persona con cuenta puede encontrarla sin que nadie se la haya pasado, y donde se muestra tu nombre de usuario como autor. Puedes retirarla del directorio en cualquier momento.',
         'Se apoya en estos proveedores, que tratan datos por cuenta nuestra como encargados, bajo contrato y con cláusulas tipo de la UE cuando hace falta:',
         '· Supabase: base de datos, autenticación, almacenamiento de archivos y envío de los correos de la cuenta (confirmar el registro y restablecer la contraseña).',
-        '· Vercel: alojamiento de la aplicación web.',
+        '· Vercel: alojamiento de la aplicación web y, solo si tú lo activas, la medición anónima de visitas.',
         '· Firebase Cloud Messaging (Google) y el servicio de notificaciones de Apple: entrega de los avisos, solo si los activas.',
         `· RevenueCat: comprobación y registro de la compra de ${BRAND_NAME} Pro, solo si la compras.`,
         'Apple y Google son un caso distinto: cuando compras, no actúan por cuenta nuestra, sino como responsables independientes del cobro y de sus propios datos de facturación. Lo que nos llega de ellos es que la compra existe.',
         'Algunos de estos proveedores tratan datos fuera del Espacio Económico Europeo. Esas transferencias se amparan en las cláusulas contractuales tipo aprobadas por la Comisión Europea.',
         'Las fotos merecen una explicación aparte. Se guardan en un almacén de archivos donde cada fichero tiene una dirección con un identificador aleatorio: no existe forma de listar el contenido ni de adivinar direcciones, pero quien tenga el enlace exacto puede abrir la imagen sin necesidad de cuenta. Es una decisión consciente y no un descuido: las direcciones que caducan romperían las fotos ya cargadas en el mapa y harían imposibles las listas públicas, que existen precisamente para verse sin cuenta. Si una foto te resulta delicada, tenlo en cuenta antes de subirla.',
-        'Al usar el mapa y el buscador de direcciones, tu dispositivo consulta directamente a OpenFreeMap, Photon (Komoot) y Nominatim (OpenStreetMap). Reciben la búsqueda o la zona que estás viendo, pero no tu identidad ni tus datos de cuenta. Si centras el mapa en tu ubicación, esa zona pasa a ser la que se pide, igual que si hubieras llegado hasta ahí arrastrando el mapa con el dedo.',
+        'Al usar el mapa y el buscador de direcciones, tu dispositivo consulta directamente a OpenFreeMap, Photon (Komoot) y Nominatim (OpenStreetMap). Reciben la búsqueda o la zona que estás viendo, pero no tu identidad ni tus datos de cuenta. Si centras el mapa en tu ubicación, esa zona pasa a ser la que se pide, igual que si hubieras llegado hasta ahí arrastrando el mapa con el dedo. La tipografía de la aplicación se sirve desde nuestros propios servidores: no se llama a Google Fonts ni a ningún servicio de fuentes de terceros.',
         'Al abrir la ficha de un sitio guardado, tu dispositivo pregunta además a Overpass (OpenStreetMap) por el horario y el teléfono de ese local. Recibe las coordenadas del sitio y su nombre, nada más: ni quién eres, ni de qué grupo es, ni qué habéis escrito de él. La respuesta se guarda con el sitio, de modo que la consulta se hace una vez y no cada vez que alguien lo mira.',
       ],
     },
@@ -543,7 +571,7 @@ const privacidadEs: LegalDoc = {
     {
       heading: 'Menores',
       body: [
-        'La aplicación no está dirigida a menores de 14 años, que es la edad a partir de la cual la ley española permite consentir el tratamiento de datos por uno mismo. Si detectamos una cuenta de un menor de esa edad sin consentimiento de quien ejerza su tutela, se eliminará.',
+        `La aplicación no está dirigida a menores de ${EDAD_MINIMA} años, que es la edad a partir de la cual la ley española permite consentir el tratamiento de datos por uno mismo. Por eso al crear la cuenta se pregunta la fecha de nacimiento; entrar con Google o con Apple pasa por la misma pregunta en la primera pantalla. La fecha solo sirve para comprobar la edad y no se guarda. Si alguien no tiene la edad, la cuenta se elimina en el acto, y si detectamos una cuenta de un menor de esa edad sin consentimiento de quien ejerza su tutela, se eliminará.`,
         'La clasificación por edades que aparece en las tiendas responde a sus propios criterios de contenido y es una cosa distinta de esta edad mínima.',
       ],
     },
@@ -590,15 +618,16 @@ const privacidadEn: LegalDoc = {
       heading: 'What is stored',
       body: [
         '· When you create an account: your email address, display name and a username. The email is handled by the authentication system; your password is never stored in plain text nor accessible to us.',
+        `· Your age: when you sign up you are asked for your date of birth to check that you are at least ${EDAD_MINIMA}. The date is not stored: only the fact that it was checked, and when, is recorded.`,
         '· If you add them: a profile photo, a short bio and your preferred language.',
         '· What you contribute: the places you save (name, address, coordinates, notes, photos, price and category), the plans you create, your responses to plans, your ratings, your comments, your collections and the spaces you belong to.',
         '· Your votes: in a plan, the date and the place you vote for; in a group decision, the option you pick. They are stored with your name and the group sees them, because the whole point of voting here is that it is clear who said what.',
-        '· If you report something: the reason you pick, the text you write, who or what it refers to, and the date. If what you send is a report of illegal content, we also store where the content is as you describe it, why you believe it is unlawful, the email address you leave for the reply, and the fact that you confirmed the account is accurate; the Digital Services Act requires those details in order to process it. If you block someone, the block is stored; that person is not told.',
+        '· If you report something: the reason you pick, the text you write, who or what it refers to (if it is a photo, which one; a copy of its path is also kept, in case it is deleted), and the date. If what you send is a report of illegal content, we also store where the content is as you describe it, why you believe it is unlawful, the email address you leave for the reply, and the fact that you confirmed the account is accurate; the Digital Services Act requires those details in order to process it. If you block someone, the block is stored; that person is not told.',
         '· If you enable notifications: an identifier provided by your phone’s operating system or your browser, needed to deliver them. It does not include your phone number or otherwise identify the device.',
         `· If you buy ${BRAND_NAME} Pro: that you have it, when it was activated, and the purchase identifier the store returns. Nothing else. Not the card, not the address, not the billing name: that stays with Apple or Google and never reaches us.`,
         '· If you tap the map’s “my location” button: your approximate position, and only while that screen is open. It is not stored, not sent to any server, and no record is kept of where you have been. It is used solely to centre the map on your device.',
         '· Technical connection logs: infrastructure providers record the IP address, date and time, and device or browser details in their logs, as any server does. They serve to detect abuse and diagnose faults. They are not cross-referenced with your activity in the app to build profiles, and they are kept for a limited time.',
-        'No tracking cookies, no advertising profiling, no third-party analytics. Your data is not sold or handed to anyone for commercial purposes.',
+        'No tracking cookies and no advertising profiling, and your data is not sold or handed to anyone for commercial purposes. On the web only, and only if you turn it on in Settings, there may be optional visit measurement: it counts which screens are opened, with no cookies and no persistent identifier, using Vercel Web Analytics (the same provider that hosts the web app). It is off by default, you can withdraw it at any time and, until you turn it on, nothing is loaded or sent. Your screen and what you type are not recorded, there are no session replays, and page titles are not sent, only their route. It does not exist in the mobile app.',
       ],
     },
     {
@@ -621,13 +650,13 @@ const privacidadEn: LegalDoc = {
         'Listing that list in “Explore” is a separate decision you have to switch on yourself. Sharing gives a link that works for whoever has it; listing puts it in a searchable directory, where anyone with an account can find it without being sent the link, and where your username is shown as the author. You can unlist it at any time.',
         'The service relies on these providers, which process data on our behalf as processors, under contract and with the EU standard contractual clauses where needed:',
         '· Supabase: database, authentication, file storage and the account emails (confirming sign-up and resetting your password).',
-        '· Vercel: hosting for the web app.',
+        '· Vercel: hosting for the web app and, only if you turn it on, anonymous visit measurement.',
         '· Firebase Cloud Messaging (Google) and the Apple push notification service: delivery of notifications, only if you enable them.',
         `· RevenueCat: verifying and recording your ${BRAND_NAME} Pro purchase, only if you buy it.`,
         'Apple and Google are a different case: when you buy, they do not act on our behalf but as independent controllers of the payment and their own billing data. What reaches us from them is that the purchase exists.',
         'Some of these providers process data outside the European Economic Area. Those transfers rely on the standard contractual clauses approved by the European Commission.',
         'Photos deserve a separate explanation. They are kept in a file store where every file has an address containing a random identifier: there is no way to list the contents or guess addresses, but anyone holding the exact link can open the image without needing an account. This is a deliberate choice, not an oversight: expiring addresses would break photos already loaded on the map and would make public lists impossible, and those exist precisely to be seen without an account. If a photo feels sensitive to you, bear that in mind before uploading it.',
-        'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested, exactly as if you had panned there with your finger.',
+        'When you use the map and the address search, your device queries OpenFreeMap, Photon (Komoot) and Nominatim (OpenStreetMap) directly. They receive the search or the area you are viewing, but not your identity or account data. If you centre the map on your location, that becomes the area requested, exactly as if you had panned there with your finger. The app’s typeface is served from our own servers: Google Fonts and other third-party font services are not called.',
         'When you open a saved place, your device also asks Overpass (OpenStreetMap) for that venue’s opening hours and phone number. It receives the place coordinates and its name, nothing else: not who you are, not which group it belongs to, not anything you have written about it. The answer is stored with the place, so the query happens once rather than every time someone looks at it.',
       ],
     },
@@ -671,7 +700,7 @@ const privacidadEn: LegalDoc = {
     {
       heading: 'Minors',
       body: [
-        'The app is not aimed at children under 14, the age from which Spanish law allows someone to consent to the processing of their own data. If we detect an account belonging to a child under that age without the consent of their guardian, it will be deleted.',
+        `The app is not aimed at children under ${EDAD_MINIMA}, the age from which Spanish law allows someone to consent to the processing of their own data. That is why your date of birth is asked when you create the account; signing in with Google or Apple goes through the same question on the first screen. The date is only used to check age and is not stored. If someone is under that age the account is deleted on the spot, and if we detect an account belonging to a child under that age without the consent of their guardian, it will be deleted.`,
         'The age rating shown in the stores follows their own content criteria and is a different thing from this minimum age.',
       ],
     },

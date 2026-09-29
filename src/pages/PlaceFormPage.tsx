@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
+import { PhotoRightsNote } from '../components/PhotoRightsNote'
 import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
 import { categoryLabel } from '../lib/categories'
 import type { PlaceStatus } from '../lib/types'
@@ -1075,6 +1076,8 @@ export function PlaceFormPage() {
                 />
                 <Label className="mt-5">{t('place.photos')}</Label>
                 {photosBlock}
+
+                <PhotoRightsNote className="mt-2" />
                 {contactBlock}
               </section>
             </div>
@@ -1389,6 +1392,8 @@ export function PlaceFormPage() {
 
         <Label className="mt-5">{t('place.photos')}</Label>
         {photosBlock}
+
+        <PhotoRightsNote className="mt-2" />
 
         {contactBlock}
 

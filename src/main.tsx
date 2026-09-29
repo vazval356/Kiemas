@@ -4,6 +4,12 @@ import App from './App'
 import { setupAnalytics } from './lib/analytics'
 import { leerIdiomaDelMovil } from './lib/idiomaDelMovil'
 import { setupNative } from './lib/native'
+// Figtree, servida desde este dominio. Ver el comentario de `index.html`.
+import '@fontsource/figtree/400.css'
+import '@fontsource/figtree/500.css'
+import '@fontsource/figtree/600.css'
+import '@fontsource/figtree/700.css'
+import '@fontsource/figtree/800.css'
 import './index.css'
 
 // No se espera: en web no hace nada, y en nativo son ajustes de presentación
