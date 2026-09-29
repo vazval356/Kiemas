@@ -363,6 +363,9 @@ const es = {
   'list.sortRating': 'Mejor puntuados',
   'list.emptyTitle': 'Nada por aquí todavía',
   'list.emptyBody': 'Añade el primer sitio con el botón +.',
+  'list.toGo': 'Para ir',
+  'list.toGoCount': '{count} pendientes',
+  'list.openFirst': 'abiertos primero',
 
   // Formulario de sitio
   'form.newTitle': 'Nuevo sitio',
@@ -1257,6 +1260,9 @@ const en: Record<TranslationKey, string> = {
   'list.sortRating': 'Best rated',
   'list.emptyTitle': 'Nothing here yet',
   'list.emptyBody': 'Add your first place with the + button.',
+  'list.toGo': 'To go',
+  'list.toGoCount': '{count} to go',
+  'list.openFirst': 'open first',
 
   'form.newTitle': 'New place',
   'form.newSubtitle': 'Save that place you want to go to.',

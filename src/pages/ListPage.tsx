@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CategoryChips } from '../components/CategoryChips'
 import { FalloAlCargar, ListaCargando } from '../components/EstadoDeSeccion'
-import { PlaceCard } from '../components/PlaceCard'
+import { PlaceRow, PlaceTall, abiertoAhora } from '../components/PlaceRow'
 import { AddIcon, CollectionIcon } from '../components/icons'
 import type { Place, PlaceStatus } from '../lib/types'
-import { averageRating } from '../lib/utils'
+import { averageRating, kmBetween } from '../lib/utils'
 import { useApp } from '../state/appState'
 import { usePageTitle } from '../lib/seo'
 import { useBusqueda } from '../state/busqueda'
@@ -14,7 +14,8 @@ type StatusFilter = 'all' | PlaceStatus
 type SortKey = 'recent' | 'name' | 'rating'
 
 export function ListPage() {
-  const { places, categories, tags, activeSpace, api, refresh, locale, t, dataStatus } = useApp()
+  const { places, categories, tags, activeSpace, api, refresh, locale, t, dataStatus, position } =
+    useApp()
   usePageTitle(t('nav.list'))
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
@@ -56,6 +57,54 @@ export function ListPage() {
       return b.createdAt.localeCompare(a.createdAt)
     })
   }, [places, busqueda, statusFilter, categoryFilter, onlyFavorites, tagFilter, sort, locale])
+
+  /**
+   * El carril «Para ir»: los sitios que todavía están por visitar.
+   *
+   * Es lo que la gente busca al abrir la lista, y siempre existe: no depende de
+   * que alguien haya escrito horarios ni de saber dónde está. Esos dos datos
+   * solo ordenan y decoran:
+   *
+   *  1. Los que están abiertos ahora, según un horario que se entienda.
+   *  2. Los favoritos.
+   *  3. Los más cercanos, solo si la posición ya se conoce. La app no la pide
+   *     desde aquí: solo existe si se ha usado «mi ubicación» en el mapa.
+   *
+   * Nunca se esconde un sitio por no tener horario.
+   */
+  const paraIr = useMemo(() => {
+    const ahora = new Date()
+    const distancia = (p: Place) =>
+      position ? kmBetween(position.lat, position.lng, p.lat, p.lng) : 0
+    return places
+      .filter((p) => p.status === 'want_to_go')
+      .map((p) => ({ place: p, abierto: abiertoAhora(p, ahora) }))
+      .sort(
+        (a, b) =>
+          Number(b.abierto !== null) - Number(a.abierto !== null) ||
+          Number(b.place.favorite) - Number(a.place.favorite) ||
+          distancia(a.place) - distancia(b.place)
+      )
+  }, [places, position])
+
+  // El carril solo sale con la lista sin tocar. Con un filtro o una búsqueda
+  // puesta, quien mira quiere el resultado y nada más.
+  const sinFiltros =
+    statusFilter === 'all' && !onlyFavorites && extraCount === 0 && busqueda.trim() === ''
+  const conCarril = sinFiltros && paraIr.length > 0
+  const hayAbiertos = paraIr.some((x) => x.abierto !== null)
+
+  // Con carril, la lista de abajo lleva el resto: ningún sitio sale dos veces.
+  const resto = conCarril ? filtered.filter((p) => p.status !== 'want_to_go') : filtered
+  const tituloLista = conCarril
+    ? t('place.visited')
+    : statusFilter === 'want_to_go'
+      ? t('place.wantToGo')
+      : statusFilter === 'visited'
+        ? t('place.visited')
+        : onlyFavorites
+          ? t('place.favorite')
+          : t('list.all')
 
   async function toggleFavorite(place: Place) {
     await api.updatePlace(place.id, { favorite: !place.favorite })
@@ -109,6 +158,17 @@ export function ListPage() {
               active={onlyFavorites}
               onClick={() => setOnlyFavorites(!onlyFavorites)}
             />
+            {/* Colecciones era una fila entera entre los filtros y el primer
+                sitio, para enlazar a otra pantalla. Como chip ocupa lo mismo
+                que cualquier filtro y libera el alto de esa fila. */}
+            <Link
+              to="/collections"
+              data-tour="colecciones"
+              className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface-lowest px-4 py-2 text-sm font-medium text-on-surface shadow-[var(--shadow-surface)] squish"
+            >
+              <CollectionIcon className="size-4 text-primary" />
+              {t('collection.plural')}
+            </Link>
           </div>
 
           <button
@@ -181,45 +241,18 @@ export function ListPage() {
           </div>
         )}
 
-        <Link
-          to="/collections"
-          data-tour="colecciones"
-          className="mt-3 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
-        >
-          <CollectionIcon className="size-5 text-primary" />
-          <span className="flex-1 font-semibold text-on-surface">{t('collection.plural')}</span>
-          <span className="text-on-surface-variant">›</span>
-        </Link>
-
-        <div className="mb-3 mt-3 flex items-center justify-between">
-          <p className="text-sm text-on-surface-variant">
-            {filtered.length === 1
-              ? t('list.countOne')
-              : t('list.count', { count: filtered.length })}
-          </p>
-          {/* Sin rótulo visible por diseño: es un desplegable que ya enseña la
-              opción elegida. Pero para un lector de pantalla, «Más recientes,
-              lista desplegable» no dice de qué es. */}
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            aria-label={t('list.sortLabel')}
-            className="bg-transparent text-sm font-semibold text-primary outline-none"
-          >
-            <option value="recent">{t('list.sortRecent')}</option>
-            <option value="name">{t('list.sortName')}</option>
-            <option value="rating">{t('list.sortRating')}</option>
-          </select>
-        </div>
-
         {/* El orden importa: primero «todavía viene», luego «no ha venido», y
             solo al final «no hay nada». Al revés —que es como estaba— un grupo
             lleno de sitios enseñaba «aún no has guardado nada» mientras
             cargaba. */}
         {dataStatus === 'loading' ? (
-          <ListaCargando />
+          <div className="mt-3">
+            <ListaCargando />
+          </div>
         ) : dataStatus === 'error' ? (
-          <FalloAlCargar />
+          <div className="mt-3">
+            <FalloAlCargar />
+          </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center">
             <div className="mb-3 text-5xl" aria-hidden>
@@ -231,16 +264,67 @@ export function ListPage() {
             <p className="text-on-surface-variant">{t('list.emptyBody')}</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filtered.map((place) => (
-              <PlaceCard
-                key={place.id}
-                place={place}
-                category={categories.find((c) => c.id === place.categoryId)}
-                onToggleFavorite={(p) => void toggleFavorite(p)}
-              />
-            ))}
-          </div>
+          <>
+            {conCarril && (
+              <section>
+                <div className="mb-2.5 mt-4 flex items-baseline justify-between gap-2">
+                  <h2 className="font-display text-lg font-bold text-on-surface">
+                    {t('list.toGo')}
+                  </h2>
+                  <span className="text-xs text-on-surface-variant">
+                    {t('list.toGoCount', { count: paraIr.length })}
+                    {hayAbiertos && ` · ${t('list.openFirst')}`}
+                  </span>
+                </div>
+                <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 hide-scrollbar">
+                  {paraIr.map(({ place, abierto }) => (
+                    <PlaceTall
+                      key={place.id}
+                      place={place}
+                      category={categories.find((c) => c.id === place.categoryId)}
+                      abierto={abierto}
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {resto.length > 0 && (
+              <section>
+                <div className="mb-1 mt-5 flex items-center justify-between gap-2">
+                  <h2 className="flex items-baseline gap-2 font-display text-lg font-bold text-on-surface">
+                    {tituloLista}
+                    <span className="text-xs font-normal text-on-surface-variant">
+                      {resto.length}
+                    </span>
+                  </h2>
+                  {/* Sin rótulo visible por diseño: es un desplegable que ya enseña la
+                      opción elegida. Pero para un lector de pantalla, «Más recientes,
+                      lista desplegable» no dice de qué es. */}
+                  <select
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value as SortKey)}
+                    aria-label={t('list.sortLabel')}
+                    className="bg-transparent text-sm font-semibold text-primary outline-none"
+                  >
+                    <option value="recent">{t('list.sortRecent')}</option>
+                    <option value="name">{t('list.sortName')}</option>
+                    <option value="rating">{t('list.sortRating')}</option>
+                  </select>
+                </div>
+                <ul className="divide-y divide-surface-container">
+                  {resto.map((place) => (
+                    <PlaceRow
+                      key={place.id}
+                      place={place}
+                      category={categories.find((c) => c.id === place.categoryId)}
+                      onToggleFavorite={(p) => void toggleFavorite(p)}
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
+          </>
         )}
       </div>
 

@@ -9,6 +9,13 @@ const DEGRADADOS = [
   ['#0b6fa8', '#7c3aed'],
 ]
 
+/** Un degradado estable a partir de un texto: el mismo texto da siempre el mismo. */
+export function degradadoDe(seed: string): string {
+  const suma = [...seed].reduce((n, c) => n + c.charCodeAt(0), 0)
+  const [a, b] = DEGRADADOS[suma % DEGRADADOS.length]
+  return `linear-gradient(140deg, ${a}, ${b})`
+}
+
 /**
  * La portada de una lista, o una generada si no tiene foto.
  *
