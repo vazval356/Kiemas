@@ -459,3 +459,24 @@ input[type='range'].kd-range::-moz-range-thumb {
     opacity: 0.2;
   }
 }
+
+/* Paso nuevo del asistente de «Nuevo sitio»: entra desde la derecha, corto y
+   con salida suave. Solo anima al aparecer; el paso anterior se oculta sin más. */
+@keyframes kd-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.kd-step-in {
+  animation: kd-step-in 0.26s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kd-step-in {
+    animation: none;
+  }
+}

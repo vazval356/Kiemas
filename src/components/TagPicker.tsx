@@ -16,6 +16,12 @@ const PALETTE = [
 interface Props {
   selected: string[]
   onChange: (tagIds: string[]) => void
+  /**
+   * Todas las etiquetas con la misma forma y el mismo color: índigo al elegirlas,
+   * neutras si no. El color de cada etiqueta sigue existiendo, pero en una lista
+   * larga esos colores compiten entre sí y con el índigo de «esto se puede tocar».
+   */
+  neutral?: boolean
 }
 
 /**
@@ -25,7 +31,7 @@ interface Props {
  * solo puede haber una; la etiqueta dice CÓMO es y se combinan libremente. Si
  * compartieran control habría que elegir entre «restaurante» y «con terraza».
  */
-export function TagPicker({ selected, onChange }: Props) {
+export function TagPicker({ selected, onChange, neutral = false }: Props) {
   const { tags, activeSpace, api, refresh, t } = useApp()
 
   const [open, setOpen] = useState(false)
@@ -67,15 +73,24 @@ export function TagPicker({ selected, onChange }: Props) {
               key={tag.id}
               type="button"
               onClick={() => toggle(tag.id)}
-              className="rounded-full px-3.5 py-1.5 text-sm font-semibold squish transition-colors"
+              aria-pressed={on}
+              className={`rounded-full px-3.5 py-1.5 text-sm font-semibold squish transition-colors ${
+                neutral
+                  ? on
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-lowest text-on-surface-variant shadow-[var(--shadow-surface)]'
+                  : ''
+              }`}
               style={
-                on
-                  ? { backgroundColor: tag.color, color: '#fff' }
-                  : {
-                      backgroundColor: 'transparent',
-                      color: tag.color,
-                      boxShadow: `inset 0 0 0 1.5px ${tag.color}`,
-                    }
+                neutral
+                  ? undefined
+                  : on
+                    ? { backgroundColor: tag.color, color: '#fff' }
+                    : {
+                        backgroundColor: 'transparent',
+                        color: tag.color,
+                        boxShadow: `inset 0 0 0 1.5px ${tag.color}`,
+                      }
               }
             >
               {tag.name}

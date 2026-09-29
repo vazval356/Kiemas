@@ -1,146 +1,109 @@
-<!--
-  Kiemas · Confirmación de cuenta
-
-  Correo transaccional. Las reglas que sigue este HTML no son estéticas:
-
-  · Maquetado con <table>. Muchos clientes de correo, Outlook el primero, no
-    soportan flexbox ni grid, y una maqueta moderna se descuadra entera.
-  · Estilos en línea. Gmail elimina el <style> del <head> en algunos contextos
-    (sobre todo en su app de Android), así que lo que esté solo ahí desaparece.
-  · El logotipo es una imagen alojada en kiemas.com, y la maqueta no depende
-    de que cargue. Gmail y Apple Mail enseñan las imágenes por defecto, así que
-    se verá casi siempre; pero si alguien las tiene bloqueadas, queda el texto
-    alternativo «Kiemas» junto al nombre escrito al lado, y el correo se lee
-    perfectamente. Ninguna imagen carga contenido, solo la marca.
-  · El enlace aparece también como texto. Si el botón no se pinta o el cliente
-    lo estropea, la persona todavía puede copiar la dirección.
-  · Ancho máximo 600px, el único ancho seguro en el panel de vista previa de
-    Outlook de escritorio.
-
-  El bloque <style> añade modo oscuro donde se soporta (Apple Mail, iOS). Donde
-  no, se queda el diseño claro, que es legible igual.
--->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light dark" />
     <title>Confirma tu cuenta de Kiemas</title>
     <style>
       @media (prefers-color-scheme: dark) {
-        .cuerpo   { background: #12121a !important; }
-        .tarjeta  { background: #1c1c26 !important; }
-        .texto    { color: #e6e5f0 !important; }
-        .apagado  { color: #a09fb0 !important; }
-        .linea    { border-color: #2e2e3d !important; }
+        .cuerpo   { background: #0f1020 !important; }
+        .tarjeta  { background: #1a1b2e !important; }
+        .cabecera { background: #3b3db8 !important; }
+        .texto    { color: #ecebfa !important; }
+        .apagado  { color: #a3a2bd !important; }
+        .linea    { border-color: #2c2d47 !important; }
+        .aviso    { background: #2a2418 !important; }
+        .avisotxt { color: #e8d9b0 !important; }
+        .enlace   { color: #c0c1ff !important; }
+        .boton    { background: #6063ee !important; }
       }
       @media only screen and (max-width: 620px) {
-        .tarjeta { padding: 28px 22px !important; }
+        .relleno { padding: 28px 22px !important; }
+        .titulo  { font-size: 24px !important; }
       }
     </style>
   </head>
-  <body class="cuerpo" style="margin:0; padding:0; background:#f4f3fb; -webkit-font-smoothing:antialiased;">
-    <!-- Resumen que algunos clientes enseñan junto al asunto en la bandeja. -->
-    <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
-      Confirma tu correo y empieza a montar planes con tu gente.
-    </div>
+  <body class="cuerpo" style="margin:0; padding:0; background:#f0f3ff; -webkit-font-smoothing:antialiased;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0;">Confirma tu correo y empieza a montar planes con tu gente.</div>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f3fb;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="cuerpo" style="background:#f0f3ff;">
       <tr>
         <td align="center" style="padding:32px 16px;">
 
-          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="tarjeta"
+                 style="width:100%; max-width:600px; background:#ffffff; border-radius:20px; overflow:hidden;">
 
-            <!-- Marca -->
             <tr>
-              <td align="center" style="padding-bottom:24px;">
+              <td class="cabecera relleno" align="center" bgcolor="#4648d4"
+                  style="background:#4648d4; padding:40px 34px 36px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <!-- El logotipo va sobre un cuadro blanco fijo, no transparente:
-                         el PNG lleva fondo claro y en un correo en modo oscuro
-                         flotaría como un parche. Así se ve igual en los dos temas. -->
-                    <td width="48" height="48" align="center" valign="middle"
-                        style="width:48px; height:48px; background:#ffffff; border-radius:14px;">
-                      <img src="https://kiemas.com/icons/icon-192.png"
-                           width="48" height="48" alt="Kiemas"
-                           style="display:block; width:48px; height:48px; border:0; border-radius:14px;" />
+                    <td width="72" height="72" align="center" valign="middle"
+                        style="width:72px; height:72px; background:#ffffff; border-radius:20px;">
+                      <img src="https://kiemas.com/icons/icon-192.png" width="72" height="72" alt="Kiemas"
+                           style="display:block; width:72px; height:72px; border:0; border-radius:20px;" />
                     </td>
-                    <td style="padding-left:12px; font-family:Helvetica,Arial,sans-serif;
-                               font-size:20px; font-weight:bold; color:#4648d4;">Kiemas</td>
                   </tr>
                 </table>
+                <p style="margin:16px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:26px; font-weight:bold; letter-spacing:0.5px; color:#ffffff;">Kiemas</p>
+                <p style="margin:4px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:14px; color:#c0c1ff;">El mapa y el calendario de tu grupo</p>
               </td>
             </tr>
 
-            <!-- Tarjeta -->
             <tr>
-              <td class="tarjeta" style="background:#ffffff; border-radius:16px; padding:36px 34px;">
+              <td class="relleno" style="padding:38px 36px 36px;">
 
-                <h1 class="texto" style="margin:0 0 14px; font-family:Helvetica,Arial,sans-serif;
-                           font-size:23px; line-height:1.3; color:#1a1a24;">
-                  Confirma tu correo
+                <h1 class="texto titulo" style="margin:0 0 14px; font-family:Helvetica,Arial,sans-serif; font-size:26px; line-height:1.25; color:#111c2d;">
+                  Te damos la bienvenida a Kiemas
                 </h1>
 
-                <p class="texto" style="margin:0 0 26px; font-family:Helvetica,Arial,sans-serif;
-                          font-size:16px; line-height:1.6; color:#3a3a48;">
-                  Ya casi está. Pulsa el botón y tu cuenta quedará lista para
-                  guardar sitios en el mapa y montar planes con tu gente.
+                <p class="texto" style="margin:0 0 28px; font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height:1.65; color:#464554;">
+                  Ya casi está. Confirma tu correo y tu cuenta quedará lista para guardar sitios en el mapa y montar planes con tu gente.
                 </p>
 
-                <!-- Botón: tabla, no <a> con padding, que Outlook ignora. -->
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td align="center" style="background:#4648d4; border-radius:999px;">
+                    <td class="boton" align="center" bgcolor="#4648d4" style="background:#4648d4; border-radius:999px;">
                       <a href="{{ .ConfirmationURL }}"
-                         style="display:inline-block; padding:15px 34px;
-                                font-family:Helvetica,Arial,sans-serif; font-size:16px;
-                                font-weight:bold; color:#ffffff; text-decoration:none;">
+                         style="display:inline-block; padding:16px 38px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;">
                         Confirmar mi cuenta
                       </a>
                     </td>
                   </tr>
                 </table>
 
-                <p class="apagado" style="margin:26px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
+                <p class="apagado" style="margin:28px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
                   Si el botón no funciona, copia esta dirección en tu navegador:
                 </p>
-                <p style="margin:6px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.5; word-break:break-all;">
-                  <a href="{{ .ConfirmationURL }}" style="color:#4648d4;">{{ .ConfirmationURL }}</a>
+                <p style="margin:6px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.5; word-break:break-all;">
+                  <a class="enlace" href="{{ .ConfirmationURL }}" style="color:#4648d4;">{{ .ConfirmationURL }}</a>
                 </p>
 
-                <hr class="linea" style="border:none; border-top:1px solid #e8e7f2; margin:28px 0 0;" />
+                <hr class="linea" style="border:none; border-top:1px solid #e7eeff; margin:28px 0 0;" />
 
-                <p class="apagado" style="margin:20px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
-                  Si no has creado ninguna cuenta en Kiemas, puedes ignorar este
-                  correo. Sin confirmar, la cuenta no llega a activarse.
+                <p class="apagado" style="margin:20px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
+                  Si no has creado ninguna cuenta en Kiemas, puedes ignorar este correo. Sin confirmar, la cuenta no llega a activarse.
                 </p>
-
-                <p class="apagado" style="margin:14px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
-                  <strong>English:</strong> confirm your email address to activate
-                  your Kiemas account using the button above. If you didn’t sign
-                  up, you can safely ignore this message.
+                <p class="apagado" style="margin:14px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
+                  <strong>English:</strong> confirm your email address to activate your Kiemas account using the button above. If you didn’t sign up, you can safely ignore this message.
                 </p>
 
               </td>
             </tr>
+          </table>
 
-            <!-- Pie -->
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;">
             <tr>
               <td align="center" style="padding:22px 12px 0;">
-                <p class="apagado" style="margin:0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:12px; line-height:1.6; color:#8a8a9c;">
-                  Kiemas · El mapa y el calendario de tu grupo<br />
-                  <a href="https://kiemas.com" style="color:#8a8a9c;">kiemas.com</a>
+                <p class="apagado" style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#767586;">
+                  <a class="apagado" href="https://kiemas.com" style="color:#767586;">kiemas.com</a>
                 </p>
               </td>
             </tr>
-
           </table>
+
         </td>
       </tr>
     </table>

@@ -1,155 +1,119 @@
-<!--
-  Kiemas · Recuperación de contraseña
-
-  Mismas reglas de maquetado que confirmacion.html: tablas, estilos en línea,
-  el logotipo sin que la maqueta dependa de él, y el enlace también como texto.
-
-  Lo que cambia respecto al de confirmación es el tono. Un correo de
-  recuperación llega a veces a quien NO lo ha pedido, porque alguien se
-  equivocó de dirección o porque alguien está intentando entrar en su cuenta.
-  Por eso dice de forma destacada qué hacer en ese caso y deja claro que no
-  hace falta ninguna acción para cancelarlo: no pulsar es cancelarlo.
-
-  Tampoco promete una caducidad concreta. El plazo lo fija Supabase en su
-  configuración, y poner aquí «una hora» a mano significa que el día que se
-  cambie ese ajuste el correo empieza a mentir.
--->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="light dark" />
     <title>Recupera tu contraseña de Kiemas</title>
     <style>
       @media (prefers-color-scheme: dark) {
-        .cuerpo   { background: #12121a !important; }
-        .tarjeta  { background: #1c1c26 !important; }
-        .texto    { color: #e6e5f0 !important; }
-        .apagado  { color: #a09fb0 !important; }
-        .linea    { border-color: #2e2e3d !important; }
+        .cuerpo   { background: #0f1020 !important; }
+        .tarjeta  { background: #1a1b2e !important; }
+        .cabecera { background: #3b3db8 !important; }
+        .texto    { color: #ecebfa !important; }
+        .apagado  { color: #a3a2bd !important; }
+        .linea    { border-color: #2c2d47 !important; }
         .aviso    { background: #2a2418 !important; }
         .avisotxt { color: #e8d9b0 !important; }
+        .enlace   { color: #c0c1ff !important; }
+        .boton    { background: #6063ee !important; }
       }
       @media only screen and (max-width: 620px) {
-        .tarjeta { padding: 28px 22px !important; }
+        .relleno { padding: 28px 22px !important; }
+        .titulo  { font-size: 24px !important; }
       }
     </style>
   </head>
-  <body class="cuerpo" style="margin:0; padding:0; background:#f4f3fb; -webkit-font-smoothing:antialiased;">
-    <div style="display:none; max-height:0; overflow:hidden; opacity:0;">
-      Elige una contraseña nueva para tu cuenta de Kiemas.
-    </div>
+  <body class="cuerpo" style="margin:0; padding:0; background:#f0f3ff; -webkit-font-smoothing:antialiased;">
+    <div style="display:none; max-height:0; overflow:hidden; opacity:0;">Elige una contraseña nueva para tu cuenta de Kiemas.</div>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f3fb;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="cuerpo" style="background:#f0f3ff;">
       <tr>
         <td align="center" style="padding:32px 16px;">
 
-          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="tarjeta"
+                 style="width:100%; max-width:600px; background:#ffffff; border-radius:20px; overflow:hidden;">
 
-            <!-- Marca -->
             <tr>
-              <td align="center" style="padding-bottom:24px;">
+              <td class="cabecera relleno" align="center" bgcolor="#4648d4"
+                  style="background:#4648d4; padding:40px 34px 36px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <!-- El logotipo va sobre un cuadro blanco fijo, no transparente:
-                         el PNG lleva fondo claro y en un correo en modo oscuro
-                         flotaría como un parche. Así se ve igual en los dos temas. -->
-                    <td width="48" height="48" align="center" valign="middle"
-                        style="width:48px; height:48px; background:#ffffff; border-radius:14px;">
-                      <img src="https://kiemas.com/icons/icon-192.png"
-                           width="48" height="48" alt="Kiemas"
-                           style="display:block; width:48px; height:48px; border:0; border-radius:14px;" />
+                    <td width="72" height="72" align="center" valign="middle"
+                        style="width:72px; height:72px; background:#ffffff; border-radius:20px;">
+                      <img src="https://kiemas.com/icons/icon-192.png" width="72" height="72" alt="Kiemas"
+                           style="display:block; width:72px; height:72px; border:0; border-radius:20px;" />
                     </td>
-                    <td style="padding-left:12px; font-family:Helvetica,Arial,sans-serif;
-                               font-size:20px; font-weight:bold; color:#4648d4;">Kiemas</td>
                   </tr>
                 </table>
+                <p style="margin:16px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:26px; font-weight:bold; letter-spacing:0.5px; color:#ffffff;">Kiemas</p>
+                <p style="margin:4px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:14px; color:#c0c1ff;">El mapa y el calendario de tu grupo</p>
               </td>
             </tr>
 
-            <!-- Tarjeta -->
             <tr>
-              <td class="tarjeta" style="background:#ffffff; border-radius:16px; padding:36px 34px;">
+              <td class="relleno" style="padding:38px 36px 36px;">
 
-                <h1 class="texto" style="margin:0 0 14px; font-family:Helvetica,Arial,sans-serif;
-                           font-size:23px; line-height:1.3; color:#1a1a24;">
+                <h1 class="texto titulo" style="margin:0 0 14px; font-family:Helvetica,Arial,sans-serif; font-size:26px; line-height:1.25; color:#111c2d;">
                   Elige una contraseña nueva
                 </h1>
 
-                <p class="texto" style="margin:0 0 26px; font-family:Helvetica,Arial,sans-serif;
-                          font-size:16px; line-height:1.6; color:#3a3a48;">
-                  Hemos recibido una petición para restablecer la contraseña de
-                  tu cuenta. Pulsa el botón y podrás escribir una nueva.
+                <p class="texto" style="margin:0 0 28px; font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height:1.65; color:#464554;">
+                  Hemos recibido una petición para restablecer la contraseña de tu cuenta. Pulsa el botón y podrás escribir una nueva.
                 </p>
 
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td align="center" style="background:#4648d4; border-radius:999px;">
+                    <td class="boton" align="center" bgcolor="#4648d4" style="background:#4648d4; border-radius:999px;">
                       <a href="{{ .ConfirmationURL }}"
-                         style="display:inline-block; padding:15px 34px;
-                                font-family:Helvetica,Arial,sans-serif; font-size:16px;
-                                font-weight:bold; color:#ffffff; text-decoration:none;">
+                         style="display:inline-block; padding:16px 38px; font-family:Helvetica,Arial,sans-serif; font-size:16px; font-weight:bold; color:#ffffff; text-decoration:none;">
                         Cambiar mi contraseña
                       </a>
                     </td>
                   </tr>
                 </table>
 
-                <p class="apagado" style="margin:26px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
-                  Si el botón no funciona, copia esta dirección en tu navegador:
-                </p>
-                <p style="margin:6px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.5; word-break:break-all;">
-                  <a href="{{ .ConfirmationURL }}" style="color:#4648d4;">{{ .ConfirmationURL }}</a>
-                </p>
-
-                <!-- Aviso destacado: este correo llega a veces a quien no lo pidió. -->
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
                   <tr>
                     <td class="aviso" style="background:#fdf6e3; border-radius:12px; padding:16px 18px;">
-                      <p class="avisotxt" style="margin:0; font-family:Helvetica,Arial,sans-serif;
-                                font-size:14px; line-height:1.6; color:#6b5a20;">
-                        <strong>¿No has pedido tú esto?</strong><br />
-                        Ignora este correo y bórralo. Tu contraseña seguirá siendo
-                        la de siempre: no cambia nada mientras nadie abra el
-                        enlace. No tienes que hacer nada más.
+                      <p class="avisotxt" style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:14px; line-height:1.6; color:#6b5a20;">
+                        <strong>¿No has pedido tú esto?</strong><br />Ignora este correo y bórralo. Tu contraseña seguirá siendo la de siempre: no cambia nada mientras nadie abra el enlace. No tienes que hacer nada más.
                       </p>
                     </td>
                   </tr>
                 </table>
 
-                <hr class="linea" style="border:none; border-top:1px solid #e8e7f2; margin:28px 0 0;" />
-
-                <p class="apagado" style="margin:20px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
-                  El enlace caduca pasado un tiempo y solo se puede usar una vez.
-                  Si ha caducado, pide otro desde la pantalla de entrada.
+                <p class="apagado" style="margin:28px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
+                  Si el botón no funciona, copia esta dirección en tu navegador:
+                </p>
+                <p style="margin:6px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.5; word-break:break-all;">
+                  <a class="enlace" href="{{ .ConfirmationURL }}" style="color:#4648d4;">{{ .ConfirmationURL }}</a>
                 </p>
 
-                <p class="apagado" style="margin:14px 0 0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:13px; line-height:1.6; color:#6a6a7c;">
-                  <strong>English:</strong> use the button above to choose a new
-                  password. If you didn’t request this, ignore and delete this
-                  email — your password stays unchanged.
+                <hr class="linea" style="border:none; border-top:1px solid #e7eeff; margin:28px 0 0;" />
+
+                <p class="apagado" style="margin:20px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
+                  El enlace caduca pasado un tiempo y solo se puede usar una vez. Si ha caducado, pide otro desde la pantalla de entrada.
+                </p>
+                <p class="apagado" style="margin:14px 0 0; font-family:Helvetica,Arial,sans-serif; font-size:13px; line-height:1.6; color:#767586;">
+                  <strong>English:</strong> use the button above to choose a new password. If you didn’t request this, ignore and delete this email — your password stays unchanged.
                 </p>
 
               </td>
             </tr>
+          </table>
 
-            <!-- Pie -->
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;">
             <tr>
               <td align="center" style="padding:22px 12px 0;">
-                <p class="apagado" style="margin:0; font-family:Helvetica,Arial,sans-serif;
-                          font-size:12px; line-height:1.6; color:#8a8a9c;">
-                  Kiemas · El mapa y el calendario de tu grupo<br />
-                  <a href="https://kiemas.com" style="color:#8a8a9c;">kiemas.com</a>
+                <p class="apagado" style="margin:0; font-family:Helvetica,Arial,sans-serif; font-size:12px; line-height:1.6; color:#767586;">
+                  <a class="apagado" href="https://kiemas.com" style="color:#767586;">kiemas.com</a>
                 </p>
               </td>
             </tr>
-
           </table>
+
         </td>
       </tr>
     </table>

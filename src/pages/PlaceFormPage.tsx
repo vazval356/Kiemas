@@ -5,7 +5,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
-import { PinIcon, SparkleIcon } from '../components/icons'
+import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
 import { categoryLabel } from '../lib/categories'
 import type { PlaceStatus } from '../lib/types'
 import { isNative } from '../lib/appUrl'
@@ -30,6 +30,10 @@ import { usePageTitle } from '../lib/seo'
 
 const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty'
 const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168]
+/** Última pantalla del asistente: 0 dónde, 1 categoría, 2 estado, 3 precio, 4 etiquetas, 5 nota y fotos. */
+const LAST_STEP = 5
+/** Lo que se pega como enlace, frente a lo que se busca por nombre. */
+const LOOKS_LIKE_URL = /^(https?:\/\/|www\.|maps\.app\.|goo\.gl\/)/i
 
 export function PlaceFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -37,6 +41,8 @@ export function PlaceFormPage() {
   const { places, categories, position, activeSpace, api, refresh, locale, t } = useApp()
 
   const editing = Boolean(id)
+  // Sitio nuevo: asistente. Sitio existente: el formulario completo.
+  const wizard = !id
   const existing = id ? places.find((p) => p.id === id) : undefined
 
   const [name, setName] = useState(existing?.name ?? '')
@@ -99,6 +105,23 @@ export function PlaceFormPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const markerRef = useRef<maplibregl.Marker | null>(null)
+
+  // Asistente de «Nuevo sitio»
+  const [step, setStep] = useState(0)
+  const [smart, setSmart] = useState('')
+  const advanceTimer = useRef<number>(0)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => () => window.clearTimeout(advanceTimer.current), [])
+  // El mapa se queda montado al cambiar de pantalla, pero oculto mide cero:
+  // al volver a la primera hay que decirle que recalcule su tamaño.
+  useEffect(() => {
+    if (step === 0) mapRef.current?.resize()
+  }, [step])
+  // El campo único se vacía cuando lo que había escrito ya se ha usado: un
+  // enlace importado, o un resultado de búsqueda elegido.
+  useEffect(() => {
+    if (query === '' && importUrl === '' && smart !== '') setSmart('')
+  }, [query, importUrl, smart])
 
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return
@@ -339,6 +362,7 @@ export function PlaceFormPage() {
     setCategoryId(cat.id)
     setNewCatOpen(false)
     setNewCatName('')
+    if (wizard) queueGo(2)
   }
 
   /**
@@ -421,6 +445,608 @@ export function PlaceFormPage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  // Trozos que comparten el asistente de «Nuevo sitio» y el formulario de edición.
+  const photosBlock = (
+    <div className="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onClick={() => (isNative ? setPickingPhotos(true) : photoInputRef.current?.click())}
+        className="flex size-24 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish"
+      >
+        <span className="text-2xl">📷</span>
+        <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
+      </button>
+      {/* Solo en web: sin plugin nativo, el selector propio se cae al de
+          siempre. */}
+      {!isNative && (
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+          onChange={(e) => {
+            const elegidas = Array.from(e.target.files ?? [])
+            // El campo se vacía siempre, incluso si no se acepta nada:
+            // sin esto, volver a elegir la MISMA foto no dispara `change`
+            // y parece que el botón ha dejado de funcionar.
+            e.target.value = ''
+
+            const caben = elegidas.filter((f) => f.size <= MAX_FOTO_BYTES)
+            const gordas = elegidas.filter((f) => f.size > MAX_FOTO_BYTES)
+
+            if (caben.length > 0) setPhotoFiles([...photoFiles, ...caben])
+            // Se nombra la foto y se dice cuánto pesa. «Imagen demasiado
+            // grande» a secas, con cinco fotos elegidas de golpe, no dice
+            // cuál sobra ni por cuánto.
+            setError(
+              gordas.length === 0
+                ? ''
+                : gordas
+                    .map((f) =>
+                      t('photo.tooBig', {
+                        nombre: f.name,
+                        peso: pesoLegible(f.size, locale),
+                      })
+                    )
+                    .join(' ')
+            )
+          }}
+        />
+      )}
+      {photoFiles.map((foto, i) => (
+        <button
+          key={`${foto.name}-${foto.lastModified}-${i}`}
+          type="button"
+          onClick={() => setPhotoFiles(photoFiles.filter((_, j) => j !== i))}
+          className="relative size-24 overflow-hidden rounded-card"
+          title={t('common.delete')}
+          // El botón ES la miniatura, así que sin esto un lector de
+          // pantalla anuncia «botón» y nada más: ni qué foto es ni que al
+          // pulsarlo se quita. `title` solo lo leen algunos.
+          aria-label={`${t('common.delete')}: ${foto.name}`}
+        >
+          <img decoding="async" src={miniaturas[i]} alt="" className="size-full object-cover" />
+        </button>
+      ))}
+    </div>
+  )
+
+  const contactBlock = (
+    <details className="mt-5">
+      <summary className="cursor-pointer font-semibold text-on-surface-variant">
+        {t('form.contactOptional')}
+      </summary>
+      <div className="mt-3 space-y-3">
+        <input
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder={t('place.phone')}
+          aria-label={t('place.phone')}
+          type="tel"
+          className="kd-input"
+        />
+        <input
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          placeholder={t('place.website')}
+          aria-label={t('place.website')}
+          type="url"
+          className="kd-input"
+        />
+        {/* El horario a mano.
+            OpenStreetMap solo conoce el de uno de cada seis bares, así que
+            sin esta casilla las otras cinco fichas tendrían un hueco que
+            nadie podría rellenar nunca. Lo que se escriba aquí manda sobre
+            lo que diga el mapa: quien ha estado en el sitio sabe más. */}
+        <div>
+          <input
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+            placeholder={t('hours.manualLabel')}
+            aria-label={t('hours.manualLabel')}
+            className="kd-input"
+            maxLength={300}
+          />
+          <p className="mt-1 text-xs text-on-surface-variant">{t('hours.manualHint')}</p>
+          {/* Solo se avisa; no se impide guardar. Alguien puede tener un
+              horario raro que esta gramática no entienda, y perder lo
+              escrito por eso sería peor que enseñarlo sin la línea de
+              «abierto ahora». */}
+          {hours.trim() !== '' && parseOpeningHours(hours) === null && (
+            <p className="mt-1 text-xs font-semibold text-error">{t('hours.manualBad')}</p>
+          )}
+        </div>
+      </div>
+    </details>
+  )
+
+  const newCategoryForm = newCatOpen && (
+    <div className="mt-3 rounded-card bg-surface-container p-4 animate-pop">
+      <input
+        value={newCatName}
+        onChange={(e) => setNewCatName(e.target.value)}
+        placeholder={t('form.categoryNamePlaceholder')}
+        aria-label={t('form.categoryNamePlaceholder')}
+        className="kd-input"
+      />
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {CATEGORY_EMOJIS.map((em) => (
+          <button
+            key={em}
+            type="button"
+            onClick={() => setNewCatEmoji(em)}
+            className={`flex size-10 items-center justify-center rounded-md text-xl squish ${
+              newCatEmoji === em ? 'bg-primary-fixed' : 'bg-surface-lowest'
+            }`}
+          >
+            {em}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => void createCategory()}
+        disabled={!newCatName.trim()}
+        className="mt-3 w-full rounded-full bg-primary py-2.5 font-semibold text-on-primary squish disabled:opacity-40"
+      >
+        {t('form.createCategory')}
+      </button>
+    </div>
+  )
+
+  const errorBlock = error && (
+    <div className="mt-4 text-sm font-semibold text-error">
+      <p>{error}</p>
+      {atLimit && (
+        <Link
+          to="/subscription"
+          className="mt-1 inline-block text-primary underline underline-offset-2"
+        >
+          {t('limit.seePlans')}
+        </Link>
+      )}
+    </div>
+  )
+
+  const photoPicker = pickingPhotos && (
+    <MultiPhotoPicker
+      maxBytes={MAX_FOTO_BYTES}
+      locale={locale}
+      onCancel={() => setPickingPhotos(false)}
+      onDone={(files) => {
+        setPickingPhotos(false)
+        setPhotoFiles([...photoFiles, ...files])
+      }}
+    />
+  )
+
+  // ── Asistente de «Nuevo sitio» ───────────────────────────────────────────
+  // Una pregunta por pantalla. Lo de un solo valor (categoría, estado, precio)
+  // avanza solo al tocar; lo demás tiene su botón. Editar un sitio sigue siendo
+  // el formulario de siempre: allí se viene a cambiar una cosa, no a rellenar
+  // seis.
+  function go(n: number) {
+    window.clearTimeout(advanceTimer.current)
+    setStep(Math.max(0, Math.min(LAST_STEP, n)))
+    scrollRef.current?.scrollTo({ top: 0 })
+  }
+
+  /** Avanza tras un momento, para que se vea la elección antes de cambiar de pantalla. */
+  function queueGo(n: number) {
+    window.clearTimeout(advanceTimer.current)
+    advanceTimer.current = window.setTimeout(() => go(n), 260)
+  }
+
+  function runSmart() {
+    if (importUrl.trim()) {
+      void runImport()
+    } else if (query.trim().length >= 3) {
+      window.clearTimeout(searchTimer.current)
+      // A fondo, igual que al pulsar Enter en el buscador de siempre.
+      void runSearch(query, true)
+    }
+  }
+
+  function onSmartChange(value: string) {
+    setSmart(value)
+    // Un solo campo para dos cosas: lo que parece un enlace se importa, el
+    // resto se busca.
+    if (LOOKS_LIKE_URL.test(value.trim())) {
+      setImportUrl(value)
+      setQuery('')
+    } else {
+      setImportUrl('')
+      setQuery(value)
+    }
+  }
+
+  const smartIsUrl = importUrl.trim() !== ''
+  const canRunSmart = smartIsUrl || query.trim().length >= 3
+  const stepReady = step === 0 ? name.trim().length > 0 && coords !== null : true
+
+  function onWizardSubmit() {
+    // Pulsar Intro en un campo de las pantallas automáticas (crear una
+    // categoría, por ejemplo) no debe saltarse la pregunta.
+    if (step >= 1 && step <= 3) return
+    if (step === LAST_STEP) {
+      if (canSave) void save()
+    } else if (stepReady) {
+      go(step + 1)
+    }
+  }
+
+  if (wizard) {
+    const showFoot = step === 0 || step === 4 || step === LAST_STEP
+    const stepShown = (i: number) => (step === i ? 'kd-step-in' : 'hidden')
+
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="mx-auto flex w-full max-w-md items-center gap-3 px-5 pt-2">
+          <button
+            type="button"
+            onClick={() => (step > 0 ? go(step - 1) : navigate(-1))}
+            className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-lowest text-on-surface-variant shadow-[var(--shadow-surface)] squish"
+            aria-label={t('common.back')}
+          >
+            <BackIcon className="size-5" />
+          </button>
+          <div
+            role="progressbar"
+            aria-label={t('wiz.step', { n: step + 1, total: LAST_STEP + 1 })}
+            aria-valuemin={1}
+            aria-valuemax={LAST_STEP + 1}
+            aria-valuenow={step + 1}
+            className="h-1.5 flex-1 overflow-hidden rounded-full bg-outline-variant/60"
+          >
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
+              style={{ width: `${((step + 1) / (LAST_STEP + 1)) * 100}%` }}
+            />
+          </div>
+          {/* Desde la segunda pantalla ya se puede guardar: lo demás es opcional. */}
+          <div className="flex min-w-16 justify-end">
+            {step >= 1 && canSave && (
+              <button
+                type="button"
+                onClick={() => void save()}
+                className="py-2 text-sm font-bold text-primary squish"
+              >
+                {t('wiz.saveNow')}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <form
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault()
+            onWizardSubmit()
+          }}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+            <div className="mx-auto max-w-md px-5 pb-6">
+              {/* 0 · Dónde: enlace o búsqueda en un solo campo, mapa y nombre. */}
+              <section className={stepShown(0)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.placeTitle')}
+                </h1>
+                <div className="relative mt-4">
+                  <div className="flex items-center gap-2 rounded-2xl bg-surface-lowest py-1 pl-4 pr-1 shadow-[var(--shadow-float)]">
+                    <SparkleIcon className="size-5 shrink-0 text-primary" />
+                    <input
+                      value={smart}
+                      onChange={(e) => onSmartChange(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          if (canRunSmart) runSmart()
+                        }
+                      }}
+                      placeholder={t('wiz.smartPlaceholder')}
+                      aria-label={t('wiz.smartPlaceholder')}
+                      inputMode="url"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none placeholder:text-on-surface-variant/70"
+                    />
+                    <button
+                      type="button"
+                      onClick={runSmart}
+                      disabled={!canRunSmart}
+                      className="shrink-0 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary squish disabled:opacity-40"
+                    >
+                      {smartIsUrl ? t('wiz.import') : t('wiz.search')}
+                    </button>
+                  </div>
+                  {results.length > 0 && (
+                    <ul className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-card border border-outline-variant/40 bg-surface-lowest shadow-[var(--shadow-float)]">
+                      {results.map((r, i) => (
+                        <li key={i}>
+                          <button
+                            type="button"
+                            onClick={() => pickResult(r)}
+                            className="w-full px-4 py-3 text-left text-sm text-on-surface hover:bg-surface-low"
+                          >
+                            {r.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <p className="mt-2 px-1 text-xs text-on-surface-variant">
+                  {searching
+                    ? t('form.searching')
+                    : query.trim().length >= 3
+                      ? t('form.searchDeeper')
+                      : t('wiz.smartHint')}
+                </p>
+                {noResults && !searching && query.trim().length >= 3 && (
+                  <p className="mt-2 text-sm text-on-surface-variant">
+                    {t('form.noResults', { query })}
+                  </p>
+                )}
+                {importMessage && (
+                  <p
+                    className={`mt-2 text-sm ${
+                      importMessage.kind === 'ok'
+                        ? 'font-medium text-primary'
+                        : 'text-on-surface-variant'
+                    }`}
+                  >
+                    {importMessage.text}
+                  </p>
+                )}
+                {/* Si el enlace no se pudo seguir, abrirlo y limpiar el campo
+                    ahorran copiar, cambiar de app y volver. */}
+                {importUrl.trim() !== '' && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {importMessage?.kind === 'warn' && /^https?:/i.test(importUrl.trim()) && (
+                      <a
+                        href={importUrl.trim()}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-primary squish"
+                      >
+                        {t('import.openIt')}
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImportUrl('')
+                        setImportMessage(null)
+                        // Descarta lo que llegue de una importación en vuelo.
+                        importSeq.current++
+                      }}
+                      className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
+                    >
+                      {t('import.clear')}
+                    </button>
+                  </div>
+                )}
+
+                <div
+                  ref={mapContainerRef}
+                  className="mt-4 h-48 overflow-hidden rounded-card border border-outline-variant/50"
+                />
+                <p className="mt-1.5 text-xs text-on-surface-variant">
+                  {coords ? `✓ ${address || t('wiz.located')}` : t('form.mapHint')}
+                </p>
+
+                <Label className="mt-5" htmlFor="sitio-nombre">
+                  {t('place.name')}
+                </Label>
+                <input
+                  id="sitio-nombre"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t('form.namePlaceholder')}
+                  className="kd-input"
+                />
+              </section>
+
+              {/* 1 · Categoría: un icono con su nombre; al tocar, avanza. */}
+              <section className={stepShown(1)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.categoryTitle')}
+                </h1>
+                <div className="mt-6 grid grid-cols-3 gap-x-1 gap-y-5">
+                  {categories.map((c) => {
+                    const on = categoryId === c.id
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() => {
+                          setCategoryId(on ? null : c.id)
+                          if (!on) queueGo(2)
+                        }}
+                        className="flex flex-col items-center gap-1.5 squish"
+                      >
+                        <span
+                          className={`flex size-[60px] items-center justify-center rounded-full text-3xl shadow-[var(--shadow-surface)] transition-colors ${
+                            on ? 'bg-primary' : 'bg-surface-lowest'
+                          }`}
+                        >
+                          {c.emoji}
+                        </span>
+                        <span
+                          className={`text-sm ${
+                            on ? 'font-extrabold text-primary' : 'font-semibold text-on-surface-variant'
+                          }`}
+                        >
+                          {categoryLabel(c, t)}
+                        </span>
+                      </button>
+                    )
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => setNewCatOpen(!newCatOpen)}
+                    aria-expanded={newCatOpen}
+                    className="flex flex-col items-center gap-1.5 squish"
+                  >
+                    <span className="flex size-[60px] items-center justify-center rounded-full border-2 border-dashed border-outline-variant text-2xl text-on-surface-variant">
+                      +
+                    </span>
+                    <span className="text-sm font-semibold text-on-surface-variant">
+                      {t('form.newCategory').replace(/^\+\s*/, '')}
+                    </span>
+                  </button>
+                </div>
+                {newCategoryForm}
+                <button
+                  type="button"
+                  onClick={() => go(2)}
+                  className="mx-auto mt-6 block px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
+                >
+                  {t('wiz.skip')}
+                </button>
+              </section>
+
+              {/* 2 · Estado. */}
+              <section className={stepShown(2)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.statusTitle')}
+                </h1>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {(
+                    [
+                      ['want_to_go', '📌', t('place.wantToGo')],
+                      ['visited', '✓', t('place.visited')],
+                    ] as const
+                  ).map(([value, emoji, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={status === value}
+                      onClick={() => {
+                        setStatus(value)
+                        queueGo(3)
+                      }}
+                      className={`flex flex-col items-center gap-1.5 rounded-2xl px-2 py-6 text-base font-bold shadow-[var(--shadow-surface)] squish ${
+                        status === value
+                          ? 'bg-primary text-on-primary'
+                          : 'bg-surface-lowest text-on-surface'
+                      }`}
+                    >
+                      <span className="text-3xl">{emoji}</span>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
+              {/* 3 · Precio. */}
+              <section className={stepShown(3)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.priceTitle')}
+                </h1>
+                <div className="mt-6 grid grid-cols-2 gap-3">
+                  {[1, 2, 3, 4].map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      aria-pressed={priceLevel === lvl}
+                      onClick={() => {
+                        const next = priceLevel === lvl ? null : lvl
+                        setPriceLevel(next)
+                        if (next) queueGo(4)
+                      }}
+                      className={`rounded-2xl py-6 text-2xl font-bold shadow-[var(--shadow-surface)] squish ${
+                        priceLevel === lvl
+                          ? 'bg-primary text-on-primary'
+                          : 'bg-surface-lowest text-on-surface'
+                      }`}
+                    >
+                      {priceLabel(lvl)}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => go(4)}
+                  className="mx-auto mt-6 block px-4 py-2 text-sm font-semibold text-on-surface-variant squish"
+                >
+                  {t('wiz.skip')}
+                </button>
+              </section>
+
+              {/* 4 · Etiquetas. */}
+              <section className={stepShown(4)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.tagsTitle')}
+                </h1>
+                <p className="mb-5 mt-1 text-on-surface-variant">{t('wiz.tagsSub')}</p>
+                <TagPicker selected={tagIds} onChange={setTagIds} neutral />
+              </section>
+
+              {/* 5 · Nota, fotos y contacto. */}
+              <section className={stepShown(5)}>
+                <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
+                  {t('wiz.notesTitle')}
+                </h1>
+                <p className="mb-5 mt-1 text-on-surface-variant">{t('wiz.notesSub')}</p>
+                <Label htmlFor="sitio-notas">{t('place.notes')}</Label>
+                <textarea
+                  id="sitio-notas"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                  placeholder={t('form.notesPlaceholder')}
+                  className="kd-input resize-none"
+                />
+                <Label className="mt-5">{t('place.photos')}</Label>
+                {photosBlock}
+                {contactBlock}
+              </section>
+            </div>
+          </div>
+
+          {(showFoot || error) && (
+            <div className="pb-safe">
+              <div className="mx-auto max-w-md px-5 pb-4 pt-2">
+                {errorBlock}
+                {step === 0 && coords === null && (
+                  <p className="mb-2 text-center text-xs text-on-surface-variant">
+                    {t('form.needLocation')}
+                  </p>
+                )}
+                {!showFoot ? null : step === LAST_STEP ? (
+                  <button
+                    type="button"
+                    onClick={() => void save()}
+                    disabled={!canSave}
+                    className="w-full rounded-full bg-primary py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-40"
+                  >
+                    {saving ? t('form.saving') : t('form.save')}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => go(step + 1)}
+                    disabled={!stepReady}
+                    className="w-full rounded-full bg-primary py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-40"
+                  >
+                    {t('wiz.next')}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </form>
+
+        {photoPicker}
+      </div>
+    )
   }
 
   return (
@@ -632,39 +1258,7 @@ export function PlaceFormPage() {
             {t('form.newCategory')}
           </button>
         </div>
-        {newCatOpen && (
-          <div className="mt-3 rounded-card bg-surface-container p-4 animate-pop">
-            <input
-              value={newCatName}
-              onChange={(e) => setNewCatName(e.target.value)}
-              placeholder={t('form.categoryNamePlaceholder')}
-              aria-label={t('form.categoryNamePlaceholder')}
-              className="kd-input"
-            />
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {CATEGORY_EMOJIS.map((em) => (
-                <button
-                  key={em}
-                  type="button"
-                  onClick={() => setNewCatEmoji(em)}
-                  className={`flex size-10 items-center justify-center rounded-md text-xl squish ${
-                    newCatEmoji === em ? 'bg-primary-fixed' : 'bg-surface-lowest'
-                  }`}
-                >
-                  {em}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => void createCategory()}
-              disabled={!newCatName.trim()}
-              className="mt-3 w-full rounded-full bg-primary py-2.5 font-semibold text-on-primary squish disabled:opacity-40"
-            >
-              {t('form.createCategory')}
-            </button>
-          </div>
-        )}
+        {newCategoryForm}
 
         <Label className="mt-5">{t('form.statusQuestion')}</Label>
         <div className="grid grid-cols-2 rounded-full bg-surface-container p-1">
@@ -725,130 +1319,11 @@ export function PlaceFormPage() {
         />
 
         <Label className="mt-5">{t('place.photos')}</Label>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => (isNative ? setPickingPhotos(true) : photoInputRef.current?.click())}
-            className="flex size-24 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish"
-          >
-            <span className="text-2xl">📷</span>
-            <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
-          </button>
-          {/* Solo en web: sin plugin nativo, el selector propio se cae al de
-              siempre. */}
-          {!isNative && (
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              hidden
-              onChange={(e) => {
-                const elegidas = Array.from(e.target.files ?? [])
-                // El campo se vacía siempre, incluso si no se acepta nada:
-                // sin esto, volver a elegir la MISMA foto no dispara `change`
-                // y parece que el botón ha dejado de funcionar.
-                e.target.value = ''
+        {photosBlock}
 
-                const caben = elegidas.filter((f) => f.size <= MAX_FOTO_BYTES)
-                const gordas = elegidas.filter((f) => f.size > MAX_FOTO_BYTES)
+        {contactBlock}
 
-                if (caben.length > 0) setPhotoFiles([...photoFiles, ...caben])
-                // Se nombra la foto y se dice cuánto pesa. «Imagen demasiado
-                // grande» a secas, con cinco fotos elegidas de golpe, no dice
-                // cuál sobra ni por cuánto.
-                setError(
-                  gordas.length === 0
-                    ? ''
-                    : gordas
-                        .map((f) =>
-                          t('photo.tooBig', {
-                            nombre: f.name,
-                            peso: pesoLegible(f.size, locale),
-                          })
-                        )
-                        .join(' ')
-                )
-              }}
-            />
-          )}
-          {photoFiles.map((foto, i) => (
-            <button
-              key={`${foto.name}-${foto.lastModified}-${i}`}
-              type="button"
-              onClick={() => setPhotoFiles(photoFiles.filter((_, j) => j !== i))}
-              className="relative size-24 overflow-hidden rounded-card"
-              title={t('common.delete')}
-              // El botón ES la miniatura, así que sin esto un lector de
-              // pantalla anuncia «botón» y nada más: ni qué foto es ni que al
-              // pulsarlo se quita. `title` solo lo leen algunos.
-              aria-label={`${t('common.delete')}: ${foto.name}`}
-            >
-              <img decoding="async" src={miniaturas[i]} alt="" className="size-full object-cover" />
-            </button>
-          ))}
-        </div>
-
-        <details className="mt-5">
-          <summary className="cursor-pointer font-semibold text-on-surface-variant">
-            {t('form.contactOptional')}
-          </summary>
-          <div className="mt-3 space-y-3">
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder={t('place.phone')}
-              aria-label={t('place.phone')}
-              type="tel"
-              className="kd-input"
-            />
-            <input
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder={t('place.website')}
-              aria-label={t('place.website')}
-              type="url"
-              className="kd-input"
-            />
-            {/* El horario a mano.
-                OpenStreetMap solo conoce el de uno de cada seis bares, así que
-                sin esta casilla las otras cinco fichas tendrían un hueco que
-                nadie podría rellenar nunca. Lo que se escriba aquí manda sobre
-                lo que diga el mapa: quien ha estado en el sitio sabe más. */}
-            <div>
-              <input
-                value={hours}
-                onChange={(e) => setHours(e.target.value)}
-                placeholder={t('hours.manualLabel')}
-                aria-label={t('hours.manualLabel')}
-                className="kd-input"
-                maxLength={300}
-              />
-              <p className="mt-1 text-xs text-on-surface-variant">{t('hours.manualHint')}</p>
-              {/* Solo se avisa; no se impide guardar. Alguien puede tener un
-                  horario raro que esta gramática no entienda, y perder lo
-                  escrito por eso sería peor que enseñarlo sin la línea de
-                  «abierto ahora». */}
-              {hours.trim() !== '' && parseOpeningHours(hours) === null && (
-                <p className="mt-1 text-xs font-semibold text-error">{t('hours.manualBad')}</p>
-              )}
-            </div>
-          </div>
-        </details>
-
-        {error && (
-          <div className="mt-4 text-sm font-semibold text-error">
-            <p>{error}</p>
-            {atLimit && (
-              <Link
-                to="/subscription"
-                className="mt-1 inline-block text-primary underline underline-offset-2"
-              >
-                {t('limit.seePlans')}
-              </Link>
-            )}
-          </div>
-        )}
+        {errorBlock}
 
         <button
           type="submit"
@@ -862,17 +1337,7 @@ export function PlaceFormPage() {
         )}
       </form>
 
-      {pickingPhotos && (
-        <MultiPhotoPicker
-          maxBytes={MAX_FOTO_BYTES}
-          locale={locale}
-          onCancel={() => setPickingPhotos(false)}
-          onDone={(files) => {
-            setPickingPhotos(false)
-            setPhotoFiles([...photoFiles, ...files])
-          }}
-        />
-      )}
+      {photoPicker}
     </div>
   )
 }
