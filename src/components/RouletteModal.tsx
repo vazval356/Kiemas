@@ -34,10 +34,10 @@ const FILA = 62
  *
  * Con un solo sitio no hay nada que sortear: corto.
  */
-const DURACION_MS = 3000
+const DURACION_MS = 4500
 const DURACION_UNICA_MS = 1300
-const VUELTAS = 48
-const VUELTAS_UNICA = 8
+const VUELTAS = 53
+const VUELTAS_UNICA = 12
 const CURVA = 'cubic-bezier(0.15, 0.65, 0.25, 1)'
 
 const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
