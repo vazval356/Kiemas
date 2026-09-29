@@ -141,8 +141,10 @@ export const en: TextoLanding = {
     pro: {
       insignia: 'One-time payment, no renewals',
       etiqueta: 'Everything unlimited, one payment',
+      precio: '€2.99',
+      nota: 'One-time payment. The store confirms the final price before you pay.',
       punto: 'No limit on groups, people, places or plans',
-      pronto: 'Coming soon',
+      cta: 'Start free and upgrade in the app',
     },
   },
 

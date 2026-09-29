@@ -204,9 +204,10 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 <p className="mt-3 text-sm font-semibold text-on-surface-variant">
                   {t.precios.pro.etiqueta}
                 </p>
-                <p className="mt-1 font-display text-3xl font-extrabold text-on-surface-variant sm:text-4xl">
-                  {t.precios.pro.pronto}
+                <p className="mt-1 font-display text-4xl font-extrabold">
+                  {t.precios.pro.precio}
                 </p>
+                <p className="mt-1 text-sm text-on-surface-variant">{t.precios.pro.nota}</p>
                 <ul className="mt-5 text-sm">
                   <li className="flex items-center gap-2">
                     <span aria-hidden className="font-bold text-primary">
@@ -215,6 +216,12 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                     {t.precios.pro.punto}
                   </li>
                 </ul>
+                <a
+                  href="/#/login?modo=signup"
+                  className="squish mt-6 block rounded-full border-2 border-primary py-3 text-center font-semibold text-primary"
+                >
+                  {t.precios.pro.cta}
+                </a>
               </div>
             </div>
           </Revela>

@@ -141,8 +141,10 @@ export const es: TextoLanding = {
     pro: {
       insignia: 'Pago único, sin renovaciones',
       etiqueta: 'Todo sin límites, con un solo pago',
+      precio: '2,99 €',
+      nota: 'Pago único. El precio final lo confirma la tienda antes de pagar.',
       punto: 'Grupos, personas, sitios y planes sin tope',
-      pronto: 'Próximamente',
+      cta: 'Empieza gratis y mejora desde la app',
     },
   },
 
