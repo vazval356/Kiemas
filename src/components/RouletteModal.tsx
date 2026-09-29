@@ -27,7 +27,6 @@ const DURACION_MS = 3800
 const DURACION_UNICA_MS = 1800
 
 const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
-const fotograma = () => new Promise<void>((r) => requestAnimationFrame(() => r()))
 
 /**
  * El sorteo, como un carrete de tragaperras.
@@ -49,10 +48,13 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
   const [spinning, setSpinning] = useState(false)
   const [secuencia, setSecuencia] = useState<Place[]>([])
   const [borroso, setBorroso] = useState(false)
+  /** Con «reducir movimiento»: solo tres filas que cambian de sitio, sin deslizar. */
+  const [ventana, setVentana] = useState<Place[] | null>(null)
   const [winner, setWinner] = useState<Place | null>(null)
 
   const tiraRef = useRef<HTMLDivElement>(null)
   const confetiRef = useRef<HTMLDivElement>(null)
+  const animacion = useRef<Animation | null>(null)
   /**
    * Número de giro vigente. Cada sorteo lo incrementa, y las esperas del anterior
    * miran si siguen siendo las suyas antes de tocar nada: si se cambia de filtro
@@ -115,9 +117,13 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
 
   async function spin() {
     const mio = ++giro.current
+    animacion.current?.cancel()
+    animacion.current = null
     setWinner(null)
+    setBorroso(false)
     if (candidates.length === 0) {
       setSecuencia([])
+      setVentana(null)
       setSpinning(false)
       return
     }
@@ -126,6 +132,37 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
     // El ganador, antes de animar.
     const n = candidates.length
     const chosen = candidates[Math.floor(Math.random() * n)]
+    const tira = tiraRef.current
+    if (tira) tira.style.transform = 'translateY(0)'
+
+    /**
+     * «Reducir movimiento» no es «sin animación».
+     *
+     * Antes, quien lo tenía activado recibía el resultado de golpe, sin ningún
+     * giro: parecía que la ruleta no hacía nada. Lo que pide ese ajuste es que no
+     * haya desplazamientos grandes, no que desaparezca el suspense. Se cambia el
+     * deslizamiento por lo que el propio iOS usa en su lugar: la ventana se queda
+     * quieta y los nombres se van cambiando cada vez más despacio hasta que se
+     * para en el elegido.
+     */
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const enVentana = (i: number) => [
+        candidates[(i - 1 + n) % n],
+        candidates[i % n],
+        candidates[(i + 1) % n],
+      ]
+      const pasos = n === 1 ? 4 : 12
+      const inicio = Math.floor(Math.random() * n)
+      for (let t = 1; t <= pasos; t++) {
+        const i = t === pasos ? candidates.indexOf(chosen) : inicio + t
+        setVentana(enVentana(i))
+        await esperar(90 + t * 28)
+        if (mio !== giro.current) return
+      }
+      setWinner(chosen)
+      setSpinning(false)
+      return
+    }
 
     // La tira: vueltas a la lista y, al final, el ganador. Sus dos vecinos no
     // pueden ser él mismo, o se vería dos veces seguidas y parecería un fallo.
@@ -139,35 +176,36 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
       if (seq[vueltas - 1] === chosen) seq[vueltas - 1] = otro
       if (seq[vueltas + 1] === chosen) seq[vueltas + 1] = otro
     }
-
-    // Se vuelve arriba sin animar, se pintan las filas nuevas, y solo entonces se
-    // activa la transición: si se cambia todo de golpe el navegador salta al valor
-    // final sin deslizar nada.
-    const tira = tiraRef.current
-    if (tira) {
-      tira.style.transition = 'none'
-      tira.style.transform = 'translateY(0)'
-    }
+    setVentana(null)
     setSecuencia(seq)
-    await fotograma()
-    await fotograma()
-    if (mio !== giro.current) return
 
-    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const dur = reducido ? 0 : n === 1 ? DURACION_UNICA_MS : DURACION_MS
+    // Se espera a que React haya pintado las filas nuevas. Con un temporizador y
+    // no con `requestAnimationFrame`: los fotogramas se pausan si la vista no
+    // está activa del todo, y entonces el giro se quedaba esperando para siempre.
+    await esperar(60)
+    if (mio !== giro.current) return
     const el = tiraRef.current
     if (!el) return
-    void el.offsetHeight
-    setBorroso(dur > 0)
-    el.style.transition = dur ? `transform ${dur}ms cubic-bezier(.16,.86,.2,1.03)` : 'none'
-    // La fila del ganador queda en el centro de la ventana de tres.
-    el.style.transform = `translateY(${-(vueltas - 1) * FILA}px)`
+
+    // `animate` en lugar de una transición de CSS. La transición dependía de
+    // cambiar `transition` y `transform` en el orden justo y de forzar un
+    // repintado entre medias; si el navegador lo juntaba, saltaba al final sin
+    // deslizar. Una animación tiene el origen y el destino escritos, y no
+    // depende de nada de eso.
+    const dur = n === 1 ? DURACION_UNICA_MS : DURACION_MS
+    const destino = `translateY(${-(vueltas - 1) * FILA}px)`
+    setBorroso(true)
+    animacion.current = el.animate(
+      [{ transform: 'translateY(0)' }, { transform: destino }],
+      // La fila del ganador queda en el centro de la ventana de tres.
+      { duration: dur, easing: 'cubic-bezier(.16,.86,.2,1.03)', fill: 'forwards' }
+    )
 
     // Borroso mientras corre; nítido en el último tramo, para poder leer dónde cae.
     await esperar(dur * 0.72)
     if (mio !== giro.current) return
     setBorroso(false)
-    await esperar(dur ? dur * 0.28 + 200 : 0)
+    await esperar(dur * 0.28 + 200)
     if (mio !== giro.current) return
 
     setWinner(chosen)
@@ -180,13 +218,14 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
     void spin()
     return () => {
       giro.current++
+      animacion.current?.cancel()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [catFilter, includeVisited])
 
   // Antes del primer giro la ventana enseña los primeros sitios, para no abrir
   // con un hueco.
-  const filas = secuencia.length > 0 ? secuencia : candidates.slice(0, 3)
+  const filas = ventana ?? (secuencia.length > 0 ? secuencia : candidates.slice(0, 3))
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
@@ -261,7 +300,10 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
               aria-hidden
             >
               <div
-                className={`pointer-events-none absolute inset-x-2 z-[1] rounded-2xl transition-[box-shadow,background-color] duration-200 ${
+                // Por DETRÁS de la tira (z-0 frente a su z-[1]): con la franja
+                // encima, su color al 60 % velaba el nombre del ganador y se
+                // leía en gris.
+                className={`pointer-events-none absolute inset-x-2 z-0 rounded-2xl transition-[box-shadow,background-color] duration-200 ${
                   winner
                     ? 'bg-secondary-fixed/60 shadow-[0_0_0_3px_var(--color-secondary),0_0_22px_rgba(185,5,56,0.35)]'
                     : 'bg-primary-fixed/45 shadow-[0_0_0_2.5px_var(--color-primary)]'
@@ -278,7 +320,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
               />
               <div
                 ref={tiraRef}
-                className={`absolute inset-x-0 top-0 will-change-transform ${
+                className={`absolute inset-x-0 top-0 z-[1] will-change-transform ${
                   borroso ? 'blur-[1.4px]' : ''
                 }`}
               >
