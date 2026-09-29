@@ -130,6 +130,7 @@ export const en: TextoLanding = {
     gratis: {
       etiqueta: 'To get organised',
       precio: '€0',
+      nota: 'Included as soon as you create your account.',
       puntos: [
         'Up to 2 groups',
         'Up to 6 people per group',
@@ -143,7 +144,12 @@ export const en: TextoLanding = {
       etiqueta: 'Everything unlimited, one payment',
       precio: '€2.99',
       nota: 'One-time payment. The store confirms the final price before you pay.',
-      punto: 'No limit on groups, people, places or plans',
+      puntos: [
+        'Unlimited groups',
+        'Unlimited people per group',
+        'Unlimited saved places',
+        'Unlimited plans at once',
+      ],
       cta: 'Start free and upgrade in the app',
     },
   },

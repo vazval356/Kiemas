@@ -75,14 +75,14 @@ export interface TextoLanding {
   precios: {
     titulo: string
     subtitulo: string
-    gratis: { etiqueta: string; precio: string; puntos: string[]; cta: string }
+    gratis: { etiqueta: string; precio: string; nota: string; puntos: string[]; cta: string }
     pro: {
       insignia: string
       etiqueta: string
       precio: string
       /** Aclaración bajo el precio: que es pago único y que lo confirma la tienda. */
       nota: string
-      punto: string
+      puntos: string[]
       cta: string
     }
   }

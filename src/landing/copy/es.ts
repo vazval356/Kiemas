@@ -130,6 +130,7 @@ export const es: TextoLanding = {
     gratis: {
       etiqueta: 'Para empezar a organizarse',
       precio: '0 €',
+      nota: 'Incluido en cuanto creas tu cuenta.',
       puntos: [
         'Hasta 2 grupos',
         'Hasta 6 personas por grupo',
@@ -143,7 +144,12 @@ export const es: TextoLanding = {
       etiqueta: 'Todo sin límites, con un solo pago',
       precio: '2,99 €',
       nota: 'Pago único. El precio final lo confirma la tienda antes de pagar.',
-      punto: 'Grupos, personas, sitios y planes sin tope',
+      puntos: [
+        'Grupos sin tope',
+        'Personas sin tope por grupo',
+        'Sitios guardados sin tope',
+        'Planes a la vez sin tope',
+      ],
       cta: 'Empieza gratis y mejora desde la app',
     },
   },

@@ -186,7 +186,9 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 <p className="mt-2 font-display text-5xl font-extrabold leading-none">
                   {t.precios.gratis.precio}
                 </p>
-                <p className="mt-2 min-h-10 text-sm text-on-surface-variant" aria-hidden />
+                <p className="mt-2 min-h-10 text-sm text-on-surface-variant">
+                  {t.precios.gratis.nota}
+                </p>
                 <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
                   {t.precios.gratis.puntos.map((p) => (
                     <li key={p} className="flex items-center gap-2.5">
@@ -219,15 +221,17 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 </p>
                 <p className="mt-2 min-h-10 text-sm text-on-primary/80">{t.precios.pro.nota}</p>
                 <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
-                  <li className="flex items-center gap-2.5">
-                    <span
-                      aria-hidden
-                      className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white"
-                    >
-                      ✓
-                    </span>
-                    {t.precios.pro.punto}
-                  </li>
+                  {t.precios.pro.puntos.map((p) => (
+                    <li key={p} className="flex items-center gap-2.5">
+                      <span
+                        aria-hidden
+                        className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white"
+                      >
+                        ✓
+                      </span>
+                      {p}
+                    </li>
+                  ))}
                 </ul>
                 <a
                   href="/#/login?modo=signup"
