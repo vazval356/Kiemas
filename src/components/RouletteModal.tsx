@@ -19,6 +19,27 @@ interface Props {
   onPick?: (place: Place) => void
 }
 
+/** Alto de cada fila del carrete, en píxeles. La ventana enseña tres. */
+const FILA = 62
+
+/** Cuánto dura la animación. Con un solo sitio no hay nada que sortear: rápido. */
+const DURACION_MS = 3800
+const DURACION_UNICA_MS = 1800
+
+const esperar = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms))
+const fotograma = () => new Promise<void>((r) => requestAnimationFrame(() => r()))
+
+/**
+ * El sorteo, como un carrete de tragaperras.
+ *
+ * Antes el nombre parpadeaba dentro de una caja de puntos, cada vez más despacio:
+ * no se veía nada girar y el resultado llegaba sin ninguna expectación. Ahora los
+ * nombres pasan por una ventana a toda velocidad, frenan y se pasan un poco antes
+ * de asentarse en el sitio elegido.
+ *
+ * El ganador se decide ANTES de animar: la animación es teatro, no sorteo. Lo que
+ * se pinta es una tira larga de sitios que termina en él, y la tira se desliza.
+ */
 export function RouletteModal({ places, categories, initialCategory, onClose, onPick }: Props) {
   const navigate = useNavigate()
   const { t } = useApp()
@@ -26,9 +47,18 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
   const [catFilter, setCatFilter] = useState<string | null>(initialCategory)
   const [includeVisited, setIncludeVisited] = useState(false)
   const [spinning, setSpinning] = useState(false)
-  const [current, setCurrent] = useState<Place | null>(null)
+  const [secuencia, setSecuencia] = useState<Place[]>([])
+  const [borroso, setBorroso] = useState(false)
   const [winner, setWinner] = useState<Place | null>(null)
-  const timerRef = useRef<number>(0)
+
+  const tiraRef = useRef<HTMLDivElement>(null)
+  const confetiRef = useRef<HTMLDivElement>(null)
+  /**
+   * Número de giro vigente. Cada sorteo lo incrementa, y las esperas del anterior
+   * miran si siguen siendo las suyas antes de tocar nada: si se cambia de filtro
+   * a mitad de giro, o se cierra el modal, el giro viejo se calla solo.
+   */
+  const giro = useRef(0)
 
   // Por defecto solo los pendientes: la pregunta es «dónde vamos», no «dónde
   // hemos estado». El interruptor suma los visitados para repetir favoritos.
@@ -49,51 +79,123 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
     [categories, byStatus]
   )
 
-  function spin() {
-    window.clearTimeout(timerRef.current)
+  const emojiDe = (p: Place) => categories.find((c) => c.id === p.categoryId)?.emoji ?? '📍'
+
+  /** Confeti al acabar. Con «reducir movimiento» no hay nada que animar. */
+  function confeti() {
+    const capa = confetiRef.current
+    if (!capa || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    for (const [k, emoji] of ['🎉', '✨', '🎊', '⭐', '✨', '🎉'].entries()) {
+      for (let i = 0; i < 4; i++) {
+        const s = document.createElement('span')
+        s.textContent = emoji
+        s.className = 'absolute left-1/2 top-[45%] text-lg'
+        capa.appendChild(s)
+        const ang = Math.random() * Math.PI * 2
+        const dist = 90 + Math.random() * 110
+        s.animate(
+          [
+            { transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 },
+            {
+              transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${
+                Math.sin(ang) * dist - 30
+              }px)) rotate(${Math.random() * 300 - 150}deg) scale(1.1)`,
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 900 + Math.random() * 500,
+            easing: 'cubic-bezier(.2,.8,.3,1)',
+            delay: k * 25,
+          }
+        ).onfinish = () => s.remove()
+      }
+    }
+  }
+
+  async function spin() {
+    const mio = ++giro.current
     setWinner(null)
     if (candidates.length === 0) {
-      setCurrent(null)
+      setSecuencia([])
       setSpinning(false)
       return
     }
     setSpinning(true)
-    // El ganador se decide antes de animar: la animación es teatro, no sorteo.
-    const chosen = candidates[Math.floor(Math.random() * candidates.length)]
-    let ticks = 0
-    const totalTicks = candidates.length === 1 ? 6 : 16
-    const tick = () => {
-      ticks++
-      setCurrent(candidates[ticks % candidates.length])
-      if (ticks >= totalTicks) {
-        setCurrent(chosen)
-        setWinner(chosen)
-        setSpinning(false)
-      } else {
-        // Cada vuelta tarda un poco más: es lo que da la sensación de frenada.
-        timerRef.current = window.setTimeout(tick, 60 + ticks * 14)
-      }
+
+    // El ganador, antes de animar.
+    const n = candidates.length
+    const chosen = candidates[Math.floor(Math.random() * n)]
+
+    // La tira: vueltas a la lista y, al final, el ganador. Sus dos vecinos no
+    // pueden ser él mismo, o se vería dos veces seguidas y parecería un fallo.
+    const vueltas = n === 1 ? 10 : 30
+    const seq: Place[] = []
+    let k = Math.floor(Math.random() * n)
+    for (let i = 0; i < vueltas + 2; i++) seq.push(candidates[k++ % n])
+    seq[vueltas] = chosen
+    if (n > 1) {
+      const otro = candidates[(candidates.indexOf(chosen) + 1) % n]
+      if (seq[vueltas - 1] === chosen) seq[vueltas - 1] = otro
+      if (seq[vueltas + 1] === chosen) seq[vueltas + 1] = otro
     }
-    tick()
+
+    // Se vuelve arriba sin animar, se pintan las filas nuevas, y solo entonces se
+    // activa la transición: si se cambia todo de golpe el navegador salta al valor
+    // final sin deslizar nada.
+    const tira = tiraRef.current
+    if (tira) {
+      tira.style.transition = 'none'
+      tira.style.transform = 'translateY(0)'
+    }
+    setSecuencia(seq)
+    await fotograma()
+    await fotograma()
+    if (mio !== giro.current) return
+
+    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const dur = reducido ? 0 : n === 1 ? DURACION_UNICA_MS : DURACION_MS
+    const el = tiraRef.current
+    if (!el) return
+    void el.offsetHeight
+    setBorroso(dur > 0)
+    el.style.transition = dur ? `transform ${dur}ms cubic-bezier(.16,.86,.2,1.03)` : 'none'
+    // La fila del ganador queda en el centro de la ventana de tres.
+    el.style.transform = `translateY(${-(vueltas - 1) * FILA}px)`
+
+    // Borroso mientras corre; nítido en el último tramo, para poder leer dónde cae.
+    await esperar(dur * 0.72)
+    if (mio !== giro.current) return
+    setBorroso(false)
+    await esperar(dur ? dur * 0.28 + 200 : 0)
+    if (mio !== giro.current) return
+
+    setWinner(chosen)
+    setSpinning(false)
+    confeti()
   }
 
   // Gira al abrir y cada vez que cambian los filtros.
   useEffect(() => {
-    spin()
-    return () => window.clearTimeout(timerRef.current)
+    void spin()
+    return () => {
+      giro.current++
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [catFilter, includeVisited])
 
-  const cat = winner ? categories.find((c) => c.id === winner.categoryId) : null
+  // Antes del primer giro la ventana enseña los primeros sitios, para no abrir
+  // con un hueco.
+  const filas = secuencia.length > 0 ? secuencia : candidates.slice(0, 3)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
       <div className="absolute inset-0 bg-on-surface/50" onClick={onClose} />
-      <div className="relative w-full max-w-sm rounded-card bg-surface p-6 text-center shadow-[var(--shadow-float)] animate-pop">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-card bg-surface p-6 text-center shadow-[var(--shadow-float)] animate-pop">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 text-on-surface-variant squish"
+          className="absolute right-4 top-4 z-10 text-on-surface-variant squish"
           aria-label={t('common.close')}
         >
           <CloseIcon />
@@ -139,7 +241,7 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
           </p>
         ) : (
           <>
-            <p className="mb-5 text-sm text-on-surface-variant">
+            <p className="mb-3 text-sm text-on-surface-variant">
               {spinning
                 ? t('roulette.spinning')
                 : `${t('roulette.decided')} (${
@@ -148,34 +250,74 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
                       : t('roulette.options', { count: candidates.length })
                   })`}
             </p>
+
+            {/* ── El carrete ───────────────────────────────────────────────
+                Una ventana de tres filas con la del centro marcada: es la que
+                cuenta. Los difuminados de arriba y abajo hacen que las filas
+                entren y salgan en vez de cortarse de golpe. */}
             <div
-              className={`mb-6 rounded-card border-2 border-dashed px-4 py-8 transition-colors ${
-                winner
-                  ? 'border-primary bg-primary-fixed/50'
-                  : 'border-outline-variant bg-surface-container'
-              }`}
+              className="relative mb-2 overflow-hidden rounded-card bg-surface-lowest shadow-[inset_0_0_0_1.5px_var(--color-outline-variant)]"
+              style={{ height: FILA * 3 }}
+              aria-hidden
             >
-              <div className="mb-2 text-4xl">{winner ? (cat?.emoji ?? '🎉') : '🎲'}</div>
-              <div className="min-h-7 font-display text-xl font-bold text-on-surface">
-                {current?.name ?? '…'}
-              </div>
-              {winner && (
-                <div className="mt-1 flex flex-col items-center gap-0.5">
-                  {winner.address && (
-                    <span className="text-sm text-on-surface-variant">{winner.address}</span>
-                  )}
-                  {winner.status === 'visited' && (
-                    <span className="rounded-full bg-surface-highest px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
-                      {t('roulette.alreadyVisited')}
+              <div
+                className={`pointer-events-none absolute inset-x-2 z-[1] rounded-2xl transition-[box-shadow,background-color] duration-200 ${
+                  winner
+                    ? 'bg-secondary-fixed/60 shadow-[0_0_0_3px_var(--color-secondary),0_0_22px_rgba(185,5,56,0.35)]'
+                    : 'bg-primary-fixed/45 shadow-[0_0_0_2.5px_var(--color-primary)]'
+                }`}
+                style={{ top: FILA, height: FILA }}
+              />
+              <div
+                className="pointer-events-none absolute inset-x-0 top-0 z-[2] bg-gradient-to-b from-surface-lowest to-transparent"
+                style={{ height: FILA }}
+              />
+              <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-surface-lowest to-transparent"
+                style={{ height: FILA }}
+              />
+              <div
+                ref={tiraRef}
+                className={`absolute inset-x-0 top-0 will-change-transform ${
+                  borroso ? 'blur-[1.4px]' : ''
+                }`}
+              >
+                {filas.map((p, i) => (
+                  <div
+                    key={`${i}-${p.id}`}
+                    className="flex items-center gap-3 px-6"
+                    style={{ height: FILA }}
+                  >
+                    <span className="w-9 shrink-0 text-2xl">{emojiDe(p)}</span>
+                    <span className="min-w-0 truncate text-left font-display text-lg font-bold text-on-surface">
+                      {p.name}
                     </span>
-                  )}
-                </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Lo que un lector de pantalla necesita: el carrete es decorativo
+                y no se lee; el resultado sí. */}
+            <p className="sr-only" aria-live="polite">
+              {winner ? winner.name : ''}
+            </p>
+
+            <div className="mb-5 flex min-h-9 flex-col items-center justify-center gap-0.5">
+              {winner?.address && (
+                <span className="text-sm text-on-surface-variant">📍 {winner.address}</span>
+              )}
+              {winner?.status === 'visited' && (
+                <span className="rounded-full bg-surface-highest px-2 py-0.5 text-xs font-semibold text-on-surface-variant">
+                  {t('roulette.alreadyVisited')}
+                </span>
               )}
             </div>
+
             <div className="flex gap-3">
               <button
                 type="button"
-                onClick={spin}
+                onClick={() => void spin()}
                 disabled={spinning}
                 className="flex-1 rounded-full border border-outline-variant py-3 font-semibold text-on-surface-variant squish disabled:opacity-50"
               >
@@ -196,6 +338,8 @@ export function RouletteModal({ places, categories, initialCategory, onClose, on
             </div>
           </>
         )}
+
+        <div ref={confetiRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
       </div>
     </div>
   )
