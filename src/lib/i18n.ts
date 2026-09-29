@@ -870,6 +870,10 @@ const es = {
 
   // Aspecto del espacio
   'space.look': 'Aspecto',
+  'space.customize': 'Personalizar',
+  'space.moreActions': 'Más acciones',
+  'invite.newLink': 'Nuevo enlace',
+  'invite.options': 'Opciones del enlace',
   'space.lookHint': 'Con qué icono y color se reconoce este grupo.',
   'space.lookSaved': 'Aspecto guardado',
   'space.pickColor': 'Elegir color',
@@ -1731,6 +1735,10 @@ const en: Record<TranslationKey, string> = {
 
   // Space look
   'space.look': 'Look',
+  'space.customize': 'Customize',
+  'space.moreActions': 'More actions',
+  'invite.newLink': 'New link',
+  'invite.options': 'Link options',
   'space.lookHint': 'The icon and colour this group is recognised by.',
   'space.lookSaved': 'Look saved',
   'space.pickColor': 'Pick a colour',
