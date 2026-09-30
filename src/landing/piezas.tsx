@@ -466,3 +466,94 @@ export function Ruido({ lineas }: { lineas: string[] }) {
     </div>
   )
 }
+
+// ── Escaparate: pantallas reales de la app ──────────────────────────────
+
+/**
+ * Una captura real de la app dentro de un marco de móvil, girada unos grados.
+ *
+ * A diferencia del resto de piezas, esto SÍ es una captura: enseña la app tal
+ * como está en la tienda. El giro es la misma composición que las capturas de
+ * App Store (`brand/appstore/`). Las imágenes viven en `public/landing/` y
+ * salen de las capturas de `docs/` (ver `public/landing/LEEME.md`).
+ *
+ * El `width`/`height` reservan el hueco antes de que cargue la imagen, para
+ * que la página no salte.
+ */
+export function MovilCaptura({
+  src,
+  alt,
+  inclinacion = 0,
+  className = '',
+  prioridad = false,
+}: {
+  src: string
+  alt: string
+  inclinacion?: number
+  className?: string
+  /** Solo la del primer pantallazo: el resto se carga al acercarse. */
+  prioridad?: boolean
+}) {
+  return (
+    <div className={`kl-movil ${className}`} style={{ '--inc': `${inclinacion}deg` } as CSSProperties}>
+      <div className="rounded-[2.4rem] bg-[#0e0f1a] p-[5px] shadow-[0_40px_70px_-25px_rgba(7,0,108,0.55)] ring-1 ring-white/10">
+        <img
+          src={src}
+          alt={alt}
+          width={738}
+          height={1600}
+          loading={prioridad ? 'eager' : 'lazy'}
+          decoding="async"
+          className="block h-auto w-full rounded-[2.1rem]"
+        />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * La sorpresa, en dos tarjetas: lo que ve quien la prepara y lo que ve la otra
+ * persona. No hay captura de esto, y una comparación lo explica mejor que una
+ * pantalla sola: la gracia es precisamente la diferencia.
+ */
+export function PiezaSorpresa({ texto }: { texto: TextoLanding['escaparate']['sorpresa'] }) {
+  return (
+    <div className="mx-auto flex w-full max-w-sm flex-col gap-3" role="img" aria-label={texto.alt}>
+      <p aria-hidden className="text-sm font-bold text-on-surface-variant">
+        {texto.vistaAutor}
+      </p>
+      <div
+        aria-hidden
+        className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-float)]"
+      >
+        <p className="text-xs font-semibold text-on-surface-variant">🎁 {texto.cuando}</p>
+        <p className="mt-0.5 font-display text-lg font-bold leading-tight text-on-surface">
+          {texto.plan}
+        </p>
+        <p className="mt-1.5 text-sm text-on-surface-variant">{texto.nota}</p>
+        <div className="mt-3 flex items-center gap-2 text-sm text-on-surface-variant">
+          <Caras iniciales={['M', 'D', 'L']} />
+          {texto.van}
+        </div>
+      </div>
+
+      <span aria-hidden className="self-center text-xl text-primary">
+        ↓
+      </span>
+
+      <p aria-hidden className="text-sm font-bold text-on-surface-variant">
+        {texto.vistaOtra}
+      </p>
+      <div
+        aria-hidden
+        className="rounded-card bg-primary-fixed p-4 shadow-[var(--shadow-surface)]"
+      >
+        <p className="flex items-center gap-2 text-sm font-bold text-primary">
+          <span>🎁</span>
+          {texto.casilla}
+        </p>
+        <p className="mt-1 text-sm text-on-surface-variant">🕐 {texto.cuando}</p>
+      </div>
+    </div>
+  )
+}

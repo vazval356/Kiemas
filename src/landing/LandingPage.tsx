@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { IDIOMAS_LANDING, type IdiomaLanding } from './idiomas'
 import {
-  EscenaHero,
+  MovilCaptura,
   PiezaCompartir,
   PiezaDescubrir,
   PiezaIr,
+  PiezaSorpresa,
   PiezaVotar,
   Revela,
   Ruido,
@@ -33,27 +34,57 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
 
   return (
     <div className="kl h-full overflow-y-auto bg-surface-low text-on-surface">
-      <Cabecera idioma={idioma} entrar={t.nav.entrar} etiquetaIdioma={t.nav.idioma} />
-
       <main>
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-4 sm:px-6 md:grid-cols-[1.05fr_1fr] md:gap-14 md:pb-24 md:pt-10">
-          <div>
-            <h1 className="font-display text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] text-on-surface sm:text-5xl md:text-6xl">
-              {t.hero.titulo}
-            </h1>
-            <p className="mt-5 max-w-[34ch] text-lg leading-relaxed text-on-surface-variant">
-              {t.hero.subtitulo}
-            </p>
-            <div className="mt-8 flex flex-col items-start gap-3">
-              <a href="/#/login?modo=signup" className={BOTON_PRINCIPAL}>
-                {t.hero.cta}
-              </a>
-              <p className="text-sm text-on-surface-variant">{t.hero.nota}</p>
+        {/* Azul de marca a todo el ancho, como las capturas de la tienda: dos
+            móviles con la app de verdad, girados y saliendo por abajo. La
+            cabecera vive dentro de la banda para que el azul empiece arriba
+            del todo. */}
+        <div className="overflow-hidden bg-gradient-to-b from-primary to-primary-container text-on-primary">
+          <Cabecera
+            idioma={idioma}
+            entrar={t.nav.entrar}
+            etiquetaIdioma={t.nav.idioma}
+            sobreColor
+          />
+          <section className="mx-auto grid max-w-6xl items-center gap-6 px-4 pt-4 sm:px-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-10">
+            <div className="pb-2 md:pb-24">
+              <h1 className="font-display text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] text-on-primary sm:text-5xl md:text-6xl">
+                {t.hero.titulo}
+              </h1>
+              <p className="mt-5 max-w-[34ch] text-lg leading-relaxed text-on-primary/85">
+                {t.hero.subtitulo}
+              </p>
+              <div className="mt-8 flex flex-col items-start gap-3">
+                <a
+                  href="/#/login?modo=signup"
+                  className="squish inline-flex items-center rounded-full bg-surface-lowest px-8 py-4 font-display text-lg font-bold text-primary shadow-[var(--shadow-float)]"
+                >
+                  {t.hero.cta}
+                </a>
+                <p className="text-sm text-on-primary/75">{t.hero.nota}</p>
+              </div>
             </div>
-          </div>
-          <EscenaHero texto={t.hero} />
-        </section>
+
+            {/* Dos móviles que se solapan y salen por el borde de abajo. */}
+            <div className="relative mx-auto h-[25rem] w-full max-w-md sm:h-[32rem] md:h-[38rem] md:max-w-none">
+              <MovilCaptura
+                src="/landing/app-mapa.webp"
+                alt={t.escaparate.mapa.alt}
+                inclinacion={-6}
+                prioridad
+                className="absolute bottom-[-18%] left-[2%] w-[52%] md:left-[0%]"
+              />
+              <MovilCaptura
+                src="/landing/app-calendario.webp"
+                alt={t.escaparate.calendario.alt}
+                inclinacion={5}
+                prioridad
+                className="absolute bottom-[-26%] right-[2%] w-[52%] md:right-[0%]"
+              />
+            </div>
+          </section>
+        </div>
 
         {/* ── Problema ─────────────────────────────────────────────────── */}
         <section aria-labelledby="kl-problema" className="bg-surface-high">
@@ -72,6 +103,62 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             <HiloDeChat hilo={t.problema.hilo} despues={t.problema.despues} />
           </Revela>
         </section>
+
+        {/* ── Así se ve: pantallas reales, en bandas de color ──────────── */}
+        <Banda
+          id="kl-mapa"
+          fondo="bg-surface-lowest"
+          titulo={t.escaparate.mapa.titulo}
+          cuerpo={t.escaparate.mapa.cuerpo}
+        >
+          <MovilCaptura
+            src="/landing/app-mapa.webp"
+            alt={t.escaparate.mapa.alt}
+            inclinacion={-5}
+            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+          />
+        </Banda>
+
+        <Banda
+          id="kl-calendario"
+          fondo="bg-on-primary-fixed"
+          oscuro
+          invertir
+          titulo={t.escaparate.calendario.titulo}
+          cuerpo={t.escaparate.calendario.cuerpo}
+        >
+          <MovilCaptura
+            src="/landing/app-calendario.webp"
+            alt={t.escaparate.calendario.alt}
+            inclinacion={5}
+            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+          />
+        </Banda>
+
+        <Banda
+          id="kl-sorpresa"
+          fondo="bg-surface-low"
+          titulo={t.escaparate.sorpresa.titulo}
+          cuerpo={t.escaparate.sorpresa.cuerpo}
+        >
+          <PiezaSorpresa texto={t.escaparate.sorpresa} />
+        </Banda>
+
+        <Banda
+          id="kl-explorar"
+          fondo="bg-gradient-to-br from-primary to-primary-container"
+          oscuro
+          invertir
+          titulo={t.escaparate.explorar.titulo}
+          cuerpo={t.escaparate.explorar.cuerpo}
+        >
+          <MovilCaptura
+            src="/landing/app-explorar.webp"
+            alt={t.escaparate.explorar.alt}
+            inclinacion={-5}
+            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+          />
+        </Banda>
 
         {/* ── Cómo funciona: la interfaz real, paso a paso ─────────────── */}
         <section aria-labelledby="kl-como" className="bg-surface-lowest">
@@ -277,21 +364,75 @@ const TITULO_SECCION =
   'font-display text-3xl font-extrabold leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
 const ETIQUETA = 'text-sm font-bold text-on-surface-variant'
 
+/**
+ * Una banda del escaparate: titular y texto a un lado, la pieza al otro. En
+ * móvil va el texto primero y debajo la pieza; `invertir` solo cambia el lado
+ * en pantallas anchas. `oscuro` pone el texto en blanco sobre fondos de color.
+ */
+function Banda({
+  id,
+  fondo,
+  titulo,
+  cuerpo,
+  oscuro = false,
+  invertir = false,
+  children,
+}: {
+  id: string
+  fondo: string
+  titulo: string
+  cuerpo: string
+  oscuro?: boolean
+  invertir?: boolean
+  children: ReactNode
+}) {
+  return (
+    <section aria-labelledby={id} className={`overflow-hidden ${fondo}`}>
+      <Revela
+        as="div"
+        className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 md:grid-cols-2 md:gap-16 md:py-24"
+      >
+        <div className={invertir ? 'md:order-2' : ''}>
+          <h2
+            id={id}
+            className={oscuro ? TITULO_SECCION.replace('text-on-surface', 'text-on-primary') : TITULO_SECCION}
+          >
+            {titulo}
+          </h2>
+          <p
+            className={`mt-4 max-w-[42ch] text-lg leading-relaxed ${
+              oscuro ? 'text-on-primary/85' : 'text-on-surface-variant'
+            }`}
+          >
+            {cuerpo}
+          </p>
+        </div>
+        <div className="flex justify-center">{children}</div>
+      </Revela>
+    </section>
+  )
+}
+
 function Cabecera({
   idioma,
   entrar,
   etiquetaIdioma,
+  sobreColor = false,
 }: {
   idioma: IdiomaLanding
   entrar: string
   etiquetaIdioma: string
+  /** La cabecera está sobre el azul de marca: textos y botones en claro. */
+  sobreColor?: boolean
 }) {
   return (
     <header className="pt-safe">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <a
           href={`/${idioma}`}
-          className="flex items-center gap-2.5 font-display text-xl font-extrabold"
+          className={`flex items-center gap-2.5 font-display text-xl font-extrabold ${
+            sobreColor ? 'text-on-primary' : ''
+          }`}
         >
           <img
             src="/icons/icon-192.png"
@@ -303,10 +444,12 @@ function Cabecera({
           Kiemas
         </a>
         <div className="flex items-center gap-2">
-          <SelectorDeIdioma idioma={idioma} etiqueta={etiquetaIdioma} />
+          <SelectorDeIdioma idioma={idioma} etiqueta={etiquetaIdioma} sobreColor={sobreColor} />
           <a
             href="/#/login"
-            className="squish rounded-full bg-surface-lowest px-4 py-2 text-sm font-semibold shadow-[var(--shadow-surface)]"
+            className={`squish rounded-full px-4 py-2 text-sm font-semibold shadow-[var(--shadow-surface)] ${
+              sobreColor ? 'bg-surface-lowest text-primary' : 'bg-surface-lowest'
+            }`}
           >
             {entrar}
           </a>
@@ -316,11 +459,21 @@ function Cabecera({
   )
 }
 
-function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiqueta: string }) {
+function SelectorDeIdioma({
+  idioma,
+  etiqueta,
+  sobreColor = false,
+}: {
+  idioma: IdiomaLanding
+  etiqueta: string
+  sobreColor?: boolean
+}) {
   return (
     <nav
       aria-label={etiqueta}
-      className="flex rounded-full bg-surface-container p-0.5 text-xs font-bold"
+      className={`flex rounded-full p-0.5 text-xs font-bold ${
+        sobreColor ? 'bg-white/15' : 'bg-surface-container'
+      }`}
     >
       {(Object.keys(IDIOMAS_LANDING) as IdiomaLanding[]).map((id) => (
         <a
@@ -333,7 +486,9 @@ function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiquet
           className={`rounded-full px-2.5 py-1.5 ${
             id === idioma
               ? 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
-              : 'text-on-surface-variant'
+              : sobreColor
+                ? 'text-on-primary/85'
+                : 'text-on-surface-variant'
           }`}
         >
           {IDIOMAS_LANDING[id].etiqueta}

@@ -98,6 +98,40 @@ export const es: TextoLanding = {
     },
   },
 
+  escaparate: {
+    mapa: {
+      titulo: 'Todos vuestros sitios, en un solo mapa',
+      cuerpo:
+        'Lo que cada uno guarda aparece en el mapa del grupo, con su categoría. Pegad un enlace de Google Maps, Apple Maps o Waze y se rellena solo.',
+      alt: 'Pantalla de Kiemas: el mapa de Madrid lleno de pines de sitios guardados por categorías.',
+    },
+    calendario: {
+      titulo: 'Quedad sin cuarenta mensajes',
+      cuerpo:
+        'Un plan con fecha, o con votación si no os ponéis de acuerdo. Las decisiones pequeñas se votan en un toque, y se ve de un vistazo quién va.',
+      alt: 'Pantalla de Kiemas: el calendario del grupo con un plan votando fechas y una decisión abierta.',
+    },
+    sorpresa: {
+      titulo: 'Y si es una sorpresa, no se entera',
+      cuerpo:
+        'Preparad un plan para alguien del grupo. En su calendario solo verá que ese día tiene algo. Vosotros lo veis todo, y cuando toque, lo reveláis.',
+      alt: 'Comparación: el plan completo que ve quien lo prepara y la casilla «Algo te espera» que ve la persona sorprendida.',
+      vistaAutor: 'Lo ves tú',
+      vistaOtra: 'Lo que ve la otra persona',
+      casilla: 'Algo te espera',
+      cuando: 'Sáb · 21:00',
+      plan: 'Cena sorpresa por su cumple',
+      nota: 'Mesa a las 21:00 en La Tasca. Que no sospeche.',
+      van: '3 van',
+    },
+    explorar: {
+      titulo: 'Descubre listas de otra gente',
+      cuerpo:
+        'Sigue las listas que publican otros —hamburguesas, terrazas, planes de lluvia— y llévate los sitios a tu mapa.',
+      alt: 'Pantalla de Kiemas: Explorar, con listas públicas de hamburgueserías y un buscador.',
+    },
+  },
+
   antesDespues: {
     titulo: 'El mismo plan, sin el ruido.',
     antes: 'Antes',

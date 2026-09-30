@@ -59,6 +59,27 @@ export interface TextoLanding {
     }
   }
 
+  /**
+   * «Así se ve»: cuatro bandas con una pantalla real de la app cada una. Las
+   * capturas están en `public/landing/` y se ven en español en los dos idiomas
+   * (la landing en inglés lleva una interfaz en español hasta que haya
+   * capturas en inglés); el `alt` sí va por idioma.
+   */
+  escaparate: {
+    mapa: Escaparate
+    calendario: Escaparate
+    sorpresa: Escaparate & {
+      vistaAutor: string
+      vistaOtra: string
+      casilla: string
+      cuando: string
+      plan: string
+      nota: string
+      van: string
+    }
+    explorar: Escaparate
+  }
+
   antesDespues: {
     titulo: string
     antes: string
@@ -96,6 +117,13 @@ export interface TextoLanding {
     aviso: string
     derechos: string
   }
+}
+
+export interface Escaparate {
+  titulo: string
+  cuerpo: string
+  /** Descripción de la captura para lectores de pantalla. */
+  alt: string
 }
 
 export interface PasoComo {

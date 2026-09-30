@@ -98,6 +98,40 @@ export const en: TextoLanding = {
     },
   },
 
+  escaparate: {
+    mapa: {
+      titulo: 'Every place, on one map',
+      cuerpo:
+        'What each of you saves shows up on the group map, by category. Paste a Google Maps, Apple Maps or Waze link and it fills itself in.',
+      alt: 'Kiemas screen: a map of Madrid full of saved-place pins, sorted by category.',
+    },
+    calendario: {
+      titulo: 'Sort it out without forty messages',
+      cuerpo:
+        'A plan with a date, or a vote when you can’t agree. Small decisions take one tap, and you can see who’s in at a glance.',
+      alt: 'Kiemas screen: the group calendar with a plan that is voting on dates and an open decision.',
+    },
+    sorpresa: {
+      titulo: 'And if it’s a surprise, they won’t know',
+      cuerpo:
+        'Plan something for someone in the group. On their calendar they only see that they’re busy that day. You see everything, and you reveal it when the time comes.',
+      alt: 'Comparison: the full plan its organiser sees, and the “Something’s waiting for you” slot the surprised person sees.',
+      vistaAutor: 'What you see',
+      vistaOtra: 'What they see',
+      casilla: 'Something’s waiting for you',
+      cuando: 'Sat · 9:00 PM',
+      plan: 'Surprise birthday dinner',
+      nota: 'Table for 9:00 PM at La Tasca. Keep it quiet.',
+      van: '3 going',
+    },
+    explorar: {
+      titulo: 'Find lists from other people',
+      cuerpo:
+        'Follow the lists others publish — burgers, terraces, rainy-day plans — and take the places to your own map.',
+      alt: 'Kiemas screen: Explore, with public lists of burger places and a search bar.',
+    },
+  },
+
   antesDespues: {
     titulo: 'Same plan. Less noise.',
     antes: 'Before',

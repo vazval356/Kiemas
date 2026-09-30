@@ -170,3 +170,12 @@
     transform: none;
   }
 }
+
+/* ── Escaparate: móviles con captura ────────────────────────────────────── */
+
+/* El giro es fijo y solo decorativo. Sin animación: no hay nada que respetar
+   con `prefers-reduced-motion`, pero tampoco se mueve nada que distraiga. */
+.kl-movil {
+  transform: rotate(var(--inc, 0deg));
+  transform-origin: 50% 60%;
+}
