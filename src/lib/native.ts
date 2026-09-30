@@ -3,6 +3,7 @@ import { Browser } from '@capacitor/browser'
 import { SplashScreen } from '@capacitor/splash-screen'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { isNative } from './appUrl'
+import { iniciarCompartido } from './shareTarget'
 
 /**
  * Ajustes que solo tienen sentido dentro del contenedor nativo.
@@ -17,6 +18,7 @@ export async function setupNative(): Promise<void> {
   setupBackButton()
   setupExternalLinks()
   setupDeepLinks()
+  iniciarCompartido()
 
   // Se oculta a mano, no por tiempo: si se ocultara por temporizador, en un
   // móvil lento la app aparecería a medio cargar.

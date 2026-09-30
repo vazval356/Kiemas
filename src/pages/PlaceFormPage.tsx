@@ -1,7 +1,8 @@
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { enlaceDelPortapapeles } from '../lib/shareTarget'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
@@ -39,6 +40,7 @@ const LOOKS_LIKE_URL = /^(https?:\/\/|www\.|maps\.app\.|goo\.gl\/)/i
 export function PlaceFormPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { places, categories, position, activeSpace, api, refresh, locale, t } = useApp()
 
   const editing = Boolean(id)
@@ -183,7 +185,76 @@ export function PlaceFormPage() {
    */
   const importSeq = useRef(0)
 
+  // Enlace que llega de fuera: «Compartir» desde Google Maps (`?import=`) o el
+  // que la persona tiene copiado (`sugerido`).
+  const autoImport = useRef(false)
+  const [sugerido, setSugerido] = useState<string | null>(null)
+
   // ── Importar desde un enlace de Google Maps ──────────────────────────────
+  const importParam = searchParams.get('import')
+  useEffect(() => {
+    if (!importParam || existing) return
+    autoImport.current = true
+    setSugerido(null)
+    go(0)
+    onSmartChange(importParam)
+    // Se quita de la dirección para que recargar o volver atrás no reimporte.
+    setSearchParams({}, { replace: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importParam])
+
+  // Importa en cuanto el enlace recibido está en el campo.
+  useEffect(() => {
+    if (autoImport.current && importUrl.trim()) {
+      autoImport.current = false
+      void runImport()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importUrl])
+
+  // Sugerencia: hay un enlace de mapas copiado. Se mira al abrir la pantalla y
+  // al volver a la app (típico: copiar en Maps, cambiar a Kiemas).
+  useEffect(() => {
+    if (existing) return
+    let vivo = true
+    const mirar = async () => {
+      const link = await enlaceDelPortapapeles()
+      if (!vivo || !link) return
+      try {
+        if (window.sessionStorage.getItem('kiemas.sugerenciaDescartada') === link) return
+      } catch {
+        // sin almacenamiento: se sugiere igual
+      }
+      setSugerido(link)
+    }
+    void mirar()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void mirar()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      vivo = false
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  function descartarSugerencia() {
+    try {
+      if (sugerido) window.sessionStorage.setItem('kiemas.sugerenciaDescartada', sugerido)
+    } catch {
+      // se pierde solo el recuerdo
+    }
+    setSugerido(null)
+  }
+
+  function importarSugerido() {
+    if (!sugerido) return
+    autoImport.current = true
+    onSmartChange(sugerido)
+    descartarSugerencia()
+  }
+
   async function runImport() {
     const mio = ++importSeq.current
     setImportMessage(null)
@@ -804,6 +875,28 @@ export function PlaceFormPage() {
                 <h1 className="mt-4 font-display text-3xl font-bold text-on-surface">
                   {t('wiz.placeTitle')}
                 </h1>
+                {sugerido && !smartIsUrl && (
+                  <div className="mt-3 flex items-center gap-2 rounded-2xl bg-primary-fixed/60 p-3">
+                    <p className="min-w-0 flex-1 text-sm text-on-primary-fixed">
+                      {t('import.clipboard')}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={importarSugerido}
+                      className="shrink-0 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-on-primary squish"
+                    >
+                      {t('import.action')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={descartarSugerencia}
+                      aria-label={t('common.close')}
+                      className="shrink-0 px-2 text-lg leading-none text-on-surface-variant"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
                 <div className="relative mt-4">
                   <div className="flex items-center gap-2 rounded-2xl bg-surface-lowest py-1 pl-4 pr-1 shadow-[var(--shadow-float)]">
                     <SparkleIcon className="size-5 shrink-0 text-primary" />

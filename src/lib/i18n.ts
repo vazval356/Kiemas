@@ -286,6 +286,7 @@ const es = {
   'import.openIt': 'Abrir el enlace',
   'import.nothingFound': 'No hemos podido sacar nada de ese enlace',
   'import.done': 'Datos importados',
+  'import.clipboard': 'Tienes un enlace de Google Maps copiado. ¿Lo importamos?',
 
   // Ruleta
   'roulette.title': '¿Dónde vamos hoy?',
@@ -1293,6 +1294,7 @@ const en: Record<TranslationKey, string> = {
   'import.openIt': 'Open the link',
   'import.nothingFound': "We couldn't get anything out of that link",
   'import.done': 'Details imported',
+  'import.clipboard': 'You have a Google Maps link copied. Import it?',
 
   'roulette.title': 'Where to today?',
   'roulette.spin': 'Spin',

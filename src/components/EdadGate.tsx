@@ -69,18 +69,18 @@ export function EdadGate() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
       <form
         noValidate
         onSubmit={(e) => void enviar(e)}
-        className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-8 pt-10"
+        className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(1.5rem,env(safe-area-inset-top))]"
       >
-        <h1 className="font-display text-3xl font-bold text-on-surface">{t('age.gateTitle')}</h1>
-        <p className="mb-6 mt-2 text-on-surface-variant">{t('age.gateBody')}</p>
+        <h1 className="font-display text-2xl font-bold text-on-surface">{t('age.gateTitle')}</h1>
+        <p className="mb-4 mt-1.5 text-sm text-on-surface-variant">{t('age.gateBody')}</p>
 
         <FechaNacimiento id="edad-nacimiento" value={fecha} onChange={setFecha} />
 
-        <label className="mt-5 flex items-start gap-2.5 text-sm text-on-surface-variant">
+        <label className="mt-4 flex items-start gap-2.5 text-sm text-on-surface-variant">
           <input
             type="checkbox"
             checked={aceptado}
@@ -119,7 +119,7 @@ export function EdadGate() {
         <button
           type="submit"
           disabled={busy}
-          className="mt-6 w-full rounded-full bg-primary py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-50"
+          className="mt-5 w-full rounded-full bg-primary py-3.5 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)] squish disabled:opacity-50"
         >
           {busy ? t('common.loading') : t('age.gateContinue')}
         </button>

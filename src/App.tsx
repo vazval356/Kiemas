@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
-import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { rutaDeImportacion, suscribirseACompartido } from './lib/shareTarget'
 import { BottomNav } from './components/BottomNav'
 import { BusquedaProvider } from './state/busqueda'
 import { EdadGate } from './components/EdadGate'
@@ -195,6 +196,14 @@ function Shell() {
   const [welcomeDone, setWelcomeDone] = useState(false)
 
   usePrecargaDePestanas(authStatus === 'ready')
+
+  // «Compartir» desde Google Maps: lleva al formulario de nuevo sitio con el
+  // enlace puesto. Solo con sesión lista; lo que llegue antes queda guardado.
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (authStatus !== 'ready') return
+    return suscribirseACompartido((link) => navigate(rutaDeImportacion(link)))
+  }, [authStatus, navigate])
 
   if (authStatus === 'loading') return <PantallaDeArranque />
 

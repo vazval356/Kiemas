@@ -282,9 +282,25 @@ textarea {
    de la pantalla. Menos relleno lateral —nunca el tamaño de letra: por debajo
    de 16px Safari hace zoom en toda la página al enfocar el campo, que es
    justo el movimiento que no queremos. */
-input[type='datetime-local'].kd-input {
+input[type='datetime-local'].kd-input,
+input[type='date'].kd-input {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+
+/* El selector de fecha de iOS/WebKit ignora `width` y se dibuja con su ancho
+   intrínseco: sin esto el recuadro se sale o queda cortado por el borde. */
+input[type='date'].kd-input {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 3.25rem;
+}
+input[type='date'].kd-input::-webkit-date-and-time-value {
+  text-align: left;
+  min-width: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

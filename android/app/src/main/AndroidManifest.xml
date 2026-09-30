@@ -59,6 +59,17 @@
                 -->
                 <data android:path="/" />
             </intent-filter>
+
+            <!--
+              «Compartir» desde otras apps. Kiemas aparece en la hoja de compartir
+              de Google Maps (y de cualquier app que comparta texto) y el sitio se
+              importa solo. Ver ShareTargetPlugin.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
 
         <!--
