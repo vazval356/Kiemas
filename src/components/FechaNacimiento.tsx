@@ -32,6 +32,10 @@ export function FechaNacimiento({
       <label htmlFor={id} className="mb-1.5 block px-1 text-sm font-semibold text-on-surface">
         {t('age.label')}
       </label>
+      {/* `overflow-hidden` como red: pase lo que pase con el selector nativo,
+          el recuadro no se sale de la pantalla. Y en iOS un campo de fecha
+          vacío se queda en blanco, así que se dibuja el formato encima. */}
+      <div className="relative w-full min-w-0 overflow-hidden rounded-control">
       <input
         id={id}
         type="date"
@@ -45,6 +49,15 @@ export function FechaNacimiento({
         aria-describedby={`${id}-nota`}
         className={`kd-input ${error ? '!border-error' : ''}`}
       />
+      {!value && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-2 flex items-center text-on-surface-variant/70"
+        >
+          {t('age.placeholder')}
+        </span>
+      )}
+      </div>
       {error ? (
         <p id={`${id}-nota`} className="mt-1.5 px-1 text-sm font-medium text-error">
           {error}

@@ -2,7 +2,7 @@ import { App } from '@capacitor/app'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Clipboard } from '@capacitor/clipboard'
 import { isNative } from './appUrl'
-import { parseGoogleMapsUrl } from './utils'
+import { parseMapLink } from './mapLinks'
 
 /**
  * Lo que llega de fuera para importar un sitio: «Compartir» desde otra app y el
@@ -27,7 +27,7 @@ interface ShareTargetPlugin {
 const ESQUEMA = 'kiemas:'
 
 /**
- * Saca el enlace de mapas de un texto.
+ * Saca el enlace de mapas (Google, Apple o Waze) de un texto.
  *
  * Google Maps comparte «Nombre del sitio\nhttps://maps.app.goo.gl/XXXX», con
  * texto alrededor, no solo la URL. Se busca la primera URL que sea de Google
@@ -37,7 +37,7 @@ export function mapsLinkFromText(text: string): string | null {
   const urls = text.match(/https?:\/\/[^\s<>"']+/gi)
   if (!urls) return null
   for (const u of urls) {
-    if (parseGoogleMapsUrl(u)) return u
+    if (parseMapLink(u)) return u
   }
   return null
 }

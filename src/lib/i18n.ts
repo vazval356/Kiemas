@@ -272,12 +272,12 @@ const es = {
 
   // Importar de Google Maps
   'import.title': 'Importación mágica',
-  'import.body': 'Pega un enlace de Google Maps y rellenamos los datos solos.',
+  'import.body': 'Pega un enlace de Google Maps, Apple Maps o Waze y rellenamos los datos solos.',
   'import.action': 'Importar',
   'import.resolving': 'Siguiendo el enlace…',
   'import.locating': 'Situando el sitio en el mapa…',
   'import.noLocation': 'Hemos sacado el nombre, pero no la ubicación. Búscala abajo.',
-  'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps',
+  'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps, Apple Maps o Waze',
   'import.deadLink':
     'Los enlaces de «Compartir» de Google Maps no se pueden abrir desde aquí. Ábrelo tú, deja que cargue Google Maps y copia el enlace de la barra de direcciones: ese sí funciona.',
   'import.shortLink':
@@ -286,6 +286,10 @@ const es = {
   'import.openIt': 'Abrir el enlace',
   'import.nothingFound': 'No hemos podido sacar nada de ese enlace',
   'import.done': 'Datos importados',
+  'import.confirmTitle': '¿Es este sitio?',
+  'import.confirmYes': 'Sí, es este',
+  'import.confirmNo': 'No, otro',
+  'import.approx': 'Ubicación aproximada: ajusta el pin en el mapa si hace falta.',
   'import.clipboard': 'Tienes un enlace de Google Maps copiado. ¿Lo importamos?',
 
   // Ruleta
@@ -400,8 +404,8 @@ const es = {
 
   // Asistente de sitio nuevo: una pregunta por pantalla
   'wiz.placeTitle': '¿Dónde es?',
-  'wiz.smartPlaceholder': 'Enlace de Google Maps o nombre',
-  'wiz.smartHint': 'Con un enlace de Google Maps rellenamos el nombre y el punto.',
+  'wiz.smartPlaceholder': 'Enlace de mapas o nombre',
+  'wiz.smartHint': 'Con un enlace de Google Maps, Apple Maps o Waze rellenamos el nombre y el punto.',
   'wiz.search': 'Buscar',
   'wiz.import': 'Importar',
   'wiz.categoryTitle': '¿Qué tipo de sitio es?',
@@ -419,6 +423,7 @@ const es = {
 
   // Edad mínima
   'age.label': 'Fecha de nacimiento',
+  'age.placeholder': 'dd/mm/aaaa',
   'age.hint': 'Solo para comprobar que tienes al menos {min} años. No la guardamos.',
   'age.required': 'Indica tu fecha de nacimiento.',
   'age.invalid': 'Esa fecha no es válida.',
@@ -1280,12 +1285,12 @@ const en: Record<TranslationKey, string> = {
   'place.emptyHint': 'Tap + to add the first one.',
 
   'import.title': 'Magic import',
-  'import.body': "Paste a Google Maps link and we'll fill in the details.",
+  'import.body': "Paste a Google Maps, Apple Maps or Waze link and we'll fill in the details.",
   'import.action': 'Import',
   'import.resolving': 'Following the link…',
   'import.locating': 'Placing it on the map…',
   'import.noLocation': 'We got the name but not the location. Search for it below.',
-  'import.notGoogleMaps': "That doesn't look like a Google Maps link",
+  'import.notGoogleMaps': "That doesn't look like a Google Maps, Apple Maps or Waze link",
   'import.deadLink':
     'Google Maps “Share” links can’t be opened from here. Open it yourself, let Google Maps load, and copy the link from the address bar: that one works.',
   'import.shortLink':
@@ -1294,6 +1299,10 @@ const en: Record<TranslationKey, string> = {
   'import.openIt': 'Open the link',
   'import.nothingFound': "We couldn't get anything out of that link",
   'import.done': 'Details imported',
+  'import.confirmTitle': 'Is this the place?',
+  'import.confirmYes': 'Yes, this one',
+  'import.confirmNo': 'No, another',
+  'import.approx': 'Approximate location: adjust the pin on the map if needed.',
   'import.clipboard': 'You have a Google Maps link copied. Import it?',
 
   'roulette.title': 'Where to today?',
@@ -1402,8 +1411,8 @@ const en: Record<TranslationKey, string> = {
 
   // New-place wizard: one question per screen
   'wiz.placeTitle': 'Where is it?',
-  'wiz.smartPlaceholder': 'Google Maps link or name',
-  'wiz.smartHint': 'With a Google Maps link we fill in the name and the spot.',
+  'wiz.smartPlaceholder': 'Maps link or name',
+  'wiz.smartHint': 'With a Google Maps, Apple Maps or Waze link we fill in the name and the spot.',
   'wiz.search': 'Search',
   'wiz.import': 'Import',
   'wiz.categoryTitle': 'What kind of place is it?',
@@ -1421,6 +1430,7 @@ const en: Record<TranslationKey, string> = {
 
   // Minimum age
   'age.label': 'Date of birth',
+  'age.placeholder': 'mm/dd/yyyy',
   'age.hint': 'Only to check that you are at least {min}. We do not store it.',
   'age.required': 'Enter your date of birth.',
   'age.invalid': 'That date is not valid.',

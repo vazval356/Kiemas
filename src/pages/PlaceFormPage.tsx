@@ -2,6 +2,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { parseMapLink } from '../lib/mapLinks'
 import { enlaceDelPortapapeles } from '../lib/shareTarget'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
@@ -35,7 +36,7 @@ const DEFAULT_CENTER: [number, number] = [-3.7038, 40.4168]
 /** Última pantalla del asistente: 0 dónde, 1 categoría, 2 estado, 3 precio, 4 etiquetas, 5 nota y fotos. */
 const LAST_STEP = 5
 /** Lo que se pega como enlace, frente a lo que se busca por nombre. */
-const LOOKS_LIKE_URL = /^(https?:\/\/|www\.|maps\.app\.|goo\.gl\/)/i
+const LOOKS_LIKE_URL = /^(https?:\/\/|www\.|maps\.app\.|maps\.apple|goo\.gl\/|waze\.com)/i
 
 export function PlaceFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -188,6 +189,9 @@ export function PlaceFormPage() {
   // Enlace que llega de fuera: «Compartir» desde Google Maps (`?import=`) o el
   // que la persona tiene copiado (`sugerido`).
   const autoImport = useRef(false)
+  // Vista previa tras importar: «¿es este sitio?». `aproximada` cuando la
+  // posición salió de geocodificar un texto y no de coordenadas del enlace.
+  const [revision, setRevision] = useState<{ aproximada: boolean } | null>(null)
   const [sugerido, setSugerido] = useState<string | null>(null)
 
   // ── Importar desde un enlace de Google Maps ──────────────────────────────
@@ -239,6 +243,21 @@ export function PlaceFormPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  function confirmarImportado() {
+    setRevision(null)
+    if (name.trim() && coords) go(1)
+  }
+
+  function rechazarImportado() {
+    importSeq.current++
+    setRevision(null)
+    setImportMessage(null)
+    setName('')
+    setAddress('')
+    setCoords(null)
+    setOsm({ osmType: null, osmId: null })
+  }
+
   function descartarSugerencia() {
     try {
       if (sugerido) window.sessionStorage.setItem('kiemas.sugerenciaDescartada', sugerido)
@@ -258,7 +277,8 @@ export function PlaceFormPage() {
   async function runImport() {
     const mio = ++importSeq.current
     setImportMessage(null)
-    let parsed = parseGoogleMapsUrl(importUrl)
+    setRevision(null)
+    let parsed = parseMapLink(importUrl)
 
     if (!parsed) {
       setImportMessage({ kind: 'warn', text: t('import.notGoogleMaps') })
@@ -273,7 +293,7 @@ export function PlaceFormPage() {
       setImportMessage({ kind: 'info', text: t('import.resolving') })
       try {
         const largo = await resolveMapsLink(importUrl)
-        parsed = parseGoogleMapsUrl(largo)
+        parsed = parseMapLink(largo)
         // Resolver ha ido bien pero el destino sigue siendo el dominio corto:
         // el enlace no lleva a ninguna ficha. Pasa con los que se copian a
         // medias, que es lo más fácil de hacer al pegarlos desde WhatsApp.
@@ -347,6 +367,7 @@ export function PlaceFormPage() {
           setOsm({ osmType: res[0].osmType, osmId: res[0].osmId })
           moveTo(res[0].lat, res[0].lng)
           setImportMessage({ kind: 'ok', text: t('import.done') })
+          setRevision({ aproximada: true })
         })
         .catch(() => setImportMessage({ kind: 'warn', text: t('import.noLocation') }))
       setImportUrl('')
@@ -372,6 +393,7 @@ export function PlaceFormPage() {
       // arriba, que sí devuelve lo que se ha pedido.
     }
     setImportMessage({ kind: 'ok', text: t('import.done') })
+    setRevision({ aproximada: parsed.lat === null })
     setImportUrl('')
   }
 
@@ -963,6 +985,38 @@ export function PlaceFormPage() {
                   >
                     {importMessage.text}
                   </p>
+                )}
+                {revision && (name.trim() || address.trim()) && (
+                  <div className="mt-3 rounded-2xl border border-primary/30 bg-surface-lowest p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                      {t('import.confirmTitle')}
+                    </p>
+                    <p className="mt-1 font-display text-lg font-bold text-on-surface">
+                      {name.trim() || address.trim()}
+                    </p>
+                    {name.trim() && address.trim() && (
+                      <p className="text-sm text-on-surface-variant">{address}</p>
+                    )}
+                    {revision.aproximada && (
+                      <p className="mt-2 text-xs text-on-surface-variant">{t('import.approx')}</p>
+                    )}
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={confirmarImportado}
+                        className="flex-1 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary squish"
+                      >
+                        {t('import.confirmYes')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={rechazarImportado}
+                        className="flex-1 rounded-full border border-outline-variant px-4 py-2.5 text-sm font-semibold text-on-surface-variant squish"
+                      >
+                        {t('import.confirmNo')}
+                      </button>
+                    </div>
+                  </div>
                 )}
                 {/* Si el enlace no se pudo seguir, abrirlo y limpiar el campo
                     ahorran copiar, cambiar de app y volver. */}
