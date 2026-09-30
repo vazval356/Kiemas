@@ -37,6 +37,11 @@ export function PlanFormPage() {
   const [notes, setNotes] = useState('')
   const [inviteAll, setInviteAll] = useState(true)
   const [invited, setInvited] = useState<string[]>([])
+  // Sorpresa: la persona elegida solo verá una casilla en su calendario. Fuerza
+  // fecha fija y sin sitio guardado, porque una encuesta de fechas o un sitio
+  // nuevo en el mapa se lo enseñarían.
+  const [surprise, setSurprise] = useState(false)
+  const [surpriseFor, setSurpriseFor] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [atLimit, setAtLimit] = useState(false)
@@ -54,6 +59,7 @@ export function PlanFormPage() {
     const clean = title.trim()
     if (!clean) return setError(t('plan.needTitle'))
 
+    if (surprise && !surpriseFor) return setError(t('surprise.pickWho'))
     if (mode === 'fixed' && !startsAt) return setError(t('plan.needDate'))
     const validOptions = options.filter(Boolean)
     if (mode === 'poll' && validOptions.length < 2) return setError(t('plan.needOptions'))
@@ -64,14 +70,17 @@ export function PlanFormPage() {
     try {
       const plan = await api.createPlan(activeSpace.id, {
         title: clean,
-        placeId,
+        placeId: surprise ? null : placeId,
         // `datetime-local` da hora local sin zona; `new Date` la interpreta en la
         // del dispositivo, que es lo que la persona acaba de escribir.
         startsAt: mode === 'fixed' ? new Date(startsAt).toISOString() : null,
         notes,
         dateOptions:
           mode === 'poll' ? validOptions.map((o) => new Date(o).toISOString()) : undefined,
-        inviteUserIds: inviteAll ? undefined : invited,
+        // En una sorpresa se invita a todos menos a la persona sorprendida; eso
+        // lo hace el servidor, que es quien no puede fallar en esto.
+        inviteUserIds: surprise || inviteAll ? undefined : invited,
+        surpriseFor: surprise ? surpriseFor : null,
       })
       await refresh()
       navigate(`/plan/${plan.id}`)
@@ -120,7 +129,68 @@ export function PlanFormPage() {
           className="kd-input"
         />
 
+        {/* ── Sorpresa ───────────────────────────────────────────────────── */}
+        {activeSpace?.kind === 'group' && others.length > 0 && (
+          <div className="mt-5 rounded-card bg-surface-container p-3">
+            <label className="flex items-center gap-2.5 font-display font-semibold text-on-surface">
+              <input
+                type="checkbox"
+                checked={surprise}
+                onChange={(e) => {
+                  setSurprise(e.target.checked)
+                  if (e.target.checked) {
+                    setMode('fixed')
+                    setPlaceId(null)
+                    setAbriendoSitio(false)
+                    // Con una sola persona más en el grupo no hay nada que elegir.
+                    if (others.length === 1) setSurpriseFor(others[0].userId)
+                  } else {
+                    setSurpriseFor(null)
+                  }
+                }}
+                className="size-4 accent-[var(--color-primary)]"
+              />
+              <span aria-hidden>🎁</span> {t('surprise.toggle')}
+            </label>
+            <p className="mt-1 text-xs text-on-surface-variant">{t('surprise.toggleHint')}</p>
+            {surprise && others.length > 1 && (
+              <div className="mt-3 flex flex-col gap-1.5">
+                <span className="text-sm font-semibold text-on-surface">{t('surprise.for')}</span>
+                {others.map((member) => {
+                  const on = surpriseFor === member.userId
+                  return (
+                    <button
+                      key={member.userId}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => setSurpriseFor(member.userId)}
+                      className={`flex items-center gap-3 rounded-card p-2.5 text-left squish ${
+                        on ? 'bg-primary-fixed' : 'bg-surface-lowest'
+                      }`}
+                    >
+                      <span
+                        className="flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                        style={{ backgroundColor: member.color }}
+                      >
+                        {member.displayName.slice(0, 1).toUpperCase()}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-on-surface">
+                        {member.displayName}
+                      </span>
+                      {on && <span className="text-primary">✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── Sitio ──────────────────────────────────────────────────────── */}
+        {surprise ? (
+          <p className="mt-3 text-xs text-on-surface-variant">{t('surprise.noPlaceHint')}</p>
+        ) : (
+          <>
         <Label className="mt-5">{t('plan.where')}</Label>
         {/* Aquí había una maraña de pastillas: una por cada sitio guardado, todas
             del mismo tamaño y sin orden. Con treinta sitios ocupaba media
@@ -180,13 +250,17 @@ export function PlanFormPage() {
             <p className="mt-1.5 text-xs text-on-surface-variant">{t('plan.noPlaceHint')}</p>
           </>
         )}
+          </>
+        )}
 
         {/* ── Cuándo ─────────────────────────────────────────────────────── */}
         {/* Sin `htmlFor`: debajo hay dos campos posibles (una fecha fija o
             varias a votar) y este rótulo encabeza los dos. Cada campo lleva su
             propio nombre en `aria-label`. */}
         <Label className="mt-5">{t('plan.when')}</Label>
-        <div className="mb-3 grid grid-cols-2 rounded-full bg-surface-container p-1">
+        <div
+          className={`mb-3 grid-cols-2 rounded-full bg-surface-container p-1 ${surprise ? 'hidden' : 'grid'}`}
+        >
           <button
             type="button"
             onClick={() => setMode('fixed')}
@@ -273,7 +347,7 @@ export function PlanFormPage() {
         )}
 
         {/* ── Quién ──────────────────────────────────────────────────────── */}
-        {activeSpace?.kind === 'group' && others.length > 0 && (
+        {!surprise && activeSpace?.kind === 'group' && others.length > 0 && (
           <>
             <Label className="mt-5">{t('plan.who')}</Label>
             <label className="mb-2 flex items-center gap-2.5 text-sm text-on-surface-variant">

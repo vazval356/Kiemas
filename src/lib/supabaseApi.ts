@@ -117,6 +117,7 @@ interface PlanRow {
   recurrence_until: string | null
   created_by: string | null
   created_at: string
+  surprise_for: string | null
   plan_attendees:
     { user_id: string; response: AttendeeResponse; responded_at: string | null }[] | null
   plan_date_options:
@@ -252,6 +253,42 @@ function mapPlan(row: PlanRow): Plan {
       })),
     createdBy: row.created_by,
     createdAt: row.created_at,
+    surpriseFor: row.surprise_for,
+    masked: false,
+  }
+}
+
+interface SurpriseSlotRow {
+  id: string
+  space_id: string
+  starts_at: string
+  ends_at: string | null
+  created_at: string
+}
+
+/**
+ * La casilla de una sorpresa vista por quien la recibe. El título es solo el
+ * regalo: es lo que acaba escrito en el calendario del móvil, y no dice nada.
+ */
+function mapSurpriseSlot(row: SurpriseSlotRow): Plan {
+  return {
+    id: row.id,
+    spaceId: row.space_id,
+    placeId: null,
+    title: '🎁',
+    notes: '',
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    status: 'confirmed',
+    recurrenceRule: null,
+    recurrenceUntil: null,
+    attendees: [],
+    dateOptions: [],
+    placeOptions: [],
+    createdBy: null,
+    createdAt: row.created_at,
+    surpriseFor: null,
+    masked: true,
   }
 }
 
@@ -295,6 +332,8 @@ export const RPC_ERRORS = [
   'invite_exhausted',
   'last_admin',
   'plan_not_found',
+  'surprise_invalid',
+  'not_a_surprise',
   'not_a_poll',
   'no_option_chosen',
   'username_invalid',
@@ -1158,7 +1197,21 @@ export const supabaseApi: DataApi = {
     }
 
     const rows = check(await query.order('starts_at', { ascending: true, nullsFirst: false }))
-    return (rows as PlanRow[]).map(mapPlan)
+    const planes = (rows as PlanRow[]).map(mapPlan)
+
+    // Las sorpresas que me preparan a mí no vienen en la consulta de arriba: la
+    // base de datos no me deja ver esas filas, solo pedir día y hora. Si falla
+    // (sin red, o la migración aún sin aplicar) el calendario sigue sin ellas.
+    const res = await supabase.rpc('list_surprise_slots', { p_space_id: spaceId })
+    if (res.error) return planes
+    const casillas = ((res.data ?? []) as SurpriseSlotRow[])
+      .filter((r) => !from || new Date(r.starts_at) >= from)
+      .map(mapSurpriseSlot)
+    return [...planes, ...casillas].sort((a, b) => {
+      if (!a.startsAt) return 1
+      if (!b.startsAt) return -1
+      return a.startsAt.localeCompare(b.startsAt)
+    })
   },
 
   async createPlan(spaceId: string, input: PlanInput): Promise<Plan> {
@@ -1171,6 +1224,9 @@ export const supabaseApi: DataApi = {
       p_notes: input.notes ?? '',
       p_date_options: input.dateOptions ?? null,
       p_invite_user_ids: input.inviteUserIds ?? null,
+      // Solo se manda si hay sorpresa: los planes normales no dependen de que
+      // el servidor conozca el argumento.
+      ...(input.surpriseFor ? { p_surprise_for: input.surpriseFor } : {}),
     })
     if (res.error) throw new Error(res.error.message)
     const id = (res.data as { id: string }).id
@@ -1199,6 +1255,11 @@ export const supabaseApi: DataApi = {
 
   async cancelPlan(planId: string) {
     ok(await supabase.from('plans').update({ status: 'cancelled' }).eq('id', planId))
+  },
+
+  async revealSurprise(planId: string) {
+    const res = await supabase.rpc('reveal_surprise', { p_plan_id: planId })
+    if (res.error) throw new Error(res.error.message)
   },
 
   async respondToPlan(planId: string, response: AttendeeResponse) {

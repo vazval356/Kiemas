@@ -234,6 +234,8 @@ export interface DataApi {
   createPlan(spaceId: string, input: PlanInput): Promise<Plan>
   updatePlan(planId: string, patch: Partial<PlanInput>): Promise<void>
   cancelPlan(planId: string): Promise<void>
+  /** Destapa una sorpresa: la persona ve el plan y recibe un aviso. Solo quien la creó. */
+  revealSurprise(planId: string): Promise<void>
   respondToPlan(planId: string, response: AttendeeResponse): Promise<void>
   voteDateOption(optionId: string, vote: DateVote): Promise<void>
   /** Sin `optionId` gana la fecha más votada. */

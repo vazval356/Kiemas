@@ -378,6 +378,17 @@ export interface Plan {
   placeOptions: PlanPlaceOption[]
   createdBy: string | null
   createdAt: string
+  /**
+   * Plan que es una sorpresa PARA esta persona. Solo lo ven quien la prepara y
+   * el resto del grupo; la persona sorprendida nunca recibe la fila, así que
+   * para ella siempre es `null` y lo que ve es `masked`.
+   */
+  surpriseFor: string | null
+  /**
+   * La casilla que ve quien recibe la sorpresa: solo fecha y hora. Sin título,
+   * sin notas, sin asistentes; no se puede abrir.
+   */
+  masked: boolean
 }
 
 export interface PlanInput {
@@ -390,6 +401,8 @@ export interface PlanInput {
   dateOptions?: string[]
   /** Sin lista se invita a todo el espacio. */
   inviteUserIds?: string[]
+  /** Hace del plan una sorpresa para esta persona: no lo verá ni será invitada. */
+  surpriseFor?: string | null
 }
 
 // ───────────────────────────────────────────────────────────────────────────

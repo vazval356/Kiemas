@@ -49,7 +49,40 @@ export function PlanDetailPage() {
     )
   }
 
+  // Me preparan una sorpresa: de ella solo sé el día y la hora.
+  if (plan.masked) {
+    return (
+      <div className="min-h-0 flex-1 overflow-y-auto pb-32">
+        <div className="mx-auto max-w-md px-5 pt-2">
+          <BackButton to="/calendar" />
+          <div className="mt-10 flex flex-col items-center gap-3 text-center">
+            <span aria-hidden className="text-6xl">
+              🎁
+            </span>
+            <h1 className="font-display text-2xl font-bold text-on-surface">
+              {t('surprise.maskedTitle')}
+            </h1>
+            {plan.startsAt && (
+              <p className="font-semibold text-primary">
+                {formatDayLabel(plan.startsAt, locale, {
+                  today: t('calendar.today'),
+                  tomorrow: t('calendar.tomorrow'),
+                })}
+                {' · '}
+                {formatTime(plan.startsAt, locale)}
+              </p>
+            )}
+            <p className="text-sm text-on-surface-variant">{t('surprise.maskedBody')}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const place = plan.placeId ? places.find((p) => p.id === plan.placeId) : undefined
+  const surpriseName = plan.surpriseFor
+    ? (activeSpace?.members.find((m) => m.userId === plan.surpriseFor)?.displayName ?? '')
+    : null
   const emoji = categories.find((c) => c.id === place?.categoryId)?.emoji ?? '📅'
   const members = activeSpace?.members ?? []
   const myResponse = plan.attendees.find((a) => a.userId === profile?.id)?.response ?? 'pending'
@@ -147,6 +180,28 @@ export function PlanDetailPage() {
             </span>
           </div>
         </div>
+
+        {surpriseName !== null && (
+          <div className="mt-4 rounded-card bg-primary-fixed px-4 py-3 text-sm text-on-surface">
+            <p className="font-semibold">🎁 {t('surprise.badge', { name: surpriseName })}</p>
+            <p className="mt-0.5 text-xs text-on-surface-variant">
+              {t('surprise.secret', { name: surpriseName })}
+            </p>
+            {plan.createdBy === profile?.id && (
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  if (!window.confirm(t('surprise.revealConfirm', { name: surpriseName }))) return
+                  void run(() => api.revealSurprise(plan.id))
+                }}
+                className="mt-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary squish disabled:opacity-50"
+              >
+                {t('surprise.reveal')}
+              </button>
+            )}
+          </div>
+        )}
 
         <PlanPlaceSection plan={plan} busy={busy} canClose={canClose} run={run} />
 

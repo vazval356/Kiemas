@@ -700,6 +700,28 @@ function PlanCard({
     return date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })
   }
 
+  // La casilla de una sorpresa que me preparan: hora y nada más. No se abre.
+  if (plan.masked) {
+    return (
+      <div className="block rounded-card bg-primary-fixed p-4 shadow-[var(--shadow-surface)]">
+        <div className="flex items-center gap-2 text-sm font-bold text-primary">
+          <span aria-hidden>🎁</span>
+          <span>{t('surprise.masked')}</span>
+        </div>
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-on-surface-variant">
+          <span aria-hidden>🕐</span>
+          {plan.startsAt
+            ? `${formatTime(plan.startsAt, locale)}${mostrarDia ? ` · ${dia(plan.startsAt)}` : ''}`
+            : ''}
+        </p>
+      </div>
+    )
+  }
+
+  const surpriseName = plan.surpriseFor
+    ? (memberById.get(plan.surpriseFor)?.displayName ?? '')
+    : null
+
   return (
     <Link
       to={`/plan/${plan.id}`}
@@ -729,7 +751,11 @@ function PlanCard({
               : 'bg-secondary text-on-secondary'
           }`}
         >
-          {isPoll ? t('plan.isPoll') : t('plan.confirmed')}
+          {isPoll
+            ? t('plan.isPoll')
+            : surpriseName !== null
+              ? `🎁 ${t('surprise.badge', { name: surpriseName })}`
+              : t('plan.confirmed')}
         </span>
       </div>
 
