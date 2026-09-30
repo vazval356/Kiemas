@@ -35,16 +35,20 @@ final class ShareViewController: UIViewController {
                 self.avisar("No he recibido ningún texto ni enlace.") { self.terminar() }
                 return
             }
-            let abierta = Self.urlDeLaApp(con: texto).map { self.abrir($0) } ?? false
-            if !abierta {
-                // Plan B: dejar el enlace copiado. Al abrir Kiemas a mano, la app
-                // lo detecta en el portapapeles y ofrece importarlo.
-                UIPasteboard.general.string = texto
-            }
             let resumen = String(texto.prefix(200))
-            let estado = abierta ? "sí" : "NO"
-            self.avisar("Recibido:\n\(resumen)\n\nApp encontrada: \(estado)") {
-                self.terminar()
+            // Primero se enseña lo recibido y DESPUÉS se intenta abrir: si la
+            // extensión se cae al abrir, al menos se sabe que llegó hasta aquí.
+            self.avisar("Recibido:\n\(resumen)") {
+                let abierta = Self.urlDeLaApp(con: texto).map { self.abrir($0) } ?? false
+                if !abierta {
+                    // Plan B: dejar el enlace copiado. Al abrir Kiemas a mano, la app
+                    // lo detecta en el portapapeles y ofrece importarlo.
+                    UIPasteboard.general.string = texto
+                }
+                let estado = abierta ? "sí" : "NO"
+                self.avisar("App encontrada: \(estado)") {
+                    self.terminar()
+                }
             }
         }
     }
@@ -123,15 +127,16 @@ final class ShareViewController: UIViewController {
     /// invoca por su nombre. Devuelve si ha encontrado a quién pedírselo.
     @discardableResult
     private func abrir(_ url: URL) -> Bool {
-        typealias Abrir = @convention(c) (
-            AnyObject, Selector, URL, [UIApplication.OpenExternalURLOptionsKey: Any], ((Bool) -> Void)?
-        ) -> Void
+        // Tipos de Objective-C (`NSURL`, `NSDictionary`) y no los de Swift: la
+        // llamada va por puntero de función y iOS espera objetos, no estructuras
+        // de Swift. Con `URL` y `[:]` la extensión podía caerse aquí.
+        typealias Abrir = @convention(c) (AnyObject, Selector, NSURL, NSDictionary, AnyObject?) -> Void
         let selector = NSSelectorFromString("openURL:options:completionHandler:")
 
         var responder: UIResponder? = self
         while let actual = responder {
             if actual.responds(to: selector), let imp = actual.method(for: selector) {
-                unsafeBitCast(imp, to: Abrir.self)(actual, selector, url, [:], nil)
+                unsafeBitCast(imp, to: Abrir.self)(actual, selector, url as NSURL, NSDictionary(), nil)
                 return true
             }
             responder = actual.next
