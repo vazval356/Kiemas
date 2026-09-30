@@ -5,13 +5,78 @@ PODS:
     - Capacitor
   - CapacitorBrowser (7.0.5):
     - Capacitor
+  - CapacitorClipboard (7.0.4):
+    - Capacitor
   - CapacitorCordova (7.6.8)
+  - CapacitorDevice (7.0.5):
+    - Capacitor
   - CapacitorPushNotifications (7.0.7):
     - Capacitor
   - CapacitorSplashScreen (7.0.5):
     - Capacitor
   - CapacitorStatusBar (7.0.6):
     - Capacitor
+  - CapgoCameraPreview (7.26.4):
+    - Capacitor
+  - CapgoCapacitorNativeBiometric (7.1.13):
+    - Capacitor
+  - CapgoCapacitorPhotoLibrary (7.2.11):
+    - Capacitor
+  - EbarooniCapacitorCalendar (7.2.0):
+    - Capacitor
+  - FirebaseCore (12.19.0):
+    - FirebaseCoreInternal (~> 12.19.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Logger (~> 8.1)
+  - FirebaseCoreInternal (12.19.0):
+    - "GoogleUtilities/NSData+zlib (~> 8.1)"
+  - FirebaseInstallations (12.19.0):
+    - FirebaseCore (~> 12.19.0)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - PromisesObjC (~> 2.4)
+  - FirebaseMessaging (12.19.0):
+    - FirebaseCore (~> 12.19.0)
+    - FirebaseInstallations (~> 12.19.0)
+    - GoogleDataTransport (~> 10.1)
+    - GoogleUtilities/AppDelegateSwizzler (~> 8.1)
+    - GoogleUtilities/Environment (~> 8.1)
+    - GoogleUtilities/Reachability (~> 8.1)
+    - GoogleUtilities/UserDefaults (~> 8.1)
+    - nanopb (~> 3.30910.0)
+  - GoogleDataTransport (10.1.1):
+    - nanopb (~> 3.30910.0)
+    - PromisesObjC (~> 2.4)
+  - GoogleUtilities/AppDelegateSwizzler (8.1.3):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (8.1.3):
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Logger (8.1.3):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (8.1.3):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (8.1.3)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (8.1.3)
+  - GoogleUtilities/Reachability (8.1.3):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/UserDefaults (8.1.3):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - nanopb (3.30910.0):
+    - nanopb/decode (= 3.30910.0)
+    - nanopb/encode (= 3.30910.0)
+  - nanopb/decode (3.30910.0)
+  - nanopb/encode (3.30910.0)
+  - PromisesObjC (2.4.1)
   - PurchasesHybridCommon (17.25.0):
     - RevenueCat (= 5.51.1)
   - RevenueCat (5.51.1)
@@ -23,14 +88,29 @@ DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
+  - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - "CapgoCameraPreview (from `../../node_modules/@capgo/camera-preview`)"
+  - "CapgoCapacitorNativeBiometric (from `../../node_modules/@capgo/capacitor-native-biometric`)"
+  - "CapgoCapacitorPhotoLibrary (from `../../node_modules/@capgo/capacitor-photo-library`)"
+  - "EbarooniCapacitorCalendar (from `../../node_modules/@ebarooni/capacitor-calendar`)"
+  - FirebaseMessaging
   - "RevenuecatPurchasesCapacitor (from `../../node_modules/@revenuecat/purchases-capacitor`)"
 
 SPEC REPOS:
   trunk:
+    - FirebaseCore
+    - FirebaseCoreInternal
+    - FirebaseInstallations
+    - FirebaseMessaging
+    - GoogleDataTransport
+    - GoogleUtilities
+    - nanopb
+    - PromisesObjC
     - PurchasesHybridCommon
     - RevenueCat
 
@@ -41,14 +121,26 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/app"
   CapacitorBrowser:
     :path: "../../node_modules/@capacitor/browser"
+  CapacitorClipboard:
+    :path: "../../node_modules/@capacitor/clipboard"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorDevice:
+    :path: "../../node_modules/@capacitor/device"
   CapacitorPushNotifications:
     :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorSplashScreen:
     :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
+  CapgoCameraPreview:
+    :path: "../../node_modules/@capgo/camera-preview"
+  CapgoCapacitorNativeBiometric:
+    :path: "../../node_modules/@capgo/capacitor-native-biometric"
+  CapgoCapacitorPhotoLibrary:
+    :path: "../../node_modules/@capgo/capacitor-photo-library"
+  EbarooniCapacitorCalendar:
+    :path: "../../node_modules/@ebarooni/capacitor-calendar"
   RevenuecatPurchasesCapacitor:
     :path: "../../node_modules/@revenuecat/purchases-capacitor"
 
@@ -56,14 +148,28 @@ SPEC CHECKSUMS:
   Capacitor: ff6bf01336ac353098378828aff465095a89e459
   CapacitorApp: f01a913211780e0718dae9750442c3e23f96e106
   CapacitorBrowser: 6d09f59655e89aede71654ef08b98de55cf032b6
+  CapacitorClipboard: d1f123674cf413125db816a45e8f70e8770972fc
   CapacitorCordova: e61ee8c40101b8cd011d0224261606a290c082cf
+  CapacitorDevice: ba96f933a2cb5dcdc68187503d48f7b5aa11ba9e
   CapacitorPushNotifications: 0527809a9619ed775439d5ab2c2d996122b48319
   CapacitorSplashScreen: 409eeaaeac603d264f209c0fcb718aa22fe1f7bb
   CapacitorStatusBar: 416e9e53fd6397e668d4a181cd2131617d949bd6
+  CapgoCameraPreview: 310ad706e9c472457668e371f950aaf3829cfcd5
+  CapgoCapacitorNativeBiometric: ede2c497c810fcad523b4e3d1895f989d33fe72b
+  CapgoCapacitorPhotoLibrary: 4134d5db50bfea1bfcc194fb364e666d4945857b
+  EbarooniCapacitorCalendar: 4568a8a318b940245bf6e257a8b115626581bb7d
+  FirebaseCore: c990214798d7c568ad436a15ba7da25c7a278c9a
+  FirebaseCoreInternal: 656b1c2fd5a1c5976183dc54b73deda78fb26ee3
+  FirebaseInstallations: f70a49eed611f5602f373e40974b3b01556ac217
+  FirebaseMessaging: c15f48126adbe8b4d3238a5e1fa24bab3ad3e472
+  GoogleDataTransport: a24e58982ab3ba2f64d79613e027fe7f57e88539
+  GoogleUtilities: 4e0c2ad9fa0d0d18b5c4df8bf57b461cba35b0bb
+  nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+  PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
   PurchasesHybridCommon: 6a79a873ab52f777bfa36e9516f3fcd84d3b3428
   RevenueCat: eab035bbab271faccfef5c36eaff2a1ffef14dc0
   RevenuecatPurchasesCapacitor: fa376932f9967c7ab4b5eac477e824d90393b91a
 
-PODFILE CHECKSUM: bb08232057cdc9b700f3d3efec8e4d367f1e7ded
+PODFILE CHECKSUM: ec48427f8258730d461886e0ee06c8c5977a1572
 
 COCOAPODS: 1.17.0
