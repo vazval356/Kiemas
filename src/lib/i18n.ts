@@ -680,7 +680,7 @@ const es = {
   'surprise.for': 'Sorpresa para',
   'surprise.pickWho': 'Elige para quién es la sorpresa.',
   'surprise.noPlaceHint':
-    'Las sorpresas no llevan sitio guardado, porque saldría en el mapa del grupo. Escríbelo en las notas.',
+    'Elige un sitio que ya esté guardado: si guardas uno nuevo, saldrá en el mapa del grupo y lo verá quien recibe la sorpresa.',
   'surprise.masked': 'Algo te espera',
   'surprise.maskedTitle': 'Alguien te está preparando algo',
   'surprise.maskedBody': 'No podemos contarte más. Solo que ese día te lo guardes.',
@@ -1690,7 +1690,7 @@ const en: Record<TranslationKey, string> = {
   'surprise.for': 'Surprise for',
   'surprise.pickWho': 'Pick who the surprise is for.',
   'surprise.noPlaceHint':
-    'Surprises don’t carry a saved place, because it would show on the group map. Write it in the notes.',
+    'Pick a place that’s already saved: a new one would show on the group map, where the surprised person can see it.',
   'surprise.masked': 'Something awaits you',
   'surprise.maskedTitle': 'Someone is planning something for you',
   'surprise.maskedBody': 'We can’t tell you more. Just keep that day free.',

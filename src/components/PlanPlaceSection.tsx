@@ -44,7 +44,9 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
 
   const cancelado = plan.status === 'cancelled'
   // En el espacio personal no hay a quién preguntar.
-  const puedeVotarse = activeSpace?.kind === 'group'
+  // Tampoco en una sorpresa: la encuesta enseñaría las candidatas a todo el
+  // grupo, también a quien no debe saberlo. Ahí el sitio lo pone quien la prepara.
+  const puedeVotarse = activeSpace?.kind === 'group' && !plan.surpriseFor
   const encuestaAbierta = plan.placeOptions.length > 0 && !plan.placeId
 
   function alternar(id: string) {

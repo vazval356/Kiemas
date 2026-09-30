@@ -70,7 +70,7 @@ export function PlanFormPage() {
     try {
       const plan = await api.createPlan(activeSpace.id, {
         title: clean,
-        placeId: surprise ? null : placeId,
+        placeId,
         // `datetime-local` da hora local sin zona; `new Date` la interpreta en la
         // del dispositivo, que es lo que la persona acaba de escribir.
         startsAt: mode === 'fixed' ? new Date(startsAt).toISOString() : null,
@@ -140,8 +140,6 @@ export function PlanFormPage() {
                   setSurprise(e.target.checked)
                   if (e.target.checked) {
                     setMode('fixed')
-                    setPlaceId(null)
-                    setAbriendoSitio(false)
                     // Con una sola persona más en el grupo no hay nada que elegir.
                     if (others.length === 1) setSurpriseFor(others[0].userId)
                   } else {
@@ -187,10 +185,6 @@ export function PlanFormPage() {
         )}
 
         {/* ── Sitio ──────────────────────────────────────────────────────── */}
-        {surprise ? (
-          <p className="mt-3 text-xs text-on-surface-variant">{t('surprise.noPlaceHint')}</p>
-        ) : (
-          <>
         <Label className="mt-5">{t('plan.where')}</Label>
         {/* Aquí había una maraña de pastillas: una por cada sitio guardado, todas
             del mismo tamaño y sin orden. Con treinta sitios ocupaba media
@@ -247,9 +241,9 @@ export function PlanFormPage() {
             >
               {t('plan.pickPlace')}
             </button>
-            <p className="mt-1.5 text-xs text-on-surface-variant">{t('plan.noPlaceHint')}</p>
-          </>
-        )}
+            <p className="mt-1.5 text-xs text-on-surface-variant">
+              {surprise ? t('surprise.noPlaceHint') : t('plan.noPlaceHint')}
+            </p>
           </>
         )}
 
