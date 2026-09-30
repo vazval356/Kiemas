@@ -1,47 +1,94 @@
 import UIKit
 import UniformTypeIdentifiers
 
-/// Extensión de «Compartir»: Kiemas aparece en la hoja de compartir de Google
-/// Maps (y de cualquier app que comparta un enlace o un texto).
+/// Extensión de «Compartir»: Kiemas aparece en la hoja de compartir de Apple
+/// Maps, de Google Maps y de cualquier app que comparta un enlace o un texto.
 ///
-/// No enseña ninguna pantalla. Recoge el texto o la URL, abre la app con
+/// No enseña ninguna pantalla. Recoge lo compartido, abre la app con
 /// `kiemas://import?text=…` y se cierra. La app se encarga del resto: buscar el
 /// enlace de mapas dentro del texto, resolverlo y rellenar «Nuevo sitio».
 final class ShareViewController: UIViewController {
 
+    private var yaProcesado = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
+    }
+
+    // Aquí y no en `viewDidLoad`: hasta que la vista está en pantalla el
+    // controlador no cuelga de la cadena de respuesta del sistema, y sin ella no
+    // hay forma de llegar a la `UIApplication` para abrir la app. Antes se hacía
+    // en `viewDidLoad` y la extensión se cerraba sin hacer nada.
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !yaProcesado else { return }
+        yaProcesado = true
+
         recogerTexto { [weak self] texto in
             guard let self else { return }
-            if let texto, let url = Self.urlDeLaApp(con: texto) {
-                self.abrir(url)
+            guard let texto, !texto.isEmpty else {
+                self.terminar()
+                return
             }
-            self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
+            let abierta = Self.urlDeLaApp(con: texto).map { self.abrir($0) } ?? false
+            if !abierta {
+                // Plan B: dejar el enlace copiado. Al abrir Kiemas a mano, la app
+                // lo detecta en el portapapeles y ofrece importarlo.
+                UIPasteboard.general.string = texto
+            }
+            self.terminar()
         }
+    }
+
+    private func terminar() {
+        extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
     }
 
     // MARK: - Recoger lo compartido
 
-    /// Google Maps comparte texto («Nombre\nhttps://maps.app.goo.gl/…»); otras
-    /// apps comparten una URL. Se acepta cualquiera de las dos.
+    /// Apple Maps comparte una URL (y a veces una tarjeta de contacto); Google
+    /// Maps comparte texto («Nombre\nhttps://maps.app.goo.gl/…»). Se lee TODO lo
+    /// que venga como URL o como texto y se junta: si solo se mirara el primer
+    /// tipo que coincide, se podía quedar el nombre del sitio sin el enlace.
+    /// Las URL van primero, que es lo que la app busca.
     private func recogerTexto(_ fin: @escaping (String?) -> Void) {
         let items = (extensionContext?.inputItems as? [NSExtensionItem]) ?? []
         let proveedores = items.flatMap { $0.attachments ?? [] }
 
-        let texto = UTType.plainText.identifier
-        let url = UTType.url.identifier
+        let tipoUrl = UTType.url.identifier
+        let tipoTexto = UTType.plainText.identifier
 
-        if let p = proveedores.first(where: { $0.hasItemConformingToTypeIdentifier(texto) }) {
-            p.loadItem(forTypeIdentifier: texto, options: nil) { valor, _ in
-                DispatchQueue.main.async { fin(valor as? String) }
+        var urls: [String] = []
+        var textos: [String] = []
+        let grupo = DispatchGroup()
+        let candado = NSLock()
+
+        for proveedor in proveedores {
+            if proveedor.hasItemConformingToTypeIdentifier(tipoUrl) {
+                grupo.enter()
+                proveedor.loadItem(forTypeIdentifier: tipoUrl, options: nil) { valor, _ in
+                    let texto = (valor as? URL)?.absoluteString ?? (valor as? String)
+                    if let texto {
+                        candado.lock(); urls.append(texto); candado.unlock()
+                    }
+                    grupo.leave()
+                }
             }
-        } else if let p = proveedores.first(where: { $0.hasItemConformingToTypeIdentifier(url) }) {
-            p.loadItem(forTypeIdentifier: url, options: nil) { valor, _ in
-                DispatchQueue.main.async { fin((valor as? URL)?.absoluteString) }
+            if proveedor.hasItemConformingToTypeIdentifier(tipoTexto) {
+                grupo.enter()
+                proveedor.loadItem(forTypeIdentifier: tipoTexto, options: nil) { valor, _ in
+                    if let texto = valor as? String {
+                        candado.lock(); textos.append(texto); candado.unlock()
+                    }
+                    grupo.leave()
+                }
             }
-        } else {
-            fin(nil)
+        }
+
+        grupo.notify(queue: .main) {
+            let todo = (urls + textos).joined(separator: "\n")
+            fin(todo.isEmpty ? nil : todo)
         }
     }
 
@@ -56,10 +103,11 @@ final class ShareViewController: UIViewController {
     // MARK: - Abrir la app
 
     /// Una extensión no puede llamar a `UIApplication.shared.open`: el SDK lo
-    /// marca como no disponible. Se sube por la cadena de respuesta hasta la
-    /// `UIApplication` y se invoca `openURL:options:completionHandler:` por su
-    /// nombre. Es el método habitual y sigue funcionando en iOS 18.
-    private func abrir(_ url: URL) {
+    /// marca como no disponible. Se sube por la cadena de respuesta hasta quien
+    /// entienda `openURL:options:completionHandler:` (la `UIApplication`) y se
+    /// invoca por su nombre. Devuelve si ha encontrado a quién pedírselo.
+    @discardableResult
+    private func abrir(_ url: URL) -> Bool {
         typealias Abrir = @convention(c) (
             AnyObject, Selector, URL, [UIApplication.OpenExternalURLOptionsKey: Any], ((Bool) -> Void)?
         ) -> Void
@@ -67,11 +115,12 @@ final class ShareViewController: UIViewController {
 
         var responder: UIResponder? = self
         while let actual = responder {
-            if actual is UIApplication, let imp = actual.method(for: selector) {
+            if actual.responds(to: selector), let imp = actual.method(for: selector) {
                 unsafeBitCast(imp, to: Abrir.self)(actual, selector, url, [:], nil)
-                return
+                return true
             }
             responder = actual.next
         }
+        return false
     }
 }
