@@ -1,4 +1,5 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { cargaPerezosa } from './lib/cargaPerezosa'
 import { HashRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { rutaDeImportacion, suscribirseACompartido } from './lib/shareTarget'
 import { BottomNav } from './components/BottomNav'
@@ -39,68 +40,68 @@ import { useApp } from './state/appState'
  * La landing también va aparte: la app con sesión no la necesita nunca, y
  * dentro del contenedor nativo no se enseña. Ver `src/landing/LandingPage.tsx`.
  */
-const LandingPage = lazy(() =>
+const LandingPage = cargaPerezosa(() =>
   import('./landing/LandingPage').then((m) => ({ default: m.LandingPage }))
 )
-const ActivityPage = lazy(() =>
+const ActivityPage = cargaPerezosa(() =>
   import('./pages/ActivityPage').then((m) => ({ default: m.ActivityPage }))
 )
-const CalendarPage = lazy(() =>
+const CalendarPage = cargaPerezosa(() =>
   import('./pages/CalendarPage').then((m) => ({ default: m.CalendarPage }))
 )
-const CollectionDetailPage = lazy(() =>
+const CollectionDetailPage = cargaPerezosa(() =>
   import('./pages/CollectionDetailPage').then((m) => ({ default: m.CollectionDetailPage }))
 )
-const CollectionsPage = lazy(() =>
+const CollectionsPage = cargaPerezosa(() =>
   import('./pages/CollectionsPage').then((m) => ({ default: m.CollectionsPage }))
 )
-const EditProfilePage = lazy(() =>
+const EditProfilePage = cargaPerezosa(() =>
   import('./pages/EditProfilePage').then((m) => ({ default: m.EditProfilePage }))
 )
-const ExplorePage = lazy(() =>
+const ExplorePage = cargaPerezosa(() =>
   import('./pages/ExplorePage').then((m) => ({ default: m.ExplorePage }))
 )
-const FollowedListsPage = lazy(() =>
+const FollowedListsPage = cargaPerezosa(() =>
   import('./pages/FollowedListsPage').then((m) => ({ default: m.FollowedListsPage }))
 )
-const LegalPage = lazy(() => import('./pages/LegalPage').then((m) => ({ default: m.LegalPage })))
-const ListPage = lazy(() => import('./pages/ListPage').then((m) => ({ default: m.ListPage })))
-const MapPage = lazy(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })))
-const NotFoundPage = lazy(() =>
+const LegalPage = cargaPerezosa(() => import('./pages/LegalPage').then((m) => ({ default: m.LegalPage })))
+const ListPage = cargaPerezosa(() => import('./pages/ListPage').then((m) => ({ default: m.ListPage })))
+const MapPage = cargaPerezosa(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })))
+const NotFoundPage = cargaPerezosa(() =>
   import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 )
-const PlaceDetailPage = lazy(() =>
+const PlaceDetailPage = cargaPerezosa(() =>
   import('./pages/PlaceDetailPage').then((m) => ({ default: m.PlaceDetailPage }))
 )
-const PlaceFormPage = lazy(() =>
+const PlaceFormPage = cargaPerezosa(() =>
   import('./pages/PlaceFormPage').then((m) => ({ default: m.PlaceFormPage }))
 )
-const PlanDetailPage = lazy(() =>
+const PlanDetailPage = cargaPerezosa(() =>
   import('./pages/PlanDetailPage').then((m) => ({ default: m.PlanDetailPage }))
 )
-const PlanFormPage = lazy(() =>
+const PlanFormPage = cargaPerezosa(() =>
   import('./pages/PlanFormPage').then((m) => ({ default: m.PlanFormPage }))
 )
-const ProfilePage = lazy(() =>
+const ProfilePage = cargaPerezosa(() =>
   import('./pages/ProfilePage').then((m) => ({ default: m.ProfilePage }))
 )
-const PublicListPage = lazy(() =>
+const PublicListPage = cargaPerezosa(() =>
   import('./pages/PublicListPage').then((m) => ({ default: m.PublicListPage }))
 )
-const ResetPasswordPage = lazy(() =>
+const ResetPasswordPage = cargaPerezosa(() =>
   import('./pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage }))
 )
-const SettingsPage = lazy(() =>
+const SettingsPage = cargaPerezosa(() =>
   import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 )
-const SpaceDetailPage = lazy(() =>
+const SpaceDetailPage = cargaPerezosa(() =>
   import('./pages/SpaceDetailPage').then((m) => ({ default: m.SpaceDetailPage }))
 )
-const SpacesPage = lazy(() => import('./pages/SpacesPage').then((m) => ({ default: m.SpacesPage })))
-const SubscriptionPage = lazy(() =>
+const SpacesPage = cargaPerezosa(() => import('./pages/SpacesPage').then((m) => ({ default: m.SpacesPage })))
+const SubscriptionPage = cargaPerezosa(() =>
   import('./pages/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage }))
 )
-const YearInReviewPage = lazy(() =>
+const YearInReviewPage = cargaPerezosa(() =>
   import('./pages/YearInReviewPage').then((m) => ({ default: m.YearInReviewPage }))
 )
 

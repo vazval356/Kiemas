@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { esFalloDeModulo, recargarPorModulo } from '../lib/cargaPerezosa'
 
 interface Props {
   children: ReactNode
@@ -22,6 +23,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error('Error no capturado:', error, info.componentStack)
+    // Una versión nueva deja sin sitio a los módulos viejos: se recarga sola una
+    // vez, y solo si sigue fallando se le enseña el error a la persona.
+    if (esFalloDeModulo(error)) recargarPorModulo()
   }
 
   render() {
@@ -32,7 +36,10 @@ export class ErrorBoundary extends Component<Props, State> {
       <div className="h-full flex flex-col items-center justify-center gap-4 p-6 text-center">
         <div className="text-4xl">🧭</div>
         <h1 className="font-display text-xl font-semibold text-on-surface">Algo se ha torcido</h1>
-        <p className="max-w-sm text-sm text-on-surface-variant">{error.message}</p>
+        <p className="max-w-sm text-sm text-on-surface-variant">{esFalloDeModulo(error)
+            ? 'No se ha podido cargar esta pantalla. Comprueba la conexión y recarga.'
+            : error.message}
+        </p>
         <button
           type="button"
           onClick={() => window.location.reload()}
