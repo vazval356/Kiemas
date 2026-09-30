@@ -9,6 +9,10 @@ import UniformTypeIdentifiers
 /// enlace de mapas dentro del texto, resolverlo y rellenar «Nuevo sitio».
 final class ShareViewController: UIViewController {
 
+    /// Diagnóstico: enseña un aviso con lo recibido y si la app se ha podido
+    /// abrir. Ponlo a `false` cuando todo funcione.
+    private let diagnostico = true
+
     private var yaProcesado = false
 
     override func viewDidLoad() {
@@ -28,7 +32,7 @@ final class ShareViewController: UIViewController {
         recogerTexto { [weak self] texto in
             guard let self else { return }
             guard let texto, !texto.isEmpty else {
-                self.terminar()
+                self.avisar("No he recibido ningún texto ni enlace.") { self.terminar() }
                 return
             }
             let abierta = Self.urlDeLaApp(con: texto).map { self.abrir($0) } ?? false
@@ -37,8 +41,19 @@ final class ShareViewController: UIViewController {
                 // lo detecta en el portapapeles y ofrece importarlo.
                 UIPasteboard.general.string = texto
             }
-            self.terminar()
+            let resumen = String(texto.prefix(200))
+            let estado = abierta ? "sí" : "NO"
+            self.avisar("Recibido:\n\(resumen)\n\nApp encontrada: \(estado)") {
+                self.terminar()
+            }
         }
+    }
+
+    private func avisar(_ mensaje: String, luego: @escaping () -> Void) {
+        guard diagnostico else { luego(); return }
+        let alerta = UIAlertController(title: "Kiemas (diagnóstico)", message: mensaje, preferredStyle: .alert)
+        alerta.addAction(UIAlertAction(title: "OK", style: .default) { _ in luego() })
+        present(alerta, animated: true)
     }
 
     private func terminar() {
