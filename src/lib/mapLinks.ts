@@ -59,8 +59,7 @@ function resultado(
  *   maps.apple.com/?ll=41.38,2.17&q=Bar
  *   maps.apple.com/?address=Calle…&q=Bar
  *
- * Los enlaces cortos `maps.apple/p/XXXX` no llevan nada legible y Apple no da
- * forma de resolverlos: se dejan fuera.
+ * Los cortos `maps.apple/p/XXXX` se marcan para resolver (ver `parseMapLink`).
  */
 function parseAppleMaps(url: URL): GoogleMapsLink | null {
   const p = url.searchParams
@@ -131,6 +130,18 @@ export function parseMapLink(input: string): GoogleMapsLink | null {
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
   const host = url.hostname.toLowerCase().replace(/^www\./, '')
 
+  // Enlace corto de «Compartir» de Apple Maps: hay que resolverlo en el servidor
+  // (redirige a `maps.apple.com/place?coordinate=…&name=…&address=…`).
+  if (host === 'maps.apple' && url.pathname.startsWith('/p/')) {
+    return {
+      name: null,
+      address: null,
+      lat: null,
+      lng: null,
+      needsResolving: true,
+      nameSource: null,
+    }
+  }
   if (host === 'maps.apple.com') return parseAppleMaps(url)
   if (host === 'waze.com' || host === 'ul.waze.com') return parseWaze(url)
   return null

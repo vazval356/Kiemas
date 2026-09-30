@@ -24,7 +24,7 @@
  * host completo, no un `includes`, porque `maps.app.goo.gl.evil.com` contiene
  * la cadena pero no es Google.
  */
-const ENTRADA_PERMITIDA = new Set(['maps.app.goo.gl', 'goo.gl'])
+const ENTRADA_PERMITIDA = new Set(['maps.app.goo.gl', 'goo.gl', 'maps.apple'])
 
 /** Dominios donde es legítimo acabar tras las redirecciones. */
 function destinoValido(host: string): boolean {
@@ -33,6 +33,7 @@ function destinoValido(host: string): boolean {
     h === 'google.com' ||
     h.endsWith('.google.com') ||
     /\.google\.[a-z.]{2,6}$/.test(h) ||
+    h === 'maps.apple.com' ||
     ENTRADA_PERMITIDA.has(h)
   )
 }
@@ -135,6 +136,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
   }
 
   if (actual.protocol !== 'https:' || !ENTRADA_PERMITIDA.has(actual.hostname.toLowerCase())) {
+    return new Response(JSON.stringify({ error: 'not_a_short_link' }), { status: 400, headers: cors })
+  }
+  // Apple: solo los enlaces de compartir (`maps.apple/p/…`), no cualquier ruta.
+  if (actual.hostname.toLowerCase() === 'maps.apple' && !actual.pathname.startsWith('/p/')) {
     return new Response(JSON.stringify({ error: 'not_a_short_link' }), { status: 400, headers: cors })
   }
 
@@ -248,6 +253,14 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     if (destino.protocol !== 'https:' || !destinoValido(destino.hostname)) {
       return new Response(JSON.stringify({ error: 'redirect_off_domain' }), { status: 400, headers: cors })
+    }
+
+    // Apple redirige el enlace corto (301, sin más saltos) a `maps.apple.com/place`
+    // con nombre, dirección y coordenadas en la propia URL. Ya es el destino:
+    // pedir esa página además serían 60 KB que no hacen falta.
+    if (destino.hostname.toLowerCase() === 'maps.apple.com') {
+      console.log(`apple resuelto -> ${destino.href}`)
+      return new Response(JSON.stringify({ url: destino.href }), { headers: cors })
     }
 
     actual = destino

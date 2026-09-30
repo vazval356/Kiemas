@@ -1000,13 +1000,30 @@ export function PlaceFormPage() {
                     {revision.aproximada && (
                       <p className="mt-2 text-xs text-on-surface-variant">{t('import.approx')}</p>
                     )}
-                    <div className="mt-3 flex gap-2">
+                    {error && (
+                      <p role="alert" className="mt-2 text-sm font-semibold text-error">
+                        {error}
+                      </p>
+                    )}
+                    {/* Guardar directo: lo importado ya trae nombre y posición, así
+                        que para el caso normal —compartir un sitio desde Maps— basta
+                        un toque. «Añadir detalles» sigue con el asistente. */}
+                    {canSave && (
+                      <button
+                        type="button"
+                        onClick={() => void save()}
+                        className="mt-3 w-full rounded-full bg-primary px-4 py-3 text-base font-bold text-on-primary shadow-[var(--shadow-float)] squish"
+                      >
+                        {t('import.saveNow')}
+                      </button>
+                    )}
+                    <div className="mt-2 flex gap-2">
                       <button
                         type="button"
                         onClick={confirmarImportado}
-                        className="flex-1 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary squish"
+                        className="flex-1 rounded-full border border-outline-variant px-4 py-2.5 text-sm font-semibold text-primary squish"
                       >
-                        {t('import.confirmYes')}
+                        {t('import.addDetails')}
                       </button>
                       <button
                         type="button"
