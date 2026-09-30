@@ -1,12 +1,16 @@
 import { useEffect, type ReactNode } from 'react'
 import { IDIOMAS_LANDING, type IdiomaLanding } from './idiomas'
 import {
+  CHIP,
+  Cinta,
   MovilCaptura,
+  Pegatina,
   PiezaCompartir,
   PiezaDescubrir,
   PiezaIr,
   PiezaSorpresa,
   PiezaVotar,
+  PinSuelto,
   Revela,
   Ruido,
   TarjetaPlan,
@@ -40,7 +44,16 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             móviles con la app de verdad, girados y saliendo por abajo. La
             cabecera vive dentro de la banda para que el azul empiece arriba
             del todo. */}
-        <div className="overflow-hidden bg-gradient-to-b from-primary to-primary-container text-on-primary">
+        <div className="relative overflow-hidden bg-gradient-to-b from-primary to-primary-container text-on-primary">
+          {/* Dos manchas de luz detrás: le quitan lo plano al degradado. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -left-32 top-24 size-[28rem] rounded-full bg-white/10 blur-3xl"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 top-0 size-[24rem] rounded-full bg-primary-fixed/25 blur-3xl"
+          />
           <Cabecera
             idioma={idioma}
             entrar={t.nav.entrar}
@@ -49,7 +62,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           />
           <section className="mx-auto grid max-w-6xl items-center gap-6 px-4 pt-4 sm:px-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-10">
             <div className="pb-2 md:pb-24">
-              <h1 className="font-display text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.03em] text-on-primary sm:text-5xl md:text-6xl">
+              <h1 className="font-display text-[2.75rem] font-extrabold leading-[1] tracking-[-0.035em] text-on-primary sm:text-6xl md:text-7xl">
                 {t.hero.titulo}
               </h1>
               <p className="mt-5 max-w-[34ch] text-lg leading-relaxed text-on-primary/85">
@@ -73,18 +86,47 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 alt={t.escaparate.mapa.alt}
                 inclinacion={-6}
                 prioridad
-                className="absolute bottom-[-18%] left-[2%] w-[52%] md:left-[0%]"
+                className="kl-sale absolute bottom-[-18%] left-[2%] w-[52%] md:left-[0%]"
+                retraso={150}
               />
               <MovilCaptura
                 src="/landing/app-calendario.webp"
                 alt={t.escaparate.calendario.alt}
                 inclinacion={5}
                 prioridad
-                className="absolute bottom-[-26%] right-[2%] w-[52%] md:right-[0%]"
+                className="kl-sale absolute bottom-[-26%] right-[2%] w-[52%] md:right-[0%]"
+                retraso={350}
               />
+
+              {/* Alrededor, lo que pasa en la app: pines que aterrizan y el plan que se confirma. */}
+              <Pegatina className="left-[-2%] top-[8%]" giro={-8} duracion={5.5}>
+                <PinSuelto emoji="🍽️" claro />
+              </Pegatina>
+              <Pegatina className="right-[0%] top-[2%]" giro={6} duracion={6.5} retraso={1.2}>
+                <PinSuelto emoji="🎭" claro />
+              </Pegatina>
+              <Pegatina className="left-[44%] top-[34%] hidden sm:block" giro={-4} duracion={7} retraso={0.6}>
+                <PinSuelto emoji="🌳" claro />
+              </Pegatina>
+              <Pegatina
+                className="bottom-[16%] left-[-4%] hidden w-[15rem] sm:block md:left-[-8%]"
+                giro={-2}
+                duracion={6}
+                retraso={0.3}
+              >
+                <TarjetaPlan plan={t.hero.plan} animado />
+              </Pegatina>
+              <Pegatina className="right-[-2%] top-[42%] hidden sm:block" giro={5} duracion={5} retraso={0.9}>
+                <span className={CHIP}>
+                  <span aria-hidden>👥</span>
+                  {t.hero.plan.van}
+                </span>
+              </Pegatina>
             </div>
           </section>
         </div>
+
+        <Cinta items={t.usos.casos} />
 
         {/* ── Problema ─────────────────────────────────────────────────── */}
         <section aria-labelledby="kl-problema" className="bg-surface-high">
@@ -110,12 +152,28 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           fondo="bg-surface-lowest"
           titulo={t.escaparate.mapa.titulo}
           cuerpo={t.escaparate.mapa.cuerpo}
+          decoracion={
+            <>
+              <Pegatina className="left-[2%] top-[10%]" giro={-8} duracion={5.5}>
+                <PinSuelto emoji="🍸" />
+              </Pegatina>
+              <Pegatina className="right-[2%] top-[30%]" giro={6} duracion={6.5} retraso={0.8}>
+                <PinSuelto emoji="🎾" />
+              </Pegatina>
+              <Pegatina className="bottom-[22%] left-[0%]" giro={-5} duracion={7} retraso={0.3}>
+                <PinSuelto emoji="🌳" />
+              </Pegatina>
+              <Pegatina className="bottom-[6%] right-[4%]" giro={7} duracion={5} retraso={1.4}>
+                <PinSuelto emoji="🎭" />
+              </Pegatina>
+            </>
+          }
         >
           <MovilCaptura
             src="/landing/app-mapa.webp"
             alt={t.escaparate.mapa.alt}
             inclinacion={-5}
-            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+            className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
           />
         </Banda>
 
@@ -126,12 +184,33 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           invertir
           titulo={t.escaparate.calendario.titulo}
           cuerpo={t.escaparate.calendario.cuerpo}
+          decoracion={
+            <>
+              <Pegatina className="left-[0%] top-[14%]" giro={-6} duracion={6}>
+                <span className={CHIP}>
+                  <span aria-hidden>🗳️</span>
+                  {t.hero.plan.votando}
+                </span>
+              </Pegatina>
+              <Pegatina className="right-[0%] top-[44%]" giro={5} duracion={5.5} retraso={0.7}>
+                <span className="flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-secondary px-3.5 py-2 text-sm font-bold text-on-secondary shadow-[var(--shadow-float)]">
+                  ✓ {t.hero.plan.confirmado}
+                </span>
+              </Pegatina>
+              <Pegatina className="bottom-[12%] left-[2%]" giro={-3} duracion={7} retraso={1.3}>
+                <span className={CHIP}>
+                  <span aria-hidden>👥</span>
+                  {t.hero.plan.van}
+                </span>
+              </Pegatina>
+            </>
+          }
         >
           <MovilCaptura
             src="/landing/app-calendario.webp"
             alt={t.escaparate.calendario.alt}
             inclinacion={5}
-            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+            className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
           />
         </Banda>
 
@@ -140,6 +219,19 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           fondo="bg-surface-low"
           titulo={t.escaparate.sorpresa.titulo}
           cuerpo={t.escaparate.sorpresa.cuerpo}
+          decoracion={
+            <>
+              <Pegatina className="-top-4 right-[2%] text-5xl" giro={8} duracion={5}>
+                🎉
+              </Pegatina>
+              <Pegatina className="bottom-[-1rem] left-[0%] text-5xl" giro={-8} duracion={6.5} retraso={0.9}>
+                🎁
+              </Pegatina>
+              <Pegatina className="top-[46%] right-[-1.5rem] text-4xl" giro={4} duracion={7} retraso={0.4}>
+                🎈
+              </Pegatina>
+            </>
+          }
         >
           <PiezaSorpresa texto={t.escaparate.sorpresa} />
         </Banda>
@@ -151,12 +243,29 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           invertir
           titulo={t.escaparate.explorar.titulo}
           cuerpo={t.escaparate.explorar.cuerpo}
+          decoracion={
+            <>
+              <Pegatina className="right-[0%] top-[16%]" giro={6} duracion={5.5}>
+                <span className={CHIP}>
+                  <span aria-hidden className="text-tertiary">★</span> 9,0
+                </span>
+              </Pegatina>
+              <Pegatina className="bottom-[20%] left-[0%]" giro={-6} duracion={6.5} retraso={0.8}>
+                <span className={CHIP}>
+                  <span aria-hidden>❤️</span> 5
+                </span>
+              </Pegatina>
+              <Pegatina className="left-[6%] top-[8%]" giro={-7} duracion={7} retraso={1.2}>
+                <PinSuelto emoji="🍔" claro />
+              </Pegatina>
+            </>
+          }
         >
           <MovilCaptura
             src="/landing/app-explorar.webp"
             alt={t.escaparate.explorar.alt}
             inclinacion={-5}
-            className="w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
+            className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
           />
         </Banda>
 
@@ -332,22 +441,30 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         </section>
 
         {/* ── Cierre ───────────────────────────────────────────────────── */}
-        <section aria-labelledby="kl-final" className="bg-inverse-surface text-inverse-on-surface">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-16 sm:px-6 md:flex-row md:items-end md:justify-between md:py-20">
+        <section
+          aria-labelledby="kl-final"
+          className="relative overflow-hidden bg-gradient-to-br from-on-primary-fixed via-primary to-primary-container text-on-primary"
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-24 size-[26rem] rounded-full bg-white/10 blur-3xl"
+          />
+          <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 py-20 sm:px-6 md:flex-row md:items-end md:justify-between md:py-28">
             <div>
               <h2
                 id="kl-final"
-                className="font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.02em] md:text-5xl"
+                className="font-display text-5xl font-extrabold leading-[1] tracking-[-0.03em] md:text-7xl"
               >
                 {t.final.titulo}
               </h2>
-              <p className="mt-3 text-lg text-inverse-on-surface/80">{t.final.cuerpo}</p>
+              <p className="mt-4 text-xl text-on-primary/85">{t.final.cuerpo}</p>
             </div>
             <a
               href="/#/login?modo=signup"
-              className="squish shrink-0 rounded-full bg-primary-fixed px-8 py-4 font-display text-lg font-bold text-on-primary-fixed"
+              className="squish inline-flex shrink-0 items-center gap-2 rounded-full bg-surface-lowest px-9 py-5 font-display text-xl font-bold text-primary shadow-[var(--shadow-float)]"
             >
               {t.final.cta}
+              <span aria-hidden>→</span>
             </a>
           </div>
         </section>
@@ -362,6 +479,8 @@ const BOTON_PRINCIPAL =
   'squish inline-flex items-center rounded-full bg-primary px-8 py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)]'
 const TITULO_SECCION =
   'font-display text-3xl font-extrabold leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
+const TITULO_BANDA =
+  'font-display text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
 const ETIQUETA = 'text-sm font-bold text-on-surface-variant'
 
 /**
@@ -376,6 +495,7 @@ function Banda({
   cuerpo,
   oscuro = false,
   invertir = false,
+  decoracion,
   children,
 }: {
   id: string
@@ -384,6 +504,8 @@ function Banda({
   cuerpo: string
   oscuro?: boolean
   invertir?: boolean
+  /** Pegatinas que flotan alrededor de la pieza (ver `Pegatina`). */
+  decoracion?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -395,7 +517,7 @@ function Banda({
         <div className={invertir ? 'md:order-2' : ''}>
           <h2
             id={id}
-            className={oscuro ? TITULO_SECCION.replace('text-on-surface', 'text-on-primary') : TITULO_SECCION}
+            className={`${TITULO_BANDA} ${oscuro ? 'text-on-primary' : 'text-on-surface'}`}
           >
             {titulo}
           </h2>
@@ -407,7 +529,10 @@ function Banda({
             {cuerpo}
           </p>
         </div>
-        <div className="flex justify-center">{children}</div>
+        <div className="relative flex justify-center">
+          {children}
+          {decoracion}
+        </div>
       </Revela>
     </section>
   )

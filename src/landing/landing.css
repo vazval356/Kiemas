@@ -179,3 +179,78 @@
   transform: rotate(var(--inc, 0deg));
   transform-origin: 50% 60%;
 }
+
+/* ── Con más vida ───────────────────────────────────────────────────────── */
+
+/* Las pegatinas sueltas alrededor de los móviles se mecen despacio. Usan las
+   propiedades individuales `translate` y `rotate`, que no pisan el `transform`
+   de quien las lleve. Cada una tiene su duración y su retraso (--t, --d) para
+   que no suban y bajen a la vez. */
+@keyframes kl-flota {
+  from {
+    translate: 0 0;
+    rotate: var(--r0, -3deg);
+  }
+  to {
+    translate: 0 -12px;
+    rotate: var(--r1, 2deg);
+  }
+}
+.kl-flota {
+  animation: kl-flota var(--t, 5s) ease-in-out var(--d, 0s) infinite alternate;
+}
+
+/* Los móviles del hero suben desde abajo al cargar. */
+@keyframes kl-sale {
+  from {
+    opacity: 0;
+    translate: 0 110px;
+  }
+}
+.kl-sale {
+  animation: kl-sale 900ms var(--kl-ease-out) var(--d, 0ms) both;
+}
+
+/* Cinta de planes que pasa sin parar; se detiene al poner el cursor encima. */
+@keyframes kl-cinta {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.kl-cinta-pista {
+  display: flex;
+  width: max-content;
+  animation: kl-cinta 50s linear infinite;
+}
+.kl-cinta:hover .kl-cinta-pista {
+  animation-play-state: paused;
+}
+
+/* Paralaje de los móviles al hacer scroll, donde el navegador lo soporta
+   (Chrome y Safari recientes); en el resto se quedan quietos y no pasa nada. */
+@supports (animation-timeline: view()) {
+  @keyframes kl-paralaje {
+    from {
+      translate: 0 70px;
+    }
+    to {
+      translate: 0 -70px;
+    }
+  }
+  .kl-paralaje {
+    animation: kl-paralaje linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-flota,
+  .kl-sale,
+  .kl-paralaje {
+    animation: none;
+  }
+  .kl-cinta-pista {
+    animation: none;
+  }
+}

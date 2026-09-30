@@ -486,16 +486,19 @@ export function MovilCaptura({
   inclinacion = 0,
   className = '',
   prioridad = false,
+  retraso = 0,
 }: {
   src: string
   alt: string
   inclinacion?: number
   className?: string
+  /** Milisegundos de espera antes de la animación de entrada (`kl-sale`). */
+  retraso?: number
   /** Solo la del primer pantallazo: el resto se carga al acercarse. */
   prioridad?: boolean
 }) {
   return (
-    <div className={`kl-movil ${className}`} style={{ '--inc': `${inclinacion}deg` } as CSSProperties}>
+    <div className={`kl-movil ${className}`} style={{ '--inc': `${inclinacion}deg`, '--d': `${retraso}ms` } as CSSProperties}>
       <div className="rounded-[2.4rem] bg-[#0e0f1a] p-[5px] shadow-[0_40px_70px_-25px_rgba(7,0,108,0.55)] ring-1 ring-white/10">
         <img
           src={src}
@@ -553,6 +556,90 @@ export function PiezaSorpresa({ texto }: { texto: TextoLanding['escaparate']['so
           {texto.casilla}
         </p>
         <p className="mt-1 text-sm text-on-surface-variant">🕐 {texto.cuando}</p>
+      </div>
+    </div>
+  )
+}
+
+// ── Vida: pegatinas y cinta ─────────────────────────────────────────────
+
+/**
+ * Algo pequeño que flota junto a un móvil: un chip, un pin, un emoji. Es solo
+ * decoración (`aria-hidden`) y se coloca con las clases que se le pasen.
+ */
+export function Pegatina({
+  children,
+  className = '',
+  retraso = 0,
+  duracion = 5,
+  giro = -3,
+}: {
+  children: ReactNode
+  className?: string
+  retraso?: number
+  duracion?: number
+  giro?: number
+}) {
+  return (
+    <span
+      aria-hidden
+      className={`kl-flota pointer-events-none absolute z-10 ${className}`}
+      style={
+        {
+          '--d': `${retraso}s`,
+          '--t': `${duracion}s`,
+          '--r0': `${giro}deg`,
+          '--r1': `${giro + 5}deg`,
+        } as CSSProperties
+      }
+    >
+      {children}
+    </span>
+  )
+}
+
+/** Chip blanco con sombra: la pegatina de texto. */
+export const CHIP =
+  'flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-surface-lowest px-3.5 py-2 text-sm font-bold text-on-surface shadow-[var(--shadow-float)]'
+
+/** Pin en gota con emoji, más grande que el del mapa, para flotar suelto. */
+export function PinSuelto({ emoji, claro = false }: { emoji: string; claro?: boolean }) {
+  return (
+    <span
+      className={`flex size-12 items-center justify-center rounded-[50%_50%_50%_4px] border-2 text-xl shadow-[var(--shadow-float)] [rotate:-45deg] ${
+        claro ? 'border-primary-fixed bg-surface-lowest' : 'border-white bg-primary'
+      }`}
+    >
+      <span className="[rotate:45deg]">{emoji}</span>
+    </span>
+  )
+}
+
+/**
+ * Cinta de planes que se desliza, ligeramente torcida, como una cinta
+ * adhesiva entre dos secciones. Repite la lista dos veces para que el bucle
+ * no tenga salto. Es decoración: los mismos planes están en «Casos de uso».
+ */
+export function Cinta({ items }: { items: { emoji: string; plan: string }[] }) {
+  return (
+    <div className="overflow-hidden py-4" aria-hidden>
+      <div className="kl-cinta relative z-10 -rotate-1 overflow-hidden bg-on-primary-fixed py-4 text-on-primary shadow-[var(--shadow-float)]">
+        <div className="kl-cinta-pista">
+          {[0, 1].map((copia) => (
+            <ul key={copia} className="flex shrink-0 items-center gap-10 pr-10">
+              {items.map((c) => (
+                <li
+                  key={c.plan}
+                  className="flex items-center gap-3 whitespace-nowrap font-display text-xl font-extrabold"
+                >
+                  <span>{c.emoji}</span>
+                  {c.plan}
+                  <span className="text-primary-fixed-dim">✦</span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
       </div>
     </div>
   )
