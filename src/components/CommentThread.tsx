@@ -59,7 +59,7 @@ export function CommentThread({ placeId }: { placeId: string }) {
       )
     } finally {
       setBusy(false)
-    }
+    } 
   }
 
   async function remove(id: string) {

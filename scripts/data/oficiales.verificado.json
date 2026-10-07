@@ -1,0 +1,1468 @@
+{
+  "Madrid": {
+    "sitios": [
+      {
+        "nombre": "Casa Lucio",
+        "lat": 40.4120917,
+        "lng": -3.7096742,
+        "address": "Calle de la Cava Baja 35, Madrid",
+        "osm": "Casa Lucio, 35, Calle de la Cava Baja, Barrio de la Latina, Palacio, Centro, Madrid, Comunidad de Madrid, 28005, España"
+      },
+      {
+        "nombre": "La Barraca",
+        "lat": 40.4199756,
+        "lng": -3.6987328,
+        "address": "Calle de la Reina 29, Madrid",
+        "osm": "La Barraca, 29, Calle de la Reina, Chueca, Justicia, Centro, Madrid, Comunidad de Madrid, 28004, España"
+      },
+      {
+        "nombre": "Lhardy",
+        "lat": 40.4166082,
+        "lng": -3.7013775,
+        "address": "Carrera de San Jerónimo, Madrid",
+        "osm": "Lhardy, Carrera de San Jerónimo, Sol, Centro, Madrid, Comunidad de Madrid, 28012, España"
+      },
+      {
+        "nombre": "Malacatín",
+        "lat": 40.4103182,
+        "lng": -3.7076364,
+        "address": "Calle de la Ruda 5, Madrid",
+        "osm": "Malacatín, 5, Calle de la Ruda, Embajadores, Centro, Madrid, Comunidad de Madrid, 28005, España"
+      },
+      {
+        "nombre": "Casa Labra",
+        "lat": 40.4171561,
+        "lng": -3.7046107,
+        "address": "Calle de Tetuán 12, Madrid",
+        "osm": "Casa Labra, 12, Calle de Tetuán, Barrio de los Austrias, Sol, Centro, Madrid, Comunidad de Madrid, 28013, España"
+      },
+      {
+        "nombre": "La Bola",
+        "lat": 40.4199972,
+        "lng": -3.7105112,
+        "address": "Calle de la Bola 5, Madrid",
+        "osm": "La Bola, 5, Calle de la Bola, Palacio, Centro, Madrid, Comunidad de Madrid, 28013, España"
+      },
+      {
+        "nombre": "Casa Alberto",
+        "lat": 40.4138199,
+        "lng": -3.7001224,
+        "address": "Calle de las Huertas 18, Madrid",
+        "osm": "Casa Alberto, 18, Calle de las Huertas, Barrio de las Letras, Cortes, Centro, Madrid, Comunidad de Madrid, 28012, España"
+      },
+      {
+        "nombre": "Taberna Antonio Sánchez",
+        "lat": 40.4111122,
+        "lng": -3.7048589,
+        "address": "Calle del Mesón de Paredes 13, Madrid",
+        "osm": "Taberna Antonio Sánchez, 13, Calle del Mesón de Paredes, Lavapiés, Embajadores, Centro, Madrid, Comunidad de Madrid, 28012, España"
+      },
+      {
+        "nombre": "Bar Cock",
+        "lat": 40.419891,
+        "lng": -3.6988045,
+        "address": "Calle de la Reina 16, Madrid",
+        "osm": "Bar Cock, 16, Calle de la Reina, Chueca, Justicia, Centro, Madrid, Comunidad de Madrid, 28004, España"
+      },
+      {
+        "nombre": "El Qüenco de Pepa",
+        "lat": 40.4601328,
+        "lng": -3.6845822,
+        "address": "Calle de Henri Dunant, Madrid",
+        "osm": "El Qüenco de Pepa, Calle de Henri Dunant, Costa Fleming, Nueva España, Chamartín, Madrid, Comunidad de Madrid, 28046, España"
+      },
+      {
+        "nombre": "Sala de Despiece",
+        "lat": 40.4379178,
+        "lng": -3.6994954,
+        "address": "Calle de Ponzano 11, Madrid",
+        "osm": "Sala de Despiece, 11, Calle de Ponzano, Almagro, Chamberí, Madrid, Comunidad de Madrid, 28010, España"
+      },
+      {
+        "nombre": "DiverXO",
+        "lat": 40.4577954,
+        "lng": -3.6859491,
+        "address": "Calle del Padre Damián 23, Madrid",
+        "osm": "DiverXO, 23, Calle del Padre Damián, Hispanoamérica, Chamartín, Madrid, Comunidad de Madrid, 28036, España"
+      },
+      {
+        "nombre": "StreetXO",
+        "lat": 40.4299505,
+        "lng": -3.6877449,
+        "address": "Calle de Serrano 47, Madrid",
+        "osm": "StreetXo, 47, Calle de Serrano, Castellana, Salamanca, Madrid, Comunidad de Madrid, 28001, España"
+      },
+      {
+        "nombre": "Ramón Freixa",
+        "lat": 40.4285126,
+        "lng": -3.6862596,
+        "address": "Calle de Claudio Coello 67, Madrid",
+        "osm": "Ramón Freixa, 67, Calle de Claudio Coello, Recoletos, Salamanca, Madrid, Comunidad de Madrid, 28001, España"
+      },
+      {
+        "nombre": "Casa Revuelta",
+        "lat": 40.4139218,
+        "lng": -3.707839,
+        "address": "Calle de Latoneros 3, Madrid",
+        "osm": "Casa Revuelta, 3, Calle de Latoneros, Barrio de los Austrias, Sol, Centro, Madrid, Comunidad de Madrid, 28005, España"
+      },
+      {
+        "nombre": "Mercado de San Miguel",
+        "lat": 40.4153741,
+        "lng": -3.7090151,
+        "address": "Plaza de San Miguel, Madrid",
+        "osm": "Mercado de San Miguel, Plaza de San Miguel, Barrio de la Latina, Palacio, Centro, Madrid, Comunidad de Madrid, 28005, España"
+      },
+      {
+        "nombre": "Mercado de San Antón",
+        "lat": 40.4219408,
+        "lng": -3.6975833,
+        "address": "Calle de Augusto Figueroa 24, Madrid",
+        "osm": "Mercado de San Antón, 24, Calle de Augusto Figueroa, Chueca, Justicia, Centro, Madrid, Comunidad de Madrid, 28004, España"
+      },
+      {
+        "nombre": "Chocolatería San Ginés",
+        "lat": 40.4167707,
+        "lng": -3.706803,
+        "address": "Pasadizo de San Ginés 5, Madrid",
+        "osm": "Chocolatería San Ginés, 5, Pasadizo de San Ginés, Barrio de los Austrias, Sol, Centro, Madrid, Comunidad de Madrid, 28013, España"
+      },
+      {
+        "nombre": "El Brillante",
+        "lat": 40.408608,
+        "lng": -3.6928819,
+        "address": "Plaza del Emperador Carlos V 8, Madrid",
+        "osm": "El Brillante, 8, Plaza del Emperador Carlos V, Embajadores, Centro, Madrid, Comunidad de Madrid, 28012, España"
+      },
+      {
+        "nombre": "Los Gatos",
+        "lat": 40.4135119,
+        "lng": -3.6957073,
+        "address": "Calle de Jesús, Madrid",
+        "osm": "Los Gatos, Calle de Jesús, Barrio de las Letras, Cortes, Centro, Madrid, Comunidad de Madrid, 28014, España"
+      },
+      {
+        "nombre": "La Casa del Abuelo",
+        "lat": 40.4156774,
+        "lng": -3.7011963,
+        "address": "Calle de Núñez de Arce 5, Madrid",
+        "osm": "La Casa del Abuelo, 5, Calle de Núñez de Arce, Barrio de las Letras, Cortes, Centro, Madrid, Comunidad de Madrid, 28012, España"
+      },
+      {
+        "nombre": "Taberna La Concha",
+        "lat": 40.4132122,
+        "lng": -3.7083551,
+        "address": "Calle de la Cava Baja 7, Madrid",
+        "osm": "Taberna La Concha, 7, Calle de la Cava Baja, Barrio de la Latina, Palacio, Centro, Madrid, Comunidad de Madrid, 28005, España"
+      },
+      {
+        "nombre": "Ten Con Ten",
+        "lat": 40.4278553,
+        "lng": -3.6884987,
+        "address": "Calle de Ayala 6, Madrid",
+        "osm": "Ten Con Ten, 6, Calle de Ayala, Recoletos, Salamanca, Madrid, Comunidad de Madrid, 28001, España"
+      },
+      {
+        "nombre": "Casa Ciriaco",
+        "lat": 40.415304,
+        "lng": -3.7123092,
+        "address": "Calle Mayor 84, Madrid",
+        "osm": "Casa Ciriaco, 84, Calle Mayor, Barrio de la Latina, Palacio, Centro, Madrid, Comunidad de Madrid, 28013, España"
+      },
+      {
+        "nombre": "Bodega de la Ardosa",
+        "lat": 40.4237686,
+        "lng": -3.7017746,
+        "address": "Calle de Colón 13, Madrid",
+        "osm": "Bodega de la Ardosa, 13, Calle de Colón, Malasaña, Universidad, Centro, Madrid, Comunidad de Madrid, 28004, España"
+      },
+      {
+        "nombre": "Restaurante Sacha",
+        "lat": 40.4607935,
+        "lng": -3.6874703,
+        "address": "Calle de Juan Hurtado de Mendoza, Madrid",
+        "osm": "Sacha, Calle de Juan Hurtado de Mendoza, Costa Fleming, Nueva España, Chamartín, Madrid, Comunidad de Madrid, 28046, España"
+      }
+    ],
+    "descartados": [
+      "Casa Botín",
+      "Sobrino de Botín",
+      "Gran Café de Gijón",
+      "La Taberna de Los Cien Vinos"
+    ]
+  },
+  "Barcelona": {
+    "sitios": [
+      {
+        "nombre": "Cal Pep",
+        "lat": 41.3839345,
+        "lng": 2.1833856,
+        "address": "Carrer d'en Tripó, Barcelona",
+        "osm": "Cal PEP, Carrer d'en Tripó, la Ribera, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Bar Cañete",
+        "lat": 41.3791405,
+        "lng": 2.173138,
+        "address": "Carrer de la Unió 17, Barcelona",
+        "osm": "Bar Cañete, 17, Carrer de la Unió, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08002, España"
+      },
+      {
+        "nombre": "Can Solé",
+        "lat": 41.378983,
+        "lng": 2.1883542,
+        "address": "Carrer de Sant Carles, Barcelona",
+        "osm": "Can Solé, Carrer de Sant Carles, la Barceloneta, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "La Cova Fumada",
+        "lat": 41.3792983,
+        "lng": 2.1891943,
+        "address": "Carrer del Baluard 56, Barcelona",
+        "osm": "La Cova Fumada, 56, Carrer del Baluard, la Barceloneta, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Bar del Pla",
+        "lat": 41.3856036,
+        "lng": 2.1800221,
+        "address": "Carrer de Montcada 2, Barcelona",
+        "osm": "Bar del Pla, 2, Carrer de Montcada, Santa Caterina, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Mercat de la Boqueria",
+        "lat": 41.381736,
+        "lng": 2.1715515,
+        "address": "La Rambla 91, Barcelona",
+        "osm": "Mercat de Sant Josep - La Boqueria, 91, La Rambla, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Bar Pinotxo",
+        "lat": 41.3785744,
+        "lng": 2.1614917,
+        "address": "Carrer del Comte Borrell, Barcelona",
+        "osm": "Pinotxo bar, Carrer del Comte Borrell, Superilla Sant Antoni, Sant Antoni, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08015, España"
+      },
+      {
+        "nombre": "Quimet & Quimet",
+        "lat": 41.374222,
+        "lng": 2.1657389,
+        "address": "Carrer del Poeta Cabanyes 25, Barcelona",
+        "osm": "Quimet & Quimet, 25, Carrer del Poeta Cabanyes, Santa Madrona, el Poble-sec, Sants-Montjuïc, Barcelona, Barcelonès, Barcelona, Catalunya, 08004, España"
+      },
+      {
+        "nombre": "Disfrutar",
+        "lat": 41.387762,
+        "lng": 2.1531722,
+        "address": "Carrer de Villarroel 163, Barcelona",
+        "osm": "Disfrutar, 163, Carrer de Villarroel, l'Antiga Esquerra de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Cervecería Catalana",
+        "lat": 41.3924032,
+        "lng": 2.1609008,
+        "address": "Carrer de Mallorca 236, Barcelona",
+        "osm": "Cervecería Catalana, 236, Carrer de Mallorca, la Dreta de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08008, España"
+      },
+      {
+        "nombre": "Casa Lolea",
+        "lat": 41.3888056,
+        "lng": 2.1771897,
+        "address": "Carrer de Sant Pere Més Alt 49, Barcelona",
+        "osm": "Casa Lolea, 49, Carrer de Sant Pere Més Alt, Sant Pere, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "El Xampanyet",
+        "lat": 41.3845086,
+        "lng": 2.1816748,
+        "address": "Carrer de Montcada 22, Barcelona",
+        "osm": "El Xampanyet, 22, Carrer de Montcada, la Ribera, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Los Caracoles",
+        "lat": 41.3796584,
+        "lng": 2.1765082,
+        "address": "Carrer dels Escudellers 14, Barcelona",
+        "osm": "Los Caracoles, 14, Carrer dels Escudellers, el Palau, el Gòtic, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08002, España"
+      },
+      {
+        "nombre": "Bodega 1900",
+        "lat": 41.3755417,
+        "lng": 2.1566504,
+        "address": "Carrer de Tamarit 91, Barcelona",
+        "osm": "Bodega 1900, 91, Carrer de Tamarit, Sant Antoni, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08015, España"
+      },
+      {
+        "nombre": "La Pepita",
+        "lat": 41.3979638,
+        "lng": 2.1610245,
+        "address": "Carrer de Còrsega 343, Barcelona",
+        "osm": "La Pepita, 343, Carrer de Còrsega, la Vila de Gràcia, Gràcia, Barcelona, Barcelonès, Barcelona, Catalunya, 08037, España"
+      },
+      {
+        "nombre": "Can Culleretes",
+        "lat": 41.381215,
+        "lng": 2.1744185,
+        "address": "Carrer d'en Quintana 5, Barcelona",
+        "osm": "Can Culleretes, 5, Carrer d'en Quintana, Santa Maria del Pi, el Gòtic, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08002, España"
+      },
+      {
+        "nombre": "7 Portes",
+        "lat": 41.3821717,
+        "lng": 2.1832472,
+        "address": "Passeig d'Isabel II, Barcelona",
+        "osm": "7 Portes, Passeig d'Isabel II, la Ribera, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Elisabets",
+        "lat": 41.3837777,
+        "lng": 2.169189,
+        "address": "Carrer d'Elisabets, Barcelona",
+        "osm": "Elisabets, Carrer d'Elisabets, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Bar Mut",
+        "lat": 41.3973001,
+        "lng": 2.1612785,
+        "address": "Carrer de Pau Claris 192, Barcelona",
+        "osm": "Bar Mut, 192, Carrer de Pau Claris, la Dreta de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08037, España"
+      },
+      {
+        "nombre": "Casa Delfín",
+        "lat": 41.385209,
+        "lng": 2.1833615,
+        "address": "Passeig del Born, Barcelona",
+        "osm": "Casa Delfín, Passeig del Born, la Ribera, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "Granja Viader",
+        "lat": 41.383021,
+        "lng": 2.1710542,
+        "address": "Carrer d'en Xuclà 4-6, Barcelona",
+        "osm": "Granja Viader, 4-6, Carrer d'en Xuclà, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Can Paixano",
+        "lat": 41.3817757,
+        "lng": 2.1834268,
+        "address": "Carrer de la Reina Cristina 7, Barcelona",
+        "osm": "Can Paixano, 7, Carrer de la Reina Cristina, la Ribera, Sant Pere, Santa Caterina i la Ribera, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08003, España"
+      },
+      {
+        "nombre": "La Mundana",
+        "lat": 41.3811619,
+        "lng": 2.1357986,
+        "address": "Carrer del Vallespir 93, Barcelona",
+        "osm": "La Mundana, 93, Carrer del Vallespir, Sants, Sants-Montjuïc, Barcelona, Barcelonès, Barcelona, Catalunya, 08014, España"
+      },
+      {
+        "nombre": "Cafè de l'Òpera",
+        "lat": 41.3809698,
+        "lng": 2.1737766,
+        "address": "La Rambla 74, Barcelona",
+        "osm": "Cafè de l'Òpera, 74, La Rambla, Santa Maria del Pi, el Gòtic, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08002, España"
+      },
+      {
+        "nombre": "Bar Lobo",
+        "lat": 41.3832611,
+        "lng": 2.170504,
+        "address": "Carrer del Pintor Fortuny 3, Barcelona",
+        "osm": "Bar Lobo, 3, Carrer del Pintor Fortuny, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Las Fernández",
+        "lat": 41.378146,
+        "lng": 2.1664383,
+        "address": "Carrer de les Carretes, Barcelona",
+        "osm": "Las Fernández, Carrer de les Carretes, el Raval, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalunya, 08001, España"
+      },
+      {
+        "nombre": "Federal Café",
+        "lat": 41.3768982,
+        "lng": 2.1628879,
+        "address": "Carrer del Parlament 39, Barcelona",
+        "osm": "Federal Cafe, 39, Carrer del Parlament, Superilla Sant Antoni, Sant Antoni, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalunya, 08015, España"
+      }
+    ],
+    "descartados": [
+      "Els Quatre Gats",
+      "Teleférico"
+    ]
+  },
+  "Valencia": {
+    "sitios": [
+      {
+        "nombre": "La Pepica",
+        "lat": 39.4633974,
+        "lng": -0.3234726,
+        "address": "Passeig de Neptú 6, Valencia",
+        "osm": "La Pepica, 6, Passeig de Neptú, el Cabanyal - el Canyamelar, Poblats Marítims, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46011, España"
+      },
+      {
+        "nombre": "Central Bar",
+        "lat": 39.4731247,
+        "lng": -0.3790624,
+        "address": "Plaça de la Ciutat de Bruges, Valencia",
+        "osm": "Central Bar, Plaça de la Ciutat de Bruges, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46001, España"
+      },
+      {
+        "nombre": "Ricard Camarena",
+        "lat": 39.4852238,
+        "lng": -0.3851157,
+        "address": "Carrer de Reus, Valencia",
+        "osm": "Ricard Camarena Restaurant, Carrer de Reus, Marxalenes, la Saïdia, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46009, España"
+      },
+      {
+        "nombre": "Mercado de Colón",
+        "lat": 39.4689513,
+        "lng": -0.3683554,
+        "address": "Carrer de Jorge Juan 19, Valencia",
+        "osm": "Mercat de Colón, 19, Carrer de Jorge Juan, el Pla del Remei, l'Eixample, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46004, España"
+      },
+      {
+        "nombre": "Horchatería Santa Catalina",
+        "lat": 39.4738263,
+        "lng": -0.3762568,
+        "address": "Plaça de Santa Catalina, Valencia",
+        "osm": "Horchateria de Santa Catalina, Plaça de Santa Catalina, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46002, España"
+      },
+      {
+        "nombre": "Horchatería Daniel",
+        "lat": 39.4953661,
+        "lng": -0.3547505,
+        "address": "Avinguda de l'Orxata 41, Valencia",
+        "osm": "Horchatería Daniel, 41, Avinguda de l'Orxata, Alboraia / Alboraya, l'Horta Nord, València / Valencia, Comunitat Valenciana, 46120, España"
+      },
+      {
+        "nombre": "Casa Carmela",
+        "lat": 39.4822538,
+        "lng": -0.3258216,
+        "address": "Carrer d'Isabel de Villena 155, Valencia",
+        "osm": "Casa Carmela, 155, Carrer d'Isabel de Villena, la Malva-rosa, Poblats Marítims, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46011, España"
+      },
+      {
+        "nombre": "La Marcelina",
+        "lat": 39.4635462,
+        "lng": -0.3234952,
+        "address": "Passeig de Neptú 8, Valencia",
+        "osm": "La Marcelina, 8, Passeig de Neptú, el Cabanyal - el Canyamelar, Poblats Marítims, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46011, España"
+      },
+      {
+        "nombre": "Navarro",
+        "lat": 39.4693146,
+        "lng": -0.3780354,
+        "address": "Carrer de l'Arquebisbe Mayoral 5, Valencia",
+        "osm": "Navarro, 5, Carrer de l'Arquebisbe Mayoral, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46002, España"
+      },
+      {
+        "nombre": "Vuelve Carolina",
+        "lat": 39.4696278,
+        "lng": -0.3745405,
+        "address": "Carrer de Correus 8, Valencia",
+        "osm": "Restaurante Vuelve Carolina, 8, Carrer de Correus, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46002, España"
+      },
+      {
+        "nombre": "La Lola",
+        "lat": 39.4755045,
+        "lng": -0.3759686,
+        "address": "Pujada del Toledà 8, Valencia",
+        "osm": "La Lola, 8, Pujada del Toledà, la Seu, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46003, España"
+      },
+      {
+        "nombre": "Casa Guillermo",
+        "lat": 39.4638199,
+        "lng": -0.3307573,
+        "address": "Carrer del Progrés 15, Valencia",
+        "osm": "Casa Guillermo, 15, Carrer del Progrés, el Cabanyal - el Canyamelar, Poblats Marítims, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46011, España"
+      },
+      {
+        "nombre": "El Rodamón",
+        "lat": 39.4609256,
+        "lng": -0.3745492,
+        "address": "Carrer de Sueca 47, Valencia",
+        "osm": "El Rodamon de Russafa, 47, Carrer de Sueca, Russafa, l'Eixample, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46006, España"
+      },
+      {
+        "nombre": "Café de las Horas",
+        "lat": 39.4770689,
+        "lng": -0.3755858,
+        "address": "Carrer del Comte d'Almodòvar 1, Valencia",
+        "osm": "Cafe de las Horas, 1, Carrer del Comte d'Almodòvar, Ciutat Vella, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46003, España"
+      },
+      {
+        "nombre": "Bodega La Pascuala",
+        "lat": 39.4739468,
+        "lng": -0.3275361,
+        "address": "Carrer del Doctor Lluch 297, Valencia",
+        "osm": "Bodega La Pascuala, 297, Carrer del Doctor Lluch, el Cabanyal - el Canyamelar, Poblats Marítims, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46011, España"
+      },
+      {
+        "nombre": "Casa Roberto",
+        "lat": 39.4649003,
+        "lng": -0.3688996,
+        "address": "Carrer del Mestre Gozalbo 19, Valencia",
+        "osm": "Casa Roberto, 19, Carrer del Mestre Gozalbo, Gran Via, l'Eixample, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46005, España"
+      },
+      {
+        "nombre": "El Racó de la Paella",
+        "lat": 39.4831403,
+        "lng": -0.399551,
+        "address": "Carrer de Mossén Rausell 17, Valencia",
+        "osm": "el Raco de la Paella, 17, Carrer de Mossén Rausell, Campanar, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46015, España"
+      },
+      {
+        "nombre": "Askua",
+        "lat": 39.468501,
+        "lng": -0.3592423,
+        "address": "Carrer de Felip Maria Garín 4, Valencia",
+        "osm": "Restaurante Askua, 4, Carrer de Felip Maria Garín, Mestalla, el Pla del Real, València, Comarca de València, València / Valencia, Comunitat Valenciana, 46021, España"
+      }
+    ],
+    "descartados": [
+      "Casa Montaña",
+      "Bodega Casa Montaña",
+      "Mercado Central de Valencia",
+      "Bar Ricardo",
+      "Nou Racó",
+      "Mercado de Ruzafa",
+      "Restaurante Tato",
+      "La Taberna de Rafa",
+      "Gran Azul"
+    ]
+  },
+  "Sevilla": {
+    "sitios": [
+      {
+        "nombre": "El Rinconcillo",
+        "lat": 37.3933406,
+        "lng": -5.9882942,
+        "address": "Calle Gerona 40, Sevilla",
+        "osm": "El Rinconcillo, 40, Calle Gerona, Encarnación-Regina, Casco Antiguo, Sevilla, Andalucía, 41003, España"
+      },
+      {
+        "nombre": "Bodeguita Romero",
+        "lat": 37.3870689,
+        "lng": -5.9956598,
+        "address": "Calle Harinas 10, Sevilla",
+        "osm": "Bodeguita Romero, 10, Calle Harinas, El Arenal, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Casa Morales",
+        "lat": 37.3865275,
+        "lng": -5.9946141,
+        "address": "Calle García de Vinuesa 11, Sevilla",
+        "osm": "Casa Morales, 11, Calle García de Vinuesa, El Arenal, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Eslava",
+        "lat": 37.3975489,
+        "lng": -5.9969243,
+        "address": "Calle Eslava 3, Sevilla",
+        "osm": "Eslava, 3, Calle Eslava, San Lorenzo, Casco Antiguo, Sevilla, Andalucía, 41002, España"
+      },
+      {
+        "nombre": "Bar Alfalfa",
+        "lat": 37.3899821,
+        "lng": -5.9901613,
+        "address": "Calle Candilejo 1, Sevilla",
+        "osm": "Bar Alfalfa, 1, Calle Candilejo, Alfalfa, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "La Brunilda",
+        "lat": 37.3883253,
+        "lng": -5.9994057,
+        "address": "Calle Galera, Sevilla",
+        "osm": "La Brunilda, Calle Galera, El Arenal, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Las Golondrinas",
+        "lat": 37.3848669,
+        "lng": -6.0055122,
+        "address": "Calle Antillano Campos 26, Sevilla",
+        "osm": "Bar Las Golondrinas, 26, Calle Antillano Campos, Triana Casco Antiguo, Triana, Sevilla, Andalucía, 41010, España"
+      },
+      {
+        "nombre": "Mercado de Triana",
+        "lat": 37.3857499,
+        "lng": -6.0035503,
+        "address": "Calle San Jorge, Sevilla",
+        "osm": "Mercado de Triana, Calle San Jorge, Triana Casco Antiguo, Triana, Sevilla, Andalucía, 41010, España"
+      },
+      {
+        "nombre": "Mercado de Feria",
+        "lat": 37.3994743,
+        "lng": -5.9911915,
+        "address": "Plaza Calderón de la Barca, Sevilla",
+        "osm": "Mercado de Abastos Calle Feria, Plaza Calderón de la Barca, Feria, Casco Antiguo, Sevilla, Andalucía, 41002, España"
+      },
+      {
+        "nombre": "Casa Román",
+        "lat": 37.385141,
+        "lng": -5.989684,
+        "address": "Plaza de los Venerables 1, Sevilla",
+        "osm": "Casa Román, 1, Plaza de los Venerables, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "Taberna El Papelón",
+        "lat": 37.3891248,
+        "lng": -5.9944872,
+        "address": "Calle Granada 2, Sevilla",
+        "osm": "Taberna El Papelón, 2, Calle Granada, Alfalfa, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Los Coloniales",
+        "lat": 37.3915663,
+        "lng": -5.9894907,
+        "address": "Calle Dormitorio, Sevilla",
+        "osm": "Los Coloniales, Calle Dormitorio, Alfalfa, Casco Antiguo, Sevilla, Andalucía, 41003, España"
+      },
+      {
+        "nombre": "La Azotea",
+        "lat": 37.395875,
+        "lng": -5.9956034,
+        "address": "Calle Jesús del Gran Poder 31, Sevilla",
+        "osm": "La Azotea, 31, Calle Jesús del Gran Poder, San Vicente, Casco Antiguo, Sevilla, Andalucía, 41002, España"
+      },
+      {
+        "nombre": "Mamarracha",
+        "lat": 37.3878621,
+        "lng": -5.993587,
+        "address": "Calle Hernando Colón 1-3, Sevilla",
+        "osm": "La Mamarracha, 1-3, Calle Hernando Colón, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "La Bartola",
+        "lat": 37.386815,
+        "lng": -5.9879857,
+        "address": "Calle San José 24, Sevilla",
+        "osm": "La Bartola, 24, Calle San José, San Bartolomé, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "Bodega Santa Cruz Las Columnas",
+        "lat": 37.3860394,
+        "lng": -5.9907674,
+        "address": "Calle Rodrigo Caro 1, Sevilla",
+        "osm": "Bodega Santa Cruz Las columnas, 1, Calle Rodrigo Caro, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "Casa Placido",
+        "lat": 37.3860704,
+        "lng": -5.9894636,
+        "address": "Calle Ximénez de Enciso, Sevilla",
+        "osm": "Casa Plácido, Calle Ximénez de Enciso, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "Contenedor",
+        "lat": 37.39842,
+        "lng": -5.9879244,
+        "address": "Calle San Luis 50, Sevilla",
+        "osm": "ConTenedor, 50, Calle San Luis, San Julián, Casco Antiguo, Sevilla, Andalucía, 41003, España"
+      },
+      {
+        "nombre": "Casa La Viuda",
+        "lat": 37.3895504,
+        "lng": -5.9946459,
+        "address": "Calle Albareda 2, Sevilla",
+        "osm": "Casa La Viuda, 2, Calle Albareda, Alfalfa, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Ovejas Negras",
+        "lat": 37.3876214,
+        "lng": -5.9935632,
+        "address": "Calle Hernando Colón 8, Sevilla",
+        "osm": "Ovejas Negras, 8, Calle Hernando Colón, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "La Moderna",
+        "lat": 37.3861635,
+        "lng": -5.9910013,
+        "address": "Calle Abades, Sevilla",
+        "osm": "La Moderna, Calle Abades, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      },
+      {
+        "nombre": "Antigua Abacería",
+        "lat": 37.3978438,
+        "lng": -5.9975647,
+        "address": "Calle Teodosio 53, Sevilla",
+        "osm": "Antigua Abacería de San Lorenzo, 53, Calle Teodosio, San Lorenzo, Casco Antiguo, Sevilla, Andalucía, 41002, España"
+      },
+      {
+        "nombre": "Mercado Lonja del Barranco",
+        "lat": 37.3876492,
+        "lng": -6.0021317,
+        "address": "Calle Arjona, Sevilla",
+        "osm": "Mercado Lonja del Barranco, Calle Arjona, Museo, Casco Antiguo, Sevilla, Andalucía, 41001, España"
+      },
+      {
+        "nombre": "Las Teresas",
+        "lat": 37.3859772,
+        "lng": -5.989319,
+        "address": "Calle Santa Teresa 2, Sevilla",
+        "osm": "Bar Las Teresas, 2, Calle Santa Teresa, Santa Cruz, Casco Antiguo, Sevilla, Andalucía, 41004, España"
+      }
+    ],
+    "descartados": [
+      "El Cabo",
+      "Bodega Dos de Mayo"
+    ]
+  },
+  "Málaga": {
+    "sitios": [
+      {
+        "nombre": "El Pimpi",
+        "lat": 36.7217974,
+        "lng": -4.4180421,
+        "address": "Calle Granada 62, Málaga",
+        "osm": "Bodega Bar El Pimpi, 62, Calle Granada, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "Antigua Casa de Guardia",
+        "lat": 36.7178132,
+        "lng": -4.4233107,
+        "address": "Alameda Principal 18, Málaga",
+        "osm": "Antigua Casa de Guardia, 18, Alameda Principal, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29001, España"
+      },
+      {
+        "nombre": "Casa Lola",
+        "lat": 36.7220033,
+        "lng": -4.4189788,
+        "address": "Calle San José, Málaga",
+        "osm": "Casa Lola, Calle San José, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "El Mesón de Cervantes",
+        "lat": 36.7240319,
+        "lng": -4.4198565,
+        "address": "Calle Álamos 11, Málaga",
+        "osm": "El Mesón de Cervantes, 11, Calle Álamos, La Merced, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29012, España"
+      },
+      {
+        "nombre": "La Recova",
+        "lat": 36.7201336,
+        "lng": -4.4236083,
+        "address": "Pasaje Nuestra Señora de los Dolores de San Juan 3, Málaga",
+        "osm": "La Recova, 3, Pasaje Nuestra Señora de los Dolores de San Juan, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29005, España"
+      },
+      {
+        "nombre": "Restaurante Kaleja",
+        "lat": 36.7211116,
+        "lng": -4.4178541,
+        "address": "Calle Marquesa de Moya 9, Málaga",
+        "osm": "Kaleja, 9, Calle Marquesa de Moya, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "Casa Aranda",
+        "lat": 36.7189531,
+        "lng": -4.4231435,
+        "address": "Calle Herrería del Rey 2, Málaga",
+        "osm": "Casa Aranda, 2, Calle Herrería del Rey, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29005, España"
+      },
+      {
+        "nombre": "La Tranca",
+        "lat": 36.7241974,
+        "lng": -4.421549,
+        "address": "Calle Carretería 93, Málaga",
+        "osm": "La Tranca, 93, Calle Carretería, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29012, España"
+      },
+      {
+        "nombre": "El Tintero",
+        "lat": 36.7168885,
+        "lng": -4.3480936,
+        "address": "Avenida Salvador Allende 340, Málaga",
+        "osm": "El Tintero, 340, Avenida Salvador Allende, El Chanquete, Este, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29017, España"
+      },
+      {
+        "nombre": "Restaurante José Carlos García",
+        "lat": 36.7168322,
+        "lng": -4.4133217,
+        "address": "Paseo del Muelle Uno, Málaga",
+        "osm": "José Carlos Garcia, Paseo del Muelle Uno, Puerto de Málaga, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "El Pescaíto",
+        "lat": 36.7239132,
+        "lng": -4.4188245,
+        "address": "Calle Madre de Dios, Málaga",
+        "osm": "El Pescaito, Calle Madre de Dios, La Merced, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "Tapeo de Cervantes",
+        "lat": 36.7239539,
+        "lng": -4.4193094,
+        "address": "Calle Cárcer 8, Málaga",
+        "osm": "Tapeo de Cervantes, 8, Calle Cárcer, La Merced, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29012, España"
+      },
+      {
+        "nombre": "Casa Mira",
+        "lat": 36.7195609,
+        "lng": -4.4214742,
+        "address": "Calle Marqués de Larios 5, Málaga",
+        "osm": "Casa Mira, 5, Calle Marqués de Larios, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "Restaurante Cortijo de Pepe",
+        "lat": 36.7228951,
+        "lng": -4.4178237,
+        "address": "2, Málaga",
+        "osm": "Cortijo de Pepe, 2, Plaza de la Merced, La Merced, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29012, España"
+      },
+      {
+        "nombre": "La Cosmopolita",
+        "lat": 36.721881,
+        "lng": -4.4199633,
+        "address": "Calle José Denis Belgrano 3, Málaga",
+        "osm": "La Cosmopolita, 3, Calle José Denis Belgrano, Centro Histórico, Centro, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      },
+      {
+        "nombre": "Gorki",
+        "lat": 36.7196308,
+        "lng": -4.4209509,
+        "address": "Calle Strachan 6, Málaga",
+        "osm": "Gorki, 6, Calle Strachan, Centro Histórico, Málaga, Málaga-Costa del Sol, Málaga, Andalucía, 29015, España"
+      }
+    ],
+    "descartados": [
+      "Mercado Central de Atarazanas",
+      "Bodega El Chinitas",
+      "Mesón Mariano",
+      "Uvedoble Taberna",
+      "Dim Sum",
+      "Bar El Gordo",
+      "Mercado de Salamanca",
+      "La Alcazaba Restaurante",
+      "Bar Lo Güeno",
+      "Bodega Bar Las Bodegas",
+      "El Balcón de la Virreina"
+    ]
+  },
+  "Bilbao": {
+    "sitios": [
+      {
+        "nombre": "Casa Rufo",
+        "lat": 43.2585607,
+        "lng": -2.9315974,
+        "address": "Hurtado de Amezaga kalea 5, Bilbao",
+        "osm": "Casa Rufo, 5, Hurtado de Amezaga kalea, Abando, Bilbao, Bizkaia, Euskadi, 48008, España"
+      },
+      {
+        "nombre": "Zortziko",
+        "lat": 43.2646271,
+        "lng": -2.9294894,
+        "address": "Mazarredo zumarkalea, Bilbao",
+        "osm": "Zortziko, Mazarredo zumarkalea, Uribitarte, Abando, Bilbao, Bizkaia, Euskadi, 48071, España"
+      },
+      {
+        "nombre": "Mercado de la Ribera",
+        "lat": 43.255551,
+        "lng": -2.9243431,
+        "address": "Martzanako kaia, Bilbao",
+        "osm": "Erriberako Merkatua, Martzanako kaia, Bilbao la Vieja, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "Víctor Montes",
+        "lat": 43.2589032,
+        "lng": -2.9223246,
+        "address": "Altxerri kobaren kalea, Bilbao",
+        "osm": "Víctor Montes, Altxerri kobaren kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "Gure Toki",
+        "lat": 43.2593874,
+        "lng": -2.9223102,
+        "address": "Ekain koben kalea 12, Bilbao",
+        "osm": "Gure Toki, 12, Ekain koben kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "Mina",
+        "lat": 43.2612387,
+        "lng": -2.9385086,
+        "address": "Ercilla kalea 37, Bilbao",
+        "osm": "Mina, 37, Ercilla kalea, Autonomia, Indautxu, Abando, Bilbao, Bizkaia, Euskadi, 48011, España"
+      },
+      {
+        "nombre": "Nerua",
+        "lat": 43.2688611,
+        "lng": -2.9325487,
+        "address": "Salbe zubia, Bilbao",
+        "osm": "Nerua, Salbe zubia, Uribitarte, Abando, Bilbao, Bizkaia, Euskadi, 48001, España"
+      },
+      {
+        "nombre": "El Globo",
+        "lat": 43.2619441,
+        "lng": -2.9326563,
+        "address": "Diputazio kalea 8, Bilbao",
+        "osm": "El Globo, 8, Diputazio kalea, Uribitarte, Abando, Bilbao, Bizkaia, Euskadi, 48008, España"
+      },
+      {
+        "nombre": "Sorginzulo",
+        "lat": 43.2593598,
+        "lng": -2.9222595,
+        "address": "Ekain koben kalea 12 bajo, Bilbao",
+        "osm": "Sorginzulo, 12 bajo, Ekain koben kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "La Viña del Ensanche",
+        "lat": 43.2616372,
+        "lng": -2.9327413,
+        "address": "Diputazio kalea 10, Bilbao",
+        "osm": "La Viña del Ensanche, 10, Diputazio kalea, Uribitarte, Abando, Bilbao, Bizkaia, Euskadi, 48008, España"
+      },
+      {
+        "nombre": "Matiko",
+        "lat": 43.2690276,
+        "lng": -2.9254554,
+        "address": "Artatzamina kalea, Bilbao",
+        "osm": "Matiko, Artatzamina kalea, Matiko - Ciudad Jardín, Matiko-Ciudad Jardín, Uribarri, Bilbao, Bizkaia, Euskadi, 48001, España"
+      },
+      {
+        "nombre": "Beltz",
+        "lat": 43.2571755,
+        "lng": -2.9256897,
+        "address": "Pilota kalea 4, Bilbao",
+        "osm": "Taska Beltz, 4, Pilota kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "Los Fueros",
+        "lat": 43.259587,
+        "lng": -2.9231074,
+        "address": "Foru kalea, Bilbao",
+        "osm": "Los Fueros, Foru kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      },
+      {
+        "nombre": "Café Bar Bilbao",
+        "lat": 43.2587351,
+        "lng": -2.9225213,
+        "address": "Altxerri kobaren kalea, Bilbao",
+        "osm": "Cafe bar Bilbao, Altxerri kobaren kalea, Casco Viejo, Ibaiondo, Bilbao, Bizkaia, Euskadi, 48005, España"
+      }
+    ],
+    "descartados": [
+      "Etxebarri",
+      "Café Iruña",
+      "Casa Vergara",
+      "Taberna Ribera",
+      "Café La Granja",
+      "Restaurante Bermeo",
+      "Bar Txiriboga",
+      "Sylkar",
+      "Cafetería Pozas",
+      "Mugitu",
+      "Bar Basko",
+      "Restaurante Kobetas",
+      "Café Boulevard",
+      "El Puerto Viejo",
+      "Restaurante Guria",
+      "Alhóndiga"
+    ]
+  },
+  "San Sebastián": {
+    "sitios": [
+      {
+        "nombre": "Bar Nestor",
+        "lat": 43.3238831,
+        "lng": -1.9837014,
+        "address": "Arrandegi kalea, San Sebastián",
+        "osm": "Nestor, Arrandegi kalea, Parte Zaharra, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "La Cuchara de San Telmo",
+        "lat": 43.3245012,
+        "lng": -1.9852992,
+        "address": "Abuztuaren 31 kalea 28, San Sebastián",
+        "osm": "La Cuchara de San Telmo, 28, Abuztuaren 31 kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Gandarias",
+        "lat": 43.3238856,
+        "lng": -1.9861219,
+        "address": "Abuztuaren 31 kalea 29, San Sebastián",
+        "osm": "Xibaritak Gandarias, 29, Abuztuaren 31 kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bar Sport",
+        "lat": 43.3234932,
+        "lng": -1.983747,
+        "address": "Fermin Calbeton kalea 10, San Sebastián",
+        "osm": "Bar Sport, 10, Fermin Calbeton kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Casa Urola",
+        "lat": 43.3233412,
+        "lng": -1.9844106,
+        "address": "Fermin Calbeton kalea 20, San Sebastián",
+        "osm": "Casa Urola, 20, Fermin Calbeton kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Ganbara",
+        "lat": 43.3234044,
+        "lng": -1.9855317,
+        "address": "San Jeronimo kalea 21, San Sebastián",
+        "osm": "Ganbara, 21, San Jeronimo kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bodegón Alejandro",
+        "lat": 43.3235764,
+        "lng": -1.9833802,
+        "address": "Fermin Calbeton kalea 4, San Sebastián",
+        "osm": "Bodegon Alejandro, 4, Fermin Calbeton kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Borda Berri",
+        "lat": 43.3234771,
+        "lng": -1.983818,
+        "address": "Fermin Calbeton kalea 12, San Sebastián",
+        "osm": "Borda berri, 12, Fermin Calbeton kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "La Viña",
+        "lat": 43.3243906,
+        "lng": -1.9847417,
+        "address": "Abuztuaren 31 kalea 3, San Sebastián",
+        "osm": "La Viña, 3, Abuztuaren 31 kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Txepetxa",
+        "lat": 43.3237715,
+        "lng": -1.9839776,
+        "address": "Arrandegi kalea 5, San Sebastián",
+        "osm": "Txepetxa, 5, Arrandegi kalea, Parte Zaharra, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bar Zeruko",
+        "lat": 43.3238013,
+        "lng": -1.9836719,
+        "address": "Arrandegi kalea 10, San Sebastián",
+        "osm": "Zeruko, 10, Arrandegi kalea, Parte Zaharra, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Akelarre",
+        "lat": 43.3077826,
+        "lng": -2.0431538,
+        "address": "Aita Orkolaga pasealekua 56, San Sebastián",
+        "osm": "Akelarre, 56, Aita Orkolaga pasealekua, Igeldo, Mendebaldea, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20170, España"
+      },
+      {
+        "nombre": "Casa Alcalde",
+        "lat": 43.3235402,
+        "lng": -1.9865175,
+        "address": "Kale Nagusia 19, San Sebastián",
+        "osm": "Casa Alcalde, 19, Kale Nagusia, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bar Martinez",
+        "lat": 43.3242204,
+        "lng": -1.9851963,
+        "address": "Abuztuaren 31 kalea 13, San Sebastián",
+        "osm": "Bar Martínez, 13, Abuztuaren 31 kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Casa Valles",
+        "lat": 43.3153301,
+        "lng": -1.9807268,
+        "address": "Errege-erregina Katolikoak kalea 10, San Sebastián",
+        "osm": "Casa Valles, 10, Errege-erregina Katolikoak kalea, Erdialdea, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20006, España"
+      },
+      {
+        "nombre": "Narru",
+        "lat": 43.3156942,
+        "lng": -1.9878703,
+        "address": "Zubieta kalea 56, San Sebastián",
+        "osm": "Narru, 56, Zubieta kalea, Erdialdea, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20007, España"
+      },
+      {
+        "nombre": "Bar Goiz Argi",
+        "lat": 43.3235829,
+        "lng": -1.9833514,
+        "address": "Fermin Calbeton kalea 4, San Sebastián",
+        "osm": "Goiz Argi, 4, Fermin Calbeton kalea, Parte Zaharra, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bar Antonio",
+        "lat": 43.3197256,
+        "lng": -1.9806016,
+        "address": "Bergara kalea 3, San Sebastián",
+        "osm": "Antonio, 3, Bergara kalea, Erdialdea, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20005, España"
+      },
+      {
+        "nombre": "Etxebe",
+        "lat": 43.3239732,
+        "lng": -1.9840014,
+        "address": "Iñigo kalea, San Sebastián",
+        "osm": "Etxebe, Iñigo kalea, Parte Zaharra, Gune Erromantikoa, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20003, España"
+      },
+      {
+        "nombre": "Bar Bergara",
+        "lat": 43.3243602,
+        "lng": -1.9723736,
+        "address": "Artetxe Jeneralaren kalea 8, San Sebastián",
+        "osm": "Bergara, 8, Artetxe Jeneralaren kalea, Gros, Ipar-Ekialdea, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20002, España"
+      },
+      {
+        "nombre": "La Bella Easo",
+        "lat": 43.3139882,
+        "lng": -1.9825727,
+        "address": "Plaza Easo, San Sebastián",
+        "osm": "La Bella Easo, Plaza Easo, Erdialdea, Amara Zaharra, Amara, Centro, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20006, España"
+      },
+      {
+        "nombre": "Rekondo",
+        "lat": 43.3131333,
+        "lng": -2.0112746,
+        "address": "Igeldo pasealekua 57, San Sebastián",
+        "osm": "Restaurante Rekondo, 57, Igeldo pasealekua, Faroa-Erregenea, Antigua, Mendebaldea, Donostia / San Sebastián, Gipuzkoa, Euskadi, 20008, España"
+      }
+    ],
+    "descartados": [
+      "A Fuego Negro",
+      "Martín Berasategui",
+      "Mercado de La Bretxa",
+      "Bar Txuleta",
+      "Pastelería Otaegui",
+      "Mugaritz"
+    ]
+  },
+  "Zaragoza": {
+    "sitios": [
+      {
+        "nombre": "Casa Lac",
+        "lat": 41.6527507,
+        "lng": -0.8801159,
+        "address": "Calle de los Mártires 12, Zaragoza",
+        "osm": "Restaurante Casa Lac, 12, Calle de los Mártires, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50003, España"
+      },
+      {
+        "nombre": "La Republicana",
+        "lat": 41.6532486,
+        "lng": -0.87872,
+        "address": "Calle de Casto Méndez Núñez 38, Zaragoza",
+        "osm": "La Republicana, 38, Calle de Casto Méndez Núñez, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50003, España"
+      },
+      {
+        "nombre": "Bodegas Almau",
+        "lat": 41.653387,
+        "lng": -0.880008,
+        "address": "Calle de Estébanes 10, Zaragoza",
+        "osm": "Bodegas Almau, 10, Calle de Estébanes, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50003, España"
+      },
+      {
+        "nombre": "Casa Pascualillo",
+        "lat": 41.65322,
+        "lng": -0.880513,
+        "address": "Calle de la Libertad 5, Zaragoza",
+        "osm": "Casa Pascualillo, 5, Calle de la Libertad, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "Taberna Doña Casta",
+        "lat": 41.6534895,
+        "lng": -0.8801384,
+        "address": "Calle de Estébanes 6, Zaragoza",
+        "osm": "Taberna Doña Casta, 6, Calle de Estébanes, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50003, España"
+      },
+      {
+        "nombre": "El Fuelle",
+        "lat": 41.6527025,
+        "lng": -0.8745351,
+        "address": "Calle Mayor 59, Zaragoza",
+        "osm": "El Fuelle, 59, Calle Mayor, El Tubo, La Magdalena, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "La Ternasca",
+        "lat": 41.653364,
+        "lng": -0.8668123,
+        "address": "Paseo de Echegaray y Caballero, Zaragoza",
+        "osm": "La Ternasca, Paseo de Echegaray y Caballero, La Magdalena, Casco Histórico, Zaragoza, Aragón, 50002, España"
+      },
+      {
+        "nombre": "Casa Juanico",
+        "lat": 41.6545337,
+        "lng": -0.8786663,
+        "address": "Calle de Santa Cruz 21, Zaragoza",
+        "osm": "Casa Juanico, 21, Calle de Santa Cruz, El Tubo, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "Café Zaragozano",
+        "lat": 41.6524553,
+        "lng": -0.8806255,
+        "address": "Calle del Coso 35, Zaragoza",
+        "osm": "Gran Café zaragozano, 35, Calle del Coso, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "Restaurante Cancook",
+        "lat": 41.6347903,
+        "lng": -0.9041539,
+        "address": "Calle de Juan II de Aragón 5, Zaragoza",
+        "osm": "Cancook, 5, Calle de Juan II de Aragón, Romareda, Universidad, Zaragoza, Aragón, 50009, España"
+      },
+      {
+        "nombre": "La Miguería",
+        "lat": 41.653769,
+        "lng": -0.8808068,
+        "address": "Plaza de Sas, Zaragoza",
+        "osm": "La Miguería, Plaza de Sas, El Tubo, El Gancho, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "Restaurante Los Victorinos",
+        "lat": 41.6542438,
+        "lng": -0.8770651,
+        "address": "Calle José de la Hera, Zaragoza",
+        "osm": "Los Victorinos, Calle José de la Hera, El Tubo, Casco Antiguo, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      },
+      {
+        "nombre": "El Foro",
+        "lat": 41.6378118,
+        "lng": -0.9031697,
+        "address": "Calle de Eduardo Ibarra 4, Zaragoza",
+        "osm": "Restaurante el foro, 4, Calle de Eduardo Ibarra, Romareda, Universidad, Zaragoza, Aragón, 50009, España"
+      },
+      {
+        "nombre": "Casa Pedro",
+        "lat": 41.6505527,
+        "lng": -0.8757561,
+        "address": "Calle de la Cadena 6, Zaragoza",
+        "osm": "Casa Pedro, 6, Calle de la Cadena, El Tubo, La Magdalena, Casco Histórico, Zaragoza, Aragón, 50001, España"
+      }
+    ],
+    "descartados": [
+      "El Pilar Restaurante",
+      "Cervecería La Ternasca",
+      "Mercado Central de Zaragoza",
+      "Bodega Sanz",
+      "Cafetería Casa Emilio",
+      "Taberna La Lonja",
+      "Bar El Platero",
+      "Casa Teodoro",
+      "Las Tinajas",
+      "Bar La Zaragozana",
+      "Taberna Los Zagales",
+      "Bodegón Zaragozano",
+      "Mesón del Pilar"
+    ]
+  },
+  "Granada": {
+    "sitios": [
+      {
+        "nombre": "Bar Los Diamantes",
+        "lat": 37.1737296,
+        "lng": -3.5983333,
+        "address": "Calle Navas 28, Granada",
+        "osm": "Bar Los Diamantes, 28, Calle Navas, La Manigua, San Matías - Realejo, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18009, España"
+      },
+      {
+        "nombre": "Bodegas Castañeda",
+        "lat": 37.1768283,
+        "lng": -3.5969894,
+        "address": "Calle Almireceros 3, Granada",
+        "osm": "Bodegas Castañeda, 3, Calle Almireceros, Sagrario, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18010, España"
+      },
+      {
+        "nombre": "Casa Torcuato",
+        "lat": 37.1840153,
+        "lng": -3.5936213,
+        "address": "Calle Pagés 31, Granada",
+        "osm": "Casa Torcuato, 31, Calle Pagés, Albaicín Alto, Albaicín, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18010, España"
+      },
+      {
+        "nombre": "Restaurante Ruta del Azafrán",
+        "lat": 37.1788448,
+        "lng": -3.5902914,
+        "address": "Paseo del Padre Manjón 1, Granada",
+        "osm": "Ruta del Azafrán, 1, Paseo del Padre Manjón, San Pedro, Albaicín, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18010, España"
+      },
+      {
+        "nombre": "Taberna La Tana",
+        "lat": 37.1727477,
+        "lng": -3.5960907,
+        "address": "Placeta del Agua 3, Granada",
+        "osm": "Taberna La Tana, 3, Placeta del Agua, San Matías, San Matías - Realejo, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18009, España"
+      },
+      {
+        "nombre": "El Ladrillo",
+        "lat": 37.1832432,
+        "lng": -3.592686,
+        "address": "Placeta de Fátima, Granada",
+        "osm": "El Ladrillo Charico, Placeta de Fátima, Albaicín Alto, Albaicín, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18010, España"
+      },
+      {
+        "nombre": "Restaurante Mirador de Morayma",
+        "lat": 37.1808972,
+        "lng": -3.5895555,
+        "address": "Calle Pianista García Carrillo 2, Granada",
+        "osm": "Mirador de Morayma, 2, Calle Pianista García Carrillo, San Pedro, Albaicín, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18010, España"
+      },
+      {
+        "nombre": "Bar Poë",
+        "lat": 37.1743831,
+        "lng": -3.6034446,
+        "address": "Calle Verónica de la Magdalena 40, Granada",
+        "osm": "Bar Poë, 40, Calle Verónica de la Magdalena, Barrio de la Magdalena, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18002, España"
+      },
+      {
+        "nombre": "Chikito",
+        "lat": 37.1719831,
+        "lng": -3.5978009,
+        "address": "Plaza del Campillo 9, Granada",
+        "osm": "Chikito, 9, Plaza del Campillo, La Manigua, San Matías - Realejo, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18009, España"
+      },
+      {
+        "nombre": "Bar Los Manueles",
+        "lat": 37.1756838,
+        "lng": -3.5998641,
+        "address": "Calle Colegio Catalino, Granada",
+        "osm": "Los Manueles, Calle Colegio Catalino, Sagrario, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18001, España"
+      },
+      {
+        "nombre": "Restaurante Cunini",
+        "lat": 37.1760334,
+        "lng": -3.6005709,
+        "address": "Plaza Pescadería, Granada",
+        "osm": "Cunini, Plaza Pescadería, Sagrario, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18001, España"
+      },
+      {
+        "nombre": "Mercado de San Agustín",
+        "lat": 37.1777822,
+        "lng": -3.5993827,
+        "address": "Calle Cristo de San Agustín, Granada",
+        "osm": "Mercado de San Agustín, Calle Cristo de San Agustín, Sagrario, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18001, España"
+      },
+      {
+        "nombre": "Casa Julio",
+        "lat": 37.1755791,
+        "lng": -3.6001001,
+        "address": "Plaza de Bib-Rambla, Granada",
+        "osm": "Bar Casa Julio, Plaza de Bib-Rambla, Sagrario, Centro - Sagrario, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18001, España"
+      },
+      {
+        "nombre": "Restaurante Damasqueros",
+        "lat": 37.1744649,
+        "lng": -3.5940738,
+        "address": "Calle Damasqueros 3, Granada",
+        "osm": "Damasqueros, 3, Calle Damasqueros, El Mauror, San Matías - Realejo, Centro, Granada, Comarca de la Vega de Granada, Granada, Andalucía, 18009, España"
+      }
+    ],
+    "descartados": [
+      "Bar Aliatar",
+      "Café Bar Casa Torcuato",
+      "Mesón Lagarto",
+      "Bar Poniente",
+      "Cervecería Bar Rincón",
+      "El Rincón de Tomás",
+      "Bar Casa de Vinos La Brujidera",
+      "Taberna Salinas",
+      "Café Bar Fútbol",
+      "Teteria Kasbah",
+      "Bar Mirador de San Cristóbal",
+      "Bar Pata Negra",
+      "La Bella y la Bestia",
+      "Taberna Oliver"
+    ]
+  },
+  "Palma": {
+    "sitios": [
+      {
+        "nombre": "Ca'n Joan de s'Aigo",
+        "lat": 39.5699112,
+        "lng": 2.6526207,
+        "address": "Carrer de Ca'n Sanç 10, Palma",
+        "osm": "Ca'n Joan de s'Aigo, 10, Carrer de Ca'n Sanç, El Sindicat, Canamunt, Districte Centre, Palma, Illes Balears, 07001, España"
+      },
+      {
+        "nombre": "Mercat de l'Olivar",
+        "lat": 39.5738656,
+        "lng": 2.6535029,
+        "address": "Plaça de l'Olivar 4, Palma",
+        "osm": "Mercat de l'Olivar, 4, Plaça de l'Olivar, El Mercat, Canamunt, Districte Centre, Palma, Illes Balears, 07002, España"
+      },
+      {
+        "nombre": "Celler Sa Premsa",
+        "lat": 39.5758508,
+        "lng": 2.6500077,
+        "address": "Plaça del Bisbe Berenguer de Palou 8, Palma",
+        "osm": "Celler Sa Premsa, 8, Plaça del Bisbe Berenguer de Palou, Plaça dels Patins, Canavall, Districte Centre, Palma, Illes Balears, 07003, España"
+      },
+      {
+        "nombre": "Bar Abaco",
+        "lat": 39.5689645,
+        "lng": 2.6451642,
+        "address": "Carrer de Sant Joan 1, Palma",
+        "osm": "Bar Abaco, 1, Carrer de Sant Joan, La Llotja - Born, Canamunt, Districte Centre, Palma, Illes Balears, 07012, España"
+      },
+      {
+        "nombre": "La Bóveda",
+        "lat": 39.5682362,
+        "lng": 2.6451263,
+        "address": "Carrer de la Boteria 3, Palma",
+        "osm": "La Bóveda, 3, Carrer de la Boteria, La Llotja - Born, Canamunt, Districte Centre, Palma, Illes Balears, 07012, España"
+      },
+      {
+        "nombre": "Ca'n Pedro",
+        "lat": 39.5660312,
+        "lng": 2.6001418,
+        "address": "Carrer del Rector Vives 14, Palma",
+        "osm": "Ca'n Pedro, 14, Carrer del Rector Vives, Sant Agustí, Districte de Ponent, Palma, Illes Balears, 07015, España"
+      },
+      {
+        "nombre": "Marc Fosh",
+        "lat": 39.5736439,
+        "lng": 2.6513183,
+        "address": "Carrer de la Missió 7a, Palma",
+        "osm": "Marc Fosh, 7a, Carrer de la Missió, La Missió, Canavall, Districte Centre, Palma, Illes Balears, 07003, España"
+      },
+      {
+        "nombre": "El Pesquero",
+        "lat": 39.5686248,
+        "lng": 2.6422459,
+        "address": "Moll de la Llotja, Palma",
+        "osm": "El Pesquero, Moll de la Llotja, Puig de Sant Pere, Canamunt, Districte Centre, Palma, Illes Balears, 07012, España"
+      },
+      {
+        "nombre": "Mercat de Santa Catalina",
+        "lat": 39.5712307,
+        "lng": 2.6382653,
+        "address": "Plaça de la Navegació, Palma",
+        "osm": "Mercat de Santa Catalina, Plaça de la Navegació, es Jonquet, Ponent, Santa Catalina, Districte de Ponent, Palma, Illes Balears, 07013, España"
+      },
+      {
+        "nombre": "La Rosa Vermuteria",
+        "lat": 39.5717433,
+        "lng": 2.6496798,
+        "address": "Carrer de la Rosa 5, Palma",
+        "osm": "Vermuteria La Rosa, 5, Carrer de la Rosa, Centre, Canavall, Districte Centre, Palma, Illes Balears, 07001, España"
+      },
+      {
+        "nombre": "Bar España",
+        "lat": 39.5709147,
+        "lng": 2.6509245,
+        "address": "Carrer de Ca'n Escursac, Palma",
+        "osm": "Bar España, Carrer de Ca'n Escursac, Cort, Canamunt, Districte Centre, Palma, Illes Balears, 07001, España"
+      },
+      {
+        "nombre": "Ca la Seu",
+        "lat": 39.5705625,
+        "lng": 2.6529435,
+        "address": "carrer de Ca La Seu, Palma",
+        "osm": "Ca la Seu, carrer de Ca La Seu, El Sindicat, Canamunt, Districte Centre, Palma, Illes Balears, 07002, España"
+      },
+      {
+        "nombre": "Restaurante Duke",
+        "lat": 39.5720815,
+        "lng": 2.6373734,
+        "address": "Carrer de Soler 36, Palma",
+        "osm": "Duke, 36, Carrer de Soler, es Jonquet, Ponent, Santa Catalina, Districte de Ponent, Palma, Illes Balears, 07012, España"
+      }
+    ],
+    "descartados": [
+      "Bar Bosch",
+      "Ca'n Carlos",
+      "Forn des Teatre",
+      "Fosh Food",
+      "Bar Rialto",
+      "Taberna de la Bóveda",
+      "Restaurante Ana",
+      "Sa Fonda",
+      "Mercat del Olivar",
+      "Cafè Lírico",
+      "Bar Jaume",
+      "Bodega Sa Mala Reputació",
+      "Ca'n Alcover"
+    ]
+  }
+}
