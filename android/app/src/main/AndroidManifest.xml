@@ -131,11 +131,14 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
 
-    <!-- Selector de galería propio, en vez del de Android. READ_MEDIA_VIDEO
-         se retira: la librería solo pide imágenes (`includeVideos` no se
-         activa en ningún sitio), y pedir vídeo sin usarlo es un permiso de
-         más que justificar en la Play Store. -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Sin permisos de galería. Google Play solo concede READ_MEDIA_IMAGES a
+         apps cuya función principal es la galería; aquí las fotos se eligen con
+         el selector del sistema (`galeriaPropia` en appUrl.ts), que no pide
+         ninguno. El plugin de galería (solo se usa en iOS) los declara en su
+         manifest, y aquí se retiran del manifest final. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
 </manifest>

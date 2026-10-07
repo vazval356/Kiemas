@@ -4,7 +4,7 @@ import { CameraIcon } from '../components/icons'
 import { CoverCropper } from '../components/CoverCropper'
 import { PhotoPicker } from '../components/PhotoPicker'
 import { UsernameEditor } from '../components/UsernameEditor'
-import { isNative } from '../lib/appUrl'
+import { galeriaPropia } from '../lib/appUrl'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { useApp } from '../state/appState'
 
@@ -60,7 +60,7 @@ export function EditProfilePage({
    * de recorte es redonda porque es como se va a ver.
    */
   function abrirSelector() {
-    if (isNative) setPicking(true)
+    if (galeriaPropia) setPicking(true)
     else fileRef.current?.click()
   }
 

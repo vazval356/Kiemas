@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CopyIcon, CollectionIcon, ShareIcon, TrashIcon } from '../components/icons'
 import { CoverCropper } from '../components/CoverCropper'
 import { PhotoPicker } from '../components/PhotoPicker'
-import { isNative, publicListUrl } from '../lib/appUrl'
+import { galeriaPropia, publicListUrl } from '../lib/appUrl'
 import type { InviteExpiry } from '../lib/types'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
@@ -220,7 +220,7 @@ export function CollectionDetailPage() {
             <button
               type="button"
               disabled={busy}
-              onClick={() => (isNative ? setPicking(true) : fileRef.current?.click())}
+              onClick={() => (galeriaPropia ? setPicking(true) : fileRef.current?.click())}
               className="rounded-full bg-surface-lowest/90 px-3 py-1.5 text-xs font-semibold text-on-surface squish disabled:opacity-50"
             >
               {t('collection.cover')}

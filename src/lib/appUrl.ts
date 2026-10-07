@@ -20,6 +20,18 @@ const CONFIGURED = (import.meta.env.VITE_PUBLIC_URL as string | undefined)?.repl
 export const isNative = Capacitor.isNativePlatform()
 
 /**
+ * true solo cuando hay que usar el selector de fotos propio (galería y cámara
+ * de la app): iOS.
+ *
+ * En Android no. La galería propia necesita READ_MEDIA_IMAGES, y Google Play
+ * solo concede ese permiso a apps cuya función principal sea la galería; para
+ * elegir una portada o un retrato exige el selector del sistema, que no pide
+ * ningún permiso. Ahí se cae al `<input type="file">` de siempre, que en el
+ * WebView de Android abre el selector del sistema (con opción de cámara).
+ */
+export const galeriaPropia = isNative && Capacitor.getPlatform() === 'ios'
+
+/**
  * Base de las URL que se comparten fuera de la app.
  *
  * Dentro del contenedor nativo NO hay alternativa razonable a la configurada:

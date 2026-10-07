@@ -11,7 +11,7 @@ import { PhotoRightsNote } from '../components/PhotoRightsNote'
 import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
 import { categoryLabel } from '../lib/categories'
 import type { PlaceStatus } from '../lib/types'
-import { isNative } from '../lib/appUrl'
+import { galeriaPropia } from '../lib/appUrl'
 import { resolveMapsLink } from '../lib/mapsLink'
 import { parseOpeningHours } from '../lib/openingHours'
 import type { OsmType } from '../lib/osm'
@@ -614,15 +614,15 @@ export function PlaceFormPage() {
     <div className="flex flex-wrap gap-2">
       <button
         type="button"
-        onClick={() => (isNative ? setPickingPhotos(true) : photoInputRef.current?.click())}
+        onClick={() => (galeriaPropia ? setPickingPhotos(true) : photoInputRef.current?.click())}
         className="flex size-24 flex-col items-center justify-center gap-1 rounded-card border-2 border-dashed border-primary-fixed-dim text-primary squish"
       >
         <span className="text-2xl">📷</span>
         <span className="text-xs font-semibold">{t('form.addPhoto')}</span>
       </button>
-      {/* Solo en web: sin plugin nativo, el selector propio se cae al de
+      {/* Solo donde no hay selector propio (web y Android): se cae al de
           siempre. */}
-      {!isNative && (
+      {!galeriaPropia && (
         <input
           ref={photoInputRef}
           type="file"

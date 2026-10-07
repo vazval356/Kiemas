@@ -5,7 +5,7 @@ import { PhotoPicker } from '../components/PhotoPicker'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
-import { inviteUrl, isNative } from '../lib/appUrl'
+import { galeriaPropia, inviteUrl } from '../lib/appUrl'
 import { SPACE_COLOR_SUGGESTIONS, SPACE_EMOJIS, normalizeHex, spaceColors } from '../lib/spaceTheme'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage, MAX_FOTO_BYTES, pesoLegible } from '../lib/utils'
@@ -921,7 +921,7 @@ export function SpaceDetailPage() {
                   <div className="mt-3 flex gap-2">
                     <button
                       type="button"
-                      onClick={() => (isNative ? setPicking(true) : coverRef.current?.click())}
+                      onClick={() => (galeriaPropia ? setPicking(true) : coverRef.current?.click())}
                       className="flex-1 rounded-control border border-outline-variant py-2.5 text-sm font-semibold text-on-surface squish"
                     >
                       {space.coverUrl ? t('space.changeCover') : t('space.addCover')}

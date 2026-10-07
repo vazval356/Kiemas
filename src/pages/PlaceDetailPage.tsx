@@ -26,7 +26,7 @@ import {
   StarIcon,
   TrashIcon,
 } from '../components/icons'
-import { isNative } from '../lib/appUrl'
+import { galeriaPropia, isNative } from '../lib/appUrl'
 import type { Place } from '../lib/types'
 import { abrirRuta, urlWebDeRuta } from '../lib/abrirRuta'
 import {
@@ -129,7 +129,7 @@ export function PlaceDetailPage() {
   }
 
   function abrirSelectorFotos() {
-    if (isNative) setPickingPhotos(true)
+    if (galeriaPropia) setPickingPhotos(true)
     else fotoInputRef.current?.click()
   }
 
@@ -272,9 +272,9 @@ export function PlaceDetailPage() {
       <div className="relative z-10 mx-auto -mt-8 max-w-md px-3">
         <div className="rounded-card bg-surface-lowest p-3 shadow-[var(--shadow-float)]">
           {/* Compartido por los botones de añadir de abajo —solo se ve uno a la
-              vez—, y solo en web: sin plugin nativo, el selector propio se cae
+              vez—, y solo donde no hay selector propio (web y Android): se cae
               al de siempre. */}
-          {!isNative && (
+          {!galeriaPropia && (
             <input
               ref={fotoInputRef}
               type="file"

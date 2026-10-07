@@ -907,3 +907,90 @@ export function termsDoc(locale: Locale): LegalDoc {
 export function noticeDoc(locale: Locale): LegalDoc {
   return locale === 'en' ? avisoEn : avisoEs
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// Estándares de seguridad infantil
+// ───────────────────────────────────────────────────────────────────────────
+//
+// Google Play exige una dirección pública con estos estándares a las apps con
+// contenido de usuarios. Solo describe lo que la aplicación hace de verdad:
+// los reportes y la moderación son los de «Contenido de otras personas» en las
+// Condiciones, y si cambian allí hay que cambiarlos aquí.
+
+const seguridadInfantilEs: LegalDoc = {
+  title: 'Estándares de seguridad infantil',
+  intro: `${BRAND_NAME} no tolera ninguna forma de abuso o explotación sexual infantil (CSAE) ni material de abuso sexual infantil (CSAM). Esta página explica qué está prohibido, cómo se denuncia y qué hacemos cuando recibimos un aviso.`,
+  sections: [
+    {
+      heading: 'Tolerancia cero',
+      body: [
+        `Está prohibido publicar, compartir o pedir en ${BRAND_NAME} cualquier contenido que sexualice a menores, muestre su abuso o explotación, o sirva para contactar con menores con ese fin. Vale para fotos, textos, nombres, comentarios y cualquier otro contenido de usuario.`,
+        `${BRAND_NAME} no está dirigida a menores de ${EDAD_MINIMA} años. Al crear la cuenta se pregunta la fecha de nacimiento para comprobar la edad, y si se detecta una cuenta de alguien que no la alcanza, se elimina.`,
+      ],
+    },
+    {
+      heading: 'Cómo denunciar',
+      body: [
+        'Desde la propia aplicación: en el perfil de una persona, en la ficha de un sitio y en cada foto (al verla en grande, «Denunciar foto») está la opción de reportar. Se elige un motivo —«Contenido ilícito» para esto— y se puede añadir una explicación.',
+        `También se puede escribir a ${LEGAL_CONTACT.email}, que es el punto de contacto designado para estos asuntos y atiende en español y en inglés.`,
+        'Cada persona puede además bloquear a otra desde su perfil: deja de ver su contenido y esa persona el suyo, sin avisarle.',
+      ],
+    },
+    {
+      heading: 'Qué hacemos con un aviso',
+      body: [
+        'Lo lee una persona. No se retira ni se deja nada por decisión automática de un programa.',
+        'Si el contenido es o parece material de abuso sexual infantil, se retira sin esperar y se suspende o cierra la cuenta que lo publicó. Se conserva lo necesario para poder ponerlo en conocimiento de las autoridades.',
+        'Lo comunicamos a las autoridades competentes (en España, las fuerzas y cuerpos de seguridad y la Fiscalía) y colaboramos con ellas cuando lo requieren, como obliga la ley.',
+      ],
+    },
+    {
+      heading: 'Cumplimiento de la ley',
+      body: [
+        'Cumplimos la normativa aplicable sobre protección de menores y sobre material de abuso sexual infantil, incluida la obligación de comunicar a las autoridades lo que lleguemos a conocer.',
+        `Cualquier duda sobre esta página o sobre cómo se trata un aviso: ${LEGAL_CONTACT.email}.`,
+      ],
+    },
+  ],
+}
+
+const seguridadInfantilEn: LegalDoc = {
+  title: 'Child safety standards',
+  intro: `${BRAND_NAME} has zero tolerance for child sexual abuse and exploitation (CSAE) and child sexual abuse material (CSAM). This page explains what is prohibited, how to report it and what we do when we receive a report.`,
+  sections: [
+    {
+      heading: 'Zero tolerance',
+      body: [
+        `It is forbidden to post, share or request on ${BRAND_NAME} any content that sexualises minors, shows their abuse or exploitation, or is used to contact minors for that purpose. This covers photos, text, names, comments and any other user content.`,
+        `${BRAND_NAME} is not aimed at anyone under ${EDAD_MINIMA}. When you create an account you are asked for your date of birth to check your age, and if an account belonging to someone below that age is found, it is deleted.`,
+      ],
+    },
+    {
+      heading: 'How to report',
+      body: [
+        'From inside the app: on a person’s profile, on a place’s page and on every photo (when viewed full size, “Report photo”) there is a report option. Choose a reason —“Illegal content” for this— and add an explanation if you wish.',
+        `You can also write to ${LEGAL_CONTACT.email}, the designated contact point for these matters, answered in Spanish and English.`,
+        'Anyone can also block another person from their profile: they stop seeing each other’s content, and the other person is not told.',
+      ],
+    },
+    {
+      heading: 'What we do with a report',
+      body: [
+        'A person reads it. Nothing is removed or kept up by an automatic decision of a program.',
+        'If the content is or appears to be child sexual abuse material, it is removed without delay and the account that posted it is suspended or closed. What is needed to report it to the authorities is preserved.',
+        'We report it to the competent authorities (in Spain, the law enforcement bodies and the Public Prosecutor’s Office) and cooperate with them when they ask, as the law requires.',
+      ],
+    },
+    {
+      heading: 'Legal compliance',
+      body: [
+        'We comply with the applicable rules on child protection and on child sexual abuse material, including the duty to report to the authorities what we become aware of.',
+        `Any question about this page or about how a report is handled: ${LEGAL_CONTACT.email}.`,
+      ],
+    },
+  ],
+}
+
+export function childSafetyDoc(locale: Locale): LegalDoc {
+  return locale === 'en' ? seguridadInfantilEn : seguridadInfantilEs
+}

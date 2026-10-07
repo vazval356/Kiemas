@@ -89,6 +89,7 @@ const PAGINAS = [
   { archivo: 'terminos.html', rotulo: 'Condiciones de uso' },
   { archivo: 'aviso-legal.html', rotulo: 'Aviso legal' },
   { archivo: 'eliminar-cuenta.html', rotulo: 'Eliminar tu cuenta' },
+  { archivo: 'seguridad-infantil.html', rotulo: 'Seguridad infantil' },
 ]
 
 const SITIO = 'https://kiemas.com'
@@ -197,6 +198,7 @@ console.log('Generando páginas legales estáticas:')
 pagina(legal.privacyDoc('es'), legal.privacyDoc('en'), 'privacidad.html')
 pagina(legal.termsDoc('es'), legal.termsDoc('en'), 'terminos.html')
 pagina(legal.noticeDoc('es'), legal.noticeDoc('en'), 'aviso-legal.html')
+pagina(legal.childSafetyDoc('es'), legal.childSafetyDoc('en'), 'seguridad-infantil.html')
 
 /**
  * El mapa del sitio, desde aquí y no a mano.
@@ -218,6 +220,7 @@ const urls = [
   { loc: '/terminos.html', cambio: 'yearly', prioridad: '0.5', fecha: legal.LEGAL_UPDATED },
   { loc: '/aviso-legal.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
   { loc: '/eliminar-cuenta.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
+  { loc: '/seguridad-infantil.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
 ]
 
 writeFileSync(
