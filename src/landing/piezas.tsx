@@ -1097,6 +1097,12 @@ export function MovilCaptura({
           height={1388}
           loading={prioridad ? 'eager' : 'lazy'}
           decoding="async"
+          // Si aún no hay captura en este idioma (`app-mapa.en.webp`), se
+          // vuelve a la española, que siempre existe.
+          onError={(e) => {
+            const img = e.currentTarget
+            if (img.src.includes('.en.webp')) img.src = img.src.replace('.en.webp', '.webp')
+          }}
           className="block h-auto w-full rounded-3xl"
         />
       </div>

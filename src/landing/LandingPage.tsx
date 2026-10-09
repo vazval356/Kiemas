@@ -135,7 +135,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           }
         >
           <MovilCaptura
-            src="/landing/app-mapa.webp"
+            src={captura('app-mapa', idioma)}
             alt={t.escaparate.mapa.alt}
             inclinacion={-5}
             className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
@@ -172,7 +172,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           }
         >
           <MovilCaptura
-            src="/landing/app-calendario.webp"
+            src={captura('app-calendario', idioma)}
             alt={t.escaparate.calendario.alt}
             inclinacion={5}
             className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
@@ -227,7 +227,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           }
         >
           <MovilCaptura
-            src="/landing/app-explorar.webp"
+            src={captura('app-explorar', idioma)}
             alt={t.escaparate.explorar.alt}
             inclinacion={-5}
             className="kl-paralaje w-[15.5rem] sm:w-[18rem] md:w-[20rem]"
@@ -469,6 +469,10 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
     </div>
   )
 }
+
+/** Captura de la app en el idioma de la página (`app-mapa.en.webp`; el español no lleva sufijo). */
+const captura = (nombre: string, idioma: IdiomaLanding) =>
+  `/landing/${nombre}${idioma === 'es' ? '' : `.${idioma}`}.webp`
 
 const BOTON_PRINCIPAL =
   'squish inline-flex items-center rounded-full bg-primary px-8 py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)]'
