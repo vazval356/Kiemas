@@ -386,7 +386,7 @@
 /* ── Eslogan: las palabras se encienden una a una ───────────────────────── */
 
 .kl-palabra {
-  opacity: 0.3;
+  opacity: 0.35;
   transition: opacity 700ms var(--kl-ease-out);
 }
 .kl-palabra.kl-encendida {

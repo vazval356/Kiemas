@@ -136,7 +136,7 @@ export function Caras({ iniciales, className = '' }: { iniciales: string[]; clas
       {iniciales.map((ini, i) => (
         <span
           key={i}
-          className="-ml-1.5 flex size-6 items-center justify-center rounded-full border-2 border-surface-lowest text-[10px] font-bold text-white first:ml-0"
+          className="-ml-2 flex size-6 items-center justify-center rounded-full border-2 border-surface-lowest text-xs font-bold text-white first:ml-0"
           style={{ background: colores[i % colores.length] }}
         >
           {ini}
@@ -163,26 +163,26 @@ export function TarjetaPlan({
 }) {
   if (estado) {
     return (
-      <div className="rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)]">
+      <div className="rounded-2xl bg-surface-lowest p-3 shadow-[var(--shadow-float)]">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-on-surface-variant">
               <span aria-hidden>{plan.emoji}</span> {plan.categoria}
             </p>
-            <p className="mt-0.5 truncate font-display text-lg font-bold leading-tight text-on-surface">
+            <p className="mt-0.5 truncate font-display text-lg font-bold text-on-surface">
               {plan.nombre}
             </p>
           </div>
           <span className="relative shrink-0">
             <span
-              className={`kl-insignia flex rounded-full border border-outline-variant px-2.5 py-1 text-xs font-semibold text-on-surface-variant ${
+              className={`kl-insignia flex rounded-full border border-outline-variant px-3 py-1 text-xs font-semibold text-on-surface-variant ${
                 estado === 'votando' ? 'opacity-100' : 'opacity-0'
               }`}
             >
               {plan.votando}
             </span>
             <span
-              className={`kl-insignia absolute inset-0 flex items-center justify-center rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-on-secondary ${
+              className={`kl-insignia absolute inset-0 flex items-center justify-center rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-on-secondary ${
                 estado === 'confirmado' ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
               }`}
             >
@@ -190,7 +190,7 @@ export function TarjetaPlan({
             </span>
           </span>
         </div>
-        <div className="mt-2.5 flex items-center justify-between text-sm text-on-surface-variant">
+        <div className="mt-2 flex items-center justify-between text-sm text-on-surface-variant">
           <span className="font-medium text-on-surface">{plan.cuando}</span>
           <span className="flex items-center gap-2">
             <Caras iniciales={['M', 'D', 'L', 'A']} />
@@ -202,7 +202,7 @@ export function TarjetaPlan({
   }
   return (
     <div
-      className={`rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)] ${
+      className={`rounded-2xl bg-surface-lowest p-3 shadow-[var(--shadow-float)] ${
         animado ? 'kl-plan' : ''
       }`}
     >
@@ -211,18 +211,18 @@ export function TarjetaPlan({
           <p className="text-xs font-semibold text-on-surface-variant">
             <span aria-hidden>{plan.emoji}</span> {plan.categoria}
           </p>
-          <p className="mt-0.5 truncate font-display text-lg font-bold leading-tight text-on-surface">
+          <p className="mt-0.5 truncate font-display text-lg font-bold text-on-surface">
             {plan.nombre}
           </p>
         </div>
         <span className="relative shrink-0">
           {animado && (
-            <span className="kl-estado-votando absolute inset-0 flex items-center justify-center rounded-full border border-outline-variant px-2.5 py-1 text-xs font-semibold text-on-surface-variant">
+            <span className="kl-estado-votando absolute inset-0 flex items-center justify-center rounded-full border border-outline-variant px-3 py-1 text-xs font-semibold text-on-surface-variant">
               {plan.votando}
             </span>
           )}
           <span
-            className={`block rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-on-secondary ${
+            className={`block rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-on-secondary ${
               animado ? 'kl-estado-confirmado' : ''
             }`}
           >
@@ -230,7 +230,7 @@ export function TarjetaPlan({
           </span>
         </span>
       </div>
-      <div className="mt-2.5 flex items-center justify-between text-sm text-on-surface-variant">
+      <div className="mt-2 flex items-center justify-between text-sm text-on-surface-variant">
         <span className="font-medium text-on-surface">{plan.cuando}</span>
         <span className="flex items-center gap-2">
           <Caras iniciales={['M', 'D', 'L', 'A']} />
@@ -271,7 +271,7 @@ export function EscenaHero({ texto }: { texto: TextoLanding['hero'] }) {
         aria-hidden
         className={`kl-escena ${
           dentro ? 'kl-activa' : ''
-        } relative h-[23rem] overflow-hidden rounded-card bg-surface-container shadow-[var(--shadow-float)] sm:h-[26rem] md:h-[30rem]`}
+        } relative h-[23rem] overflow-hidden rounded-2xl bg-surface-container shadow-[var(--shadow-float)] sm:h-[26rem] md:h-[30rem]`}
       >
         <FondoDeMapa />
         {pines.map((p, i) => (
@@ -290,7 +290,7 @@ export function EscenaHero({ texto }: { texto: TextoLanding['hero'] }) {
           {texto.chat.map((linea, i) => (
             <span
               key={linea}
-              className={`kl-burbuja max-w-[85%] rounded-2xl px-3.5 py-2 text-sm shadow-[var(--shadow-surface)] ${
+              className={`kl-burbuja max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-[var(--shadow-surface)] ${
                 i === 1
                   ? 'self-end rounded-br-md bg-primary text-on-primary'
                   : 'rounded-bl-md bg-surface-lowest text-on-surface'
@@ -399,7 +399,7 @@ export function EscenaPaneles({
         className="relative h-[26rem] sm:h-[28rem] md:h-[31rem]"
       >
         {/* Mapa, al fondo. */}
-        <div className="absolute left-0 top-[2%] h-[46%] w-[60%] overflow-hidden rounded-card bg-surface-container shadow-[var(--shadow-float)] ring-1 ring-primary/10">
+        <div className="absolute left-0 top-[2%] h-[46%] w-[60%] overflow-hidden rounded-2xl bg-surface-container shadow-[var(--shadow-float)] ring-1 ring-primary/10">
           <FondoDeMapa />
           {pines.map((p) => (
             <Pin key={p.emoji} {...p} color="var(--color-primary-container)" />
@@ -420,7 +420,7 @@ export function EscenaPaneles({
         </div>
 
         {/* La votación, en el centro. */}
-        <div className="absolute right-0 top-[14%] z-10 w-[64%] rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:p-4">
+        <div className="absolute right-0 top-[14%] z-10 w-[64%] rounded-2xl bg-surface-lowest p-3 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:p-4">
           <p className="font-display text-sm font-bold text-on-surface sm:text-base">
             {votar.pregunta}
           </p>
@@ -431,7 +431,7 @@ export function EscenaPaneles({
                 <li
                   key={o.etiqueta}
                   ref={gana ? filaRef : undefined}
-                  className={`relative overflow-hidden rounded-control border px-3 py-2 transition-colors duration-300 ${
+                  className={`relative overflow-hidden rounded-xl border px-3 py-2 transition-colors duration-300 ${
                     gana && (votado || fase === 1) ? 'border-primary' : 'border-outline-variant'
                   }`}
                 >
@@ -447,7 +447,7 @@ export function EscenaPaneles({
                       {o.etiqueta}
                       {gana && (
                         <span
-                          className={`rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-on-secondary transition-[opacity,scale] duration-300 sm:text-[11px] ${
+                          className={`rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-on-secondary transition-[opacity,scale] duration-300 ${
                             votado ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
                           }`}
                         >
@@ -469,7 +469,7 @@ export function EscenaPaneles({
             })}
           </ul>
           <p
-            className={`mt-3 text-[11px] text-on-surface-variant transition-opacity duration-300 sm:text-xs ${
+            className={`mt-3 text-xs text-on-surface-variant transition-opacity duration-300 sm:text-xs ${
               votado ? 'opacity-0' : 'opacity-100'
             }`}
           >
@@ -503,7 +503,7 @@ export function EscenaPaneles({
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="absolute left-4 top-4 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary shadow-md">
+            <span className="absolute left-4 top-4 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-on-primary shadow-md">
               Marta
             </span>
           </span>
@@ -655,7 +655,7 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
     <div
       ref={ref}
       aria-hidden
-      className={`relative h-64 overflow-hidden rounded-card bg-surface-container ${PANEL}`}
+      className={`relative h-64 overflow-hidden rounded-2xl bg-surface-container ${PANEL}`}
     >
       <FondoDeMapa />
       {pines.map((p, i) => {
@@ -681,11 +681,11 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
           </span>
         )
       })}
-      <div className="absolute inset-x-3 top-3 flex flex-wrap gap-1.5">
+      <div className="absolute inset-x-3 top-3 flex flex-wrap gap-2">
         {chips.map((c, i) => (
           <span
             key={c}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-200 sm:text-xs ${
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200 sm:text-xs ${
               (activa === null ? 0 : activa + 1) === i
                 ? 'bg-primary text-on-primary shadow-md'
                 : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
@@ -695,7 +695,7 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
           </span>
         ))}
       </div>
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-surface-lowest py-1 pl-1.5 pr-3 text-xs font-bold text-on-surface shadow-[var(--shadow-float)]">
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-surface-lowest py-1 pl-2 pr-3 text-xs font-bold text-on-surface shadow-[var(--shadow-float)]">
         <Caras iniciales={['M', 'D', 'L', 'A']} />
         <span key={visibles} className={llenos && !reducido ? 'kl-pop' : ''}>
           {llenos ? visibles : 0} 📍
@@ -722,9 +722,9 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
       activa ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
     }`
   return (
-    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-3.5 ${PANEL}`}>
+    <div ref={ref} aria-hidden className={`relative rounded-2xl bg-surface-lowest p-3 ${PANEL}`}>
       <div
-        className={`flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors duration-300 ${
+        className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold transition-colors duration-300 ${
           lista ? 'border-primary text-primary' : 'border-outline-variant text-on-surface-variant'
         }`}
       >
@@ -737,11 +737,11 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
           maps.apple.com/…
         </span>
         {enlace && !lista && !reducido && (
-          <span className="kl-giro ml-auto size-3.5 rounded-full border-2 border-primary border-t-transparent" />
+          <span className="kl-giro ml-auto size-4 rounded-full border-2 border-primary border-t-transparent" />
         )}
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-card bg-surface-container">
+      <div className="mt-3 overflow-hidden rounded-2xl bg-surface-container">
         <div
           className={`flex h-24 items-center justify-center bg-primary-fixed text-5xl transition-[opacity,scale] duration-500 ease-out ${
             lista ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
@@ -751,13 +751,13 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
         </div>
         <div className="bg-surface-lowest p-3">
           <p
-            className={`font-display text-base font-bold leading-tight text-on-surface ${capa(lista)}`}
+            className={`font-display text-base font-bold text-on-surface ${capa(lista)}`}
             style={{ transitionDelay: lista ? '120ms' : '0ms' }}
           >
             {texto.nombre}
           </p>
           <div
-            className={`mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] ${capa(lista)}`}
+            className={`mt-2 flex flex-wrap items-center gap-2 text-xs ${capa(lista)}`}
             style={{ transitionDelay: lista ? '220ms' : '0ms' }}
           >
             <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
@@ -769,14 +769,14 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
             <span className="font-semibold text-tertiary">★ 4,5</span>
           </div>
           <div
-            className={`mt-2.5 flex items-start gap-2 rounded-2xl rounded-tl-md bg-primary-fixed/60 px-3 py-2 ${capa(nota)}`}
+            className={`mt-2 flex items-start gap-2 rounded-2xl rounded-tl-md bg-primary-fixed/60 px-3 py-2 ${capa(nota)}`}
           >
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-on-secondary">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-on-secondary">
               {texto.quien.charAt(0)}
             </span>
             <span className="min-w-0 text-xs text-on-surface">
               {texto.nota}
-              <span className="block text-[11px] text-on-surface-variant">{texto.quien}</span>
+              <span className="block text-xs text-on-surface-variant">{texto.quien}</span>
             </span>
           </div>
         </div>
@@ -800,7 +800,7 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
   const votos = texto.opciones.map((o, i) => (i === ganadora && !votado ? o.votos - 1 : o.votos))
   const total = votos.reduce((s, v) => s + v, 0)
   return (
-    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-4 ${PANEL}`}>
+    <div ref={ref} aria-hidden className={`relative rounded-2xl bg-surface-lowest p-4 ${PANEL}`}>
       <p className="font-display font-bold text-on-surface">{texto.pregunta}</p>
       <ul className="mt-3 flex flex-col gap-2">
         {texto.opciones.map((o, i) => {
@@ -809,7 +809,7 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
             <li
               key={o.etiqueta}
               ref={gana ? filaRef : undefined}
-              className={`relative overflow-hidden rounded-control border px-3 py-2.5 transition-colors duration-300 ${
+              className={`relative overflow-hidden rounded-xl border px-3 py-3 transition-colors duration-300 ${
                 gana && (votado || fase === 1) ? 'border-primary' : 'border-outline-variant'
               }`}
             >
@@ -824,7 +824,7 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
                   {o.etiqueta}
                   {gana && (
                     <span
-                      className={`rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-on-secondary transition-[opacity,scale] duration-300 ${
+                      className={`rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-on-secondary transition-[opacity,scale] duration-300 ${
                         votado ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
                       }`}
                     >
@@ -948,7 +948,7 @@ export function PiezaIr({ texto }: { texto: TextoLanding['como']['ir'] }) {
     <div
       ref={ref}
       aria-hidden
-      className={`relative overflow-hidden rounded-card bg-surface p-4 text-center ${PANEL}`}
+      className={`relative overflow-hidden rounded-2xl bg-surface p-4 text-center ${PANEL}`}
     >
       <p className="font-display text-lg font-bold text-primary">{texto.titulo}</p>
       <p className="mb-2 mt-1 text-xs text-on-surface-variant">
@@ -956,7 +956,7 @@ export function PiezaIr({ texto }: { texto: TextoLanding['como']['ir'] }) {
       </p>
 
       <div
-        className="relative overflow-hidden rounded-card bg-surface-lowest shadow-[inset_0_0_0_1.5px_var(--color-outline-variant)]"
+        className="relative overflow-hidden rounded-2xl bg-surface-lowest shadow-[inset_0_0_0_1.5px_var(--color-outline-variant)]"
         style={{ height: FILA_RULETA * 3 }}
       >
         <div
@@ -968,11 +968,11 @@ export function PiezaIr({ texto }: { texto: TextoLanding['como']['ir'] }) {
           style={{ top: FILA_RULETA, height: FILA_RULETA }}
         />
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[2] bg-gradient-to-b from-surface-lowest to-transparent"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[2] bg-surface-lowest/70"
           style={{ height: FILA_RULETA }}
         />
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-surface-lowest to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-surface-lowest/70"
           style={{ height: FILA_RULETA }}
         />
         <div ref={tiraRef} className="absolute inset-x-0 top-0 z-[1] will-change-transform">
@@ -1045,7 +1045,7 @@ export function Ruido({ lineas }: { lineas: string[] }) {
       {lineas.map((l, i) => (
         <span
           key={l}
-          className={`rounded-2xl bg-surface-lowest px-3.5 py-2 text-sm text-on-surface-variant shadow-[var(--shadow-surface)] ${
+          className={`rounded-2xl bg-surface-lowest px-3 py-2 text-sm text-on-surface-variant shadow-[var(--shadow-surface)] ${
             i % 2 ? 'self-end' : ''
           }`}
           style={{ rotate: giros[i % giros.length] }}
@@ -1089,7 +1089,7 @@ export function MovilCaptura({
 }) {
   return (
     <div className={`kl-movil ${className}`} style={{ '--inc': `${inclinacion}deg`, '--d': `${retraso}ms` } as CSSProperties}>
-      <div className="rounded-[2.4rem] bg-[#0e0f1a] p-[5px] shadow-[0_40px_70px_-25px_rgba(7,0,108,0.55)] ring-1 ring-white/10">
+      <div className="rounded-4xl bg-[#0e0f1a] p-1 shadow-[0_40px_70px_-25px_rgba(7,0,108,0.55)] ring-1 ring-white/10">
         <img
           src={src}
           alt={alt}
@@ -1097,7 +1097,7 @@ export function MovilCaptura({
           height={1388}
           loading={prioridad ? 'eager' : 'lazy'}
           decoding="async"
-          className="block h-auto w-full rounded-[2.1rem]"
+          className="block h-auto w-full rounded-3xl"
         />
       </div>
     </div>
@@ -1117,13 +1117,13 @@ export function PiezaSorpresa({ texto }: { texto: TextoLanding['escaparate']['so
       </p>
       <div
         aria-hidden
-        className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-float)]"
+        className="rounded-2xl bg-surface-lowest p-4 shadow-[var(--shadow-float)]"
       >
         <p className="text-xs font-semibold text-on-surface-variant">🎁 {texto.cuando}</p>
-        <p className="mt-0.5 font-display text-lg font-bold leading-tight text-on-surface">
+        <p className="mt-0.5 font-display text-lg font-bold text-on-surface">
           {texto.plan}
         </p>
-        <p className="mt-1.5 text-sm text-on-surface-variant">{texto.nota}</p>
+        <p className="mt-2 text-sm text-on-surface-variant">{texto.nota}</p>
         <div className="mt-3 flex items-center gap-2 text-sm text-on-surface-variant">
           <Caras iniciales={['M', 'D', 'L']} />
           {texto.van}
@@ -1139,7 +1139,7 @@ export function PiezaSorpresa({ texto }: { texto: TextoLanding['escaparate']['so
       </p>
       <div
         aria-hidden
-        className="rounded-card bg-primary-fixed p-4 shadow-[var(--shadow-surface)]"
+        className="rounded-2xl bg-primary-fixed p-4 shadow-[var(--shadow-surface)]"
       >
         <p className="flex items-center gap-2 text-sm font-bold text-primary">
           <span>🎁</span>
@@ -1190,7 +1190,7 @@ export function Pegatina({
 
 /** Chip blanco con sombra: la pegatina de texto. */
 export const CHIP =
-  'flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-surface-lowest px-3.5 py-2 text-sm font-bold text-on-surface shadow-[var(--shadow-float)]'
+  'flex items-center gap-2 whitespace-nowrap rounded-2xl bg-surface-lowest px-3 py-2 text-sm font-bold text-on-surface shadow-[var(--shadow-float)]'
 
 /** Pin en gota con emoji, más grande que el del mapa, para flotar suelto. */
 export function PinSuelto({ emoji, claro = false }: { emoji: string; claro?: boolean }) {
