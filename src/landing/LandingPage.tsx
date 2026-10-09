@@ -420,13 +420,13 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             aria-hidden
             className="pointer-events-none absolute -right-24 -top-24 size-[26rem] rounded-full bg-white/10 blur-3xl"
           />
-          <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 py-20 sm:px-6 md:flex-row md:items-end md:justify-between md:py-28">
+          <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-20 text-center sm:px-6 md:py-28">
             <div>
               <h2
                 id="kl-final"
                 className="kl-titular text-5xl leading-[1] tracking-[-0.03em] md:text-7xl"
               >
-                <Marcado texto={t.final.titulo} />
+                <Marcado texto={t.final.titulo} oscuro />
               </h2>
               <p className="mt-4 text-xl text-on-primary/85">{t.final.cuerpo}</p>
             </div>
