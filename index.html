@@ -86,15 +86,18 @@
     <!-- Datos estructurados.
          La app entera vive detrás de `#/`, así que Google solo llega a indexar
          esta página. Esto es lo que le permite entender qué es Kiemas sin poder
-         recorrer nada más. -->
+         recorrer nada más. La web ya no es una aplicación: es una app móvil, y
+         Android se añade aquí cuando esté en Google Play. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
+        "@type": "MobileApplication",
         "name": "Kiemas",
         "url": "https://kiemas.com/",
+        "downloadUrl": "https://apps.apple.com/es/app/kiemas/id6799631009",
+        "installUrl": "https://apps.apple.com/es/app/kiemas/id6799631009",
         "applicationCategory": "LifestyleApplication",
-        "operatingSystem": "Android, iOS, Web",
+        "operatingSystem": "iOS",
         "inLanguage": ["es", "en"],
         "description": "Mapa compartido de sitios y calendario de planes para tu grupo: guardad bares y restaurantes, votad adónde ir y cuadrad la fecha.",
         "image": "https://kiemas.com/og.png",
