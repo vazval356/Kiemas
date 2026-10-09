@@ -11,6 +11,7 @@ import { TopBar } from './components/TopBar'
 import { GuiaDeLaPantalla } from './components/Tour'
 import { resumenDelAnoDisponible } from './lib/dates'
 import { recoveryTokens } from './lib/recovery'
+import './lib/confirmacion'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
 import { idiomaDelNavegador, idiomaDeRuta } from './landing/idiomas'
@@ -208,20 +209,9 @@ function Shell() {
 
   if (authStatus === 'loading') return <PantallaDeArranque />
 
-  // Sin sesión, `/` a secas es kiemas.com: lo que hay que enseñar ahí es la
-  // landing, no el formulario de entrar. Cualquier otra dirección —incluida
-  // `/login`, y cualquier sitio del que se salga con «Salir» en el perfil—
-  // sigue yendo directa al formulario, como siempre: solo cambia la raíz.
-  //
-  // En la app nativa no hay landing: quien la abre ya la tiene instalada y lo
-  // que busca es entrar, así que va directo al formulario.
-  if (authStatus === 'signedOut') {
-    return location.pathname === '/' && !isNative ? (
-      <LandingPage idioma={idiomaDelNavegador()} />
-    ) : (
-      <AuthPage />
-    )
-  }
+  // Esto solo se ejecuta dentro de la app nativa (ver `Rutas`): la web ya no
+  // se usa como aplicación y nunca llega aquí.
+  if (authStatus === 'signedOut') return <AuthPage />
 
   // La edad mínima va antes que la bienvenida y que todo lo demás. Cubre lo que
   // no pasa por el formulario de registro: entrar con Google o Apple y las
@@ -374,12 +364,20 @@ function Rutas() {
         <Route path="/legal/privacidad" element={<LegalPage kind="privacy" />} />
         <Route path="/legal/terminos" element={<LegalPage kind="terms" />} />
         <Route path="/legal/aviso" element={<LegalPage kind="notice" />} />
+        {/* La web ya no es una aplicación: solo se usa la app. Cualquier otra
+            dirección de kiemas.com —`/#/login`, `/#/profile`, un enlace viejo—
+            enseña la landing, que lleva a las tiendas. Dentro del contenedor
+            nativo sí arranca la app. */}
         <Route
           path="*"
           element={
-            <AppProvider>
-              <Shell />
-            </AppProvider>
+            isNative ? (
+              <AppProvider>
+                <Shell />
+              </AppProvider>
+            ) : (
+              <LandingPage idioma={idiomaDelNavegador()} />
+            )
           }
         />
       </Routes>

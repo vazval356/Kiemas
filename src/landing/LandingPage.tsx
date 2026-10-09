@@ -1,4 +1,5 @@
 import { useEffect, type CSSProperties, type ReactNode } from 'react'
+import type { TextoLanding } from './copy/tipos'
 import { IDIOMAS_LANDING, type IdiomaLanding } from './idiomas'
 import {
   CHIP,
@@ -16,6 +17,8 @@ import {
   Ruido,
   TarjetaPlan,
 } from './piezas'
+import { resultadoDeConfirmacion } from '../lib/confirmacion'
+import { APP_STORE_URL } from './tiendas'
 import './landing.css'
 
 /**
@@ -54,7 +57,8 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             aria-hidden
             className="pointer-events-none absolute -right-32 top-32 size-[26rem] rounded-full bg-primary-fixed-dim/40 blur-3xl"
           />
-          <Cabecera idioma={idioma} entrar={t.nav.entrar} etiquetaIdioma={t.nav.idioma} />
+          <Cabecera idioma={idioma} descargar={t.nav.descargar} etiquetaIdioma={t.nav.idioma} />
+          {resultadoDeConfirmacion && <AvisoDeConfirmacion texto={t.confirmacion} resultado={resultadoDeConfirmacion} />}
           <section className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-[1fr_1.1fr] md:gap-8 md:pb-24 md:pt-12">
             <div>
               <h1 className="font-display text-[2.75rem] font-extrabold leading-[1] tracking-[-0.035em] text-on-surface sm:text-6xl md:text-[4.25rem]">
@@ -64,7 +68,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 {t.hero.subtitulo}
               </p>
               <div className="mt-8 flex flex-col items-start gap-3">
-                <a href="/#/login?modo=signup" className={BOTON_PRINCIPAL}>
+                <a href={APP_STORE_URL} className={BOTON_PRINCIPAL}>
                   {t.hero.cta}
                 </a>
                 <p className="text-sm text-on-surface-variant">{t.hero.nota}</p>
@@ -363,7 +367,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                   ))}
                 </ul>
                 <a
-                  href="/#/login?modo=signup"
+                  href={APP_STORE_URL}
                   className="squish mt-8 block rounded-full border-2 border-primary py-3 text-center font-semibold text-primary"
                 >
                   {t.precios.gratis.cta}
@@ -394,7 +398,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                   ))}
                 </ul>
                 <a
-                  href="/#/login?modo=signup"
+                  href={APP_STORE_URL}
                   className="squish mt-8 block rounded-full bg-white py-3 text-center font-semibold text-primary shadow-lg"
                 >
                   {t.precios.pro.cta}
@@ -424,7 +428,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
               <p className="mt-4 text-xl text-on-primary/85">{t.final.cuerpo}</p>
             </div>
             <a
-              href="/#/login?modo=signup"
+              href={APP_STORE_URL}
               className="squish inline-flex shrink-0 items-center gap-2 rounded-full bg-surface-lowest px-9 py-5 font-display text-xl font-bold text-primary shadow-[var(--shadow-float)]"
             >
               {t.final.cta}
@@ -445,6 +449,10 @@ const TITULO_SECCION =
   'font-display text-3xl font-extrabold leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
 const TITULO_BANDA =
   'font-display text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
+const BOTON_PRINCIPAL_PEQUENO =
+  'squish inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary'
+const BOTON_SECUNDARIO_PEQUENO =
+  'squish inline-flex items-center rounded-full border-2 border-primary px-5 py-2.5 text-sm font-bold text-primary'
 const TINTES = [
   'from-primary-fixed to-surface-lowest',
   'from-surface-high to-surface-lowest',
@@ -512,12 +520,12 @@ function Banda({
 
 function Cabecera({
   idioma,
-  entrar,
+  descargar,
   etiquetaIdioma,
   sobreColor = false,
 }: {
   idioma: IdiomaLanding
-  entrar: string
+  descargar: string
   etiquetaIdioma: string
   /** La cabecera está sobre el azul de marca: textos y botones en claro. */
   sobreColor?: boolean
@@ -543,16 +551,67 @@ function Cabecera({
         <div className="flex items-center gap-2">
           <SelectorDeIdioma idioma={idioma} etiqueta={etiquetaIdioma} sobreColor={sobreColor} />
           <a
-            href="/#/login"
+            href={APP_STORE_URL}
             className={`squish rounded-full px-4 py-2 text-sm font-semibold shadow-[var(--shadow-surface)] ${
               sobreColor ? 'bg-surface-lowest text-primary' : 'bg-surface-lowest'
             }`}
           >
-            {entrar}
+            {descargar}
           </a>
         </div>
       </div>
     </header>
+  )
+}
+
+/**
+ * Lo que se ve al volver del correo de confirmación. La cuenta ya está
+ * confirmada en el servidor cuando se llega aquí; esto solo lo dice y lleva a
+ * la app. «Abrir Kiemas» usa el esquema propio de iOS, que es donde está
+ * publicada; en el resto de dispositivos solo se ofrece la descarga.
+ */
+function AvisoDeConfirmacion({
+  texto,
+  resultado,
+}: {
+  texto: TextoLanding['confirmacion']
+  resultado: 'confirmada' | 'caducada'
+}) {
+  const ok = resultado === 'confirmada'
+  const info = ok ? texto.confirmada : texto.caducada
+  const esIos = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent)
+  return (
+    <div role="status" className="relative mx-auto max-w-6xl px-4 pt-2 sm:px-6">
+      <div className="flex flex-col gap-4 rounded-card bg-surface-lowest p-5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <span
+            aria-hidden
+            className={`flex size-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${
+              ok ? 'bg-secondary text-on-secondary' : 'bg-primary-fixed text-primary'
+            }`}
+          >
+            {ok ? '✓' : '!'}
+          </span>
+          <div>
+            <p className="font-display text-lg font-bold text-on-surface">{info.titulo}</p>
+            <p className="mt-0.5 max-w-[60ch] text-sm text-on-surface-variant">{info.cuerpo}</p>
+          </div>
+        </div>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          {ok && esIos && (
+            <a href="kiemas://auth" className={BOTON_PRINCIPAL_PEQUENO}>
+              {texto.abrir}
+            </a>
+          )}
+          <a
+            href={APP_STORE_URL}
+            className={ok && esIos ? BOTON_SECUNDARIO_PEQUENO : BOTON_PRINCIPAL_PEQUENO}
+          >
+            {texto.descargar}
+          </a>
+        </div>
+      </div>
+    </div>
   )
 }
 

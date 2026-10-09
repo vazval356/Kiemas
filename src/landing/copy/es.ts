@@ -6,14 +6,14 @@ export const es: TextoLanding = {
     descripcion:
       'Guardad los sitios que os apetecen en un mapa común, votad cuándo y dónde, y que la respuesta no se pierda entre mensajes. Para cenar, salir, ver un concierto o cualquier plan.',
   },
-  nav: { entrar: 'Entrar', idioma: 'Idioma' },
+  nav: { descargar: 'Descargar', idioma: 'Idioma' },
 
   hero: {
     titulo: 'De «a mí me da igual» a un plan de verdad.',
     subtitulo:
       'Guardáis los sitios, proponéis cuándo y votáis lo que haga falta. Si nadie se decide, decide la ruleta.',
-    cta: 'Empieza gratis',
-    nota: 'Sin tarjeta. Funciona en el navegador de cualquier móvil u ordenador.',
+    cta: 'Descargar para iPhone',
+    nota: 'Gratis. Para Android, muy pronto en Google Play.',
     chat: ['¿Qué hacemos el sábado?', 'a mí me da igual 🤷', '¿alguien ha mirado algo?'],
     plan: {
       categoria: 'Cultura',
@@ -26,6 +26,20 @@ export const es: TextoLanding = {
     },
     descripcionEscena:
       'Tres mensajes de un chat de grupo sin decidir nada dan paso a un mapa con los sitios del grupo y un plan confirmado para el sábado.',
+  },
+
+  confirmacion: {
+    confirmada: {
+      titulo: '¡Cuenta confirmada!',
+      cuerpo: 'Ya está lista. Abre Kiemas e inicia sesión con tu correo y tu contraseña.',
+    },
+    caducada: {
+      titulo: 'Este enlace ya no vale',
+      cuerpo:
+        'Ha caducado o ya se usó. Si tu cuenta no está confirmada, abre la app e inicia sesión: te enviaremos otro.',
+    },
+    abrir: 'Abrir Kiemas',
+    descargar: 'Descargar la app',
   },
 
   problema: {
@@ -171,7 +185,7 @@ export const es: TextoLanding = {
         'Hasta 30 sitios guardados',
         'Hasta 3 planes a la vez',
       ],
-      cta: 'Crear cuenta gratis',
+      cta: 'Descargar gratis',
     },
     pro: {
       insignia: 'Pago único, sin renovaciones',
@@ -184,14 +198,14 @@ export const es: TextoLanding = {
         'Sitios guardados sin tope',
         'Planes a la vez sin tope',
       ],
-      cta: 'Empieza gratis y mejora desde la app',
+      cta: 'Descarga gratis y mejora desde la app',
     },
   },
 
   final: {
     titulo: '¿Quedáis esta semana?',
     cuerpo: 'Cread el grupo, pasad el enlace y guardad el primer sitio.',
-    cta: 'Empieza gratis',
+    cta: 'Descargar la app',
   },
 
   pie: {

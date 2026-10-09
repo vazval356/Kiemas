@@ -13,7 +13,7 @@
  */
 export interface TextoLanding {
   meta: { titulo: string; descripcion: string }
-  nav: { entrar: string; idioma: string }
+  nav: { descargar: string; idioma: string }
 
   hero: {
     titulo: string
@@ -25,6 +25,14 @@ export interface TextoLanding {
     plan: PlanDeEjemplo
     /** Descripción para lectores de pantalla de la animación del hero. */
     descripcionEscena: string
+  }
+
+  /** Aviso al volver del correo de confirmación de cuenta. */
+  confirmacion: {
+    confirmada: { titulo: string; cuerpo: string }
+    caducada: { titulo: string; cuerpo: string }
+    abrir: string
+    descargar: string
   }
 
   problema: {

@@ -6,14 +6,14 @@ export const en: TextoLanding = {
     descripcion:
       'Save the places you want to try on one shared map, vote on when and where, and stop losing the answer in the group chat. For dinners, drinks, gigs or any plan.',
   },
-  nav: { entrar: 'Sign in', idioma: 'Language' },
+  nav: { descargar: 'Download', idioma: 'Language' },
 
   hero: {
     titulo: 'From “I don’t mind” to an actual plan.',
     subtitulo:
       'Save places, pitch a day, vote on whatever needs deciding. If nobody picks, the wheel does.',
-    cta: 'Start for free',
-    nota: 'No card needed. Works in the browser, on any phone or computer.',
+    cta: 'Download for iPhone',
+    nota: 'Free. Android coming soon on Google Play.',
     chat: ['so what are we doing saturday?', 'honestly I don’t mind 🤷', 'has anyone looked?'],
     plan: {
       categoria: 'Culture',
@@ -26,6 +26,20 @@ export const en: TextoLanding = {
     },
     descripcionEscena:
       'Three undecided group-chat messages give way to a map of the group’s places and a confirmed plan for Saturday.',
+  },
+
+  confirmacion: {
+    confirmada: {
+      titulo: 'Account confirmed!',
+      cuerpo: 'You are all set. Open Kiemas and sign in with your email and password.',
+    },
+    caducada: {
+      titulo: 'This link is no longer valid',
+      cuerpo:
+        'It has expired or was already used. If your account is not confirmed yet, open the app and sign in: we will send you a new one.',
+    },
+    abrir: 'Open Kiemas',
+    descargar: 'Download the app',
   },
 
   problema: {
@@ -171,7 +185,7 @@ export const en: TextoLanding = {
         'Up to 30 saved places',
         'Up to 3 plans at once',
       ],
-      cta: 'Create a free account',
+      cta: 'Download for free',
     },
     pro: {
       insignia: 'One-time payment, no renewals',
@@ -184,14 +198,14 @@ export const en: TextoLanding = {
         'Unlimited saved places',
         'Unlimited plans at once',
       ],
-      cta: 'Start free and upgrade in the app',
+      cta: 'Download free and upgrade in the app',
     },
   },
 
   final: {
     titulo: 'Going out this week?',
     cuerpo: 'Start a group, share the link, save your first place.',
-    cta: 'Start for free',
+    cta: 'Download the app',
   },
 
   pie: {
