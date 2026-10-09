@@ -1,4 +1,5 @@
-import { useEffect, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
+import { ArrowDown, ArrowRight, Check, Plus } from '@phosphor-icons/react'
 import type { TextoLanding } from './copy/tipos'
 import { IDIOMAS_LANDING, type IdiomaLanding } from './idiomas'
 import {
@@ -20,8 +21,7 @@ import {
 import { resultadoDeConfirmacion } from '../lib/confirmacion'
 import { APP_STORE_URL } from './tiendas'
 import { BotonAppStore } from './BotonAppStore'
-import '@fontsource-variable/fraunces/wght.css'
-import '@fontsource-variable/fraunces/wght-italic.css'
+import '@fontsource-variable/manrope/wght.css'
 import './landing.css'
 
 /**
@@ -45,29 +45,28 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
 
   return (
     <div className="kl h-full overflow-y-auto bg-surface-low text-on-surface">
-      <main>
+      <a
+        href="#contenido"
+        onClick={saltarAlContenido}
+        className="kl-saltar squish rounded-full bg-primary px-6 py-3 text-sm font-semibold text-on-primary"
+      >
+        {t.nav.saltar}
+      </a>
+      <main id="contenido" tabIndex={-1} className="outline-none">
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         {/* Claro y con aire. La escena de la derecha es la interfaz usándose
             sola: tres paneles y un cursor que vota, confirma el plan y deja
             caer el pin. La cabecera vive dentro de la banda para que el fondo
             empiece arriba del todo. */}
-        <div className="relative overflow-hidden bg-gradient-to-b from-primary-fixed/70 via-surface-low to-surface-lowest">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -left-40 top-10 size-[30rem] rounded-full bg-primary-fixed blur-3xl"
-          />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-32 top-32 size-[26rem] rounded-full bg-primary-fixed-dim/40 blur-3xl"
-          />
-          <Cabecera idioma={idioma} descargar={t.nav.descargar} etiquetaIdioma={t.nav.idioma} />
+        <div className="relative overflow-hidden bg-surface-low pt-24">
+          <Navegacion idioma={idioma} nav={t.nav} />
           {resultadoDeConfirmacion && <AvisoDeConfirmacion texto={t.confirmacion} resultado={resultadoDeConfirmacion} />}
           <section className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-[1fr_1.1fr] md:gap-8 md:pb-24 md:pt-12">
             <div>
-              <h1 className="kl-titular text-[2.75rem] leading-[1] tracking-[-0.03em] text-on-surface sm:text-6xl md:text-[4.25rem]">
+              <h1 className="kl-titular kl-hero-titulo max-w-[680px] text-4xl tracking-tight sm:text-5xl md:text-6xl">
                 <Marcado texto={t.hero.titulo} />
               </h1>
-              <p className="mt-5 max-w-[36ch] text-lg leading-relaxed text-on-surface-variant">
+              <p className="mt-6 max-w-[680px] text-lg text-on-surface-variant">
                 {t.hero.subtitulo}
               </p>
               <div className="mt-8 flex flex-col items-start gap-3">
@@ -102,13 +101,15 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
               <h2 id="kl-problema" className={TITULO_SECCION}>
                 <Marcado texto={t.problema.titulo} />
               </h2>
-              <p className="mt-4 max-w-[42ch] text-lg leading-relaxed text-on-surface-variant">
+              <p className="mt-4 max-w-[42ch] text-lg text-on-surface-variant">
                 {t.problema.cuerpo}
               </p>
             </div>
             <HiloDeChat hilo={t.problema.hilo} despues={t.problema.despues} />
           </Revela>
         </section>
+
+        <Lema texto={t.lema} />
 
         {/* ── Así se ve: pantallas reales, en bandas de color ──────────── */}
         <Banda
@@ -157,8 +158,8 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 </span>
               </Pegatina>
               <Pegatina className="right-[0%] top-[44%]" giro={5} duracion={5.5} retraso={0.7}>
-                <span className="flex items-center gap-1.5 whitespace-nowrap rounded-2xl bg-secondary px-3.5 py-2 text-sm font-bold text-on-secondary shadow-[var(--shadow-float)]">
-                  ✓ {t.hero.plan.confirmado}
+                <span className="flex items-center gap-2 whitespace-nowrap rounded-2xl bg-secondary px-4 py-2 text-sm font-bold text-on-secondary shadow-[var(--shadow-float)]">
+                  <Check aria-hidden weight="bold" /> {t.hero.plan.confirmado}
                 </span>
               </Pegatina>
               <Pegatina className="bottom-[12%] left-[2%]" giro={-3} duracion={7} retraso={1.3}>
@@ -202,7 +203,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
 
         <Banda
           id="kl-explorar"
-          fondo="bg-gradient-to-br from-primary to-primary-container"
+          fondo="bg-primary"
           oscuro
           invertir
           titulo={t.escaparate.explorar.titulo}
@@ -242,17 +243,17 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             <ol className="mt-12 grid gap-x-12 gap-y-14 md:grid-cols-2">
               {t.como.pasos.map((paso, i) => (
                 <Revela as="li" key={paso.verbo}>
-                  <p className="flex items-center gap-2.5 text-sm font-bold text-primary">
-                    <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs text-on-primary">
+                  <p className="flex items-center gap-3 text-sm font-bold text-primary">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-primary text-xs text-on-primary">
                       {i + 1}
                     </span>
                     {paso.verbo}
                   </p>
-                  <h3 className="kl-titular mt-3 text-2xl leading-tight tracking-[-0.01em]">
+                  <h3 className="kl-titular mt-3 text-2xl">
                     {paso.titulo}
                   </h3>
                   <p className="mt-2 max-w-[44ch] text-on-surface-variant">{paso.cuerpo}</p>
-                  <div className="mt-5 rounded-card bg-surface-low p-3 sm:p-4">
+                  <div className="mt-6 rounded-2xl bg-surface-low p-3 sm:p-4">
                     {i === 0 && <PiezaDescubrir texto={t.como.descubrir} />}
                     {i === 1 && <PiezaCompartir texto={t.como.compartir} />}
                     {i === 2 && <PiezaVotar texto={t.como.votar} />}
@@ -277,11 +278,9 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                   <Ruido lineas={t.antesDespues.ruido} />
                 </div>
               </div>
-              <span
-                aria-hidden
-                className="rotate-90 justify-self-center text-3xl text-primary md:rotate-0"
-              >
-                →
+              <span aria-hidden className="justify-self-center text-3xl text-primary">
+                <ArrowRight className="hidden md:block" />
+                <ArrowDown className="md:hidden" />
               </span>
               <div>
                 <p className={ETIQUETA}>{t.antesDespues.despues}</p>
@@ -309,7 +308,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
               {t.usos.casos.map((c, i) => (
                 <li
                   key={c.categoria}
-                  className={`kl-tarjeta flex flex-col gap-10 rounded-card border border-primary/10 bg-gradient-to-br p-5 shadow-[var(--shadow-surface)] ${TINTES[i % TINTES.length]}`}
+                  className={`kl-tarjeta flex flex-col gap-10 rounded-2xl border border-primary/10 p-6 shadow-[var(--shadow-surface)] ${TINTES[i % TINTES.length]}`}
                   style={{ '--i': i } as CSSProperties}
                 >
                   <span
@@ -322,7 +321,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                     <span className="block font-display text-xl font-bold leading-snug text-on-surface">
                       {c.plan}
                     </span>
-                    <span className="mt-1 block text-sm font-semibold text-primary">
+                    <span className="mt-2 block text-sm font-semibold text-primary">
                       {c.categoria}
                     </span>
                   </span>
@@ -346,24 +345,24 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                 con el mismo tamaño en ambas. La insignia de Pro va flotando
                 fuera del flujo, así no desplaza nada. */}
             <div className="mx-auto mt-12 grid max-w-3xl gap-8 sm:grid-cols-2 sm:gap-6">
-              <div className="flex flex-col rounded-card bg-surface-lowest p-6 shadow-[var(--shadow-surface)] sm:p-8">
+              <div className="flex flex-col rounded-2xl bg-surface-lowest p-6 shadow-[var(--shadow-surface)] sm:p-8">
                 <p className="text-sm font-semibold text-on-surface-variant">
                   {t.precios.gratis.etiqueta}
                 </p>
-                <p className="mt-2 font-display text-5xl font-extrabold leading-none">
+                <p className="mt-2 font-display text-5xl font-bold">
                   {t.precios.gratis.precio}
                 </p>
                 <p className="mt-2 min-h-10 text-sm text-on-surface-variant">
                   {t.precios.gratis.nota}
                 </p>
-                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
+                <ul className="mt-4 flex flex-1 flex-col gap-3 text-sm">
                   {t.precios.gratis.puntos.map((p) => (
-                    <li key={p} className="flex items-center gap-2.5">
+                    <li key={p} className="flex items-center gap-3">
                       <span
                         aria-hidden
-                        className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-xs font-bold text-primary"
+                        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-fixed text-xs text-primary"
                       >
-                        ✓
+                        <Check weight="bold" />
                       </span>
                       {p}
                     </li>
@@ -376,25 +375,25 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                   {t.precios.gratis.cta}
                 </a>
               </div>
-              <div className="relative flex flex-col rounded-card bg-primary p-6 text-on-primary shadow-[var(--shadow-float)] ring-4 ring-primary/15 sm:p-8">
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-secondary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-on-secondary shadow-md">
+              <div className="relative flex flex-col rounded-2xl bg-primary p-6 text-on-primary shadow-[var(--shadow-float)] ring-4 ring-primary/15 sm:p-8">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-on-secondary shadow-md">
                   {t.precios.pro.insignia}
                 </span>
                 <p className="text-sm font-semibold text-on-primary/80">
                   {t.precios.pro.etiqueta}
                 </p>
-                <p className="mt-2 font-display text-5xl font-extrabold leading-none">
+                <p className="mt-2 font-display text-5xl font-bold">
                   {t.precios.pro.precio}
                 </p>
                 <p className="mt-2 min-h-10 text-sm text-on-primary/80">{t.precios.pro.nota}</p>
-                <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm">
+                <ul className="mt-4 flex flex-1 flex-col gap-3 text-sm">
                   {t.precios.pro.puntos.map((p) => (
-                    <li key={p} className="flex items-center gap-2.5">
+                    <li key={p} className="flex items-center gap-3">
                       <span
                         aria-hidden
-                        className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs font-bold text-white"
+                        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white/20 text-xs text-white"
                       >
-                        ✓
+                        <Check weight="bold" />
                       </span>
                       {p}
                     </li>
@@ -411,20 +410,51 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           </Revela>
         </section>
 
+        {/* ── Preguntas ────────────────────────────────────────────────── */}
+        <section aria-labelledby="kl-faq" className="kl-faq bg-surface-lowest">
+          <Revela as="div" className="mx-auto max-w-3xl px-4 py-16 sm:px-6 md:py-24">
+            <h2 id="kl-faq" className={`${TITULO_SECCION} text-center`}>
+              <Marcado texto={t.faq.titulo} />
+            </h2>
+            <div className="mt-12 flex flex-col gap-3">
+              {t.faq.preguntas.map((f) => (
+                <details key={f.pregunta} className="rounded-2xl bg-surface-low">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-4 text-base font-semibold sm:px-6">
+                    {f.pregunta}
+                    <Plus aria-hidden weight="bold" className="kl-faq-mas size-5 shrink-0 text-primary" />
+                  </summary>
+                  <p className="px-4 pb-4 text-on-surface-variant sm:px-6">{f.respuesta}</p>
+                </details>
+              ))}
+            </div>
+          </Revela>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                inLanguage: idioma,
+                mainEntity: t.faq.preguntas.map((f) => ({
+                  '@type': 'Question',
+                  name: f.pregunta,
+                  acceptedAnswer: { '@type': 'Answer', text: f.respuesta },
+                })),
+              }).replace(/</g, '\\u003c'),
+            }}
+          />
+        </section>
+
         {/* ── Cierre ───────────────────────────────────────────────────── */}
         <section
           aria-labelledby="kl-final"
-          className="relative overflow-hidden bg-gradient-to-br from-on-primary-fixed via-primary to-primary-container text-on-primary"
+          className="relative overflow-hidden bg-on-primary-fixed text-on-primary"
         >
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-24 -top-24 size-[26rem] rounded-full bg-white/10 blur-3xl"
-          />
-          <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-20 text-center sm:px-6 md:py-28">
+          <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-20 text-center sm:px-6 md:py-24">
             <div>
               <h2
                 id="kl-final"
-                className="kl-titular text-5xl leading-[1] tracking-[-0.03em] md:text-7xl"
+                className="kl-titular text-5xl tracking-tight md:text-7xl"
               >
                 <Marcado texto={t.final.titulo} oscuro />
               </h2>
@@ -443,22 +473,21 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
 const BOTON_PRINCIPAL =
   'squish inline-flex items-center rounded-full bg-primary px-8 py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)]'
 const TITULO_SECCION =
-  'kl-titular text-3xl leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
+  'kl-titular scroll-mt-24 text-3xl tracking-tight text-on-surface md:text-4xl'
 const TITULO_BANDA =
-  'kl-titular text-4xl leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
+  'kl-titular scroll-mt-24 text-4xl tracking-tight sm:text-5xl md:text-6xl'
 /**
- * Resalta lo que va entre asteriscos: cursiva de la serif y el color de
- * marca (ver `.kl-marca`). Sin comillas ni negritas: el énfasis lo pone la
- * forma de la letra.
+ * Resalta lo que va entre asteriscos con el color de marca (ver
+ * `.kl-marca`). Sin comillas, sin negritas y sin cursiva.
  */
 function Marcado({ texto, oscuro = false }: { texto: string; oscuro?: boolean }) {
   return (
     <>
       {texto.split('*').map((trozo, i) =>
         i % 2 === 1 ? (
-          <em key={i} className={`kl-marca ${oscuro ? 'kl-marca-oscura' : ''}`}>
+          <span key={i} className={`kl-marca ${oscuro ? 'kl-marca-oscura' : ''}`}>
             {trozo}
-          </em>
+          </span>
         ) : (
           trozo
         ),
@@ -468,17 +497,10 @@ function Marcado({ texto, oscuro = false }: { texto: string; oscuro?: boolean })
 }
 
 const BOTON_PRINCIPAL_PEQUENO =
-  'squish inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary'
+  'squish inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-on-primary'
 const BOTON_SECUNDARIO_PEQUENO =
-  'squish inline-flex items-center rounded-full border-2 border-primary px-5 py-2.5 text-sm font-bold text-primary'
-const TINTES = [
-  'from-primary-fixed to-surface-lowest',
-  'from-surface-high to-surface-lowest',
-  'from-primary-fixed/70 to-surface-low',
-  'from-surface-container to-primary-fixed/60',
-  'from-surface-low to-primary-fixed',
-  'from-primary-fixed/80 to-surface-container',
-]
+  'squish inline-flex items-center rounded-full border-2 border-primary px-6 py-3 text-sm font-bold text-primary'
+const TINTES = ['bg-primary-fixed', 'bg-surface-high', 'bg-surface-container', 'bg-surface-lowest', 'bg-surface-low', 'bg-primary-fixed']
 const ETIQUETA = 'text-sm font-bold text-on-surface-variant'
 
 /**
@@ -520,7 +542,7 @@ function Banda({
             <Marcado texto={titulo} oscuro={oscuro} />
           </h2>
           <p
-            className={`mt-4 max-w-[42ch] text-lg leading-relaxed ${
+            className={`mt-4 max-w-[42ch] text-lg ${
               oscuro ? 'text-on-primary/85' : 'text-on-surface-variant'
             }`}
           >
@@ -536,49 +558,175 @@ function Banda({
   )
 }
 
-function Cabecera({
-  idioma,
-  descargar,
-  etiquetaIdioma,
-  sobreColor = false,
-}: {
-  idioma: IdiomaLanding
-  descargar: string
-  etiquetaIdioma: string
-  /** La cabecera está sobre el azul de marca: textos y botones en claro. */
-  sobreColor?: boolean
-}) {
+const CURVA = 'duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]'
+
+function irA(id: string) {
+  const el = document.getElementById(id)
+  if (!el) return
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  el.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'start' })
+}
+
+function saltarAlContenido(e: ReactMouseEvent) {
+  e.preventDefault()
+  const main = document.getElementById('contenido')
+  main?.focus()
+  main?.scrollIntoView({ block: 'start' })
+}
+
+/**
+ * Navegación isla: una píldora de cristal flotando sobre la página. En
+ * pantallas estrechas el botón de menú (dos barras que giran hasta formar una
+ * X) abre una capa a pantalla completa con los enlaces entrando uno a uno.
+ */
+function Navegacion({ idioma, nav }: { idioma: IdiomaLanding; nav: TextoLanding['nav'] }) {
+  const [abierto, setAbierto] = useState(false)
+  const boton = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!abierto) return
+    const alTeclear = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setAbierto(false)
+        boton.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', alTeclear)
+    return () => window.removeEventListener('keydown', alTeclear)
+  }, [abierto])
+
+  const ir = (id: string) => {
+    setAbierto(false)
+    // Espera a que la capa se cierre para que el scroll no pelee con ella.
+    window.setTimeout(() => irA(id), 50)
+  }
+  const barra = `absolute left-1/2 top-1/2 h-0.5 w-6 -ml-3 rounded-full bg-current transition-transform ${CURVA}`
+
   return (
-    <header className="pt-safe">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-        <a
-          href={`/${idioma}`}
-          className={`flex items-center gap-2.5 font-display text-xl font-extrabold ${
-            sobreColor ? 'text-on-primary' : ''
-          }`}
-        >
-          <img
-            src="/icons/icon-192.png"
-            alt=""
-            width={32}
-            height={32}
-            className="size-8 rounded-[10px]"
-          />
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-safe">
+      <div className="mx-auto flex w-max max-w-[calc(100%-2rem)] items-center gap-4 rounded-full bg-surface-lowest/70 py-2 pl-4 pr-2 shadow-[var(--shadow-float)] backdrop-blur-xl mt-6 pointer-events-auto">
+        <a href={`/${idioma}`} className="flex items-center gap-3 font-display text-lg font-bold">
+          <img src="/icons/icon-192.png" alt="" width={32} height={32} className="size-8 rounded-lg" />
           Kiemas
         </a>
-        <div className="flex items-center gap-2">
-          <SelectorDeIdioma idioma={idioma} etiqueta={etiquetaIdioma} sobreColor={sobreColor} />
-          <a
-            href={APP_STORE_URL}
-            className={`squish rounded-full px-4 py-2 text-sm font-semibold shadow-[var(--shadow-surface)] ${
-              sobreColor ? 'bg-surface-lowest text-primary' : 'bg-surface-lowest'
-            }`}
-          >
-            {descargar}
-          </a>
+        <nav aria-label="Principal" className="hidden items-center gap-1 md:flex">
+          {nav.enlaces.map((e) => (
+            <button
+              key={e.id}
+              type="button"
+              onClick={() => irA(e.id)}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface"
+            >
+              {e.etiqueta}
+            </button>
+          ))}
+        </nav>
+        <div className="hidden md:block">
+          <SelectorDeIdioma idioma={idioma} etiqueta={nav.idioma} />
         </div>
+        <a
+          href={APP_STORE_URL}
+          className="squish rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
+        >
+          {nav.descargar}
+        </a>
+        <button
+          ref={boton}
+          type="button"
+          aria-expanded={abierto}
+          aria-controls="kl-menu"
+          aria-label={abierto ? nav.cerrarMenu : nav.menu}
+          onClick={() => setAbierto((a) => !a)}
+          className="squish relative size-10 shrink-0 rounded-full bg-surface-container md:hidden"
+        >
+          <span
+            aria-hidden
+            className={barra}
+            style={{ transform: abierto ? 'rotate(45deg)' : 'translateY(-4px)' }}
+          />
+          <span
+            aria-hidden
+            className={barra}
+            style={{ transform: abierto ? 'rotate(-45deg)' : 'translateY(4px)' }}
+          />
+        </button>
+      </div>
+
+      <div
+        id="kl-menu"
+        aria-hidden={!abierto}
+        inert={!abierto}
+        className={`fixed inset-0 -z-10 flex flex-col items-center justify-center gap-8 bg-surface-lowest/80 backdrop-blur-3xl transition-opacity md:hidden ${CURVA} ${
+          abierto ? 'kl-menu-abierto pointer-events-auto opacity-100' : 'opacity-0'
+        }`}
+      >
+        <ul className="flex flex-col items-center gap-6">
+          {nav.enlaces.map((e) => (
+            <li key={e.id} className="kl-menu-enlace">
+              <button
+                type="button"
+                onClick={() => ir(e.id)}
+                className="kl-titular text-4xl text-on-surface"
+              >
+                {e.etiqueta}
+              </button>
+            </li>
+          ))}
+          <li className="kl-menu-enlace">
+            <SelectorDeIdioma idioma={idioma} etiqueta={nav.idioma} />
+          </li>
+        </ul>
       </div>
     </header>
+  )
+}
+
+/**
+ * El eslogan a todo lo ancho. Cada palabra pasa del tono apagado al pleno
+ * cuando cruza la línea de activación (60 % de la altura de la pantalla), en
+ * orden de lectura. Un `IntersectionObserver` por todas las palabras: nada de
+ * escuchar el scroll.
+ */
+function Lema({ texto }: { texto: string }) {
+  const raiz = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    const palabras = raiz.current?.querySelectorAll<HTMLElement>('.kl-palabra')
+    if (!palabras?.length) return
+    if (typeof IntersectionObserver === 'undefined') {
+      palabras.forEach((p) => p.classList.add('kl-encendida'))
+      return
+    }
+    // La franja de observación acaba en la línea de activación: lo que está
+    // por encima de ella (dentro de la franja o ya salido por arriba) se enciende.
+    const io = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          const encendida = e.isIntersecting || e.boundingClientRect.top < 0
+          e.target.classList.toggle('kl-encendida', encendida)
+        }
+      },
+      { rootMargin: '0px 0px -40% 0px' }
+    )
+    palabras.forEach((p) => io.observe(p))
+    return () => io.disconnect()
+  }, [texto])
+
+  return (
+    <section aria-label={texto} className="bg-surface-lowest">
+      <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+        <p
+          ref={raiz}
+          aria-hidden
+          className="kl-titular mx-auto max-w-[680px] text-4xl tracking-tight text-on-surface md:text-5xl"
+        >
+          {texto.split(' ').map((palabra, i) => (
+            <span key={i} className="kl-palabra">
+              {palabra}{' '}
+            </span>
+          ))}
+        </p>
+      </div>
+    </section>
   )
 }
 
@@ -600,7 +748,7 @@ function AvisoDeConfirmacion({
   const esIos = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent)
   return (
     <div role="status" className="relative mx-auto max-w-6xl px-4 pt-2 sm:px-6">
-      <div className="flex flex-col gap-4 rounded-card bg-surface-lowest p-5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl bg-surface-lowest p-5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-4">
           <span
             aria-hidden
@@ -608,7 +756,7 @@ function AvisoDeConfirmacion({
               ok ? 'bg-secondary text-on-secondary' : 'bg-primary-fixed text-primary'
             }`}
           >
-            {ok ? '✓' : '!'}
+            {ok ? <Check weight="bold" /> : '!'}
           </span>
           <div>
             <p className="font-display text-lg font-bold text-on-surface">{info.titulo}</p>
@@ -633,20 +781,12 @@ function AvisoDeConfirmacion({
   )
 }
 
-function SelectorDeIdioma({
-  idioma,
-  etiqueta,
-  sobreColor = false,
-}: {
-  idioma: IdiomaLanding
-  etiqueta: string
-  sobreColor?: boolean
-}) {
+function SelectorDeIdioma({ idioma, etiqueta }: { idioma: IdiomaLanding; etiqueta: string }) {
   return (
     <nav
       aria-label={etiqueta}
-      className={`flex rounded-full p-0.5 text-xs font-bold ${
-        sobreColor ? 'bg-white/15' : 'bg-surface-container'
+      className={`flex rounded-full p-1 text-xs font-bold ${
+        'bg-surface-container'
       }`}
     >
       {(Object.keys(IDIOMAS_LANDING) as IdiomaLanding[]).map((id) => (
@@ -657,12 +797,10 @@ function SelectorDeIdioma({
           lang={id}
           aria-current={id === idioma ? 'page' : undefined}
           aria-label={IDIOMAS_LANDING[id].nombre}
-          className={`rounded-full px-2.5 py-1.5 ${
+          className={`rounded-full px-3 py-2 ${
             id === idioma
               ? 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
-              : sobreColor
-                ? 'text-on-primary/85'
-                : 'text-on-surface-variant'
+              : 'text-on-surface-variant'
           }`}
         >
           {IDIOMAS_LANDING[id].etiqueta}
@@ -681,15 +819,15 @@ function HiloDeChat({
 }) {
   const primero = hilo[0]?.quien
   return (
-    <div className="rounded-card bg-surface-low p-4 sm:p-5">
-      <ul className="flex flex-col gap-2.5">
+    <div className="rounded-2xl bg-surface-low p-4 sm:p-5">
+      <ul className="flex flex-col gap-3">
         {hilo.map((m, i) => {
           const mio = m.quien === primero
           const ultimo = i === hilo.length - 1
           return (
             <li key={i} className={`flex flex-col ${mio ? 'items-end' : 'items-start'}`}>
               {ultimo && (
-                <span className="mb-2.5 self-center rounded-full bg-surface-lowest px-3 py-1 text-xs font-semibold text-on-surface-variant">
+                <span className="mb-3 self-center rounded-full bg-surface-lowest px-3 py-1 text-xs font-semibold text-on-surface-variant">
                   {despues}
                 </span>
               )}
@@ -699,7 +837,7 @@ function HiloDeChat({
                 </span>
               )}
               <span
-                className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-[15px] ${
+                className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
                   mio
                     ? 'rounded-br-md bg-primary text-on-primary'
                     : 'rounded-bl-md bg-surface-lowest text-on-surface'
@@ -721,7 +859,7 @@ function Pie({ idioma }: { idioma: IdiomaLanding }) {
     <footer className="bg-surface-low">
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 py-10 text-sm text-on-surface-variant sm:px-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="font-display text-base font-extrabold text-on-surface">Kiemas</p>
+          <p className="font-display text-base font-bold text-on-surface">Kiemas</p>
           <p>{pie.lema}</p>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">

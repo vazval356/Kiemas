@@ -1093,8 +1093,8 @@ export function MovilCaptura({
         <img
           src={src}
           alt={alt}
-          width={738}
-          height={1600}
+          width={640}
+          height={1388}
           loading={prioridad ? 'eager' : 'lazy'}
           decoding="async"
           className="block h-auto w-full rounded-[2.1rem]"
@@ -1220,7 +1220,7 @@ export function Cinta({ items }: { items: { emoji: string; plan: string }[] }) {
               {items.map((c) => (
                 <li
                   key={c.plan}
-                  className="flex items-center gap-3 whitespace-nowrap font-display text-xl font-extrabold"
+                  className="flex items-center gap-3 whitespace-nowrap font-display text-xl font-bold"
                 >
                   <span>{c.emoji}</span>
                   {c.plan}

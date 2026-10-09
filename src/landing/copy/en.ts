@@ -6,7 +6,56 @@ export const en: TextoLanding = {
     descripcion:
       'Save the places you want to try on one shared map, vote on when and where, and stop losing the answer in the group chat. For dinners, drinks, gigs or any plan.',
   },
-  nav: { descargar: 'Download', idioma: 'Language' },
+  nav: {
+    menu: 'Open menu',
+    cerrarMenu: 'Close menu',
+    saltar: 'Skip to content',
+    enlaces: [
+      { id: 'kl-como', etiqueta: 'How it works' },
+      { id: 'kl-precios', etiqueta: 'Pricing' },
+      { id: 'kl-faq', etiqueta: 'Questions' },
+    ],
+    descargar: 'Download',
+    idioma: 'Language',
+  },
+
+  lema: 'You save places on one shared map, vote on the day in a tap, and the plan stays pinned. No lost screenshots, no forty messages, no whatever works for me.',
+
+  faq: {
+    titulo: 'Frequently *asked questions*',
+    preguntas: [
+      {
+        pregunta: 'Is Kiemas free?',
+        respuesta:
+          'Yes. Creating an account is free and includes up to 2 groups, 6 people per group, 30 saved places and 3 plans at a time.',
+      },
+      {
+        pregunta: 'What if we need more room?',
+        respuesta:
+          'A single payment of 2.99 € removes every limit. It is not a subscription and it never renews. The store confirms the final price before you pay.',
+      },
+      {
+        pregunta: 'Which phones does it run on?',
+        respuesta:
+          'It is available for iPhone on the App Store. The Android version is coming very soon to Google Play.',
+      },
+      {
+        pregunta: 'Does everyone in the group need to install it?',
+        respuesta:
+          'Yes, each person uses their own account. You join a group with a link, so creating one and dropping it in your chat takes a minute.',
+      },
+      {
+        pregunta: 'How do I add a place?',
+        respuesta:
+          'Paste a Google Maps, Apple Maps or Waze link and the name and location fill themselves in. Then add a category, a photo and a note.',
+      },
+      {
+        pregunta: 'Can I plan a surprise?',
+        respuesta:
+          'Yes. The person being surprised only sees that they have something on that day. The rest of the group sees the whole plan until you reveal it.',
+      },
+    ],
+  },
 
   hero: {
     titulo: 'From I don’t mind to an *actual plan*.',

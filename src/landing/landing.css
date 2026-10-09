@@ -11,7 +11,10 @@
  */
 
 .kl {
-  --kl-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --kl-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --font-display: 'Manrope Variable', system-ui, sans-serif;
+  --font-body: 'Manrope Variable', system-ui, sans-serif;
+  font-family: var(--font-body);
   --kl-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
@@ -101,14 +104,17 @@
 
 .kl-revela {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(4rem);
+  filter: blur(8px);
   transition:
-    opacity 600ms var(--kl-ease-out),
-    transform 600ms var(--kl-ease-out);
+    opacity 800ms var(--kl-ease-out),
+    transform 800ms var(--kl-ease-out),
+    filter 800ms var(--kl-ease-out);
 }
 .kl-revela.kl-dentro {
   opacity: 1;
   transform: none;
+  filter: none;
 }
 
 /* ── Menos movimiento: todo en su sitio desde el principio ──────────────── */
@@ -129,7 +135,8 @@
   }
   .kl-revela {
     transform: none;
-    transition: opacity 300ms ease;
+    filter: none;
+    transition: opacity 300ms var(--kl-ease-out);
   }
 
 }
@@ -160,7 +167,7 @@
   }
 }
 .kl-flota {
-  animation: kl-flota var(--t, 5s) ease-in-out var(--d, 0s) infinite alternate;
+  animation: kl-flota var(--t, 5s) var(--kl-ease-in-out) var(--d, 0s) infinite alternate;
 }
 
 /* Los móviles del hero suben desde abajo al cargar. */
@@ -231,7 +238,7 @@
 .kl-cursor {
   transition:
     transform 950ms var(--kl-ease-in-out),
-    opacity 300ms ease;
+    opacity 300ms var(--kl-ease-out);
 }
 
 .kl-insignia {
@@ -319,28 +326,113 @@
   }
   .kl-tarjeta {
     transform: none;
-    transition: opacity 300ms ease;
+    transition: opacity 300ms var(--kl-ease-out);
   }
 }
 
 /* ── Tipografía de los titulares y su énfasis ───────────────────────────── */
 
-/* Los titulares van en Fraunces, una serif con carácter; el resto de la
-   página sigue en Figtree. Peso medio: la serif pesada se vuelve tosca. */
+/* Una sola letra para toda la landing (Manrope), sin cursivas y sin pesos
+   por encima de bold. */
 .kl-titular {
-  font-family: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
-  font-weight: 640;
-  font-optical-sizing: auto;
+  font-weight: 700;
   text-wrap: balance;
 }
+.kl p,
+.kl li {
+  text-wrap: pretty;
+}
 
-/* Lo marcado: cursiva de la serif y el color de marca, sin nada detrás.
-   Índigo sobre fondos claros, ámbar sobre las bandas de color. */
+/* Lo marcado: solo color de marca, sin cursiva. Índigo sobre fondos claros,
+   ámbar sobre las bandas de color. El relleno propio evita que lo pise el
+   degradado de texto del titular del hero. */
 .kl-marca {
-  font-style: italic;
-  font-weight: 600;
+  font-style: normal;
   color: var(--color-primary);
+  -webkit-text-fill-color: var(--color-primary);
 }
 .kl-marca-oscura {
   color: var(--color-tertiary-fixed-dim);
+  -webkit-text-fill-color: var(--color-tertiary-fixed-dim);
+}
+
+/* Único degradado permitido: sobre el texto del titular del hero. */
+.kl-hero-titulo {
+  background-image: linear-gradient(to right, #000000, #666666);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Accesibilidad ──────────────────────────────────────────────────────── */
+
+.kl :is(a, button, summary):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+.kl-saltar {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 300ms var(--kl-ease-out);
+}
+.kl-saltar:focus-visible {
+  transform: none;
+}
+
+/* ── Eslogan: las palabras se encienden una a una ───────────────────────── */
+
+.kl-palabra {
+  opacity: 0.3;
+  transition: opacity 700ms var(--kl-ease-out);
+}
+.kl-palabra.kl-encendida {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kl-palabra {
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* ── Navegación isla ────────────────────────────────────────────────────── */
+
+.kl-menu-enlace {
+  opacity: 0;
+  transform: translateY(3rem);
+  transition:
+    opacity 700ms var(--kl-ease-out),
+    transform 700ms var(--kl-ease-out);
+}
+.kl-menu-abierto .kl-menu-enlace {
+  opacity: 1;
+  transform: none;
+}
+.kl-menu-abierto .kl-menu-enlace:nth-child(1) {
+  transition-delay: 100ms;
+}
+.kl-menu-abierto .kl-menu-enlace:nth-child(2) {
+  transition-delay: 150ms;
+}
+.kl-menu-abierto .kl-menu-enlace:nth-child(3) {
+  transition-delay: 200ms;
+}
+.kl-menu-abierto .kl-menu-enlace:nth-child(4) {
+  transition-delay: 250ms;
+}
+
+/* ── Preguntas frecuentes ───────────────────────────────────────────────── */
+
+.kl-faq summary::-webkit-details-marker {
+  display: none;
+}
+.kl-faq details[open] .kl-faq-mas {
+  transform: rotate(45deg);
+}
+.kl-faq-mas {
+  transition: transform 500ms var(--kl-ease-out);
 }

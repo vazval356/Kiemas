@@ -13,7 +13,19 @@
  */
 export interface TextoLanding {
   meta: { titulo: string; descripcion: string }
-  nav: { descargar: string; idioma: string }
+  nav: {
+    descargar: string
+    idioma: string
+    menu: string
+    cerrarMenu: string
+    saltar: string
+    enlaces: { id: string; etiqueta: string }[]
+  }
+
+  /** Eslogan a todo lo ancho: sus palabras se encienden una a una al hacer scroll. */
+  lema: string
+
+  faq: { titulo: string; preguntas: { pregunta: string; respuesta: string }[] }
 
   hero: {
     titulo: string

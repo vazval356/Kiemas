@@ -6,7 +6,56 @@ export const es: TextoLanding = {
     descripcion:
       'Guardad los sitios que os apetecen en un mapa común, votad cuándo y dónde, y que la respuesta no se pierda entre mensajes. Para cenar, salir, ver un concierto o cualquier plan.',
   },
-  nav: { descargar: 'Descargar', idioma: 'Idioma' },
+  nav: {
+    descargar: 'Descargar',
+    idioma: 'Idioma',
+    menu: 'Abrir menú',
+    cerrarMenu: 'Cerrar menú',
+    saltar: 'Saltar al contenido',
+    enlaces: [
+      { id: 'kl-como', etiqueta: 'Cómo funciona' },
+      { id: 'kl-precios', etiqueta: 'Precios' },
+      { id: 'kl-faq', etiqueta: 'Preguntas' },
+    ],
+  },
+
+  lema: 'Guardáis los sitios en un mapa común, votáis el día en un toque y el plan se queda fijado. Sin capturas perdidas, sin cuarenta mensajes, sin el a mí me da igual.',
+
+  faq: {
+    titulo: 'Preguntas *frecuentes*',
+    preguntas: [
+      {
+        pregunta: '¿Kiemas es gratis?',
+        respuesta:
+          'Sí. Crear la cuenta es gratis e incluye hasta 2 grupos, 6 personas por grupo, 30 sitios guardados y 3 planes a la vez.',
+      },
+      {
+        pregunta: '¿Qué pasa si necesitamos más sitio?',
+        respuesta:
+          'Hay un pago único de 2,99 € que quita todos los límites. No es una suscripción y no se renueva. El precio final lo confirma la tienda antes de pagar.',
+      },
+      {
+        pregunta: '¿En qué móviles funciona?',
+        respuesta:
+          'Está disponible para iPhone en la App Store. La versión de Android llegará muy pronto a Google Play.',
+      },
+      {
+        pregunta: '¿Tienen que instalarla todos los del grupo?',
+        respuesta:
+          'Sí, cada persona usa su propia cuenta. Se entra a un grupo con un enlace, así que crear el grupo y pasarlo al chat lleva un minuto.',
+      },
+      {
+        pregunta: '¿Cómo añado un sitio?',
+        respuesta:
+          'Pegad un enlace de Google Maps, Apple Maps o Waze y el nombre y la ubicación se rellenan solos. Después le ponéis categoría, foto y una nota.',
+      },
+      {
+        pregunta: '¿Puedo preparar un plan sorpresa?',
+        respuesta:
+          'Sí. La persona sorprendida solo ve en su calendario que ese día tiene algo. El resto del grupo ve el plan entero hasta que lo reveláis.',
+      },
+    ],
+  },
 
   hero: {
     titulo: 'Del me da igual a un *plan de verdad*.',
