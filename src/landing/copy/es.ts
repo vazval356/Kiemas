@@ -9,7 +9,7 @@ export const es: TextoLanding = {
   nav: { descargar: 'Descargar', idioma: 'Idioma' },
 
   hero: {
-    titulo: 'De «a mí me da igual» a un plan de verdad.',
+    titulo: 'Del me da igual a un plan de verdad.',
     subtitulo:
       'Guardáis los sitios, proponéis cuándo y votáis lo que haga falta. Si nadie se decide, decide la ruleta.',
     cta: 'Descargar para iPhone',
@@ -45,7 +45,7 @@ export const es: TextoLanding = {
   problema: {
     titulo: 'El chat lleva tres días con esto.',
     cuerpo:
-      'Un enlace pegado, una captura, «¿qué os parece?» y silencio. La decisión está en algún punto del chat, y nadie sabe en cuál.',
+      'Un enlace pegado, una captura, un ¿qué os parece? y silencio. La decisión está en algún punto del chat y nadie sabe en cuál.',
     hilo: [
       { quien: 'Marta', texto: '¿Qué hacemos el sábado?' },
       { quien: 'Dani', texto: 'este tiene buena pinta 👉 maps.app.goo.gl/…' },
@@ -73,7 +73,7 @@ export const es: TextoLanding = {
       },
       {
         verbo: 'Votar',
-        titulo: 'Se vota, no se discute',
+        titulo: 'Votad en vez de discutir',
         cuerpo:
           'La fecha, el sitio o cualquier cosa que haya que acordar. Cada uno vota y se ve quién falta.',
       },
@@ -91,7 +91,7 @@ export const es: TextoLanding = {
       nombre: 'Mercado Norte',
       categoria: '🍽️ Restaurantes',
       estado: '📌 Por ir',
-      nota: '«Pedid el pan de la casa, en serio»',
+      nota: 'Pedid el pan de la casa, en serio',
       quien: 'Lucía',
     },
     votar: {
@@ -133,7 +133,7 @@ export const es: TextoLanding = {
       titulo: 'Y si es una sorpresa, no se entera',
       cuerpo:
         'Preparad un plan para alguien del grupo. En su calendario solo verá que ese día tiene algo. Vosotros lo veis todo, y cuando toque, lo reveláis.',
-      alt: 'Comparación: el plan completo que ve quien lo prepara y la casilla «Algo te espera» que ve la persona sorprendida.',
+      alt: 'Comparación: el plan completo que ve quien lo prepara y la casilla Algo te espera que ve la persona sorprendida.',
       vistaAutor: 'Lo ves tú',
       vistaOtra: 'Lo que ve la otra persona',
       casilla: 'Algo te espera',
@@ -145,8 +145,8 @@ export const es: TextoLanding = {
     explorar: {
       titulo: 'Descubre listas de otra gente',
       cuerpo:
-        'Sigue las listas que publican otros —hamburguesas, terrazas, planes de lluvia— y llévate los sitios a tu mapa.',
-      alt: 'Pantalla de Kiemas: Explorar, con listas públicas de hamburgueserías y un buscador.',
+        'Sigue las listas que publican otros (dónde comer en Madrid, en Granada, en Palma) y llévate los sitios a tu mapa.',
+      alt: 'Pantalla de Kiemas: Explorar, con las listas más seguidas, como Dónde comer en Madrid, y un buscador.',
     },
   },
 
@@ -157,9 +157,9 @@ export const es: TextoLanding = {
     ruido: [
       '🔗 maps.app.goo.gl/…',
       '📷 Captura de pantalla',
-      '«¿qué os parece?»',
-      '«yo puedo el sábado… o no»',
-      '«pues ya vemos»',
+      '¿qué os parece?',
+      'yo puedo el sábado… o no',
+      'pues ya vemos',
     ],
   },
 

@@ -776,7 +776,7 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
             </span>
             <span className="min-w-0 text-xs text-on-surface">
               {texto.nota}
-              <span className="block text-[11px] text-on-surface-variant">— {texto.quien}</span>
+              <span className="block text-[11px] text-on-surface-variant">{texto.quien}</span>
             </span>
           </div>
         </div>

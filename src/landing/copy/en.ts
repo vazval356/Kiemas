@@ -9,7 +9,7 @@ export const en: TextoLanding = {
   nav: { descargar: 'Download', idioma: 'Language' },
 
   hero: {
-    titulo: 'From “I don’t mind” to an actual plan.',
+    titulo: 'From I don’t mind to an actual plan.',
     subtitulo:
       'Save places, pitch a day, vote on whatever needs deciding. If nobody picks, the wheel does.',
     cta: 'Download for iPhone',
@@ -45,7 +45,7 @@ export const en: TextoLanding = {
   problema: {
     titulo: 'The group chat’s been at this for three days.',
     cuerpo:
-      'A pasted link, a screenshot, “thoughts?”, then silence. The decision is somewhere in that thread. Nobody can find it.',
+      'A pasted link, a screenshot, a thoughts? and then silence. The decision is somewhere in that thread and nobody can find it.',
     hilo: [
       { quien: 'Sam', texto: 'so what are we doing saturday?' },
       { quien: 'Priya', texto: 'this one looks good 👉 maps.app.goo.gl/…' },
@@ -73,7 +73,7 @@ export const en: TextoLanding = {
       },
       {
         verbo: 'Vote',
-        titulo: 'Vote on it, don’t argue about it',
+        titulo: 'Vote instead of arguing',
         cuerpo:
           'The day, the place, or anything else that needs a call. Everyone votes, and you can see who hasn’t.',
       },
@@ -91,7 +91,7 @@ export const en: TextoLanding = {
       nombre: 'North Market',
       categoria: '🍽️ Dining',
       estado: '📌 To try',
-      nota: '“Get the house bread. Trust me.”',
+      nota: 'Get the house bread. Trust me.',
       quien: 'Leo',
     },
     votar: {
@@ -133,7 +133,7 @@ export const en: TextoLanding = {
       titulo: 'And if it’s a surprise, they won’t know',
       cuerpo:
         'Plan something for someone in the group. On their calendar they only see that they’re busy that day. You see everything, and you reveal it when the time comes.',
-      alt: 'Comparison: the full plan its organiser sees, and the “Something’s waiting for you” slot the surprised person sees.',
+      alt: 'Comparison: the full plan its organiser sees, and the Something’s waiting for you slot the surprised person sees.',
       vistaAutor: 'What you see',
       vistaOtra: 'What they see',
       casilla: 'Something’s waiting for you',
@@ -145,8 +145,8 @@ export const en: TextoLanding = {
     explorar: {
       titulo: 'Find lists from other people',
       cuerpo:
-        'Follow the lists others publish — burgers, terraces, rainy-day plans — and take the places to your own map.',
-      alt: 'Kiemas screen: Explore, with public lists of burger places and a search bar.',
+        'Follow the lists others publish (where to eat in Madrid, Granada, Palma) and take the places to your own map.',
+      alt: 'Kiemas screen: Explore, with the most-followed lists, like Where to eat in Madrid, and a search bar.',
     },
   },
 
@@ -157,9 +157,9 @@ export const en: TextoLanding = {
     ruido: [
       '🔗 maps.app.goo.gl/…',
       '📷 Screenshot',
-      '“thoughts?”',
-      '“I can do saturday… maybe”',
-      '“guess we’ll see”',
+      'thoughts?',
+      'I can do saturday… maybe',
+      'guess we’ll see',
     ],
   },
 
