@@ -313,7 +313,7 @@ export function EscenaHero({ texto }: { texto: TextoLanding['hero'] }) {
 /**
  * La escena del hero, al estilo de un producto que se usa solo: tres paneles
  * superpuestos —el mapa, una votación y el plan— y un cursor que recorre la
- * interfaz. Marta vota el sábado, la barra sube, el plan pasa de «Votando» a
+ * interfaz. Sara vota el sábado, la barra sube, el plan pasa de «Votando» a
  * «Confirmado» y cae el pin en el mapa. Luego vuelve a empezar.
  *
  * Es un guion de cinco fases (`FASES`) que avanza con temporizadores mientras
@@ -380,7 +380,7 @@ export function EscenaPaneles({
     (g, o, i, todas) => (o.votos > todas[g].votos ? i : g),
     0
   )
-  // La votación empieza un voto por debajo: el de Marta es el que la cierra.
+  // La votación empieza un voto por debajo: el de Sara es el que la cierra.
   const votos = votar.opciones.map((o, i) => (i === ganadora && !votado ? o.votos - 1 : o.votos))
   const total = votos.reduce((s, v) => s + v, 0)
   const pines = [
@@ -482,7 +482,7 @@ export function EscenaPaneles({
           <TarjetaPlan plan={texto.plan} estado={confirmado ? 'confirmado' : 'votando'} />
         </div>
 
-        {/* El cursor de Marta. */}
+        {/* El cursor de Sara. */}
         {!reducido && (
           <span
             className="kl-cursor pointer-events-none absolute left-0 top-0 z-30"
@@ -504,7 +504,7 @@ export function EscenaPaneles({
               />
             </svg>
             <span className="absolute left-4 top-4 rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-on-primary shadow-md">
-              Marta
+              Sara
             </span>
           </span>
         )}
@@ -517,7 +517,7 @@ export function EscenaPaneles({
 
 /**
  * Las cuatro piezas de «Cómo funciona» comparten lenguaje con la escena del
- * hero: paneles con sombra flotante y aro, el cursor de Marta y un guion en
+ * hero: paneles con sombra flotante y aro, el cursor de Sara y un guion en
  * bucle. Cada una avanza por fases (`useGuion`) solo mientras se ve; al
  * terminar vuelve a empezar. Con movimiento reducido se queda en una fase
  * final fija, sin cursor.
@@ -596,7 +596,7 @@ function useCursor(
   return pos
 }
 
-function CursorMarta({
+function CursorSara({
   pos,
   clic,
   visible,
@@ -796,7 +796,7 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
   )
   const votado = fase >= 2
   const ganadora = texto.opciones.reduce((g, o, i, todas) => (o.votos > todas[g].votos ? i : g), 0)
-  // Empieza un voto por debajo: el de Marta es el que la deja ganar.
+  // Empieza un voto por debajo: el de Sara es el que la deja ganar.
   const votos = texto.opciones.map((o, i) => (i === ganadora && !votado ? o.votos - 1 : o.votos))
   const total = votos.reduce((s, v) => s + v, 0)
   return (
@@ -850,7 +850,7 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
       >
         {texto.faltan}
       </p>
-      {!reducido && <CursorMarta pos={pos} clic={fase === 2} visible={visible} />}
+      {!reducido && <CursorSara pos={pos} clic={fase === 2} visible={visible} />}
     </div>
   )
 }
