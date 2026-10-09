@@ -19,6 +19,7 @@ import {
 } from './piezas'
 import { resultadoDeConfirmacion } from '../lib/confirmacion'
 import { APP_STORE_URL } from './tiendas'
+import { BotonAppStore } from './BotonAppStore'
 import './landing.css'
 
 /**
@@ -427,13 +428,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
               </h2>
               <p className="mt-4 text-xl text-on-primary/85">{t.final.cuerpo}</p>
             </div>
-            <a
-              href={APP_STORE_URL}
-              className="squish inline-flex shrink-0 items-center gap-2 rounded-full bg-surface-lowest px-9 py-5 font-display text-xl font-bold text-primary shadow-[var(--shadow-float)]"
-            >
-              {t.final.cta}
-              <span aria-hidden>→</span>
-            </a>
+            <BotonAppStore idioma={idioma} etiqueta={t.final.cta} />
           </div>
         </section>
       </main>

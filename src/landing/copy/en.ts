@@ -203,7 +203,7 @@ export const en: TextoLanding = {
   },
 
   final: {
-    titulo: 'Going out this week?',
+    titulo: 'Your next plan starts here.',
     cuerpo: 'Start a group, share the link, save your first place.',
     cta: 'Download the app',
   },

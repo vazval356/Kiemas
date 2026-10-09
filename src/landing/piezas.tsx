@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react'
 import type { PlanDeEjemplo, TextoLanding } from './copy/tipos'
 
 /**
@@ -515,174 +515,403 @@ export function EscenaPaneles({
 
 // ── Cómo funciona: una pieza por paso ────────────────────────────────────
 
-export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubrir'] }) {
+/**
+ * Las cuatro piezas de «Cómo funciona» comparten lenguaje con la escena del
+ * hero: paneles con sombra flotante y aro, el cursor de Marta y un guion en
+ * bucle. Cada una avanza por fases (`useGuion`) solo mientras se ve; al
+ * terminar vuelve a empezar. Con movimiento reducido se queda en una fase
+ * final fija, sin cursor.
+ */
+
+function usePreferenciaReducida() {
+  const [reducido, setReducido] = useState(false)
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducido(mq.matches)
+    const alCambiar = () => setReducido(mq.matches)
+    mq.addEventListener('change', alCambiar)
+    return () => mq.removeEventListener('change', alCambiar)
+  }, [])
+  return reducido
+}
+
+/** Verdadero mientras el elemento se ve (a diferencia de `useEnPantalla`, que solo marca la primera vez). */
+function useVisible<T extends HTMLElement>(umbral = 0.35) {
+  const ref = useRef<T>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true)
+      return
+    }
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { threshold: umbral })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [umbral])
+  return { ref, visible }
+}
+
+/** Guion en bucle: `duraciones[i]` es lo que dura la fase `i`. */
+function useGuion(duraciones: readonly number[], faseReducida: number) {
+  const { ref, visible } = useVisible<HTMLDivElement>()
+  const reducido = usePreferenciaReducida()
+  const [fase, setFase] = useState(0)
+  useEffect(() => {
+    if (!visible || reducido) return
+    const t = window.setTimeout(() => setFase((f) => (f + 1) % duraciones.length), duraciones[fase])
+    return () => window.clearTimeout(t)
+  }, [visible, reducido, fase, duraciones])
+  return { ref, fase: reducido ? faseReducida : fase, reducido, visible }
+}
+
+/**
+ * Lleva el cursor a donde está cada elemento de verdad (se mide, no se calcula
+ * a ojo). `objetivo` devuelve el elemento y el punto relativo dentro de él, o
+ * `'fuera'` para dejar el cursor fuera de la pieza.
+ */
+function useCursor(
+  contenedor: RefObject<HTMLElement | null>,
+  fase: number,
+  desactivado: boolean,
+  objetivo: (fase: number) => { el: HTMLElement | null; fx: number; fy: number } | 'fuera'
+) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
+  const objetivoRef = useRef(objetivo)
+  objetivoRef.current = objetivo
+  useEffect(() => {
+    const caja = contenedor.current?.getBoundingClientRect()
+    if (!caja || desactivado) return
+    const o = objetivoRef.current(fase)
+    if (o === 'fuera') {
+      setPos({ x: caja.width * 0.97, y: caja.height * 1.02 })
+      return
+    }
+    if (!o.el) return
+    const r = o.el.getBoundingClientRect()
+    setPos({ x: r.left - caja.left + r.width * o.fx, y: r.top - caja.top + r.height * o.fy })
+  }, [fase, desactivado, contenedor])
+  return pos
+}
+
+function CursorMarta({
+  pos,
+  clic,
+  visible,
+}: {
+  pos: { x: number; y: number } | null
+  clic: boolean
+  visible: boolean
+}) {
   return (
-    <div className="relative h-56 overflow-hidden rounded-card bg-surface-container">
+    <span
+      className="kl-cursor pointer-events-none absolute left-0 top-0 z-30"
+      style={{ transform: `translate3d(${pos?.x ?? 0}px, ${pos?.y ?? 0}px, 0)`, opacity: pos && visible ? 1 : 0 }}
+    >
+      {clic && <span className="kl-clic absolute -left-3 -top-3 size-6 rounded-full bg-primary/40" />}
+      <svg width="22" height="22" viewBox="0 0 22 22" className="drop-shadow-md">
+        <path
+          d="M3 2 L3 17 L7.2 13.2 L10 19.5 L12.6 18.3 L9.9 12.2 L15.5 12 Z"
+          fill="var(--color-primary)"
+          stroke="#fff"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  )
+}
+
+const PANEL = 'shadow-[var(--shadow-float)] ring-1 ring-primary/10'
+
+const TIEMPOS_DESCUBRIR = [1100, 1500, 1500, 1500, 1500] as const
+
+/** Filtrar por categoría: el cursor recorre los chips y el mapa deja ver solo esa. */
+export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubrir'] }) {
+  const { ref, fase, reducido, visible } = useGuion(TIEMPOS_DESCUBRIR, 0)
+  const chipsRef = useRef<(HTMLSpanElement | null)[]>([])
+  const activa = fase === 0 ? null : fase - 1
+  const pos = useCursor(ref, fase, reducido, (f) =>
+    f === 0 ? 'fuera' : { el: chipsRef.current[f], fx: 0.5, fy: 0.6 }
+  )
+  // Dos sitios por categoría, en el orden de los chips.
+  const pines = [
+    { emoji: '🍽️', cat: 0, x: '24%', y: '58%' },
+    { emoji: '🍽️', cat: 0, x: '63%', y: '90%' },
+    { emoji: '🌳', cat: 1, x: '74%', y: '56%' },
+    { emoji: '🌳', cat: 1, x: '40%', y: '80%' },
+    { emoji: '🎭', cat: 2, x: '50%', y: '60%' },
+    { emoji: '🎭', cat: 2, x: '12%', y: '86%' },
+    { emoji: '🍸', cat: 3, x: '86%', y: '84%' },
+    { emoji: '🍸', cat: 3, x: '34%', y: '96%' },
+  ]
+  const chips = [texto.todos, ...texto.chips]
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className={`relative h-64 overflow-hidden rounded-card bg-surface-container ${PANEL}`}
+    >
       <FondoDeMapa />
-      <div className="absolute inset-x-3 top-3 flex gap-1.5 overflow-hidden">
-        <span className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary">
-          {texto.todos}
-        </span>
-        {texto.chips.map((c) => (
+      {pines.map((p, i) => {
+        const encendido = activa === null || activa === p.cat
+        return (
+          <span
+            key={i}
+            className="absolute inset-0 transition-opacity duration-300 ease-out"
+            style={{ opacity: encendido ? 1 : 0.18 }}
+          >
+            <Pin
+              emoji={p.emoji}
+              x={p.x}
+              y={p.y}
+              color={activa === p.cat ? 'var(--color-primary)' : 'var(--color-primary-container)'}
+            />
+            {activa === p.cat && !reducido && (
+              <span
+                key={`${fase}-${i}`}
+                className="kl-onda absolute size-10 rounded-full border-2 border-primary"
+                style={{ left: p.x, top: `calc(${p.y} - 1.1rem)` }}
+              />
+            )}
+          </span>
+        )
+      })}
+      <div className="absolute inset-x-3 top-3 flex flex-wrap gap-1.5">
+        {chips.map((c, i) => (
           <span
             key={c}
-            className="shrink-0 rounded-full bg-surface-lowest px-3 py-1.5 text-xs font-medium text-on-surface shadow-[var(--shadow-surface)]"
+            ref={(el) => {
+              chipsRef.current[i] = el
+            }}
+            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-200 sm:text-xs ${
+              (activa === null ? 0 : activa + 1) === i
+                ? 'bg-primary text-on-primary shadow-md'
+                : 'bg-surface-lowest text-on-surface shadow-[var(--shadow-surface)]'
+            }`}
           >
             {c}
           </span>
         ))}
       </div>
-      <Pin emoji="🍽️" x="26%" y="62%" />
-      <Pin emoji="🌳" x="70%" y="52%" color="var(--color-primary-container)" />
-      <Pin emoji="🎭" x="50%" y="86%" color="var(--color-primary-container)" />
-      <Pin emoji="🍸" x="84%" y="84%" color="var(--color-primary-container)" />
+      {!reducido && <CursorMarta pos={pos} clic={fase > 0} visible={visible} />}
     </div>
   )
 }
 
+const TIEMPOS_COMPARTIR = [1000, 1000, 900, 1500, 2800] as const
+
+/** Pegar un enlace: el cursor lo pulsa, sube la tarjeta del sitio y cae su pin. */
 export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compartir'] }) {
-  return (
-    <div className="flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-surface)]">
-      {/* Sin foto, la app pone el emoji de la categoría sobre un fondo
-          tintado: la landing no se inventa una foto que no tiene. */}
-      <div
-        aria-hidden
-        className="flex w-24 shrink-0 items-center justify-center bg-primary-fixed text-4xl"
-      >
-        🍽️
-      </div>
-      <div className="min-w-0 flex-1 p-3.5">
-        <p className="font-display text-lg font-bold leading-tight text-on-surface">
-          {texto.nombre}
-        </p>
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
-            {texto.categoria}
-          </span>
-          <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
-            {texto.estado}
-          </span>
-          <span className="flex items-center gap-0.5 font-semibold text-tertiary">★ 4,5</span>
-        </div>
-        <p className="mt-2 text-sm text-on-surface">{texto.nota}</p>
-        <p className="mt-0.5 text-xs text-on-surface-variant">— {texto.quien}</p>
-      </div>
-    </div>
+  const { ref, fase, reducido, visible } = useGuion(TIEMPOS_COMPARTIR, 4)
+  const enlaceRef = useRef<HTMLSpanElement>(null)
+  const pos = useCursor(ref, fase, reducido, (f) =>
+    f === 0 ? 'fuera' : { el: enlaceRef.current, fx: 0.7, fy: 0.6 }
   )
-}
-
-/**
- * Filas de voto con el relleno semitransparente detrás, como en
- * `DecisionsSection`. Se rellenan al llegar a ellas: es el feedback de que
- * se ha votado, sin otra animación encima.
- */
-export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) {
-  const { ref, dentro } = useEnPantalla<HTMLDivElement>()
-  const total = texto.opciones.reduce((s, o) => s + o.votos, 0)
-  const maximo = Math.max(...texto.opciones.map((o) => o.votos))
+  const tarjeta = fase >= 2
+  const detalle = fase >= 3
   return (
     <div
       ref={ref}
-      className={`rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)] ${
-        dentro ? 'kl-dentro' : ''
-      }`}
+      aria-hidden
+      className={`relative h-64 overflow-hidden rounded-card bg-surface-container ${PANEL}`}
     >
+      <FondoDeMapa />
+      <span
+        ref={enlaceRef}
+        className={`absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-surface-lowest px-3 py-1.5 text-xs font-semibold shadow-[var(--shadow-surface)] transition-colors duration-200 ${
+          tarjeta ? 'text-primary' : 'text-on-surface-variant'
+        }`}
+      >
+        {tarjeta ? '✓' : '🔗'} maps.apple.com/…
+      </span>
+      <span
+        className={`absolute inset-0 transition-[opacity,translate] duration-500 ease-out ${
+          detalle ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0'
+        }`}
+      >
+        <Pin emoji="🍽️" x="74%" y="44%" />
+      </span>
+      {detalle && !reducido && (
+        <span
+          key="onda"
+          className="kl-onda absolute left-[74%] top-[44%] size-10 rounded-full border-2 border-primary"
+        />
+      )}
+      <div
+        className={`absolute inset-x-3 bottom-3 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)] transition-[opacity,translate] duration-500 ease-out ${
+          tarjeta ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+        }`}
+      >
+        <div className="flex w-20 shrink-0 items-center justify-center bg-primary-fixed text-3xl">🍽️</div>
+        <div className="min-w-0 flex-1 p-3">
+          <p className="font-display text-base font-bold leading-tight text-on-surface">{texto.nombre}</p>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
+              {texto.categoria}
+            </span>
+            <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
+              {texto.estado}
+            </span>
+            <span className="font-semibold text-tertiary">★ 4,5</span>
+          </div>
+          <div className={`transition-opacity duration-300 ${detalle ? 'opacity-100' : 'opacity-0'}`}>
+            <p className="mt-1.5 text-xs text-on-surface">{texto.nota}</p>
+            <p className="text-[11px] text-on-surface-variant">— {texto.quien}</p>
+          </div>
+        </div>
+      </div>
+      {!reducido && <CursorMarta pos={pos} clic={fase === 2} visible={visible} />}
+    </div>
+  )
+}
+
+const TIEMPOS_VOTAR = [1000, 1100, 1300, 3200] as const
+
+/** Votar: el cursor pulsa la opción, la barra sube, el contador salta y «Gana» aparece. */
+export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) {
+  const { ref, fase, reducido, visible } = useGuion(TIEMPOS_VOTAR, 3)
+  const filaRef = useRef<HTMLLIElement>(null)
+  const pos = useCursor(ref, fase, reducido, (f) =>
+    f === 0 ? 'fuera' : { el: filaRef.current, fx: 0.75, fy: 0.5 }
+  )
+  const votado = fase >= 2
+  const ganadora = texto.opciones.reduce((g, o, i, todas) => (o.votos > todas[g].votos ? i : g), 0)
+  // Empieza un voto por debajo: el de Marta es el que la deja ganar.
+  const votos = texto.opciones.map((o, i) => (i === ganadora && !votado ? o.votos - 1 : o.votos))
+  const total = votos.reduce((s, v) => s + v, 0)
+  return (
+    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-4 ${PANEL}`}>
       <p className="font-display font-bold text-on-surface">{texto.pregunta}</p>
       <ul className="mt-3 flex flex-col gap-2">
         {texto.opciones.map((o, i) => {
-          const gana = o.votos === maximo
+          const gana = i === ganadora
           return (
             <li
               key={o.etiqueta}
-              className={`relative overflow-hidden rounded-control border px-3 py-2.5 ${
-                gana ? 'border-primary' : 'border-outline-variant'
+              ref={gana ? filaRef : undefined}
+              className={`relative overflow-hidden rounded-control border px-3 py-2.5 transition-colors duration-300 ${
+                gana && (votado || fase === 1) ? 'border-primary' : 'border-outline-variant'
               }`}
             >
               <span
-                aria-hidden
-                className={`kl-barra absolute inset-0 ${gana ? 'bg-primary/20' : 'bg-primary/10'}`}
-                style={
-                  { '--p': o.votos / total, '--d': `${i * 90}ms` } as CSSProperties
-                }
+                className={`kl-barra-viva absolute inset-0 ${
+                  gana && votado ? 'bg-primary/20' : 'bg-primary/10'
+                }`}
+                style={{ transform: `scaleX(${votos[i] / total})` }}
               />
               <span className="relative flex items-center justify-between gap-2 text-sm">
                 <span className="flex items-center gap-2 font-semibold text-on-surface">
                   {o.etiqueta}
                   {gana && (
-                    <span className="kl-gana rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-on-secondary">
+                    <span
+                      className={`rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-on-secondary transition-[opacity,scale] duration-300 ${
+                        votado ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                      }`}
+                    >
                       {texto.gana}
                     </span>
                   )}
                 </span>
-                <span className="font-medium text-on-surface-variant">{o.votos}</span>
+                <span
+                  key={`${i}-${votos[i]}`}
+                  className={`font-medium text-on-surface-variant ${gana && votado && !reducido ? 'kl-pop' : ''}`}
+                >
+                  {votos[i]}
+                </span>
               </span>
             </li>
           )
         })}
       </ul>
-      <p className="mt-3 text-xs text-on-surface-variant">{texto.faltan}</p>
+      <p
+        className={`mt-3 text-xs text-on-surface-variant transition-opacity duration-300 ${
+          votado ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {texto.faltan}
+      </p>
+      {!reducido && <CursorMarta pos={pos} clic={fase === 2} visible={visible} />}
     </div>
   )
 }
 
 /**
- * La ruleta: pasa por los sitios guardados, frena y se queda en uno. Una
- * sola vuelta al llegar a ella, nunca en bucle. El ámbar dice «esto está por
- * decidir» mientras gira; al parar, el marco se rellena de índigo, como en
- * `RouletteModal`.
+ * La ruleta, en bucle mientras se ve: pasa por los sitios guardados, frena y
+ * se queda en uno; unos segundos después vuelve a girar desde donde quedó. El
+ * ámbar dice «esto está por decidir» mientras gira; al parar, el marco se
+ * rellena de índigo y sale una onda, como al confirmar un plan.
  */
 export function PiezaIr({ texto }: { texto: TextoLanding['como']['ir'] }) {
-  const { ref, dentro } = useEnPantalla<HTMLDivElement>()
+  const { ref, visible } = useVisible<HTMLDivElement>()
+  const reducido = usePreferenciaReducida()
+  const n = texto.opciones.length
   const final = texto.opciones.indexOf(texto.ganador)
   const [indice, setIndice] = useState(0)
   const [fase, setFase] = useState<'espera' | 'gira' | 'decidido'>('espera')
+  const [ciclo, setCiclo] = useState(0)
+  const indiceRef = useRef(0)
 
   useEffect(() => {
-    if (!dentro) return
-    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reducido) {
       setIndice(final)
       setFase('decidido')
       return
     }
-    // Pasos cada vez más espaciados: frena como una ruleta, no se corta en
-    // seco. Termina exactamente en el ganador.
-    const pasos = 14 + ((final - 14) % texto.opciones.length + texto.opciones.length) % texto.opciones.length
-    const tiempos: number[] = []
-    let t = 0
-    for (let n = 0; n < pasos; n++) {
-      t += 55 + n * n * 1.1
-      tiempos.push(t)
-    }
-    setFase('gira')
-    const ids = tiempos.map((ms, n) =>
+    if (!visible) return
+    const ids: number[] = []
+    setFase('espera')
+    ids.push(
       window.setTimeout(() => {
-        setIndice((n + 1) % texto.opciones.length)
-        if (n === pasos - 1) setFase('decidido')
-      }, ms)
+        // Pasos cada vez más espaciados: frena como una ruleta, no se corta en
+        // seco. Termina exactamente en el ganador, salga de donde salga.
+        const inicio = indiceRef.current
+        const pasos = 14 + ((((final - inicio - 14) % n) + n) % n)
+        let t = 0
+        setFase('gira')
+        for (let k = 0; k < pasos; k++) {
+          t += 55 + k * k * 1.1
+          ids.push(
+            window.setTimeout(() => {
+              const i = (inicio + k + 1) % n
+              indiceRef.current = i
+              setIndice(i)
+              if (k === pasos - 1) setFase('decidido')
+            }, t)
+          )
+        }
+        ids.push(window.setTimeout(() => setCiclo((c) => c + 1), t + 3200))
+      }, 900)
     )
     return () => ids.forEach(clearTimeout)
-  }, [dentro, final, texto.opciones.length])
+  }, [visible, reducido, final, n, ciclo])
 
   const decidido = fase === 'decidido'
   return (
-    <div ref={ref} className="rounded-card bg-surface-lowest p-4 shadow-[var(--shadow-surface)]">
-      <p
-        className={`text-sm font-semibold ${decidido ? 'text-secondary' : 'text-tertiary'}`}
-        aria-live="polite"
-      >
+    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-4 ${PANEL}`}>
+      <p className={`text-sm font-semibold ${decidido ? 'text-secondary' : 'text-tertiary'}`}>
         {decidido ? `✓ ${texto.despues}` : texto.antes}
       </p>
-      <div
-        className={`kl-ruleta-marco mt-3 flex h-16 items-center justify-center rounded-control border-2 border-dashed px-3 text-center font-display text-xl font-bold ${
-          decidido
-            ? 'border-primary bg-primary text-on-primary'
-            : 'border-tertiary-fixed-dim bg-tertiary-fixed/40 text-on-surface'
-        }`}
-      >
-        {texto.opciones[indice]}
+      <div className="relative mt-3">
+        <div
+          className={`kl-ruleta-marco flex h-16 items-center justify-center rounded-control border-2 border-dashed px-3 text-center font-display text-xl font-bold ${
+            decidido
+              ? 'border-primary bg-primary text-on-primary'
+              : 'border-tertiary-fixed-dim bg-tertiary-fixed/40 text-on-surface'
+          }`}
+        >
+          {texto.opciones[indice]}
+        </div>
+        {decidido && !reducido && (
+          <span
+            key={ciclo}
+            className="kl-onda pointer-events-none absolute left-1/2 top-1/2 h-16 w-1/2 rounded-control border-2 border-primary"
+          />
+        )}
       </div>
-      <div aria-hidden className="mt-3 flex justify-center gap-1.5">
+      <div className="mt-3 flex justify-center gap-1.5">
         {texto.opciones.map((o, i) => (
           <span
             key={o}

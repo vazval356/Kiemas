@@ -111,28 +111,6 @@
   transform: none;
 }
 
-/* ── Barras de voto: se rellenan al verlas ──────────────────────────────── */
-
-.kl-barra {
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 700ms var(--kl-ease-out) var(--d, 0ms);
-}
-.kl-dentro .kl-barra {
-  transform: scaleX(var(--p));
-}
-.kl-gana {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition:
-    opacity 220ms var(--kl-ease-out) 900ms,
-    transform 220ms var(--kl-ease-out) 900ms;
-}
-.kl-dentro .kl-gana {
-  opacity: 1;
-  transform: none;
-}
-
 /* ── Ruleta: el marco se rellena al decidir ─────────────────────────────── */
 
 .kl-ruleta-marco {
@@ -162,13 +140,7 @@
     transform: none;
     transition: opacity 300ms ease;
   }
-  .kl-barra {
-    transition: none;
-  }
-  .kl-gana {
-    transition: opacity 200ms ease;
-    transform: none;
-  }
+
 }
 
 /* ── Escaparate: móviles con captura ────────────────────────────────────── */
