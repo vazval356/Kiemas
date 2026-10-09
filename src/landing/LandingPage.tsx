@@ -1,8 +1,9 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, type CSSProperties, type ReactNode } from 'react'
 import { IDIOMAS_LANDING, type IdiomaLanding } from './idiomas'
 import {
   CHIP,
   Cinta,
+  EscenaPaneles,
   MovilCaptura,
   Pegatina,
   PiezaCompartir,
@@ -40,87 +41,43 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
     <div className="kl h-full overflow-y-auto bg-surface-low text-on-surface">
       <main>
         {/* ── Hero ─────────────────────────────────────────────────────── */}
-        {/* Azul de marca a todo el ancho, como las capturas de la tienda: dos
-            móviles con la app de verdad, girados y saliendo por abajo. La
-            cabecera vive dentro de la banda para que el azul empiece arriba
-            del todo. */}
-        <div className="relative overflow-hidden bg-gradient-to-b from-primary to-primary-container text-on-primary">
-          {/* Dos manchas de luz detrás: le quitan lo plano al degradado. */}
+        {/* Claro y con aire. La escena de la derecha es la interfaz usándose
+            sola: tres paneles y un cursor que vota, confirma el plan y deja
+            caer el pin. La cabecera vive dentro de la banda para que el fondo
+            empiece arriba del todo. */}
+        <div className="relative overflow-hidden bg-gradient-to-b from-primary-fixed/70 via-surface-low to-surface-lowest">
           <span
             aria-hidden
-            className="pointer-events-none absolute -left-32 top-24 size-[28rem] rounded-full bg-white/10 blur-3xl"
+            className="pointer-events-none absolute -left-40 top-10 size-[30rem] rounded-full bg-primary-fixed blur-3xl"
           />
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-24 top-0 size-[24rem] rounded-full bg-primary-fixed/25 blur-3xl"
+            className="pointer-events-none absolute -right-32 top-32 size-[26rem] rounded-full bg-primary-fixed-dim/40 blur-3xl"
           />
-          <Cabecera
-            idioma={idioma}
-            entrar={t.nav.entrar}
-            etiquetaIdioma={t.nav.idioma}
-            sobreColor
-          />
-          <section className="mx-auto grid max-w-6xl items-center gap-6 px-4 pt-4 sm:px-6 md:grid-cols-[1fr_1fr] md:gap-10 md:pt-10">
-            <div className="pb-2 md:pb-24">
-              <h1 className="font-display text-[2.75rem] font-extrabold leading-[1] tracking-[-0.035em] text-on-primary sm:text-6xl md:text-7xl">
+          <Cabecera idioma={idioma} entrar={t.nav.entrar} etiquetaIdioma={t.nav.idioma} />
+          <section className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-[1fr_1.1fr] md:gap-8 md:pb-24 md:pt-12">
+            <div>
+              <h1 className="font-display text-[2.75rem] font-extrabold leading-[1] tracking-[-0.035em] text-on-surface sm:text-6xl md:text-[4.25rem]">
                 {t.hero.titulo}
               </h1>
-              <p className="mt-5 max-w-[34ch] text-lg leading-relaxed text-on-primary/85">
+              <p className="mt-5 max-w-[36ch] text-lg leading-relaxed text-on-surface-variant">
                 {t.hero.subtitulo}
               </p>
               <div className="mt-8 flex flex-col items-start gap-3">
-                <a
-                  href="/#/login?modo=signup"
-                  className="squish inline-flex items-center rounded-full bg-surface-lowest px-8 py-4 font-display text-lg font-bold text-primary shadow-[var(--shadow-float)]"
-                >
+                <a href="/#/login?modo=signup" className={BOTON_PRINCIPAL}>
                   {t.hero.cta}
                 </a>
-                <p className="text-sm text-on-primary/75">{t.hero.nota}</p>
+                <p className="text-sm text-on-surface-variant">{t.hero.nota}</p>
               </div>
             </div>
 
-            {/* Dos móviles que se solapan y salen por el borde de abajo. */}
-            <div className="relative mx-auto h-[25rem] w-full max-w-md sm:h-[32rem] md:h-[38rem] md:max-w-none">
-              <MovilCaptura
-                src="/landing/app-mapa.webp"
-                alt={t.escaparate.mapa.alt}
-                inclinacion={-6}
-                prioridad
-                className="kl-sale absolute bottom-[-18%] left-[2%] w-[52%] md:left-[0%]"
-                retraso={150}
-              />
-              <MovilCaptura
-                src="/landing/app-calendario.webp"
-                alt={t.escaparate.calendario.alt}
-                inclinacion={5}
-                prioridad
-                className="kl-sale absolute bottom-[-26%] right-[2%] w-[52%] md:right-[0%]"
-                retraso={350}
-              />
-
-              {/* Alrededor, lo que pasa en la app: pines que aterrizan y el plan que se confirma. */}
-              <Pegatina className="left-[-2%] top-[8%]" giro={-8} duracion={5.5}>
-                <PinSuelto emoji="🍽️" claro />
-              </Pegatina>
-              <Pegatina className="right-[0%] top-[2%]" giro={6} duracion={6.5} retraso={1.2}>
+            <div className="relative">
+              <EscenaPaneles texto={t.hero} votar={t.como.votar} />
+              <Pegatina className="-right-1 top-[-4%] hidden sm:block" giro={6} duracion={6.5} retraso={1.2}>
                 <PinSuelto emoji="🎭" claro />
               </Pegatina>
-              <Pegatina className="left-[44%] top-[34%] hidden sm:block" giro={-4} duracion={7} retraso={0.6}>
+              <Pegatina className="-left-3 top-[52%] hidden md:block" giro={-8} duracion={5.5}>
                 <PinSuelto emoji="🌳" claro />
-              </Pegatina>
-              <Pegatina
-                className="bottom-[16%] left-[-4%] hidden w-[15rem] sm:block md:left-[-8%]"
-                giro={-2}
-                duracion={6}
-                retraso={0.3}
-              >
-                <TarjetaPlan plan={t.hero.plan} animado />
-              </Pegatina>
-              <Pegatina className="right-[-2%] top-[42%] hidden sm:block" giro={5} duracion={5} retraso={0.9}>
-                <span className={CHIP}>
-                  <span aria-hidden>👥</span>
-                  {t.hero.plan.van}
-                </span>
               </Pegatina>
             </div>
           </section>
@@ -272,7 +229,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         {/* ── Cómo funciona: la interfaz real, paso a paso ─────────────── */}
         <section aria-labelledby="kl-como" className="bg-surface-lowest">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-            <h2 id="kl-como" className={TITULO_SECCION}>
+            <h2 id="kl-como" className={`${TITULO_SECCION} text-center`}>
               {t.como.titulo}
             </h2>
             <ol className="mt-12 grid gap-x-12 gap-y-14 md:grid-cols-2">
@@ -332,32 +289,39 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         {/* ── Casos de uso ─────────────────────────────────────────────── */}
         <section aria-labelledby="kl-usos" className="bg-surface-lowest">
           <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-            <div className="grid gap-8 md:grid-cols-[1fr_1.4fr] md:gap-14">
-              <div>
-                <h2 id="kl-usos" className={TITULO_SECCION}>
-                  {t.usos.titulo}
-                </h2>
-                <p className="mt-4 max-w-[36ch] text-lg text-on-surface-variant">{t.usos.cuerpo}</p>
-              </div>
-              <ul className="divide-y divide-outline-variant/60 border-y border-outline-variant/60">
-                {t.usos.casos.map((c) => (
-                  <li key={c.categoria} className="flex items-center gap-4 py-4">
-                    <span
-                      aria-hidden
-                      className="flex size-11 shrink-0 items-center justify-center rounded-[50%_50%_50%_4px] bg-primary-fixed text-xl"
-                    >
-                      {c.emoji}
+            <h2 id="kl-usos" className={`${TITULO_SECCION} text-center`}>
+              {t.usos.titulo}
+            </h2>
+            <p className="mx-auto mt-4 max-w-[46ch] text-center text-lg text-on-surface-variant">
+              {t.usos.cuerpo}
+            </p>
+            {/* Cada tarjeta lleva un tinte distinto, pero solo del índigo del
+                sistema: el rosa y el ámbar quedan para «confirmado» y «por
+                decidir». */}
+            <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {t.usos.casos.map((c, i) => (
+                <li
+                  key={c.categoria}
+                  className={`kl-tarjeta flex flex-col gap-10 rounded-card border border-primary/10 bg-gradient-to-br p-5 shadow-[var(--shadow-surface)] ${TINTES[i % TINTES.length]}`}
+                  style={{ '--i': i } as CSSProperties}
+                >
+                  <span
+                    aria-hidden
+                    className="flex size-12 items-center justify-center rounded-full bg-surface-lowest text-2xl shadow-[var(--shadow-surface)]"
+                  >
+                    {c.emoji}
+                  </span>
+                  <span>
+                    <span className="block font-display text-xl font-bold leading-snug text-on-surface">
+                      {c.plan}
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-display text-lg font-bold leading-snug text-on-surface">
-                        {c.plan}
-                      </span>
-                      <span className="text-sm text-on-surface-variant">{c.categoria}</span>
+                    <span className="mt-1 block text-sm font-semibold text-primary">
+                      {c.categoria}
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  </span>
+                </li>
+              ))}
+            </ul>
           </Revela>
         </section>
 
@@ -481,6 +445,14 @@ const TITULO_SECCION =
   'font-display text-3xl font-extrabold leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
 const TITULO_BANDA =
   'font-display text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
+const TINTES = [
+  'from-primary-fixed to-surface-lowest',
+  'from-surface-high to-surface-lowest',
+  'from-primary-fixed/70 to-surface-low',
+  'from-surface-container to-primary-fixed/60',
+  'from-surface-low to-primary-fixed',
+  'from-primary-fixed/80 to-surface-container',
+]
 const ETIQUETA = 'text-sm font-bold text-on-surface-variant'
 
 /**

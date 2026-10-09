@@ -254,3 +254,99 @@
     animation: none;
   }
 }
+
+/* ── Escena del hero: paneles con cursor (ver `EscenaPaneles`) ──────────── */
+
+/* Las barras se mueven entre fases, no al entrar: transición, no keyframes. */
+.kl-barra-viva {
+  transform-origin: left;
+  transition: transform 650ms var(--kl-ease-out);
+}
+
+/* El cursor viaja con ease-in-out: es movimiento de un punto a otro dentro de
+   la pantalla, no una entrada. */
+.kl-cursor {
+  transition:
+    transform 950ms var(--kl-ease-in-out),
+    opacity 300ms ease;
+}
+
+.kl-insignia {
+  transition:
+    opacity 220ms var(--kl-ease-out),
+    scale 220ms var(--kl-ease-out);
+}
+
+@keyframes kl-clic {
+  from {
+    transform: scale(0.3);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.kl-clic {
+  animation: kl-clic 600ms var(--kl-ease-out) both;
+}
+
+@keyframes kl-onda {
+  from {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.6;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(2.6);
+    opacity: 0;
+  }
+}
+.kl-onda {
+  animation: kl-onda 900ms var(--kl-ease-out) 250ms both;
+}
+
+@keyframes kl-pop {
+  40% {
+    transform: scale(1.4);
+  }
+}
+.kl-pop {
+  animation: kl-pop 380ms var(--kl-ease-out);
+}
+
+/* ── Tarjetas de casos de uso: aparecen en cascada ──────────────────────── */
+
+.kl-tarjeta {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 500ms var(--kl-ease-out) calc(var(--i, 0) * 70ms),
+    transform 500ms var(--kl-ease-out) calc(var(--i, 0) * 70ms),
+    box-shadow 200ms var(--kl-ease-out);
+}
+.kl-dentro .kl-tarjeta {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .kl-dentro .kl-tarjeta:hover {
+    transform: translateY(-3px);
+    transition-delay: 0ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kl-barra-viva,
+  .kl-insignia {
+    transition: none;
+  }
+  .kl-onda,
+  .kl-clic,
+  .kl-pop {
+    animation: none;
+  }
+  .kl-tarjeta {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+}

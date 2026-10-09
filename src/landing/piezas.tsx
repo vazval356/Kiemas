@@ -151,7 +151,55 @@ export function Caras({ iniciales, className = '' }: { iniciales: string[]; clas
  * borde) a «Confirmado» (rosa relleno): el mismo lenguaje de insignias que
  * Planes y Decisiones.
  */
-export function TarjetaPlan({ plan, animado = false }: { plan: PlanDeEjemplo; animado?: boolean }) {
+export function TarjetaPlan({
+  plan,
+  animado = false,
+  estado,
+}: {
+  plan: PlanDeEjemplo
+  animado?: boolean
+  /** Lo gobierna quien la lleva (ver `EscenaPaneles`) en vez de los keyframes. */
+  estado?: 'votando' | 'confirmado'
+}) {
+  if (estado) {
+    return (
+      <div className="rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-on-surface-variant">
+              <span aria-hidden>{plan.emoji}</span> {plan.categoria}
+            </p>
+            <p className="mt-0.5 truncate font-display text-lg font-bold leading-tight text-on-surface">
+              {plan.nombre}
+            </p>
+          </div>
+          <span className="relative shrink-0">
+            <span
+              className={`kl-insignia flex rounded-full border border-outline-variant px-2.5 py-1 text-xs font-semibold text-on-surface-variant ${
+                estado === 'votando' ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              {plan.votando}
+            </span>
+            <span
+              className={`kl-insignia absolute inset-0 flex items-center justify-center rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-on-secondary ${
+                estado === 'confirmado' ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+              }`}
+            >
+              {plan.confirmado}
+            </span>
+          </span>
+        </div>
+        <div className="mt-2.5 flex items-center justify-between text-sm text-on-surface-variant">
+          <span className="font-medium text-on-surface">{plan.cuando}</span>
+          <span className="flex items-center gap-2">
+            <Caras iniciales={['M', 'D', 'L', 'A']} />
+            {plan.van}
+          </span>
+        </div>
+      </div>
+    )
+  }
   return (
     <div
       className={`rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)] ${
@@ -257,6 +305,209 @@ export function EscenaHero({ texto }: { texto: TextoLanding['hero'] }) {
         <div className="absolute inset-x-3 bottom-3">
           <TarjetaPlan plan={texto.plan} animado />
         </div>
+      </div>
+    </figure>
+  )
+}
+
+/**
+ * La escena del hero, al estilo de un producto que se usa solo: tres paneles
+ * superpuestos —el mapa, una votación y el plan— y un cursor que recorre la
+ * interfaz. Marta vota el sábado, la barra sube, el plan pasa de «Votando» a
+ * «Confirmado» y cae el pin en el mapa. Luego vuelve a empezar.
+ *
+ * Es un guion de cinco fases (`FASES`) que avanza con temporizadores mientras
+ * la escena se ve; el CSS solo anima los cambios entre fases. Los textos son
+ * los del hero y los de «Votar», no hay copy nuevo. Con movimiento reducido
+ * se queda en la última fase, sin cursor.
+ */
+const FASES = [900, 1200, 1300, 1200, 3800] as const
+
+export function EscenaPaneles({
+  texto,
+  votar,
+}: {
+  texto: TextoLanding['hero']
+  votar: TextoLanding['como']['votar']
+}) {
+  const { ref, dentro } = useEnPantalla<HTMLDivElement>('0px', 0.35)
+  const [fase, setFase] = useState(0)
+  const [reducido, setReducido] = useState(false)
+  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
+  const filaRef = useRef<HTMLLIElement>(null)
+  const planRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setReducido(mq.matches)
+    const alCambiar = () => setReducido(mq.matches)
+    mq.addEventListener('change', alCambiar)
+    return () => mq.removeEventListener('change', alCambiar)
+  }, [])
+
+  useEffect(() => {
+    if (!dentro || reducido) return
+    const t = window.setTimeout(() => setFase((f) => (f + 1) % FASES.length), FASES[fase])
+    return () => window.clearTimeout(t)
+  }, [dentro, reducido, fase])
+
+  // El cursor va a donde está cada elemento de verdad: se mide, no se calcula
+  // a ojo, así sigue acertando en cualquier ancho de pantalla.
+  useEffect(() => {
+    const escena = ref.current
+    if (!escena || reducido) return
+    const caja = escena.getBoundingClientRect()
+    const punto = (el: HTMLElement | null, fx: number, fy: number) => {
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return { x: r.left - caja.left + r.width * fx, y: r.top - caja.top + r.height * fy }
+    }
+    setCursor(
+      fase === 0
+        ? { x: caja.width * 0.95, y: caja.height * 0.98 }
+        : fase <= 2
+          ? punto(filaRef.current, 0.72, 0.5)
+          : fase === 3
+            ? punto(planRef.current, 0.82, 0.3)
+            : punto(planRef.current, 1.04, 0.45)
+    )
+  }, [fase, reducido, ref])
+
+  const votado = reducido || fase >= 2
+  const confirmado = reducido || fase >= 4
+  const ganadora = votar.opciones.reduce(
+    (g, o, i, todas) => (o.votos > todas[g].votos ? i : g),
+    0
+  )
+  // La votación empieza un voto por debajo: el de Marta es el que la cierra.
+  const votos = votar.opciones.map((o, i) => (i === ganadora && !votado ? o.votos - 1 : o.votos))
+  const total = votos.reduce((s, v) => s + v, 0)
+  const pines = [
+    { emoji: '🍽️', x: '20%', y: '44%' },
+    { emoji: '🌳', x: '74%', y: '34%' },
+    { emoji: '🍸', x: '82%', y: '78%' },
+    { emoji: '🎾', x: '16%', y: '84%' },
+  ]
+
+  return (
+    <figure className="relative m-0">
+      <figcaption className="sr-only">{texto.descripcionEscena}</figcaption>
+      <div
+        ref={ref}
+        aria-hidden
+        className="relative h-[26rem] sm:h-[28rem] md:h-[31rem]"
+      >
+        {/* Mapa, al fondo. */}
+        <div className="absolute left-0 top-[2%] h-[46%] w-[60%] overflow-hidden rounded-card bg-surface-container shadow-[var(--shadow-float)] ring-1 ring-primary/10">
+          <FondoDeMapa />
+          {pines.map((p) => (
+            <Pin key={p.emoji} {...p} color="var(--color-primary-container)" />
+          ))}
+          <span
+            className={`absolute inset-0 transition-[opacity,translate] duration-500 ease-out ${
+              confirmado ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0'
+            }`}
+          >
+            <Pin emoji={texto.plan.emoji} x="48%" y="58%" />
+          </span>
+          {confirmado && (
+            <span
+              key="onda"
+              className="kl-onda absolute left-[48%] top-[58%] size-10 rounded-full border-2 border-primary"
+            />
+          )}
+        </div>
+
+        {/* La votación, en el centro. */}
+        <div className="absolute right-0 top-[14%] z-10 w-[64%] rounded-card bg-surface-lowest p-3.5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:p-4">
+          <p className="font-display text-sm font-bold text-on-surface sm:text-base">
+            {votar.pregunta}
+          </p>
+          <ul className="mt-3 flex flex-col gap-2">
+            {votar.opciones.map((o, i) => {
+              const gana = i === ganadora
+              return (
+                <li
+                  key={o.etiqueta}
+                  ref={gana ? filaRef : undefined}
+                  className={`relative overflow-hidden rounded-control border px-3 py-2 transition-colors duration-300 ${
+                    gana && (votado || fase === 1) ? 'border-primary' : 'border-outline-variant'
+                  }`}
+                >
+                  <span
+                    aria-hidden
+                    className={`kl-barra-viva absolute inset-0 ${
+                      gana && votado ? 'bg-primary/20' : 'bg-primary/10'
+                    }`}
+                    style={{ transform: `scaleX(${votos[i] / total})` }}
+                  />
+                  <span className="relative flex items-center justify-between gap-2 text-xs sm:text-sm">
+                    <span className="flex items-center gap-2 font-semibold text-on-surface">
+                      {o.etiqueta}
+                      {gana && (
+                        <span
+                          className={`rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-on-secondary transition-[opacity,scale] duration-300 sm:text-[11px] ${
+                            votado ? 'scale-100 opacity-100' : 'scale-75 opacity-0'
+                          }`}
+                        >
+                          {votar.gana}
+                        </span>
+                      )}
+                    </span>
+                    <span
+                      key={`${i}-${votos[i]}`}
+                      className={`font-medium text-on-surface-variant ${
+                        gana && votado && !reducido ? 'kl-pop' : ''
+                      }`}
+                    >
+                      {votos[i]}
+                    </span>
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+          <p
+            className={`mt-3 text-[11px] text-on-surface-variant transition-opacity duration-300 sm:text-xs ${
+              votado ? 'opacity-0' : 'opacity-100'
+            }`}
+          >
+            {votar.faltan}
+          </p>
+        </div>
+
+        {/* El plan, delante de todo. */}
+        <div ref={planRef} className="absolute bottom-[3%] left-[2%] z-20 w-[70%] sm:w-[64%]">
+          <TarjetaPlan plan={texto.plan} estado={confirmado ? 'confirmado' : 'votando'} />
+        </div>
+
+        {/* El cursor de Marta. */}
+        {!reducido && (
+          <span
+            className="kl-cursor pointer-events-none absolute left-0 top-0 z-30"
+            style={{
+              transform: `translate3d(${cursor?.x ?? 0}px, ${cursor?.y ?? 0}px, 0)`,
+              opacity: cursor && dentro ? 1 : 0,
+            }}
+          >
+            {fase === 2 && (
+              <span className="kl-clic absolute -left-3 -top-3 size-6 rounded-full bg-primary/40" />
+            )}
+            <svg width="22" height="22" viewBox="0 0 22 22" className="drop-shadow-md">
+              <path
+                d="M3 2 L3 17 L7.2 13.2 L10 19.5 L12.6 18.3 L9.9 12.2 L15.5 12 Z"
+                fill="var(--color-primary)"
+                stroke="#fff"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="absolute left-4 top-4 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-on-primary shadow-md">
+              Marta
+            </span>
+          </span>
+        )}
       </div>
     </figure>
   )
