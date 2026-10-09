@@ -9,7 +9,7 @@ export const es: TextoLanding = {
   nav: { descargar: 'Descargar', idioma: 'Idioma' },
 
   hero: {
-    titulo: 'Del me da igual a un plan de verdad.',
+    titulo: 'Del me da igual a un *plan de verdad*.',
     subtitulo:
       'Guardáis los sitios, proponéis cuándo y votáis lo que haga falta. Si nadie se decide, decide la ruleta.',
     cta: 'Descargar para iPhone',
@@ -43,7 +43,7 @@ export const es: TextoLanding = {
   },
 
   problema: {
-    titulo: 'El chat lleva tres días con esto.',
+    titulo: 'El chat lleva *tres días* con esto.',
     cuerpo:
       'Un enlace pegado, una captura, un ¿qué os parece? y silencio. La decisión está en algún punto del chat y nadie sabe en cuál.',
     hilo: [
@@ -57,7 +57,7 @@ export const es: TextoLanding = {
   },
 
   como: {
-    titulo: 'Descubrir. Compartir. Votar. Ir.',
+    titulo: 'Descubrir. Compartir. Votar. *Ir.*',
     pasos: [
       {
         verbo: 'Descubrir',
@@ -118,19 +118,19 @@ export const es: TextoLanding = {
 
   escaparate: {
     mapa: {
-      titulo: 'Todos vuestros sitios, en un solo mapa',
+      titulo: 'Todos vuestros sitios, en *un solo mapa*',
       cuerpo:
         'Lo que cada uno guarda aparece en el mapa del grupo, con su categoría. Pegad un enlace de Google Maps, Apple Maps o Waze y se rellena solo.',
       alt: 'Pantalla de Kiemas: el mapa de Madrid lleno de pines de sitios guardados por categorías.',
     },
     calendario: {
-      titulo: 'Quedad sin cuarenta mensajes',
+      titulo: 'Quedad sin *cuarenta mensajes*',
       cuerpo:
         'Un plan con fecha, o con votación si no os ponéis de acuerdo. Las decisiones pequeñas se votan en un toque, y se ve de un vistazo quién va.',
       alt: 'Pantalla de Kiemas: el calendario del grupo con un plan votando fechas y una decisión abierta.',
     },
     sorpresa: {
-      titulo: 'Y si es una sorpresa, no se entera',
+      titulo: 'Y si es una sorpresa, *no se entera*',
       cuerpo:
         'Preparad un plan para alguien del grupo. En su calendario solo verá que ese día tiene algo. Vosotros lo veis todo, y cuando toque, lo reveláis.',
       alt: 'Comparación: el plan completo que ve quien lo prepara y la casilla Algo te espera que ve la persona sorprendida.',
@@ -143,7 +143,7 @@ export const es: TextoLanding = {
       van: '3 van',
     },
     explorar: {
-      titulo: 'Descubre listas de otra gente',
+      titulo: 'Descubre listas de *otra gente*',
       cuerpo:
         'Sigue las listas que publican otros (dónde comer en Madrid, en Granada, en Palma) y llévate los sitios a tu mapa.',
       alt: 'Pantalla de Kiemas: Explorar, con las listas más seguidas, como Dónde comer en Madrid, y un buscador.',
@@ -151,7 +151,7 @@ export const es: TextoLanding = {
   },
 
   antesDespues: {
-    titulo: 'El mismo plan, sin el ruido.',
+    titulo: 'El mismo plan, *sin el ruido*.',
     antes: 'Antes',
     despues: 'Con Kiemas',
     ruido: [
@@ -164,7 +164,7 @@ export const es: TextoLanding = {
   },
 
   usos: {
-    titulo: 'Para cualquier plan, no solo para cenar.',
+    titulo: 'Para cualquier plan, *no solo para cenar*.',
     cuerpo: 'Las mismas categorías que trae la app, para lo que os apetezca.',
     casos: [
       { emoji: '🍽️', categoria: 'Restaurantes', plan: 'La cena de cumpleaños' },
@@ -177,7 +177,7 @@ export const es: TextoLanding = {
   },
 
   precios: {
-    titulo: 'Gratis para empezar',
+    titulo: 'Gratis para *empezar*',
     subtitulo: 'Un pago único más adelante, solo si os hace falta más sitio.',
     gratis: {
       etiqueta: 'Para empezar a organizarse',
@@ -207,7 +207,7 @@ export const es: TextoLanding = {
   },
 
   final: {
-    titulo: 'Vuestro próximo plan empieza aquí.',
+    titulo: 'Vuestro *próximo plan* empieza aquí.',
     cuerpo: 'Cread el grupo, pasad el enlace y guardad el primer sitio.',
     cta: 'Descargar la app',
   },

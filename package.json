@@ -27,6 +27,7 @@
     "@capgo/capacitor-native-biometric": "^7.5.0",
     "@capgo/capacitor-photo-library": "^7.2.11",
     "@ebarooni/capacitor-calendar": "^7.2.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource/figtree": "^5.3.0",
     "@revenuecat/purchases-capacitor": "^11.3.2",
     "@supabase/supabase-js": "^2.49.4",

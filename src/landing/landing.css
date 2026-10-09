@@ -322,3 +322,62 @@
     transition: opacity 300ms ease;
   }
 }
+
+/* ── Tipografía de los titulares y su énfasis ───────────────────────────── */
+
+/* Los titulares van en Fraunces, una serif con carácter; el resto de la
+   página sigue en Figtree. Peso medio: la serif pesada se vuelve tosca. */
+.kl-titular {
+  font-family: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  font-weight: 640;
+  font-optical-sizing: auto;
+  text-wrap: balance;
+}
+
+/* Lo marcado: cursiva y un trazo de rotulador por debajo, que se dibuja de
+   izquierda a derecha al entrar en pantalla. Con `box-decoration-break` el
+   trazo se repite si la frase salta de línea. Sin soporte de
+   `animation-timeline` o con movimiento reducido queda ya dibujado. */
+.kl-marca {
+  --kl-trazo: color-mix(in srgb, var(--color-secondary-fixed-dim) 85%, transparent);
+  font-style: italic;
+  font-weight: 600;
+  padding: 0 0.08em;
+  margin: 0 -0.08em;
+  background-image: linear-gradient(
+    to bottom,
+    transparent 56%,
+    var(--kl-trazo) 56%,
+    var(--kl-trazo) 90%,
+    transparent 90%
+  );
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 100% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.kl-marca-oscura {
+  --kl-trazo: color-mix(in srgb, var(--color-tertiary-fixed-dim) 80%, transparent);
+}
+.kl-marca-oscura {
+  color: var(--color-on-primary);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kl-marca {
+      animation: kl-trazo linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 40%;
+    }
+  }
+}
+@keyframes kl-trazo {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}

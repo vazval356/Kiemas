@@ -20,6 +20,8 @@ import {
 import { resultadoDeConfirmacion } from '../lib/confirmacion'
 import { APP_STORE_URL } from './tiendas'
 import { BotonAppStore } from './BotonAppStore'
+import '@fontsource-variable/fraunces/wght.css'
+import '@fontsource-variable/fraunces/wght-italic.css'
 import './landing.css'
 
 /**
@@ -62,8 +64,8 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           {resultadoDeConfirmacion && <AvisoDeConfirmacion texto={t.confirmacion} resultado={resultadoDeConfirmacion} />}
           <section className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-6 sm:px-6 md:grid-cols-[1fr_1.1fr] md:gap-8 md:pb-24 md:pt-12">
             <div>
-              <h1 className="font-display text-[2.75rem] font-extrabold leading-[1] tracking-[-0.035em] text-on-surface sm:text-6xl md:text-[4.25rem]">
-                {t.hero.titulo}
+              <h1 className="kl-titular text-[2.75rem] leading-[1] tracking-[-0.03em] text-on-surface sm:text-6xl md:text-[4.25rem]">
+                <Marcado texto={t.hero.titulo} />
               </h1>
               <p className="mt-5 max-w-[36ch] text-lg leading-relaxed text-on-surface-variant">
                 {t.hero.subtitulo}
@@ -98,7 +100,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
           >
             <div>
               <h2 id="kl-problema" className={TITULO_SECCION}>
-                {t.problema.titulo}
+                <Marcado texto={t.problema.titulo} />
               </h2>
               <p className="mt-4 max-w-[42ch] text-lg leading-relaxed text-on-surface-variant">
                 {t.problema.cuerpo}
@@ -235,7 +237,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         <section aria-labelledby="kl-como" className="bg-surface-lowest">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
             <h2 id="kl-como" className={`${TITULO_SECCION} text-center`}>
-              {t.como.titulo}
+              <Marcado texto={t.como.titulo} />
             </h2>
             <ol className="mt-12 grid gap-x-12 gap-y-14 md:grid-cols-2">
               {t.como.pasos.map((paso, i) => (
@@ -246,7 +248,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
                     </span>
                     {paso.verbo}
                   </p>
-                  <h3 className="mt-3 font-display text-2xl font-bold leading-tight tracking-[-0.01em]">
+                  <h3 className="kl-titular mt-3 text-2xl leading-tight tracking-[-0.01em]">
                     {paso.titulo}
                   </h3>
                   <p className="mt-2 max-w-[44ch] text-on-surface-variant">{paso.cuerpo}</p>
@@ -266,7 +268,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         <section aria-labelledby="kl-antes" className="bg-primary-fixed">
           <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
             <h2 id="kl-antes" className={TITULO_SECCION}>
-              {t.antesDespues.titulo}
+              <Marcado texto={t.antesDespues.titulo} />
             </h2>
             <div className="mt-10 grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-10">
               <div>
@@ -295,7 +297,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         <section aria-labelledby="kl-usos" className="bg-surface-lowest">
           <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
             <h2 id="kl-usos" className={`${TITULO_SECCION} text-center`}>
-              {t.usos.titulo}
+              <Marcado texto={t.usos.titulo} />
             </h2>
             <p className="mx-auto mt-4 max-w-[46ch] text-center text-lg text-on-surface-variant">
               {t.usos.cuerpo}
@@ -334,7 +336,7 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
         <section aria-labelledby="kl-precios" className="bg-surface-high">
           <Revela as="div" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
             <h2 id="kl-precios" className={`${TITULO_SECCION} text-center`}>
-              {t.precios.titulo}
+              <Marcado texto={t.precios.titulo} />
             </h2>
             <p className="mx-auto mt-3 max-w-[46ch] text-center text-lg text-on-surface-variant">
               {t.precios.subtitulo}
@@ -422,9 +424,9 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
             <div>
               <h2
                 id="kl-final"
-                className="font-display text-5xl font-extrabold leading-[1] tracking-[-0.03em] md:text-7xl"
+                className="kl-titular text-5xl leading-[1] tracking-[-0.03em] md:text-7xl"
               >
-                {t.final.titulo}
+                <Marcado texto={t.final.titulo} />
               </h2>
               <p className="mt-4 text-xl text-on-primary/85">{t.final.cuerpo}</p>
             </div>
@@ -441,9 +443,30 @@ export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
 const BOTON_PRINCIPAL =
   'squish inline-flex items-center rounded-full bg-primary px-8 py-4 font-display text-lg font-bold text-on-primary shadow-[var(--shadow-float)]'
 const TITULO_SECCION =
-  'font-display text-3xl font-extrabold leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
+  'kl-titular text-3xl leading-[1.08] tracking-[-0.02em] text-on-surface md:text-[2.75rem]'
 const TITULO_BANDA =
-  'font-display text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
+  'kl-titular text-4xl leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
+/**
+ * Resalta lo que va entre asteriscos: cursiva de la serif y un trazo de
+ * rotulador que se dibuja al entrar en pantalla (ver `.kl-marca`). Sin
+ * comillas ni negritas: el énfasis lo pone la forma de la letra.
+ */
+function Marcado({ texto, oscuro = false }: { texto: string; oscuro?: boolean }) {
+  return (
+    <>
+      {texto.split('*').map((trozo, i) =>
+        i % 2 === 1 ? (
+          <em key={i} className={`kl-marca ${oscuro ? 'kl-marca-oscura' : ''}`}>
+            {trozo}
+          </em>
+        ) : (
+          trozo
+        ),
+      )}
+    </>
+  )
+}
+
 const BOTON_PRINCIPAL_PEQUENO =
   'squish inline-flex items-center rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary'
 const BOTON_SECUNDARIO_PEQUENO =
@@ -494,7 +517,7 @@ function Banda({
             id={id}
             className={`${TITULO_BANDA} ${oscuro ? 'text-on-primary' : 'text-on-surface'}`}
           >
-            {titulo}
+            <Marcado texto={titulo} oscuro={oscuro} />
           </h2>
           <p
             className={`mt-4 max-w-[42ch] text-lg leading-relaxed ${

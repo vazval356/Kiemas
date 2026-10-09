@@ -9,7 +9,7 @@ export const en: TextoLanding = {
   nav: { descargar: 'Download', idioma: 'Language' },
 
   hero: {
-    titulo: 'From I don’t mind to an actual plan.',
+    titulo: 'From I don’t mind to an *actual plan*.',
     subtitulo:
       'Save places, pitch a day, vote on whatever needs deciding. If nobody picks, the wheel does.',
     cta: 'Download for iPhone',
@@ -43,7 +43,7 @@ export const en: TextoLanding = {
   },
 
   problema: {
-    titulo: 'The group chat’s been at this for three days.',
+    titulo: 'The group chat’s been at this for *three days*.',
     cuerpo:
       'A pasted link, a screenshot, a thoughts? and then silence. The decision is somewhere in that thread and nobody can find it.',
     hilo: [
@@ -57,7 +57,7 @@ export const en: TextoLanding = {
   },
 
   como: {
-    titulo: 'Discover. Share. Vote. Go.',
+    titulo: 'Discover. Share. Vote. *Go.*',
     pasos: [
       {
         verbo: 'Discover',
@@ -118,19 +118,19 @@ export const en: TextoLanding = {
 
   escaparate: {
     mapa: {
-      titulo: 'Every place, on one map',
+      titulo: 'Every place, on *one map*',
       cuerpo:
         'What each of you saves shows up on the group map, by category. Paste a Google Maps, Apple Maps or Waze link and it fills itself in.',
       alt: 'Kiemas screen: a map of Madrid full of saved-place pins, sorted by category.',
     },
     calendario: {
-      titulo: 'Sort it out without forty messages',
+      titulo: 'Sort it out without *forty messages*',
       cuerpo:
         'A plan with a date, or a vote when you can’t agree. Small decisions take one tap, and you can see who’s in at a glance.',
       alt: 'Kiemas screen: the group calendar with a plan that is voting on dates and an open decision.',
     },
     sorpresa: {
-      titulo: 'And if it’s a surprise, they won’t know',
+      titulo: 'And if it’s a surprise, *they won’t know*',
       cuerpo:
         'Plan something for someone in the group. On their calendar they only see that they’re busy that day. You see everything, and you reveal it when the time comes.',
       alt: 'Comparison: the full plan its organiser sees, and the Something’s waiting for you slot the surprised person sees.',
@@ -143,7 +143,7 @@ export const en: TextoLanding = {
       van: '3 going',
     },
     explorar: {
-      titulo: 'Find lists from other people',
+      titulo: 'Find lists from *other people*',
       cuerpo:
         'Follow the lists others publish (where to eat in Madrid, Granada, Palma) and take the places to your own map.',
       alt: 'Kiemas screen: Explore, with the most-followed lists, like Where to eat in Madrid, and a search bar.',
@@ -151,7 +151,7 @@ export const en: TextoLanding = {
   },
 
   antesDespues: {
-    titulo: 'Same plan. Less noise.',
+    titulo: 'Same plan. *Less noise.*',
     antes: 'Before',
     despues: 'With Kiemas',
     ruido: [
@@ -164,7 +164,7 @@ export const en: TextoLanding = {
   },
 
   usos: {
-    titulo: 'For any plan, not just dinner.',
+    titulo: 'For any plan, *not just dinner*.',
     cuerpo: 'The same categories the app comes with, for whatever you’re up for.',
     casos: [
       { emoji: '🍽️', categoria: 'Dining', plan: 'The birthday dinner' },
@@ -177,7 +177,7 @@ export const en: TextoLanding = {
   },
 
   precios: {
-    titulo: 'Free to start',
+    titulo: 'Free to *start*',
     subtitulo: 'A one-time payment later, only if you need more room.',
     gratis: {
       etiqueta: 'To get organised',
@@ -207,7 +207,7 @@ export const en: TextoLanding = {
   },
 
   final: {
-    titulo: 'Your next plan starts here.',
+    titulo: 'Your *next plan* starts here.',
     cuerpo: 'Start a group, share the link, save your first place.',
     cta: 'Download the app',
   },
