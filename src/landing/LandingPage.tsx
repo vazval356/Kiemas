@@ -447,9 +447,9 @@ const TITULO_SECCION =
 const TITULO_BANDA =
   'kl-titular text-4xl leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-6xl'
 /**
- * Resalta lo que va entre asteriscos: cursiva de la serif y un trazo de
- * rotulador que se dibuja al entrar en pantalla (ver `.kl-marca`). Sin
- * comillas ni negritas: el énfasis lo pone la forma de la letra.
+ * Resalta lo que va entre asteriscos: cursiva de la serif y el color de
+ * marca (ver `.kl-marca`). Sin comillas ni negritas: el énfasis lo pone la
+ * forma de la letra.
  */
 function Marcado({ texto, oscuro = false }: { texto: string; oscuro?: boolean }) {
   return (
