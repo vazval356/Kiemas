@@ -626,27 +626,30 @@ function CursorMarta({
 
 const PANEL = 'shadow-[var(--shadow-float)] ring-1 ring-primary/10'
 
-const TIEMPOS_DESCUBRIR = [1100, 1500, 1500, 1500, 1500] as const
+const TIEMPOS_DESCUBRIR = [900, 1900, 1400, 1400, 1400, 1400] as const
 
-/** Filtrar por categoría: el cursor recorre los chips y el mapa deja ver solo esa. */
+/**
+ * El mapa del grupo: sin cursor, porque aquí no hace falta tocar nada. Caen los
+ * pines de cuatro personas (cada una con su color, como en la app) y luego el
+ * filtro de categorías va pasando solo, dejando ver lo de cada tipo.
+ */
 export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubrir'] }) {
-  const { ref, fase, reducido, visible } = useGuion(TIEMPOS_DESCUBRIR, 0)
-  const chipsRef = useRef<(HTMLSpanElement | null)[]>([])
-  const activa = fase === 0 ? null : fase - 1
-  const pos = useCursor(ref, fase, reducido, (f) =>
-    f === 0 ? 'fuera' : { el: chipsRef.current[f], fx: 0.5, fy: 0.6 }
-  )
-  // Dos sitios por categoría, en el orden de los chips.
+  const { ref, fase, reducido } = useGuion(TIEMPOS_DESCUBRIR, 1)
+  const llenos = fase >= 1
+  const activa = fase <= 1 ? null : fase - 2
+  const colores = ['#4648d4', '#b90538', '#825100', '#2f2ebe']
+  // Dos sitios por categoría, en el orden de los chips; `quien` es la persona que lo guardó.
   const pines = [
-    { emoji: '🍽️', cat: 0, x: '24%', y: '58%' },
-    { emoji: '🍽️', cat: 0, x: '63%', y: '90%' },
-    { emoji: '🌳', cat: 1, x: '74%', y: '56%' },
-    { emoji: '🌳', cat: 1, x: '40%', y: '80%' },
-    { emoji: '🎭', cat: 2, x: '50%', y: '60%' },
-    { emoji: '🎭', cat: 2, x: '12%', y: '86%' },
-    { emoji: '🍸', cat: 3, x: '86%', y: '84%' },
-    { emoji: '🍸', cat: 3, x: '34%', y: '96%' },
+    { emoji: '🍽️', cat: 0, quien: 0, x: '24%', y: '58%' },
+    { emoji: '🌳', cat: 1, quien: 1, x: '74%', y: '56%' },
+    { emoji: '🎭', cat: 2, quien: 2, x: '50%', y: '60%' },
+    { emoji: '🍸', cat: 3, quien: 3, x: '86%', y: '84%' },
+    { emoji: '🍽️', cat: 0, quien: 1, x: '63%', y: '90%' },
+    { emoji: '🌳', cat: 1, quien: 0, x: '40%', y: '80%' },
+    { emoji: '🎭', cat: 2, quien: 3, x: '12%', y: '86%' },
+    { emoji: '🍸', cat: 3, quien: 2, x: '34%', y: '96%' },
   ]
+  const visibles = pines.filter((p) => activa === null || p.cat === activa).length
   const chips = [texto.todos, ...texto.chips]
   return (
     <div
@@ -660,15 +663,14 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
         return (
           <span
             key={i}
-            className="absolute inset-0 transition-opacity duration-300 ease-out"
-            style={{ opacity: encendido ? 1 : 0.18 }}
+            className="absolute inset-0 transition-[opacity,translate] duration-300 ease-out"
+            style={{
+              opacity: llenos ? (encendido ? 1 : 0.15) : 0,
+              translate: llenos ? '0 0' : '0 -14px',
+              transitionDelay: fase === 1 ? `${i * 110}ms` : '0ms',
+            }}
           >
-            <Pin
-              emoji={p.emoji}
-              x={p.x}
-              y={p.y}
-              color={activa === p.cat ? 'var(--color-primary)' : 'var(--color-primary-container)'}
-            />
+            <Pin emoji={p.emoji} x={p.x} y={p.y} color={colores[p.quien]} />
             {activa === p.cat && !reducido && (
               <span
                 key={`${fase}-${i}`}
@@ -683,9 +685,6 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
         {chips.map((c, i) => (
           <span
             key={c}
-            ref={(el) => {
-              chipsRef.current[i] = el
-            }}
             className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors duration-200 sm:text-xs ${
               (activa === null ? 0 : activa + 1) === i
                 ? 'bg-primary text-on-primary shadow-md'
@@ -696,59 +695,71 @@ export function PiezaDescubrir({ texto }: { texto: TextoLanding['como']['descubr
           </span>
         ))}
       </div>
-      {!reducido && <CursorMarta pos={pos} clic={fase > 0} visible={visible} />}
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-surface-lowest py-1 pl-1.5 pr-3 text-xs font-bold text-on-surface shadow-[var(--shadow-float)]">
+        <Caras iniciales={['M', 'D', 'L', 'A']} />
+        <span key={visibles} className={llenos && !reducido ? 'kl-pop' : ''}>
+          {llenos ? visibles : 0} 📍
+        </span>
+      </div>
     </div>
   )
 }
 
-const TIEMPOS_COMPARTIR = [1000, 1000, 900, 1500, 2800] as const
+const TIEMPOS_COMPARTIR = [900, 1100, 1300, 1400, 3000] as const
 
-/** Pegar un enlace: el cursor lo pulsa, sube la tarjeta del sitio y cae su pin. */
+/**
+ * Pegar un enlace y que se rellene la ficha: sin mapa ni cursor. El enlace
+ * entra en su campo, la tarjeta del sitio se monta por capas (foto, nombre,
+ * etiquetas) y al final llega la nota de quien lo trajo.
+ */
 export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compartir'] }) {
-  const { ref, fase, reducido, visible } = useGuion(TIEMPOS_COMPARTIR, 4)
-  const enlaceRef = useRef<HTMLSpanElement>(null)
-  const pos = useCursor(ref, fase, reducido, (f) =>
-    f === 0 ? 'fuera' : { el: enlaceRef.current, fx: 0.7, fy: 0.6 }
-  )
-  const tarjeta = fase >= 2
-  const detalle = fase >= 3
+  const { ref, fase, reducido } = useGuion(TIEMPOS_COMPARTIR, 4)
+  const enlace = fase >= 1
+  const lista = fase >= 2
+  const nota = fase >= 3
+  const capa = (activa: boolean) =>
+    `transition-[opacity,translate] duration-[400ms] ease-out ${
+      activa ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+    }`
   return (
-    <div
-      ref={ref}
-      aria-hidden
-      className={`relative h-64 overflow-hidden rounded-card bg-surface-container ${PANEL}`}
-    >
-      <FondoDeMapa />
-      <span
-        ref={enlaceRef}
-        className={`absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-surface-lowest px-3 py-1.5 text-xs font-semibold shadow-[var(--shadow-surface)] transition-colors duration-200 ${
-          tarjeta ? 'text-primary' : 'text-on-surface-variant'
-        }`}
-      >
-        {tarjeta ? '✓' : '🔗'} maps.apple.com/…
-      </span>
-      <span
-        className={`absolute inset-0 transition-[opacity,translate] duration-500 ease-out ${
-          detalle ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0'
-        }`}
-      >
-        <Pin emoji="🍽️" x="74%" y="44%" />
-      </span>
-      {detalle && !reducido && (
-        <span
-          key="onda"
-          className="kl-onda absolute left-[74%] top-[44%] size-10 rounded-full border-2 border-primary"
-        />
-      )}
+    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-3.5 ${PANEL}`}>
       <div
-        className={`absolute inset-x-3 bottom-3 flex overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)] transition-[opacity,translate] duration-500 ease-out ${
-          tarjeta ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+        className={`flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-semibold transition-colors duration-300 ${
+          lista ? 'border-primary text-primary' : 'border-outline-variant text-on-surface-variant'
         }`}
       >
-        <div className="flex w-20 shrink-0 items-center justify-center bg-primary-fixed text-3xl">🍽️</div>
-        <div className="min-w-0 flex-1 p-3">
-          <p className="font-display text-base font-bold leading-tight text-on-surface">{texto.nombre}</p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+        <span>{lista ? '✓' : '🔗'}</span>
+        <span
+          className={`transition-[opacity,translate] duration-300 ease-out ${
+            enlace ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'
+          }`}
+        >
+          maps.apple.com/…
+        </span>
+        {enlace && !lista && !reducido && (
+          <span className="kl-giro ml-auto size-3.5 rounded-full border-2 border-primary border-t-transparent" />
+        )}
+      </div>
+
+      <div className="mt-3 overflow-hidden rounded-card bg-surface-container">
+        <div
+          className={`flex h-24 items-center justify-center bg-primary-fixed text-5xl transition-[opacity,scale] duration-500 ease-out ${
+            lista ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          }`}
+        >
+          🍽️
+        </div>
+        <div className="bg-surface-lowest p-3">
+          <p
+            className={`font-display text-base font-bold leading-tight text-on-surface ${capa(lista)}`}
+            style={{ transitionDelay: lista ? '120ms' : '0ms' }}
+          >
+            {texto.nombre}
+          </p>
+          <div
+            className={`mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] ${capa(lista)}`}
+            style={{ transitionDelay: lista ? '220ms' : '0ms' }}
+          >
             <span className="rounded-full bg-surface-container px-2 py-0.5 font-semibold text-on-surface-variant">
               {texto.categoria}
             </span>
@@ -757,13 +768,19 @@ export function PiezaCompartir({ texto }: { texto: TextoLanding['como']['compart
             </span>
             <span className="font-semibold text-tertiary">★ 4,5</span>
           </div>
-          <div className={`transition-opacity duration-300 ${detalle ? 'opacity-100' : 'opacity-0'}`}>
-            <p className="mt-1.5 text-xs text-on-surface">{texto.nota}</p>
-            <p className="text-[11px] text-on-surface-variant">— {texto.quien}</p>
+          <div
+            className={`mt-2.5 flex items-start gap-2 rounded-2xl rounded-tl-md bg-primary-fixed/60 px-3 py-2 ${capa(nota)}`}
+          >
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-on-secondary">
+              {texto.quien.charAt(0)}
+            </span>
+            <span className="min-w-0 text-xs text-on-surface">
+              {texto.nota}
+              <span className="block text-[11px] text-on-surface-variant">— {texto.quien}</span>
+            </span>
           </div>
         </div>
       </div>
-      {!reducido && <CursorMarta pos={pos} clic={fase === 2} visible={visible} />}
     </div>
   )
 }
@@ -838,91 +855,184 @@ export function PiezaVotar({ texto }: { texto: TextoLanding['como']['votar'] }) 
   )
 }
 
+/** Alto de cada fila del carrete: el de la app, escalado a la pieza. */
+const FILA_RULETA = 52
+const GIROS_RULETA = 40
+const DURACION_RULETA = 3200
+const CURVA_RULETA = 'cubic-bezier(0.15, 0.65, 0.25, 1)'
+/** Un emoji por sitio, en el orden de `opciones`: la ruleta de la app los enseña por categoría. */
+const EMOJIS_RULETA = ['🍽️', '🌳', '🍸', '🎭']
+
 /**
- * La ruleta, en bucle mientras se ve: pasa por los sitios guardados, frena y
- * se queda en uno; unos segundos después vuelve a girar desde donde quedó. El
- * ámbar dice «esto está por decidir» mientras gira; al parar, el marco se
- * rellena de índigo y sale una onda, como al confirmar un plan.
+ * La ruleta de verdad: la ventana de tres filas de `RouletteModal` con la del
+ * centro marcada, la tira que se desliza con desenfoque y frena en el sitio
+ * elegido, y el confeti al decidir. El ganador se fija antes de animar, como
+ * en la app. En bucle mientras se ve. Con movimiento reducido, solo el resultado.
  */
 export function PiezaIr({ texto }: { texto: TextoLanding['como']['ir'] }) {
   const { ref, visible } = useVisible<HTMLDivElement>()
   const reducido = usePreferenciaReducida()
   const n = texto.opciones.length
   const final = texto.opciones.indexOf(texto.ganador)
-  const [indice, setIndice] = useState(0)
-  const [fase, setFase] = useState<'espera' | 'gira' | 'decidido'>('espera')
+  const [decidido, setDecidido] = useState(false)
   const [ciclo, setCiclo] = useState(0)
-  const indiceRef = useRef(0)
+  const tiraRef = useRef<HTMLDivElement>(null)
+  const confetiRef = useRef<HTMLDivElement>(null)
+  const inicioRef = useRef(0)
+
+  // La tira: vueltas a la lista y, al final, el ganador. Empieza donde acabó
+  // la anterior, para que el bucle no dé un salto. Sus vecinos no pueden ser él.
+  const inicio = inicioRef.current
+  const filas = Array.from({ length: GIROS_RULETA + 2 }, (_, i) =>
+    i === GIROS_RULETA ? final : (inicio + i) % n
+  )
+  if (filas[GIROS_RULETA - 1] === final) filas[GIROS_RULETA - 1] = (final + 1) % n
+  if (filas[GIROS_RULETA + 1] === final) filas[GIROS_RULETA + 1] = (final + 1) % n
 
   useEffect(() => {
+    const tira = tiraRef.current
+    if (!tira) return
+    const destino = `translateY(${-(GIROS_RULETA - 1) * FILA_RULETA}px)`
     if (reducido) {
-      setIndice(final)
-      setFase('decidido')
+      setDecidido(true)
+      tira.style.transform = destino
       return
     }
     if (!visible) return
+    let vigente = true
     const ids: number[] = []
-    setFase('espera')
+    setDecidido(false)
+    tira.style.transform = 'translateY(0)'
     ids.push(
       window.setTimeout(() => {
-        // Pasos cada vez más espaciados: frena como una ruleta, no se corta en
-        // seco. Termina exactamente en el ganador, salga de donde salga.
-        const inicio = indiceRef.current
-        const pasos = 14 + ((((final - inicio - 14) % n) + n) % n)
-        let t = 0
-        setFase('gira')
-        for (let k = 0; k < pasos; k++) {
-          t += 55 + k * k * 1.1
-          ids.push(
-            window.setTimeout(() => {
-              const i = (inicio + k + 1) % n
-              indiceRef.current = i
-              setIndice(i)
-              if (k === pasos - 1) setFase('decidido')
-            }, t)
-          )
-        }
-        ids.push(window.setTimeout(() => setCiclo((c) => c + 1), t + 3200))
+        tira.animate([{ transform: 'translateY(0)' }, { transform: destino }], {
+          duration: DURACION_RULETA,
+          easing: CURVA_RULETA,
+          fill: 'forwards',
+        })
+        // El desenfoque baja con la velocidad: a tope mientras corre y a cero
+        // antes de parar, para poder leer dónde cae.
+        tira.animate(
+          [
+            { filter: 'blur(2.6px)' },
+            { filter: 'blur(2px)', offset: 0.3 },
+            { filter: 'blur(0px)', offset: 0.75 },
+            { filter: 'blur(0px)' },
+          ],
+          { duration: DURACION_RULETA, easing: 'linear', fill: 'forwards' }
+        )
+        ids.push(
+          window.setTimeout(() => {
+            if (!vigente) return
+            setDecidido(true)
+            confeti(confetiRef.current)
+          }, DURACION_RULETA + 120)
+        )
+        ids.push(
+          window.setTimeout(() => {
+            if (!vigente) return
+            inicioRef.current = final
+            setCiclo((c) => c + 1)
+          }, DURACION_RULETA + 3400)
+        )
       }, 900)
     )
-    return () => ids.forEach(clearTimeout)
-  }, [visible, reducido, final, n, ciclo])
+    return () => {
+      vigente = false
+      ids.forEach(clearTimeout)
+      tira.getAnimations().forEach((a) => a.cancel())
+    }
+  }, [visible, reducido, final, ciclo])
 
-  const decidido = fase === 'decidido'
   return (
-    <div ref={ref} aria-hidden className={`relative rounded-card bg-surface-lowest p-4 ${PANEL}`}>
-      <p className={`text-sm font-semibold ${decidido ? 'text-secondary' : 'text-tertiary'}`}>
-        {decidido ? `✓ ${texto.despues}` : texto.antes}
+    <div
+      ref={ref}
+      aria-hidden
+      className={`relative overflow-hidden rounded-card bg-surface p-4 text-center ${PANEL}`}
+    >
+      <p className="font-display text-lg font-bold text-primary">{texto.titulo}</p>
+      <p className="mb-2 mt-1 text-xs text-on-surface-variant">
+        {decidido ? `${texto.despues} (${texto.numOpciones})` : texto.antes}
       </p>
-      <div className="relative mt-3">
+
+      <div
+        className="relative overflow-hidden rounded-card bg-surface-lowest shadow-[inset_0_0_0_1.5px_var(--color-outline-variant)]"
+        style={{ height: FILA_RULETA * 3 }}
+      >
         <div
-          className={`kl-ruleta-marco flex h-16 items-center justify-center rounded-control border-2 border-dashed px-3 text-center font-display text-xl font-bold ${
+          className={`pointer-events-none absolute inset-x-2 z-0 rounded-2xl transition-[box-shadow,background-color] duration-200 ${
             decidido
-              ? 'border-primary bg-primary text-on-primary'
-              : 'border-tertiary-fixed-dim bg-tertiary-fixed/40 text-on-surface'
+              ? 'bg-secondary-fixed/60 shadow-[0_0_0_3px_var(--color-secondary),0_0_22px_rgba(185,5,56,0.35)]'
+              : 'bg-primary-fixed/45 shadow-[0_0_0_2.5px_var(--color-primary)]'
+          }`}
+          style={{ top: FILA_RULETA, height: FILA_RULETA }}
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 z-[2] bg-gradient-to-b from-surface-lowest to-transparent"
+          style={{ height: FILA_RULETA }}
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-surface-lowest to-transparent"
+          style={{ height: FILA_RULETA }}
+        />
+        <div ref={tiraRef} className="absolute inset-x-0 top-0 z-[1] will-change-transform">
+          {filas.map((o, i) => (
+            <div
+              key={`${ciclo}-${i}`}
+              className="flex items-center gap-3 px-5"
+              style={{ height: FILA_RULETA }}
+            >
+              <span className="w-8 shrink-0 text-xl">{EMOJIS_RULETA[o % EMOJIS_RULETA.length]}</span>
+              <span className="min-w-0 truncate text-left font-display text-base font-bold text-on-surface">
+                {texto.opciones[o]}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-3 flex gap-2">
+        <span className="flex-1 rounded-full border border-outline-variant py-2 text-sm font-semibold text-on-surface-variant opacity-50">
+          {texto.otraVez}
+        </span>
+        <span
+          className={`flex-1 rounded-full bg-primary py-2 text-sm font-semibold text-on-primary transition-opacity duration-200 ${
+            decidido ? 'opacity-100' : 'opacity-50'
           }`}
         >
-          {texto.opciones[indice]}
-        </div>
-        {decidido && !reducido && (
-          <span
-            key={ciclo}
-            className="kl-onda pointer-events-none absolute left-1/2 top-1/2 h-16 w-1/2 rounded-control border-2 border-primary"
-          />
-        )}
+          {texto.vamos}
+        </span>
       </div>
-      <div className="mt-3 flex justify-center gap-1.5">
-        {texto.opciones.map((o, i) => (
-          <span
-            key={o}
-            className={`size-1.5 rounded-full transition-colors duration-150 ${
-              i === indice ? (decidido ? 'bg-primary' : 'bg-tertiary') : 'bg-outline-variant'
-            }`}
-          />
-        ))}
-      </div>
+      <div ref={confetiRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
     </div>
   )
+}
+
+/** El confeti de la app al decidir, con las mismas partículas. */
+function confeti(capa: HTMLElement | null) {
+  if (!capa) return
+  for (const [k, emoji] of ['🎉', '✨', '🎊', '⭐', '✨', '🎉'].entries()) {
+    for (let i = 0; i < 3; i++) {
+      const s = document.createElement('span')
+      s.textContent = emoji
+      s.className = 'absolute left-1/2 top-[55%] text-lg'
+      capa.appendChild(s)
+      const ang = Math.random() * Math.PI * 2
+      const dist = 80 + Math.random() * 90
+      s.animate(
+        [
+          { transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 },
+          {
+            transform: `translate(calc(-50% + ${Math.cos(ang) * dist}px), calc(-50% + ${
+              Math.sin(ang) * dist - 30
+            }px)) rotate(${Math.random() * 300 - 150}deg) scale(1.1)`,
+            opacity: 0,
+          },
+        ],
+        { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.2,.8,.3,1)', delay: k * 25 }
+      ).onfinish = () => s.remove()
+    }
+  }
 }
 
 // ── Antes / después ──────────────────────────────────────────────────────

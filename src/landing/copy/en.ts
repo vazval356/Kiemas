@@ -105,10 +105,14 @@ export const en: TextoLanding = {
       faltan: '1 vote to go',
     },
     ir: {
-      antes: 'Nobody can decide…',
+      titulo: 'Where to today?',
+      numOpciones: '4 options',
+      otraVez: 'Again',
+      vamos: "Let's go!",
+      antes: 'Spinning…',
       opciones: ['North Market', 'Riverside Park', 'Lighthouse Bar', 'Aurora Hall'],
       ganador: 'Aurora Hall',
-      despues: 'Decided',
+      despues: 'The wheel has spoken!',
     },
   },
 

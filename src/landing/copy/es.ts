@@ -105,10 +105,14 @@ export const es: TextoLanding = {
       faltan: 'Falta 1 por votar',
     },
     ir: {
-      antes: 'Nadie se decide…',
+      titulo: '¿Dónde vamos hoy?',
+      numOpciones: '4 opciones',
+      otraVez: 'Otra vez',
+      vamos: '¡Vamos!',
+      antes: 'La ruleta está girando…',
       opciones: ['Mercado Norte', 'Parque del Río', 'Bar Faro', 'Sala Aurora'],
       ganador: 'Sala Aurora',
-      despues: 'Decidido',
+      despues: '¡La ruleta ha decidido!',
     },
   },
 

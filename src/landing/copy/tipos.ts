@@ -60,6 +60,10 @@ export interface TextoLanding {
       faltan: string
     }
     ir: {
+      titulo: string
+      numOpciones: string
+      otraVez: string
+      vamos: string
       antes: string
       opciones: string[]
       ganador: string

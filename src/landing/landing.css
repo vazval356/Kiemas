@@ -111,15 +111,6 @@
   transform: none;
 }
 
-/* ── Ruleta: el marco se rellena al decidir ─────────────────────────────── */
-
-.kl-ruleta-marco {
-  transition:
-    background-color 240ms var(--kl-ease-out),
-    border-color 240ms var(--kl-ease-out),
-    color 240ms var(--kl-ease-out);
-}
-
 /* ── Menos movimiento: todo en su sitio desde el principio ──────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -275,6 +266,15 @@
 }
 .kl-onda {
   animation: kl-onda 900ms var(--kl-ease-out) 250ms both;
+}
+
+@keyframes kl-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.kl-giro {
+  animation: kl-giro 700ms linear infinite;
 }
 
 @keyframes kl-pop {
