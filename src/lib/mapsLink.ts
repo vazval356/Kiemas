@@ -1,4 +1,68 @@
+import { CapacitorHttp } from '@capacitor/core'
+import { isNative } from './appUrl'
 import { supabase } from './supabaseClient'
+
+/** ¿Es un host donde es legítimo acabar al seguir un enlace de mapas? */
+function esDestinoDeMapas(host: string): boolean {
+  const h = host.toLowerCase()
+  return (
+    h === 'google.com' ||
+    h.endsWith('.google.com') ||
+    /\.google\.[a-z.]{2,6}$/.test(h) ||
+    h === 'maps.apple.com'
+  )
+}
+
+/**
+ * Sigue el enlace corto desde el propio móvil.
+ *
+ * Es el camino principal en la app. Google solo redirige a quien parece un
+ * móvil de verdad: a un servidor le devuelve una página con JavaScript y sin el
+ * enlace dentro, y por eso la función del servidor empezó a no poder con los
+ * enlaces de «Compartir». Desde el móvil no hay CORS —`CapacitorHttp` hace la
+ * petición con el sistema operativo, no con el navegador— y Google contesta
+ * con la redirección normal. `response.url` es la dirección final, tras seguir
+ * todos los saltos.
+ *
+ * Devuelve null si no llega a un destino de mapas; quien llama cae entonces en
+ * el servidor.
+ */
+async function resolverEnElMovil(shortUrl: string): Promise<string | null> {
+  try {
+    const res = await CapacitorHttp.get({
+      url: shortUrl,
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 ' +
+          '(KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+        'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+      },
+      responseType: 'text',
+      connectTimeout: 8000,
+      readTimeout: 8000,
+    })
+    const final = new URL(res.url || shortUrl)
+
+    // Pantalla de consentimiento: el destino real va en `continue`.
+    if (/^consent\.google\./i.test(final.hostname)) {
+      const seguir = final.searchParams.get('continue')
+      if (seguir) {
+        const real = new URL(seguir)
+        if (real.protocol === 'https:' && esDestinoDeMapas(real.hostname)) return real.href
+      }
+      return null
+    }
+    if (final.protocol === 'https:' && esDestinoDeMapas(final.hostname)) return final.href
+
+    // Sin redirección, Google a veces sirve una página con el enlace dentro.
+    const html = typeof res.data === 'string' ? res.data : ''
+    const dentro = html.match(/https:\/\/(?:www\.)?google\.[a-z.]{2,6}\/maps\/[^"'<>\s\\]+/)
+    if (dentro) return dentro[0]
+  } catch (e) {
+    console.warn('[kiemas] no se pudo seguir el enlace desde el móvil:', e)
+  }
+  return null
+}
 
 /**
  * Pide al servidor que siga la redirección de un enlace corto de Google Maps.
@@ -16,6 +80,11 @@ import { supabase } from './supabaseClient'
  * de que la función esté desplegada.
  */
 export async function resolveMapsLink(shortUrl: string): Promise<string> {
+  if (isNative) {
+    const local = await resolverEnElMovil(shortUrl.trim())
+    if (local) return local
+  }
+
   const { data, error } = await supabase.functions.invoke('resolve-maps-link', {
     body: { url: shortUrl.trim() },
   })
