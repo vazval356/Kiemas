@@ -32,11 +32,10 @@ export async function setupNative(): Promise<void> {
 /**
  * Quita el splash nativo.
  *
- * Se llama tras el primer pintado y no al arrancar: el splash es plano, del
- * color de la app, y debajo ya está la pantalla de arranque con el logo de
- * Kiemas. Ocultarlo antes dejaba ver un instante la vista web todavía vacía, y
- * al logo por defecto que llevaba el splash se sumaba el de la app en un
- * fundido de uno encima del otro.
+ * Se llama tras el primer pintado y no al arrancar. El splash es el logo de
+ * Kiemas y, debajo, la pantalla de arranque dibuja el mismo logo en el mismo
+ * sitio: al quitar uno queda el otro sin que se note. Si se ocultara antes se
+ * vería un instante la vista web todavía vacía.
  */
 export async function ocultarSplash(): Promise<void> {
   if (!isNative) return
