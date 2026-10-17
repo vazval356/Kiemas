@@ -22,11 +22,6 @@
                                     <constraint firstAttribute="width" constant="72" id="Lg2-wd-72p"/>
                                     <constraint firstAttribute="height" constant="72" id="Lg3-ht-72p"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <real key="value" value="16"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Sa1-fe-0Ar"/>

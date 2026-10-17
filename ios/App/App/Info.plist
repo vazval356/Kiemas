@@ -24,7 +24,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>14</string>
 	<!-- Esquema propio: la extensión de compartir (ios/ShareExtension) abre la app
 	     con kiemas://import?text=… y de ahí sale «Compartir desde Maps». -->
 	<key>CFBundleURLTypes</key>
