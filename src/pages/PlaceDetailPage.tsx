@@ -573,8 +573,21 @@ export function PlaceDetailPage() {
           <RatingStars
             value={myRating}
             disabled={busy}
-            onChange={(next) => void run(() => api.setRating(place.id, next))}
+            // Devuelven la promesa: las estrellas mantienen la nota pintada
+            // mientras se guarda, en vez de volver a la vieja y saltar.
+            onChange={(next) => run(() => api.setRating(place.id, next))}
+            onClear={() => run(() => api.removeRating(place.id))}
           />
+          {myRating > 0 && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void run(() => api.removeRating(place.id))}
+              className="mt-1 text-sm font-semibold text-on-surface-variant underline underline-offset-2 squish disabled:opacity-50"
+            >
+              {t('detail.removeRating')}
+            </button>
+          )}
 
           {/* Puntuaciones del grupo. En un espacio personal solo hay una, así
               que la lista sobra. */}

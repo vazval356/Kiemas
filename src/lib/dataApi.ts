@@ -203,6 +203,8 @@ export interface DataApi {
    */
   copyPlaceTo(placeId: string, targetSpaceId: string): Promise<string>
   setRating(placeId: string, score: number): Promise<void>
+  /** Quita MI puntuación; la de los demás no se toca. */
+  removeRating(placeId: string): Promise<void>
   addPhotos(placeId: string, files: File[]): Promise<void>
   removePhoto(placeId: string, photoId: string): Promise<void>
   /** Elegir la portada del sitio, o quitarla con `null`. */

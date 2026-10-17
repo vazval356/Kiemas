@@ -485,6 +485,7 @@ const es = {
 
   // Detalle del sitio
   'detail.myRating': 'Tu puntuación',
+  'detail.removeRating': 'Quitar mi puntuación',
   'detail.ratedBy': 'de {count} personas',
   'detail.ratedByOne': 'de 1 persona',
   'detail.groupRatings': 'Puntuaciones del grupo',
@@ -1539,6 +1540,7 @@ const en: Record<TranslationKey, string> = {
   'form.addressNotFound': "We couldn't find that address. Mark the spot on the map by hand.",
 
   'detail.myRating': 'Your rating',
+  'detail.removeRating': 'Remove my rating',
   'detail.ratedBy': 'from {count} people',
   'detail.ratedByOne': 'from 1 person',
   'detail.groupRatings': 'Group ratings',

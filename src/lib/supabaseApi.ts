@@ -1046,6 +1046,11 @@ export const supabaseApi: DataApi = {
     )
   },
 
+  async removeRating(placeId: string) {
+    const uid = await myId()
+    ok(await supabase.from('ratings').delete().eq('place_id', placeId).eq('user_id', uid))
+  },
+
   async addPhotos(placeId: string, files: File[]) {
     const uid = await myId()
     const place = check(

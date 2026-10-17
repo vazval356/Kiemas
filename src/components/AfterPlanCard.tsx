@@ -95,7 +95,7 @@ export function AfterPlanCard() {
           {/* Puntuar es la respuesta más rápida y la que más falta hace: sin
               nota, un sitio guardado no le dice nada al grupo dentro de seis
               meses. */}
-          <RatingStars value={0} onChange={(n) => void puntuar(n)} />
+          <RatingStars value={0} onChange={(n) => puntuar(n)} />
         </div>
       )}
 
