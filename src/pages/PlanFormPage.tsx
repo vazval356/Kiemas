@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { TrashIcon } from '../components/icons'
+import { SelectorDeLimite, limiteValido } from '../components/LimiteDeVotos'
 import { SelectorDeSitios } from '../components/SelectorDeSitios'
 import { nextRoundHour, toDateTimeLocalValue } from '../lib/dates'
 import { rpcErrorCode } from '../lib/supabaseApi'
@@ -34,6 +35,8 @@ export function PlanFormPage() {
     toDateTimeLocalValue(nextRoundHour()),
     toDateTimeLocalValue(new Date(nextRoundHour().getTime() + 86400000)),
   ])
+  // Hora límite de la encuesta de fechas; `null` es sin límite.
+  const [limite, setLimite] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
   const [inviteAll, setInviteAll] = useState(true)
   const [invited, setInvited] = useState<string[]>([])
@@ -63,6 +66,7 @@ export function PlanFormPage() {
     if (mode === 'fixed' && !startsAt) return setError(t('plan.needDate'))
     const validOptions = options.filter(Boolean)
     if (mode === 'poll' && validOptions.length < 2) return setError(t('plan.needOptions'))
+    if (mode === 'poll' && !limiteValido(limite)) return setError(t('vote.deadline.past'))
 
     setBusy(true)
     setError('')
@@ -81,6 +85,7 @@ export function PlanFormPage() {
         // lo hace el servidor, que es quien no puede fallar en esto.
         inviteUserIds: surprise || inviteAll ? undefined : invited,
         surpriseFor: surprise ? surpriseFor : null,
+        dateVoteClosesAt: mode === 'poll' ? limite : null,
       })
       await refresh()
       navigate(`/plan/${plan.id}`)
@@ -337,6 +342,7 @@ export function PlanFormPage() {
             >
               {t('plan.addOption')}
             </button>
+            <SelectorDeLimite value={limite} onChange={setLimite} />
           </div>
         )}
 

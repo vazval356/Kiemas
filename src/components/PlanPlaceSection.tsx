@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { AvisoDeLimite, SelectorDeLimite, limiteValido } from './LimiteDeVotos'
 import { SelectorDeSitios } from './SelectorDeSitios'
 import { Caras } from './Votantes'
 import type { Plan } from '../lib/types'
@@ -31,6 +32,8 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
 
   const [eligiendo, setEligiendo] = useState(false)
   const [proponiendo, setProponiendo] = useState<string[] | null>(null)
+  // Hora límite al proponer los sitios; `null` es sin límite.
+  const [limite, setLimite] = useState<string | null>(null)
 
   const place = plan.placeId ? places.find((p) => p.id === plan.placeId) : undefined
   const miembros = activeSpace?.members ?? []
@@ -48,6 +51,8 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
   // grupo, también a quien no debe saberlo. Ahí el sitio lo pone quien la prepara.
   const puedeVotarse = activeSpace?.kind === 'group' && !plan.surpriseFor
   const encuestaAbierta = plan.placeOptions.length > 0 && !plan.placeId
+  const sitioVencido =
+    plan.placeVoteClosesAt !== null && new Date(plan.placeVoteClosesAt).getTime() <= Date.now()
 
   function alternar(id: string) {
     const actual = proponiendo ?? []
@@ -113,9 +118,20 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
         <h2 className="mb-2 font-display font-semibold text-on-surface">
           {t('plan.placePollTitle')}
         </h2>
-        <p className="mb-2 text-xs text-on-surface-variant">
+        <p className="text-xs text-on-surface-variant">
           {t('plan.pollPeople', { count: cuantos })}
         </p>
+        <div className="mb-2">
+          <AvisoDeLimite
+            closesAt={plan.placeVoteClosesAt}
+            busy={busy}
+            onChange={
+              canClose
+                ? (iso) => void run(() => api.setPollDeadline('place', plan.id, iso))
+                : undefined
+            }
+          />
+        </div>
         <ul className="flex flex-col gap-2">
           {plan.placeOptions.map((o) => {
             const mia = miVoto?.id === o.id
@@ -139,7 +155,7 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
                 )}
                 <button
                   type="button"
-                  disabled={busy}
+                  disabled={busy || sitioVencido}
                   aria-pressed={mia}
                   onClick={() => void run(() => api.votePlanPlace(o.id))}
                   className="relative flex w-full items-center gap-2.5 px-3 py-3 text-left squish disabled:opacity-50"
@@ -240,6 +256,10 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
           <SelectorDeSitios elegidos={proponiendo} max={6} onAlternar={alternar} busy={busy} />
         </div>
 
+        <div className="mt-3">
+          <SelectorDeLimite value={limite} onChange={setLimite} />
+        </div>
+
         <div className="mt-3 flex gap-2">
           <button
             type="button"
@@ -250,11 +270,18 @@ export function PlanPlaceSection({ plan, busy, canClose, run }: Props) {
           </button>
           <button
             type="button"
-            disabled={busy || !bastantes}
+            disabled={busy || !bastantes || !limiteValido(limite)}
             onClick={() => {
               const elegidos = proponiendo
+              const cierre = limite
               setProponiendo(null)
-              void run(() => api.setPlanPlaceOptions(plan.id, elegidos))
+              setLimite(null)
+              void run(async () => {
+                await api.setPlanPlaceOptions(plan.id, elegidos)
+                // Siempre se manda, también vacía: volver a proponer sitios
+                // no debe heredar una hora límite que ya no se ve en pantalla.
+                await api.setPollDeadline('place', plan.id, cierre)
+              })
             }}
             className="flex-1 rounded-full bg-primary py-2.5 text-sm font-semibold text-on-primary squish disabled:opacity-40"
           >

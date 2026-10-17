@@ -217,7 +217,12 @@ export interface DataApi {
   // ── Decisiones del grupo ─────────────────────────────────────────────────
   listDecisions(spaceId: string): Promise<Decision[]>
   /** Entre dos y seis opciones. Devuelve el identificador de la creada. */
-  createDecision(spaceId: string, title: string, options: string[]): Promise<string>
+  createDecision(
+    spaceId: string,
+    title: string,
+    options: string[],
+    closesAt?: string | null
+  ): Promise<string>
   /** Votar, o cambiar el voto. Una opción por persona y decisión. */
   castDecisionVote(optionId: string): Promise<void>
   /** Sin opción gana la más votada. Solo quien la abrió o un administrador. */
@@ -246,6 +251,15 @@ export interface DataApi {
   votePlanPlace(optionId: string): Promise<void>
   /** Sin `optionId` gana el sitio más votado. El ganador queda como sitio del plan. */
   closePlacePoll(planId: string, optionId?: string): Promise<void>
+  /**
+   * Pone, cambia o quita (`null`) la hora límite de una votación. `date` y
+   * `place` son de un plan; `decision`, de una decisión.
+   */
+  setPollDeadline(
+    kind: 'date' | 'place' | 'decision',
+    id: string,
+    closesAt: string | null
+  ): Promise<void>
 
   // ── Etiquetas de ambiente (Fase 3) ───────────────────────────────────────
   listTags(spaceId: string): Promise<Tag[]>

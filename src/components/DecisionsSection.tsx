@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { TrashIcon } from './icons'
+import { AvisoDeLimite, SelectorDeLimite, limiteValido } from './LimiteDeVotos'
 import { Caras } from './Votantes'
 import type { Decision } from '../lib/types'
 import { errorMessage } from '../lib/utils'
@@ -67,6 +68,8 @@ export function DecisionsSection({
   const [abriendo, setAbriendo] = useState(abrirNueva)
   const [titulo, setTitulo] = useState('')
   const [opciones, setOpciones] = useState(['', ''])
+  // Hora límite de la decisión nueva; `null` es sin límite.
+  const [limite, setLimite] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -110,11 +113,12 @@ export function DecisionsSection({
 
   async function crear() {
     const limpias = opciones.map((o) => o.trim()).filter(Boolean)
-    if (!titulo.trim() || limpias.length < 2) return
+    if (!titulo.trim() || limpias.length < 2 || !limiteValido(limite)) return
     await hacer(async () => {
-      await api.createDecision(spaceId!, titulo.trim(), limpias)
+      await api.createDecision(spaceId!, titulo.trim(), limpias, limite)
       setTitulo('')
       setOpciones(['', ''])
+      setLimite(null)
       setAbriendo(false)
     })
   }
@@ -128,6 +132,9 @@ export function DecisionsSection({
     const cerrada = d.closedAt !== null
     const miVoto = d.options.find((o) => o.voters.includes(profile?.id ?? ''))
     const puedoCerrar = d.createdBy === profile?.id || activeSpace?.myRole === 'admin'
+    // Pasada la hora el voto se rechaza aunque el servidor tarde hasta un
+    // minuto en cerrarla: el botón se apaga ya.
+    const vencida = d.closesAt !== null && new Date(d.closesAt).getTime() <= Date.now()
 
     // Cuántos apoyan cada opción, sobre el grupo entero: es lo que
     // dibuja la barra de fondo. Con el espacio vacío de miembros
@@ -170,9 +177,20 @@ export function DecisionsSection({
             })}
           </p>
         ) : (
-          <p className="mt-0.5 text-sm text-on-surface-variant">
-            {t('decision.openedBy', { name: nombreDe(d.createdBy ?? '') })}
-          </p>
+          <>
+            <p className="mt-0.5 text-sm text-on-surface-variant">
+              {t('decision.openedBy', { name: nombreDe(d.createdBy ?? '') })}
+            </p>
+            <AvisoDeLimite
+              closesAt={d.closesAt}
+              busy={busy}
+              onChange={
+                puedoCerrar
+                  ? (iso) => void hacer(() => api.setPollDeadline('decision', d.id, iso))
+                  : undefined
+              }
+            />
+          </>
         )}
 
         <ul className="mt-3 flex flex-col gap-1.5">
@@ -194,7 +212,7 @@ export function DecisionsSection({
                           con la que de verdad ha decidido el grupo. */}
                 <button
                   type="button"
-                  disabled={busy || cerrada}
+                  disabled={busy || cerrada || vencida}
                   aria-pressed={mia}
                   onClick={() => void hacer(() => api.castDecisionVote(o.id))}
                   className={`relative flex w-full items-center gap-2 overflow-hidden rounded-control bg-surface-container py-2.5 pr-3 text-left squish disabled:cursor-default ${
@@ -347,6 +365,9 @@ export function DecisionsSection({
               />
             ))}
           </div>
+          <div className="mt-3">
+            <SelectorDeLimite value={limite} onChange={setLimite} />
+          </div>
           {/* Seis es el tope del servidor. Enseñar el botón por encima sería
               ofrecer algo que va a rebotar. */}
           {opciones.length < 6 && (
@@ -371,7 +392,12 @@ export function DecisionsSection({
             </button>
             <button
               type="button"
-              disabled={busy || !titulo.trim() || opciones.filter((o) => o.trim()).length < 2}
+              disabled={
+                busy ||
+                !titulo.trim() ||
+                opciones.filter((o) => o.trim()).length < 2 ||
+                !limiteValido(limite)
+              }
               onClick={() => void crear()}
               className="flex-1 rounded-full bg-primary py-2.5 text-sm font-semibold text-on-primary squish disabled:opacity-40"
             >

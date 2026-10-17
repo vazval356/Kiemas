@@ -118,6 +118,8 @@ interface PlanRow {
   created_by: string | null
   created_at: string
   surprise_for: string | null
+  date_poll_closes_at: string | null
+  place_poll_closes_at: string | null
   plan_attendees:
     { user_id: string; response: AttendeeResponse; responded_at: string | null }[] | null
   plan_date_options:
@@ -253,6 +255,8 @@ function mapPlan(row: PlanRow): Plan {
       })),
     createdBy: row.created_by,
     createdAt: row.created_at,
+    dateVoteClosesAt: row.date_poll_closes_at ?? null,
+    placeVoteClosesAt: row.place_poll_closes_at ?? null,
     surpriseFor: row.surprise_for,
     masked: false,
   }
@@ -287,6 +291,8 @@ function mapSurpriseSlot(row: SurpriseSlotRow): Plan {
     placeOptions: [],
     createdBy: null,
     createdAt: row.created_at,
+    dateVoteClosesAt: null,
+    placeVoteClosesAt: null,
     surpriseFor: null,
     masked: true,
   }
@@ -1115,6 +1121,7 @@ export const supabaseApi: DataApi = {
       createdBy: (d.created_by as string) ?? null,
       createdAt: d.created_at as string,
       closedAt: (d.closed_at as string) ?? null,
+      closesAt: (d.closes_at as string) ?? null,
       chosenOptionId: (d.chosen_option_id as string) ?? null,
       options: ((d.options ?? []) as Record<string, unknown>[]).map((o) => ({
         id: o.id as string,
@@ -1124,14 +1131,21 @@ export const supabaseApi: DataApi = {
     }))
   },
 
-  async createDecision(spaceId: string, title: string, options: string[]): Promise<string> {
+  async createDecision(
+    spaceId: string,
+    title: string,
+    options: string[],
+    closesAt?: string | null
+  ): Promise<string> {
     const res = await supabase.rpc('create_decision', {
       p_space_id: spaceId,
       p_title: title,
       p_options: options,
     })
     if (res.error) throw new Error(res.error.message)
-    return res.data as string
+    const id = res.data as string
+    if (closesAt) await supabaseApi.setPollDeadline('decision', id, closesAt)
+    return id
   },
 
   async castDecisionVote(optionId: string) {
@@ -1234,6 +1248,11 @@ export const supabaseApi: DataApi = {
     })
     if (res.error) throw new Error(res.error.message)
     const id = (res.data as { id: string }).id
+    // Aparte de `create_plan`: la función ya tiene once argumentos y la hora
+    // límite solo aplica a las encuestas de fecha.
+    if (input.dateVoteClosesAt && input.dateOptions?.length) {
+      await supabaseApi.setPollDeadline('date', id, input.dateVoteClosesAt)
+    }
     const row = check(
       await supabase
         .from('plans')
@@ -1298,6 +1317,15 @@ export const supabaseApi: DataApi = {
     const res = await supabase.rpc('set_plan_place_options', {
       p_plan_id: planId,
       p_place_ids: placeIds,
+    })
+    if (res.error) throw new Error(res.error.message)
+  },
+
+  async setPollDeadline(kind: 'date' | 'place' | 'decision', id: string, closesAt: string | null) {
+    const res = await supabase.rpc('set_poll_deadline', {
+      p_kind: kind,
+      p_id: id,
+      p_at: closesAt,
     })
     if (res.error) throw new Error(res.error.message)
   },

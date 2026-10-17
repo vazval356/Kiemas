@@ -6,6 +6,7 @@ import type { AttendeeResponse, DateVote } from '../lib/types'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { errorMessage } from '../lib/utils'
 import { BackButton } from '../components/BackButton'
+import { AvisoDeLimite } from '../components/LimiteDeVotos'
 import { PlanPlaceSection } from '../components/PlanPlaceSection'
 import { Cara, Caras } from '../components/Votantes'
 import { useApp } from '../state/appState'
@@ -91,6 +92,12 @@ export function PlanDetailPage() {
   // Cerrar la encuesta lo puede hacer quien creó el plan o un administrador:
   // es la misma regla que aplica `close_date_poll` en la base de datos.
   const canClose = plan.createdBy === profile?.id || activeSpace?.myRole === 'admin'
+
+  // Pasada la hora límite no se puede votar, aunque el servidor tarde hasta un
+  // minuto en cerrar la encuesta: el botón se apaga ya, y la base de datos
+  // rechaza el voto igualmente.
+  const fechaVencida =
+    plan.dateVoteClosesAt !== null && new Date(plan.dateVoteClosesAt).getTime() <= Date.now()
 
   /**
    * Cuánta gente hay y cuál va ganando, para la encuesta de fechas.
@@ -253,9 +260,20 @@ export function PlanDetailPage() {
         {plan.status === 'poll' && plan.dateOptions.length > 0 && (
           <section className="mt-6">
             <h2 className="font-display font-semibold text-on-surface">{t('plan.pollTitle')}</h2>
-            <p className="mb-2 mt-0.5 text-xs text-on-surface-variant">
+            <p className="mt-0.5 text-xs text-on-surface-variant">
               {t('plan.pollPeople', { count: cuantos })}
             </p>
+            <div className="mb-2">
+              <AvisoDeLimite
+                closesAt={plan.dateVoteClosesAt}
+                busy={busy}
+                onChange={
+                  canClose
+                    ? (iso) => void run(() => api.setPollDeadline('date', plan.id, iso))
+                    : undefined
+                }
+              />
+            </div>
             <ul className="flex flex-col gap-2">
               {plan.dateOptions.map((option) => {
                 const myVote = option.votes.find((v) => v.userId === profile?.id)?.vote
@@ -344,7 +362,7 @@ export function PlanDetailPage() {
                               <button
                                 key={v.value}
                                 type="button"
-                                disabled={busy}
+                                disabled={busy || fechaVencida}
                                 aria-pressed={mio}
                                 onClick={() =>
                                   void run(() => api.voteDateOption(option.id, v.value))

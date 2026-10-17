@@ -378,6 +378,10 @@ export interface Plan {
   placeOptions: PlanPlaceOption[]
   createdBy: string | null
   createdAt: string
+  /** Hora en que la encuesta de fechas se cierra sola con lo más votado. */
+  dateVoteClosesAt: string | null
+  /** Lo mismo para la encuesta de sitios. */
+  placeVoteClosesAt: string | null
   /**
    * Plan que es una sorpresa PARA esta persona. Solo lo ven quien la prepara y
    * el resto del grupo; la persona sorprendida nunca recibe la fila, así que
@@ -403,6 +407,8 @@ export interface PlanInput {
   inviteUserIds?: string[]
   /** Hace del plan una sorpresa para esta persona: no lo verá ni será invitada. */
   surpriseFor?: string | null
+  /** Hora límite de la encuesta de fechas (ISO); al llegar, se cierra sola. */
+  dateVoteClosesAt?: string | null
 }
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -725,6 +731,8 @@ export interface Decision {
   createdAt: string
   /** `null` mientras siga abierta. */
   closedAt: string | null
+  /** Hora límite: al llegar, se cierra sola con lo más votado. */
+  closesAt: string | null
   /** La que ganó, fijada al cerrar y no recontada después. */
   chosenOptionId: string | null
   options: DecisionOption[]
