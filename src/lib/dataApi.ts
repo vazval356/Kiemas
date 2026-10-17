@@ -250,6 +250,7 @@ export interface DataApi {
   // ── Etiquetas de ambiente (Fase 3) ───────────────────────────────────────
   listTags(spaceId: string): Promise<Tag[]>
   addTag(spaceId: string, name: string, color: string): Promise<Tag>
+  updateTag(tagId: string, patch: { name?: string; color?: string }): Promise<void>
   deleteTag(tagId: string): Promise<void>
   /** Reemplaza el juego completo de etiquetas de un sitio. */
   setPlaceTags(placeId: string, tagIds: string[]): Promise<void>

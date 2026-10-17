@@ -1335,6 +1335,10 @@ export const supabaseApi: DataApi = {
     return { id: row.id, name: row.name, color: row.color }
   },
 
+  async updateTag(tagId: string, patch: { name?: string; color?: string }) {
+    ok(await supabase.from('tags').update(patch).eq('id', tagId))
+  },
+
   async deleteTag(tagId: string) {
     ok(await supabase.from('tags').delete().eq('id', tagId))
   },

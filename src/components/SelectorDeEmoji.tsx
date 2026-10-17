@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useApp } from '../state/appState'
 
 interface Props {
@@ -34,7 +35,21 @@ function emojisDe(texto: string): string[] {
 export function SelectorDeEmoji({ value, onChange, sugeridos, className, soloOtro }: Props) {
   const { t } = useApp()
   const [abierto, setAbierto] = useState(false)
+  const campo = useRef<HTMLInputElement>(null)
   const esPropio = value !== '' && !sugeridos.includes(value)
+
+  // El teclado de iOS solo se levanta si `focus()` se llama dentro del toque que
+  // lo pide. Con `autoFocus` el campo se enfoca después de pintarse, ya fuera
+  // del gesto, y el móvil no abre nada. `flushSync` pinta el campo ya, y así se
+  // puede enfocar sin salir del toque.
+  function alternar() {
+    if (abierto) {
+      setAbierto(false)
+      return
+    }
+    flushSync(() => setAbierto(true))
+    campo.current?.focus()
+  }
 
   function escribir(texto: string) {
     const emojis = emojisDe(texto)
@@ -58,7 +73,7 @@ export function SelectorDeEmoji({ value, onChange, sugeridos, className, soloOtr
         ))}
         <button
           type="button"
-          onClick={() => setAbierto(!abierto)}
+          onClick={alternar}
           aria-expanded={abierto}
           aria-label={t('emoji.otherLabel')}
           className={`flex h-10 items-center justify-center rounded-md px-3 text-sm font-semibold squish ${
@@ -79,7 +94,7 @@ export function SelectorDeEmoji({ value, onChange, sugeridos, className, soloOtr
             onChange={(e) => escribir(e.target.value)}
             placeholder="😀"
             aria-label={t('emoji.otherLabel')}
-            autoFocus
+            ref={campo}
             className="kd-input text-center text-2xl"
           />
           <p className="mt-1 text-xs text-on-surface-variant">{t('emoji.hint')}</p>
