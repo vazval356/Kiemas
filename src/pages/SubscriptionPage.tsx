@@ -190,8 +190,12 @@ export function SubscriptionPage() {
     // Tras pagar, quien concede el derecho es el webhook de RevenueCat: hay un
     // viaje por sus servidores que tarda un par de segundos. Recargar una sola
     // vez enseñaría el nivel viejo y parecería que el pago no ha servido.
-    for (let intento = 0; intento < 6; intento++) {
-      await new Promise((r) => setTimeout(r, 1500))
+    //
+    // Se mira enseguida y luego cada medio segundo, no cada segundo y medio
+    // empezando por una pausa: con el webhook rápido, la espera mínima era ya
+    // de 1,5 s aunque el derecho llevara medio segundo concedido.
+    for (let intento = 0; intento < 20; intento++) {
+      if (intento > 0) await new Promise((r) => setTimeout(r, 500))
       try {
         const fresh = await api.myEntitlement()
         if (fresh.entitlement !== previous) {
@@ -211,8 +215,16 @@ export function SubscriptionPage() {
     setBuying(pkg.identifier)
     setBuyNotice('')
     try {
-      await buyPackage(pkg)
-      const got = await waitForUpgrade(mine?.entitlement ?? 'free')
+      const previous = mine?.entitlement ?? 'free'
+      const comprado = await buyPackage(pkg)
+      if (comprado) {
+        // La tienda ya ha cobrado: se enseña la bienvenida sin esperar al
+        // servidor y este se sincroniza por detrás (topes, espacios).
+        setJustGot(comprado)
+        void waitForUpgrade(previous)
+        return
+      }
+      const got = await waitForUpgrade(previous)
       if (got) setJustGot(got)
       else setBuyNotice(t('sub.purchasePending'))
     } catch (e) {

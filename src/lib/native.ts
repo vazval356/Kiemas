@@ -22,9 +22,29 @@ export async function setupNative(): Promise<void> {
   setupDeepLinks()
   iniciarCompartido()
 
-  // Se oculta a mano, no por tiempo: si se ocultara por temporizador, en un
-  // móvil lento la app aparecería a medio cargar.
-  await SplashScreen.hide()
+  // El splash se oculta cuando la app ya ha pintado su primera pantalla (ver
+  // `ocultarSplash`, que llama `main.tsx`). Este plazo es solo la red de
+  // seguridad: si por lo que sea nunca llegara a pintar, no puede quedarse
+  // tapando la pantalla para siempre.
+  window.setTimeout(() => void ocultarSplash(), 5000)
+}
+
+/**
+ * Quita el splash nativo.
+ *
+ * Se llama tras el primer pintado y no al arrancar: el splash es plano, del
+ * color de la app, y debajo ya está la pantalla de arranque con el logo de
+ * Kiemas. Ocultarlo antes dejaba ver un instante la vista web todavía vacía, y
+ * al logo por defecto que llevaba el splash se sumaba el de la app en un
+ * fundido de uno encima del otro.
+ */
+export async function ocultarSplash(): Promise<void> {
+  if (!isNative) return
+  try {
+    await SplashScreen.hide()
+  } catch {
+    // Ya oculto: no es un error.
+  }
 }
 
 /**

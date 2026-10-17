@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import { setupAnalytics } from './lib/analytics'
 import { leerIdiomaDelMovil } from './lib/idiomaDelMovil'
-import { setupNative } from './lib/native'
+import { ocultarSplash, setupNative } from './lib/native'
 // Figtree, servida desde este dominio. Ver el comentario de `index.html`.
 import '@fontsource/figtree/400.css'
 import '@fontsource/figtree/500.css'
@@ -33,4 +33,7 @@ void leerIdiomaDelMovil().then(() => {
       <App />
     </StrictMode>
   )
+  // Dos fotogramas: el primero compone lo que React acaba de montar y el
+  // segundo es cuando el usuario ya lo está viendo.
+  requestAnimationFrame(() => requestAnimationFrame(() => void ocultarSplash()))
 })

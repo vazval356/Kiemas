@@ -63,6 +63,10 @@ export async function setupPurchases(userId: string): Promise<void> {
       })
       await Purchases.configure({ apiKey: key, appUserID: userId })
       configured = true
+      // Se piden ya las ofertas para que RevenueCat las deje en su caché: cuando
+      // se abre la pantalla de planes los precios están, en vez de salir los
+      // botones uno o dos segundos después de la pantalla.
+      void Purchases.getOfferings().catch(() => {})
     } else {
       // Cambio de cuenta sin reiniciar la app: `configure` solo vale una vez.
       await Purchases.logIn({ appUserID: userId })
@@ -104,10 +108,21 @@ export async function listPackages(): Promise<PurchasesPackage[]> {
   }
 }
 
-/** true si la compra se completó; false si la persona la canceló. */
-export async function buyPackage(pkg: PurchasesPackage): Promise<boolean> {
-  await Purchases.purchasePackage({ aPackage: pkg })
-  return true
+/**
+ * Lanza la compra y devuelve el nivel que la tienda dice haber activado, si lo
+ * dice. Lanza si la persona cancela o el pago falla.
+ *
+ * Ese nivel es solo para **enseñar** la bienvenida al instante: la tienda ya
+ * cobró y su respuesta llega firmada por RevenueCat. Lo que de verdad concede
+ * los topes sigue siendo la base de datos, que se entera por el webhook un par
+ * de segundos después, y la pantalla de planes la espera aparte.
+ */
+export async function buyPackage(pkg: PurchasesPackage): Promise<'plus' | 'pro' | null> {
+  const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg })
+  const activos = customerInfo?.entitlements?.active ?? {}
+  if (activos.pro) return 'pro'
+  if (activos.plus) return 'plus'
+  return null
 }
 
 /**
