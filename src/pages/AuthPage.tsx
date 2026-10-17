@@ -20,7 +20,9 @@ import {
 import { publicBaseUrl } from '../lib/appUrl'
 import { FechaNacimiento } from '../components/FechaNacimiento'
 import { comprobarEdad, EDAD_MINIMA, MENOR_KEY } from '../lib/edad'
-import { createTranslate, detectLocale } from '../lib/i18n'
+import { createTranslate } from '../lib/i18n'
+import { SelectorDeIdioma } from '../components/SelectorDeIdioma'
+import { useApp } from '../state/appState'
 import { useHtmlLang, usePageTitle } from '../lib/seo'
 import { oauthProviders, signInWith, type OAuthProvider } from '../lib/oauth'
 import { bloqMayusActivo, contrasenaValida, PASSWORD_MIN } from '../lib/password'
@@ -57,8 +59,10 @@ import { errorMessage } from '../lib/utils'
  * misma errata dejándola ver, con un campo menos que rellenar.
  */
 export function AuthPage() {
-  // El perfil todavía no existe, así que el idioma sale del navegador.
-  const t = createTranslate(detectLocale())
+  // El perfil todavía no existe, así que el idioma sale del móvil, y la persona
+  // puede cambiarlo aquí con las banderas. Al iniciar sesión manda el del perfil.
+  const { locale, setLocale } = useApp()
+  const t = createTranslate(locale)
 
   // La landing enlaza aquí con `?modo=signup` cuando el botón que se toca dice
   // «crear cuenta»: sin esto, todo el mundo caía en el formulario de entrar y
@@ -350,7 +354,7 @@ export function AuthPage() {
             emailRedirectTo: publicBaseUrl(),
             data: {
               display_name: displayName.trim(),
-              locale: detectLocale(),
+              locale,
               // La lee el alta en el servidor, comprueba la edad y la borra de
               // los metadatos. No se guarda.
               birth_date: nacimiento,
@@ -384,8 +388,9 @@ export function AuthPage() {
 
   usePageTitle(titulo)
   // Todavía no hay perfil del que sacar el idioma, así que manda el del
-  // navegador; el proveedor lo corregirá al entrar si el perfil dice otra cosa.
-  useHtmlLang(detectLocale())
+  // móvil o el que se elija con las banderas; el proveedor lo corregirá al
+  // entrar si el perfil dice otra cosa.
+  useHtmlLang(locale)
 
   return (
     <div className="pt-safe h-full overflow-y-auto bg-surface">
@@ -400,7 +405,14 @@ export function AuthPage() {
           cambio, para un caso de uso que no existe, no sale a cuenta. */}
       <div className="mx-auto flex min-h-full max-w-md flex-col justify-center px-4 py-8">
         <div className="w-full">
-          <div className="overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)]">
+          <div className="relative overflow-hidden rounded-card bg-surface-lowest shadow-[var(--shadow-float)]">
+            {/* Arriba a la derecha de la tarjeta, donde no compite con el
+                formulario ni mueve nada al cambiar de idioma. */}
+            <SelectorDeIdioma
+              locale={locale}
+              onChange={(l) => void setLocale(l)}
+              className="absolute right-3 top-3 z-10"
+            />
             <div className="px-6 pb-6 pt-7">
               <header className="text-center">
                 <img
