@@ -906,6 +906,10 @@ export const supabaseApi: DataApi = {
     return { id: row.id, name: row.name, emoji: row.emoji, icon: row.icon }
   },
 
+  async updateCategory(categoryId: string, patch: { name?: string; emoji?: string }) {
+    ok(await supabase.from('categories').update(patch).eq('id', categoryId))
+  },
+
   async deleteCategory(categoryId: string) {
     ok(await supabase.from('categories').delete().eq('id', categoryId))
   },

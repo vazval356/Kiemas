@@ -737,8 +737,8 @@ function Lema({ texto }: { texto: string }) {
 /**
  * Lo que se ve al volver del correo de confirmación. La cuenta ya está
  * confirmada en el servidor cuando se llega aquí; esto solo lo dice y lleva a
- * la app. «Abrir Kiemas» usa el esquema propio de iOS, que es donde está
- * publicada; en el resto de dispositivos solo se ofrece la descarga.
+ * la app. «Abrir Kiemas» usa el esquema propio (`kiemas://`) en iOS y Android,
+ * y se intenta solo al llegar; en escritorio solo se ofrece la descarga.
  */
 function AvisoDeConfirmacion({
   texto,
@@ -749,7 +749,15 @@ function AvisoDeConfirmacion({
 }) {
   const ok = resultado === 'confirmada'
   const info = ok ? texto.confirmada : texto.caducada
-  const esIos = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent)
+  const esMovil = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/.test(navigator.userAgent)
+
+  // Cuenta confirmada desde el móvil: se intenta abrir la app sin esperar a que
+  // se pulse nada. Si no está instalada el sistema no hace nada y quedan los
+  // botones. `resultado` no cambia, así que salta una sola vez.
+  useEffect(() => {
+    if (ok && esMovil) window.location.href = 'kiemas://auth'
+  }, [ok, esMovil])
+
   return (
     <div role="status" className="relative mx-auto max-w-6xl px-4 pt-2 sm:px-6">
       <div className="flex flex-col gap-4 rounded-2xl bg-surface-lowest p-5 shadow-[var(--shadow-float)] ring-1 ring-primary/10 sm:flex-row sm:items-center sm:justify-between">
@@ -768,14 +776,14 @@ function AvisoDeConfirmacion({
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2">
-          {ok && esIos && (
+          {ok && esMovil && (
             <a href="kiemas://auth" className={BOTON_PRINCIPAL_PEQUENO}>
               {texto.abrir}
             </a>
           )}
           <a
             href={APP_STORE_URL}
-            className={ok && esIos ? BOTON_SECUNDARIO_PEQUENO : BOTON_PRINCIPAL_PEQUENO}
+            className={ok && esMovil ? BOTON_SECUNDARIO_PEQUENO : BOTON_PRINCIPAL_PEQUENO}
           >
             {texto.descargar}
           </a>

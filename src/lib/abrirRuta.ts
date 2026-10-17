@@ -9,6 +9,44 @@ export function urlWebDeRuta(lat: number, lng: number): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
 }
 
+/** Las apps de navegación entre las que se puede elegir al pulsar «Ir». */
+export type AppDeRuta = 'google' | 'waze' | 'apple'
+
+const esApple = () =>
+  (isNative && Capacitor.getPlatform() === 'ios') ||
+  (!isNative && typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent))
+
+/**
+ * Qué apps se ofrecen. Apple Maps solo donde existe; las otras dos valen en todas
+ * partes, porque si la app no está el enlace cae en su web, que también guía.
+ */
+export function appsDeRuta(): AppDeRuta[] {
+  return esApple() ? ['google', 'waze', 'apple'] : ['google', 'waze']
+}
+
+/**
+ * Enlaces universales de Waze y Apple Maps. Los dos abren su app si está
+ * instalada y, si no, su web. Waze se pide con `navigate=yes` para que empiece a
+ * guiar en vez de enseñar el punto.
+ */
+function urlDe(app: 'waze' | 'apple', lat: number, lng: number): string {
+  return app === 'waze'
+    ? `https://waze.com/ul?ll=${lat},${lng}&navigate=yes`
+    : `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`
+}
+
+/** Abre «cómo llegar» en la app de navegación elegida. */
+export function abrirEn(app: AppDeRuta, lat: number, lng: number): void {
+  if (app === 'google') return abrirRuta(lat, lng)
+  const url = urlDe(app, lat, lng)
+  if (!isNative) {
+    window.open(url, '_blank', 'noopener')
+    return
+  }
+  // El sistema reparte el enlace: a la app si está y, si no, al navegador.
+  window.location.href = url
+}
+
 /** Cuánto se espera a ver si la app de mapas ha tomado el control. */
 const ESPERA_MS = 900
 

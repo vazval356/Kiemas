@@ -61,6 +61,18 @@
             </intent-filter>
 
             <!--
+              Esquema propio. La web de confirmación de cuenta ofrece «Abrir
+              Kiemas» con kiemas://auth; en iOS ya existe, aquí hace falta
+              declararlo para que Android también abra la app.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kiemas" />
+            </intent-filter>
+
+            <!--
               «Compartir» desde otras apps. Kiemas aparece en la hoja de compartir
               de Google Maps (y de cualquier app que comparta texto) y el sitio se
               importa solo. Ver ShareTargetPlugin.

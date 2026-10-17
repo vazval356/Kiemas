@@ -28,7 +28,7 @@ import {
 } from '../components/icons'
 import { galeriaPropia, isNative } from '../lib/appUrl'
 import type { Place } from '../lib/types'
-import { abrirRuta, urlWebDeRuta } from '../lib/abrirRuta'
+import { SelectorDeNavegacion } from '../components/SelectorDeNavegacion'
 import {
   averageRating,
   errorMessage,
@@ -89,6 +89,7 @@ export function PlaceDetailPage() {
   const [denunciando, setDenunciando] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [copiando, setCopiando] = useState(false)
+  const [eligiendoRuta, setEligiendoRuta] = useState(false)
   const [copiado, setCopiado] = useState('')
 
   // Si otro dispositivo cambia las notas, se recogen — salvo que se estén
@@ -431,23 +432,15 @@ export function PlaceDetailPage() {
           <div
             className={`mt-4 grid gap-2 ${otrosEspacios.length > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}
           >
-            {/* En la web es un enlace normal. Dentro de la app se abre la de
-                Google Maps si está (ver `abrirRuta`): un enlace web, en iOS,
-                acababa siempre en Safari. */}
-            <a
-              href={urlWebDeRuta(place.lat, place.lng)}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(e) => {
-                if (!isNative) return
-                e.preventDefault()
-                abrirRuta(place.lat, place.lng)
-              }}
+            {/* Abre la hoja para elegir app: Google Maps, Waze o Apple Maps. */}
+            <button
+              type="button"
+              onClick={() => setEligiendoRuta(true)}
               className="flex flex-col items-center gap-1 rounded-card bg-primary py-3 text-sm font-bold text-on-primary squish"
             >
               <NavigateIcon className="size-5" />
               {t('place.navigate')}
-            </a>
+            </button>
             <button
               type="button"
               disabled={busy}
@@ -713,6 +706,14 @@ export function PlaceDetailPage() {
             setViendo(null)
             setDenunciando(foto.id)
           }}
+        />
+      )}
+
+      {eligiendoRuta && (
+        <SelectorDeNavegacion
+          lat={place.lat}
+          lng={place.lng}
+          onClose={() => setEligiendoRuta(false)}
         />
       )}
 

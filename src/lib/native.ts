@@ -3,7 +3,9 @@ import { Browser } from '@capacitor/browser'
 import { SplashScreen } from '@capacitor/splash-screen'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { isNative } from './appUrl'
+import { leerRecuperacion, recibirRecuperacion } from './recovery'
 import { iniciarCompartido } from './shareTarget'
+import { supabase } from './supabaseClient'
 
 /**
  * Ajustes que solo tienen sentido dentro del contenedor nativo.
@@ -105,7 +107,13 @@ function esEnlaceDeMapas(href: string): boolean {
   try {
     const url = new URL(href)
     const host = url.hostname.replace(/^www\./, '')
-    if (host === 'maps.google.com' || host === 'maps.app.goo.gl' || host === 'maps.apple.com') {
+    if (
+      host === 'maps.google.com' ||
+      host === 'maps.app.goo.gl' ||
+      host === 'maps.apple.com' ||
+      host === 'waze.com' ||
+      host === 'ul.waze.com'
+    ) {
       return true
     }
     return host === 'google.com' && url.pathname.startsWith('/maps')
@@ -131,10 +139,50 @@ function setupDeepLinks(): void {
     try {
       const parsed = new URL(url)
       if (parsed.hash && parsed.hash.length > 1) {
+        const fragmento = parsed.hash.slice(1)
+        // Una ruta interna empieza por barra; el fragmento de un correo de
+        // Supabase (`access_token=…&type=…`), no.
+        if (!fragmento.startsWith('/')) {
+          void recibirEnlaceDeCorreo(fragmento)
+          return
+        }
         window.location.hash = parsed.hash
       }
     } catch {
       // URL malformada: se ignora en vez de dejar la app en un estado raro.
     }
   })
+}
+
+/**
+ * Los enlaces de los correos de Supabase cuando abren la app.
+ *
+ * En web los recogen `recovery.ts` y `confirmacion.ts` al cargar la página. Con
+ * la app instalada, el sistema entrega el enlace aquí y la página ya estaba
+ * cargada, así que hay que tratarlo a mano; sin esto el fragmento se tomaba por
+ * una ruta y la persona caía en la pantalla de entrada sin que pasara nada.
+ *
+ *  · recuperación → pantalla de contraseña nueva.
+ *  · confirmación de cuenta (o cambio de correo) → se abre la sesión con los
+ *    tokens y la app entra sola, sin pedir otra vez el correo y la contraseña.
+ *  · enlace caducado → no hay sesión que abrir; se queda en la pantalla de
+ *    entrada, donde puede iniciar sesión o pedir otro correo.
+ */
+async function recibirEnlaceDeCorreo(fragmento: string): Promise<void> {
+  const recuperacion = leerRecuperacion(fragmento)
+  if (recuperacion) {
+    recibirRecuperacion(recuperacion)
+    return
+  }
+
+  const params = new URLSearchParams(fragmento)
+  const accessToken = params.get('access_token')
+  const refreshToken = params.get('refresh_token')
+  if (!accessToken || !refreshToken) return
+
+  try {
+    await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+  } catch {
+    // Sin sesión se queda en «iniciar sesión», que es un sitio razonable.
+  }
 }

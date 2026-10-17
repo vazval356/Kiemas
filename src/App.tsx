@@ -10,7 +10,7 @@ import { PantallaDeArranque } from './components/PantallaDeArranque'
 import { TopBar } from './components/TopBar'
 import { GuiaDeLaPantalla } from './components/Tour'
 import { resumenDelAnoDisponible } from './lib/dates'
-import { recoveryTokens } from './lib/recovery'
+import { useRecoveryTokens } from './lib/recovery'
 import './lib/confirmacion'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 import { AuthPage } from './pages/AuthPage'
@@ -338,6 +338,7 @@ function IrALista({ token }: { token: string }) {
 }
 
 function Rutas() {
+  const recoveryTokens = useRecoveryTokens()
   // Se ha llegado desde el correo de recuperación. Va antes del router y del
   // proveedor: hay sesión, pero es de recuperación, y arrancar la app entera
   // para una pantalla que solo pide una contraseña sobra.

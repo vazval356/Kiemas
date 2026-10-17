@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react'
+
 /**
  * Captura el enlace de recuperación de contraseña antes de que enrute nadie.
  *
@@ -18,9 +20,20 @@
  * quede después ya es una ruta normal.
  */
 
-interface Recuperacion {
+export interface Recuperacion {
   accessToken: string
   refreshToken: string
+}
+
+/** Los tokens de recuperación de un fragmento `access_token=…&type=recovery`, o null. */
+export function leerRecuperacion(fragmento: string): Recuperacion | null {
+  const params = new URLSearchParams(fragmento.replace(/^#/, ''))
+  if (params.get('type') !== 'recovery') return null
+
+  const accessToken = params.get('access_token')
+  const refreshToken = params.get('refresh_token')
+  if (!accessToken || !refreshToken) return null
+  return { accessToken, refreshToken }
 }
 
 function capturar(): Recuperacion | null {
@@ -30,23 +43,40 @@ function capturar(): Recuperacion | null {
   // Una ruta normal empieza por barra; un fragmento de Supabase, no.
   if (!bruto || bruto.startsWith('/')) return null
 
-  const params = new URLSearchParams(bruto)
-  if (params.get('type') !== 'recovery') return null
-
-  const accessToken = params.get('access_token')
-  const refreshToken = params.get('refresh_token')
-  if (!accessToken || !refreshToken) return null
+  const recuperacion = leerRecuperacion(bruto)
+  if (!recuperacion) return null
 
   // Se borra de la barra sin dejar entrada en el historial: un token de
   // recuperación en el historial del navegador es un token que sigue ahí
   // cuando alguien pulsa «atrás» o mira las páginas visitadas.
   window.history.replaceState(null, '', window.location.pathname + window.location.search)
 
-  return { accessToken, refreshToken }
+  return recuperacion
 }
 
 /**
- * Los tokens del enlace, si se ha llegado por uno. Se lee una sola vez, al
- * cargar: para cuando cualquier componente pregunte, la URL ya está limpia.
+ * Los tokens del enlace, si se ha llegado por uno. En web se leen al cargar:
+ * para cuando cualquier componente pregunte, la URL ya está limpia.
+ *
+ * Dentro de la app el enlace no llega al cargar sino después, por `appUrlOpen`
+ * (Android e iOS abren Kiemas con el enlace del correo). Por eso el valor puede
+ * cambiar y se expone con una suscripción: `recibirRecuperacion` lo rellena y
+ * `useRecoveryTokens` hace que la pantalla de nueva contraseña aparezca.
  */
-export const recoveryTokens: Recuperacion | null = capturar()
+let actual: Recuperacion | null = capturar()
+const oyentes = new Set<() => void>()
+
+export function recibirRecuperacion(recuperacion: Recuperacion): void {
+  actual = recuperacion
+  oyentes.forEach((avisar) => avisar())
+}
+
+export function useRecoveryTokens(): Recuperacion | null {
+  return useSyncExternalStore(
+    (avisar) => {
+      oyentes.add(avisar)
+      return () => oyentes.delete(avisar)
+    },
+    () => actual
+  )
+}

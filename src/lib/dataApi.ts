@@ -181,6 +181,7 @@ export interface DataApi {
   // ── Categorías y sitios ──────────────────────────────────────────────────
   listCategories(spaceId: string): Promise<Category[]>
   addCategory(spaceId: string, name: string, emoji: string, icon?: string): Promise<Category>
+  updateCategory(categoryId: string, patch: { name?: string; emoji?: string }): Promise<void>
   deleteCategory(categoryId: string): Promise<void>
 
   listPlaces(spaceId: string): Promise<Place[]>

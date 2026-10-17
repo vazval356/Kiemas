@@ -344,6 +344,10 @@ export function AuthPage() {
           email: email.trim(),
           password,
           options: {
+            // Adonde vuelve el enlace del correo de confirmación. Sin esto manda
+            // a la «Site URL» del panel de Supabase, que no tiene por qué ser la
+            // misma que la de la recuperación de contraseña.
+            emailRedirectTo: publicBaseUrl(),
             data: {
               display_name: displayName.trim(),
               locale: detectLocale(),

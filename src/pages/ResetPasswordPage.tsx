@@ -3,7 +3,7 @@ import { EyeIcon, EyeOffIcon } from '../components/icons'
 import { RequisitosDeContrasena } from '../components/RequisitosDeContrasena'
 import { createTranslate, detectLocale } from '../lib/i18n'
 import { bloqMayusActivo, contrasenaValida, PASSWORD_MIN } from '../lib/password'
-import { recoveryTokens } from '../lib/recovery'
+import { useRecoveryTokens } from '../lib/recovery'
 import { usePageTitle } from '../lib/seo'
 import { supabase } from '../lib/supabaseClient'
 import { errorMessage } from '../lib/utils'
@@ -21,6 +21,7 @@ import { errorMessage } from '../lib/utils'
  */
 export function ResetPasswordPage() {
   const t = createTranslate(detectLocale())
+  const recoveryTokens = useRecoveryTokens()
 
   const [ready, setReady] = useState(false)
   const [password, setPassword] = useState('')
@@ -47,7 +48,7 @@ export function ResetPasswordPage() {
         else setReady(true)
       })
       .catch(() => setError(t('reset.linkExpired')))
-  }, [t])
+  }, [t, recoveryTokens])
 
   async function submit(e: FormEvent) {
     e.preventDefault()

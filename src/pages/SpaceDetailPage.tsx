@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { CoverCropper } from '../components/CoverCropper'
+import { GestorDeCategorias } from '../components/GestorDeCategorias'
 import { PhotoPicker } from '../components/PhotoPicker'
+import { SelectorDeEmoji } from '../components/SelectorDeEmoji'
 import { ReportDialog } from '../components/ReportDialog'
 import { BackIcon, CopyIcon, ShareIcon, TrashIcon } from '../components/icons'
 import type { Invite, InviteExpiry, SpaceMember } from '../lib/types'
@@ -917,6 +919,15 @@ export function SpaceDetailPage() {
                       </button>
                     ))}
                   </div>
+                  {/* Cualquier otro emoji, con el teclado del móvil. */}
+                  <div className="mt-2">
+                    <SelectorDeEmoji
+                      value={emoji}
+                      sugeridos={SPACE_EMOJIS}
+                      soloOtro
+                      onChange={(e) => void saveLook(e, color)}
+                    />
+                  </div>
 
                   <div className="mt-3 flex gap-2">
                     <button
@@ -1029,6 +1040,16 @@ export function SpaceDetailPage() {
             </div>
           </details>
         )}
+        {/* Editar y borrar las categorías del espacio (crearlas se hace al añadir
+            un sitio). */}
+        <details className="mt-3 rounded-card bg-surface-low px-4 py-3">
+          <summary className="cursor-pointer font-semibold text-on-surface">
+            {t('category.manageTitle')}
+          </summary>
+          <div className="mt-3">
+            <GestorDeCategorias />
+          </div>
+        </details>
         <Link
           to="/activity"
           className="mt-3 flex items-center gap-2 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"

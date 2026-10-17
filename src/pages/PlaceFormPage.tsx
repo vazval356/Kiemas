@@ -6,6 +6,8 @@ import { parseMapLink } from '../lib/mapLinks'
 import { enlaceDelPortapapeles } from '../lib/shareTarget'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
+import { GestorDeCategorias } from '../components/GestorDeCategorias'
+import { SelectorDeEmoji } from '../components/SelectorDeEmoji'
 import { MultiPhotoPicker } from '../components/MultiPhotoPicker'
 import { PhotoRightsNote } from '../components/PhotoRightsNote'
 import { BackIcon, PinIcon, SparkleIcon } from '../components/icons'
@@ -104,6 +106,15 @@ export function PlaceFormPage() {
   const [newCatOpen, setNewCatOpen] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [newCatEmoji, setNewCatEmoji] = useState(CATEGORY_EMOJIS[0])
+  const [gestionandoCats, setGestionandoCats] = useState(false)
+
+  // Si se borra la categoría que estaba elegida, el sitio no puede seguir
+  // apuntando a ella: se guardaría un id que ya no existe.
+  useEffect(() => {
+    if (categoryId && categories.length > 0 && !categories.some((c) => c.id === categoryId)) {
+      setCategoryId(null)
+    }
+  }, [categories, categoryId])
 
   // Mini mapa para afinar el punto
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -734,19 +745,8 @@ export function PlaceFormPage() {
         aria-label={t('form.categoryNamePlaceholder')}
         className="kd-input"
       />
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {CATEGORY_EMOJIS.map((em) => (
-          <button
-            key={em}
-            type="button"
-            onClick={() => setNewCatEmoji(em)}
-            className={`flex size-10 items-center justify-center rounded-md text-xl squish ${
-              newCatEmoji === em ? 'bg-primary-fixed' : 'bg-surface-lowest'
-            }`}
-          >
-            {em}
-          </button>
-        ))}
+      <div className="mt-3">
+        <SelectorDeEmoji value={newCatEmoji} onChange={setNewCatEmoji} sugeridos={CATEGORY_EMOJIS} />
       </div>
       <button
         type="button"
@@ -757,6 +757,26 @@ export function PlaceFormPage() {
         {t('form.createCategory')}
       </button>
     </div>
+  )
+
+  // Crear categorías y, desde el mismo sitio, editarlas o borrarlas.
+  const categoryTools = (
+    <>
+      {newCategoryForm}
+      <button
+        type="button"
+        onClick={() => setGestionandoCats(!gestionandoCats)}
+        aria-expanded={gestionandoCats}
+        className="mx-auto mt-3 block px-4 py-1.5 text-sm font-semibold text-primary squish"
+      >
+        {t('category.manage')}
+      </button>
+      {gestionandoCats && (
+        <div className="mt-2 rounded-card bg-surface-container p-4 animate-pop">
+          <GestorDeCategorias />
+        </div>
+      )}
+    </>
   )
 
   const errorBlock = error && (
@@ -1136,7 +1156,7 @@ export function PlaceFormPage() {
                     </span>
                   </button>
                 </div>
-                {newCategoryForm}
+                {categoryTools}
                 <button
                   type="button"
                   onClick={() => go(2)}
@@ -1494,7 +1514,7 @@ export function PlaceFormPage() {
             {t('form.newCategory')}
           </button>
         </div>
-        {newCategoryForm}
+        {categoryTools}
 
         <Label className="mt-5">{t('form.statusQuestion')}</Label>
         <div className="grid grid-cols-2 rounded-full bg-surface-container p-1">
