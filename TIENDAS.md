@@ -209,6 +209,35 @@ Y en general: pegar un enlace de Google Maps al crear un sitio, la ruleta de «�
 Si algo falla, decid qué móvil tenéis y qué estabais haciendo justo antes. Con eso basta.
 ```
 
+## Prueba cerrada en Google Play (beta de Android)
+
+Es el equivalente a TestFlight. Si la cuenta de desarrollador es personal y se
+creó después de noviembre de 2023, Google exige una prueba cerrada con al menos
+12 testers apuntados durante 14 días seguidos antes de dar acceso a producción.
+Confírmalo en Play Console (Panel > «Haz tu app pública»), porque Google ha ido
+cambiando las cifras.
+
+1. **Play Console > Pruebas > Pruebas cerradas > Crear pista.** Nombre libre, por
+   ejemplo «Amigos».
+2. **Testers > Crear lista de correos.** Añade las cuentas de **Google** de cada
+   persona (Gmail o cuentas de Workspace). Un correo que no esté ligado a una
+   cuenta de Google no sirve.
+3. **Países y regiones:** España como mínimo, y las demás donde vivan tus testers.
+4. **Versiones > Crear nueva versión.** Sube `app-release.aab`
+   (`android/app/build/outputs/bundle/release/`, versionCode 6) y pon las notas
+   de la versión. Se pueden reutilizar las del apartado de arriba.
+5. **Enviar a revisión.** La primera vez tarda de horas a unos días.
+6. **Enlace de participación:** en la pestaña Testers de la pista aparece un
+   enlace «Copiar enlace». Mándalo por WhatsApp. Cada tester debe abrirlo con la
+   cuenta que dio de alta, pulsar «Convertirse en tester» e instalar desde Play
+   Store. Hasta que lo acepten no cuentan para los 12.
+
+Antes de la primera versión, Play Console pide tener completo el contenido de la
+app: política de privacidad, seguridad de los datos (tabla de abajo), clasificación
+por edades, anuncios (no hay) y público objetivo.
+
+Cada subida nueva necesita un `versionCode` mayor que el anterior.
+
 ---
 
 ## Privacidad y datos, declarado igual en las dos
