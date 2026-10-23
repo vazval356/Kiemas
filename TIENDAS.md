@@ -238,6 +238,30 @@ por edades, anuncios (no hay) y público objetivo.
 
 Cada subida nueva necesita un `versionCode` mayor que el anterior.
 
+### Mensaje para los testers (WhatsApp)
+
+```
+¡Hola! Necesito tu ayuda para probar Kiemas en Android antes de publicarla.
+
+Es el mapa y el calendario de nuestro grupo: guardamos sitios con foto, nota y valoración, y quedamos creando planes que se votan dentro de la app.
+
+Para instalarla:
+1. Abre este enlace desde el móvil, con la cuenta de Google que me diste: [ENLACE]
+2. Pulsa «Convertirse en tester».
+3. Pulsa «Descargar en Google Play» e instálala como cualquier app.
+
+Importante: necesito que te quedes como tester al menos 14 días, aunque no la uses a diario. No te salgas de la prueba ni la desinstales antes, porque si no, no cuenta.
+
+Qué probar, sobre todo:
+- Fotos: añade fotos a un sitio, desde la galería y con la cámara.
+- Avisos: acepta las notificaciones y mira si te llegan los planes que crea otra persona.
+- Votaciones: en un plan sin fecha o sin sitio, votad y comprobad que al cerrarse se rellena solo.
+- Invitaciones: únete a un grupo con el código o con el enlace desde WhatsApp.
+- Pegar un enlace de Google Maps al crear un sitio, y compartir un sitio desde Google Maps hacia Kiemas.
+
+Si algo falla o se ve raro, dime qué móvil tienes y qué estabas haciendo justo antes. Con eso basta. ¡Gracias!
+```
+
 ---
 
 ## Privacidad y datos, declarado igual en las dos
