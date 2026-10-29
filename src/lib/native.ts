@@ -3,7 +3,7 @@ import { Browser } from '@capacitor/browser'
 import { SplashScreen } from '@capacitor/splash-screen'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { isNative } from './appUrl'
-import { leerRecuperacion, recibirRecuperacion } from './recovery'
+import { avisarEnlaceCaducado, leerRecuperacion, recibirRecuperacion } from './recovery'
 import { iniciarCompartido } from './shareTarget'
 import { supabase } from './supabaseClient'
 
@@ -184,8 +184,8 @@ function setupDeepLinks(): void {
  *  · recuperación → pantalla de contraseña nueva.
  *  · confirmación de cuenta (o cambio de correo) → se abre la sesión con los
  *    tokens y la app entra sola, sin pedir otra vez el correo y la contraseña.
- *  · enlace caducado → no hay sesión que abrir; se queda en la pantalla de
- *    entrada, donde puede iniciar sesión o pedir otro correo.
+ *  · enlace caducado o ya usado → no hay sesión que abrir; la pantalla de
+ *    entrada lo dice (ver `avisarEnlaceCaducado`) para que pida otro correo.
  */
 async function recibirEnlaceDeCorreo(fragmento: string): Promise<void> {
   const recuperacion = leerRecuperacion(fragmento)
@@ -195,6 +195,11 @@ async function recibirEnlaceDeCorreo(fragmento: string): Promise<void> {
   }
 
   const params = new URLSearchParams(fragmento)
+  if (params.get('error') || params.get('error_code')) {
+    avisarEnlaceCaducado()
+    return
+  }
+
   const accessToken = params.get('access_token')
   const refreshToken = params.get('refresh_token')
   if (!accessToken || !refreshToken) return

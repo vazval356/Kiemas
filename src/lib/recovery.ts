@@ -80,3 +80,31 @@ export function useRecoveryTokens(): Recuperacion | null {
     () => actual
   )
 }
+
+/**
+ * Un enlace de correo que ya no vale (caducado o usado ya), recibido dentro de
+ * la app. Supabase lo devuelve como `#error=…&error_code=otp_expired`, sin
+ * tokens. Antes se descartaba en silencio y la persona se quedaba en «te hemos
+ * enviado el correo» sin saber por qué no pasaba nada. Ahora la pantalla de
+ * entrada lo dice.
+ *
+ * Es un contador y no un booleano: dos enlaces caducados seguidos tienen que
+ * avisar dos veces.
+ */
+let caducados = 0
+const oyentesCaducado = new Set<() => void>()
+
+export function avisarEnlaceCaducado(): void {
+  caducados += 1
+  oyentesCaducado.forEach((avisar) => avisar())
+}
+
+export function useEnlaceCaducado(): number {
+  return useSyncExternalStore(
+    (avisar) => {
+      oyentesCaducado.add(avisar)
+      return () => oyentesCaducado.delete(avisar)
+    },
+    () => caducados
+  )
+}

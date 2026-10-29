@@ -21,6 +21,7 @@ import { publicBaseUrl } from '../lib/appUrl'
 import { FechaNacimiento } from '../components/FechaNacimiento'
 import { comprobarEdad, EDAD_MINIMA, MENOR_KEY } from '../lib/edad'
 import { createTranslate } from '../lib/i18n'
+import { useEnlaceCaducado } from '../lib/recovery'
 import { SelectorDeIdioma } from '../components/SelectorDeIdioma'
 import { useApp } from '../state/appState'
 import { useHtmlLang, usePageTitle } from '../lib/seo'
@@ -109,6 +110,19 @@ export function AuthPage() {
     // Una sola vez, al montar.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Un enlace del correo que ya no vale ha abierto la app. Se vuelve a «entrar»
+  // con el aviso en vez de dejar en pantalla «te hemos enviado el correo», que
+  // hacía creer que el enlace no había hecho nada.
+  const enlaceCaducado = useEnlaceCaducado()
+  useEffect(() => {
+    if (!enlaceCaducado) return
+    setMode('signIn')
+    setNotice(null)
+    setError(t('auth.linkExpired'))
+    // Solo cuando llega un enlace nuevo, no al cambiar de idioma.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enlaceCaducado])
 
   /** La contraseña a la vista. Se apaga al cambiar de modo, nunca se recuerda. */
   const [verPassword, setVerPassword] = useState(false)

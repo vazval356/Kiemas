@@ -165,6 +165,8 @@ const es = {
   'auth.sendReset': 'Enviarme el enlace',
   'auth.resetHint': 'Te mandamos un enlace para elegir una contraseña nueva.',
   'auth.resetSent': 'Si hay una cuenta con ese correo, ya tiene el enlace. Míralo también en spam.',
+  'auth.linkExpired':
+    'Ese enlace ya no vale: ha caducado o ya se usó. Pide otro y ábrelo desde el último correo.',
   'reset.title': 'Elige una contraseña nueva',
   'reset.body': 'Escribe la que quieras usar a partir de ahora.',
   'reset.newPassword': 'Contraseña nueva',
@@ -1236,6 +1238,8 @@ const en: Record<TranslationKey, string> = {
   'auth.resetHint': "We'll send you a link to choose a new password.",
   'auth.resetSent':
     'If there is an account with that email, the link is on its way. Check spam too.',
+  'auth.linkExpired':
+    'That link is no longer valid: it has expired or was already used. Ask for a new one and open the latest email.',
   'reset.title': 'Choose a new password',
   'reset.body': 'Type the one you want to use from now on.',
   'reset.newPassword': 'New password',
