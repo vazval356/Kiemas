@@ -224,7 +224,7 @@ cambiando las cifras.
    cuenta de Google no sirve.
 3. **Países y regiones:** España como mínimo, y las demás donde vivan tus testers.
 4. **Versiones > Crear nueva versión.** Sube `app-release.aab`
-   (`android/app/build/outputs/bundle/release/`, versionCode 6) y pon las notas
+   (`android/app/build/outputs/bundle/release/`, versionCode 7) y pon las notas
    de la versión. Se pueden reutilizar las del apartado de arriba.
 5. **Enviar a revisión.** La primera vez tarda de horas a unos días.
 6. **Enlace de participación:** en la pestaña Testers de la pista aparece un
