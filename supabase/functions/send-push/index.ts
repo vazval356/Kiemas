@@ -123,9 +123,12 @@ async function enviar(req: Request): Promise<Response> {
 
   const { data: pending, error } = await db
     .from('notification_outbox')
-    .select('id, user_id, title, body, route, attempts')
+    .select('id, user_id, title, body, route, attempts, space_id')
     .is('sent_at', null)
     .lt('attempts', MAX_ATTEMPTS)
+    // Los avisos agrupables esperan unos segundos por si llegan más del mismo
+    // tipo y se suman en uno solo. Hasta que no pasa su hora no salen.
+    .lte('send_after', new Date().toISOString())
     .order('created_at')
     .limit(BATCH)
 
@@ -171,8 +174,21 @@ async function enviar(req: Request): Promise<Response> {
             // La ruta viaja como dato para que al tocar la notificación la app
             // abra la pantalla concreta y no el mapa.
             data: { route: note.route },
-            android: { priority: 'high', notification: { sound: 'default' } },
-            apns: { payload: { aps: { sound: 'default' } } },
+            // El color tiñe el icono pequeño de la barra de estado. En iOS,
+            // `thread-id` apila en la pantalla de bloqueo los avisos del mismo
+            // grupo en vez de mezclarlos con los de los demás.
+            android: {
+              priority: 'high',
+              notification: { sound: 'default', color: '#4647D3' },
+            },
+            apns: {
+              payload: {
+                aps: {
+                  sound: 'default',
+                  ...(note.space_id ? { 'thread-id': note.space_id } : {}),
+                },
+              },
+            },
             // En la web, el destino al tocar el aviso lo lleva el propio
             // mensaje: el trabajador de servicio ya no pinta nada a mano —lo
             // hacía y el aviso llegaba duplicado— así que sin esto un toque

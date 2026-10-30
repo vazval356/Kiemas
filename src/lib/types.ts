@@ -89,7 +89,15 @@ export interface CalendarLink {
  * Los tipos de aviso que se pueden apagar uno a uno. Tienen que coincidir con
  * los que manda la base de datos en `enqueue_notification`.
  */
-export type TipoDeAviso = 'planes' | 'comentarios' | 'sitios' | 'preguntas' | 'grupo'
+export type TipoDeAviso =
+  | 'planes'
+  | 'comentarios'
+  | 'sitios'
+  | 'preguntas'
+  | 'grupo'
+  | 'fotos'
+  | 'valoraciones'
+  | 'recordatorios'
 
 /** Lo que cada persona ha silenciado. Lo que no aparece aquí, llega. */
 export interface AjustesDeAvisos {

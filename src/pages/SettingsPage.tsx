@@ -41,7 +41,16 @@ import { usePageTitle } from '../lib/seo'
  * del sistema vuelve a la lista, y no salta fuera de los ajustes.
  */
 /** En el orden en que se enseñan: de lo que más importa a lo que menos. */
-const TIPOS_DE_AVISO: TipoDeAviso[] = ['planes', 'comentarios', 'preguntas', 'sitios', 'grupo']
+const TIPOS_DE_AVISO: TipoDeAviso[] = [
+  'planes',
+  'recordatorios',
+  'comentarios',
+  'preguntas',
+  'sitios',
+  'fotos',
+  'valoraciones',
+  'grupo',
+]
 
 type Vista = 'inicio' | 'avisos' | 'idioma' | 'bloqueadas'
 const VISTAS: Vista[] = ['inicio', 'avisos', 'idioma', 'bloqueadas']
