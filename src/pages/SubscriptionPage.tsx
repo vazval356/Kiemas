@@ -7,6 +7,7 @@ import { QuotaMeter } from '../components/QuotaMeter'
 import {
   buyPackage,
   isPurchaseCancelled,
+  errorDeOfertas,
   listPackages,
   openStoreSubscriptions,
   purchasesAvailable,
@@ -68,6 +69,7 @@ export function SubscriptionPage() {
 
   const canBuy = purchasesAvailable()
   const [packages, setPackages] = useState<PurchasesPackage[]>([])
+  const [cargandoOfertas, setCargandoOfertas] = useState(canBuy)
   const [period, setPeriod] = useState<Period>('monthly')
   const [buying, setBuying] = useState('')
   const [buyNotice, setBuyNotice] = useState('')
@@ -93,7 +95,11 @@ export function SubscriptionPage() {
   }, [load])
 
   useEffect(() => {
-    if (canBuy) void listPackages().then(setPackages)
+    if (!canBuy) return
+    setCargandoOfertas(true)
+    void listPackages()
+      .then(setPackages)
+      .finally(() => setCargandoOfertas(false))
   }, [canBuy])
 
   const highlight = useMemo(() => nivelDestacado(limits), [limits])
@@ -581,12 +587,38 @@ export function SubscriptionPage() {
               </div>
             )}
 
-            {(!canBuy || packages.length === 0) && (
+            {cargandoOfertas && (
+              <p className="mt-5 text-sm text-on-surface-variant">{t('sub.loadingStore')}</p>
+            )}
+
+            {!cargandoOfertas && !canBuy && (
               <p className="mt-5 rounded-card bg-surface-container px-4 py-3 text-sm text-on-surface-variant">
                 <span className="font-semibold text-on-surface">{t('sub.notYet')}</span>
                 <br />
                 {t('sub.notYetHint')}
               </p>
+            )}
+
+            {!cargandoOfertas && canBuy && packages.length === 0 && (
+              <div className="mt-5 rounded-card bg-surface-container px-4 py-3 text-sm text-on-surface-variant">
+                <p className="font-semibold text-on-surface">{t('sub.storeUnavailable')}</p>
+                <p className="mt-1">{t('sub.storeUnavailableHint')}</p>
+                {errorDeOfertas() && (
+                  <p className="mt-2 break-words text-xs opacity-70">{errorDeOfertas()}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCargandoOfertas(true)
+                    void listPackages()
+                      .then(setPackages)
+                      .finally(() => setCargandoOfertas(false))
+                  }}
+                  className="mt-3 rounded-control border border-outline-variant px-3 py-1.5 font-semibold text-primary"
+                >
+                  {t('sub.retry')}
+                </button>
+              </div>
             )}
 
             {buyNotice && (

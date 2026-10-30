@@ -42,6 +42,19 @@ export const purchasesAvailable = (): boolean => apiKey() !== null
 
 let configured = false
 
+// Se resuelve cuando el SDK queda configurado (o falla). `listPackages` lo
+// espera: abrir «Planes» justo después de entrar pedía las ofertas antes de que
+// `configure` terminara, fallaba con «no configurado» y la tarjeta se quedaba en
+// «Próximamente» para siempre, porque nadie volvía a preguntar.
+let avisarConfigurado: () => void = () => {}
+const sdkListo = new Promise<void>((resolve) => {
+  avisarConfigurado = resolve
+})
+
+/** Último motivo por el que no hubo ofertas, para poder enseñarlo en pantalla. */
+let ultimoErrorDeOfertas = ''
+export const errorDeOfertas = (): string => ultimoErrorDeOfertas
+
 /**
  * Arranca el SDK y ata la sesión de RevenueCat a la cuenta de Supabase.
  *
@@ -75,7 +88,21 @@ export async function setupPurchases(userId: string): Promise<void> {
     // Que falle el SDK de compras no puede impedir usar la app. Quien no llegue
     // a configurarse simplemente no verá botones de compra.
     console.warn('RevenueCat no se ha podido iniciar:', e)
+    ultimoErrorDeOfertas = textoDeError(e)
+  } finally {
+    avisarConfigurado()
   }
+}
+
+/** El motivo de un error del SDK, con el código si lo trae. */
+function textoDeError(e: unknown): string {
+  if (e && typeof e === 'object') {
+    const o = e as { message?: string; code?: string | number; underlyingErrorMessage?: string }
+    const partes = [o.message, o.underlyingErrorMessage].filter(Boolean)
+    const base = partes.length ? partes.join(' · ') : JSON.stringify(e)
+    return o.code !== undefined ? `${base} (${o.code})` : base
+  }
+  return String(e)
 }
 
 /**
@@ -94,18 +121,39 @@ export async function purchasesLogOut(): Promise<void> {
   }
 }
 
-/** Los paquetes de la oferta actual, o lista vacía si no hay nada que vender. */
+/**
+ * Los paquetes de la oferta actual, o lista vacía si no hay nada que vender.
+ *
+ * Espera a que el SDK esté configurado y reintenta un par de veces: la tienda
+ * tarda a veces en contestar la primera vez, y una sola respuesta vacía no debe
+ * dejar la pantalla sin botón de compra. Si al final sigue vacío, el motivo
+ * queda en `errorDeOfertas()`.
+ */
 export async function listPackages(): Promise<PurchasesPackage[]> {
   if (!apiKey()) return []
-  try {
-    const offerings = await Purchases.getOfferings()
-    // Solo la oferta marcada como actual en el panel de RevenueCat. Recorrer
-    // `all` enseñaría también las de pruebas A/B y las retiradas.
-    return offerings.current?.availablePackages ?? []
-  } catch (e) {
-    console.warn('no se han podido leer las ofertas:', e)
-    return []
+  await Promise.race([sdkListo, new Promise((r) => setTimeout(r, 8000))])
+  if (!configured) return []
+
+  for (let intento = 0; intento < 3; intento++) {
+    try {
+      const offerings = await Purchases.getOfferings()
+      // Solo la oferta marcada como actual en el panel de RevenueCat. Recorrer
+      // `all` enseñaría también las de pruebas A/B y las retiradas.
+      const paquetes = offerings.current?.availablePackages ?? []
+      if (paquetes.length > 0) {
+        ultimoErrorDeOfertas = ''
+        return paquetes
+      }
+      ultimoErrorDeOfertas = offerings.current
+        ? 'La oferta actual no tiene paquetes (la tienda no ha devuelto ningún producto).'
+        : 'RevenueCat no tiene ninguna oferta marcada como actual.'
+    } catch (e) {
+      console.warn('no se han podido leer las ofertas:', e)
+      ultimoErrorDeOfertas = textoDeError(e)
+    }
+    await new Promise((r) => setTimeout(r, 1500))
   }
+  return []
 }
 
 /**
