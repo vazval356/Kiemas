@@ -529,36 +529,31 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
 
   // Nombre: el segmento que va detrás de `/place/`.
   let name: string | null = null
+  let address: string | null = null
   let nameSource: GoogleMapsLink['nameSource'] = null
   const placeSegment = url.pathname.match(/\/place\/([^/@]+)/)
   if (placeSegment) {
     const decoded = safeDecode(placeSegment[1]).replace(/\+/g, ' ').trim()
     // Google mete a veces las coordenadas como nombre cuando no hay ficha.
     if (decoded && !/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(decoded)) {
-      name = decoded
+      // Con la dirección dentro del tramo («/place/Poyo+Club,+Calle+de…») el
+      // nombre es solo lo de antes de la primera coma.
+      const partido = separarNombreYDireccion(decoded)
+      name = partido ? partido.name : decoded
+      address = partido ? partido.address : null
       nameSource = 'place'
     }
   }
-  let address: string | null = null
   if (!name) {
     const q = url.searchParams.get('q') ?? url.searchParams.get('query')
     if (q && !/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/.test(q)) {
       const texto = safeDecode(q).replace(/\+/g, ' ').trim()
       if (texto) {
-        // «Poyo Club, Calle de San Andrés, 38, Centro, 28004 Madrid»: el nombre
-        // hasta la primera coma y la dirección después. Solo cuando el primer
-        // trozo NO empieza por vía, porque «Calle de la Cruz, 12, Madrid» es
-        // una dirección entera y partirla dejaría «Calle de la Cruz» de nombre.
-        const corte = texto.indexOf(',')
-        const cabeza = corte > 0 ? texto.slice(0, corte).trim() : ''
-        const esVia =
-          /^(calle|c\/|avda?|avenida|plaza|pza|paseo|carrera|camino|carretera|ctra|ronda|travesía|travesia|gran vía|gran via|via|vía)/i.test(
-            cabeza
-          ) || /^\d/.test(cabeza)
-        if (cabeza && !esVia && corte < texto.length - 1) {
-          name = cabeza
+        const partido = separarNombreYDireccion(texto)
+        if (partido) {
+          name = partido.name
           nameSource = 'place'
-          address = texto.slice(corte + 1).trim() || null
+          address = partido.address
         } else {
           name = texto
           nameSource = 'query'
@@ -578,6 +573,24 @@ export function parseGoogleMapsUrl(input: string): GoogleMapsLink | null {
 
   if (name === null && lat === null) return null
   return { name, address, lat, lng, needsResolving: false, nameSource }
+}
+
+/**
+ * «Poyo Club, Calle de San Andrés, 38, Centro, 28004 Madrid»: el nombre hasta la
+ * primera coma y la dirección después. Solo cuando el primer trozo NO empieza
+ * por vía, porque «Calle de la Cruz, 12, Madrid» es una dirección entera y
+ * partirla dejaría «Calle de la Cruz» de nombre.
+ */
+function separarNombreYDireccion(texto: string): { name: string; address: string } | null {
+  const corte = texto.indexOf(',')
+  const cabeza = corte > 0 ? texto.slice(0, corte).trim() : ''
+  const esVia =
+    /^(calle|c\/|avda?|avenida|plaza|pza|paseo|carrera|camino|carretera|ctra|ronda|travesía|travesia|gran vía|gran via|via|vía)/i.test(
+      cabeza
+    ) || /^\d/.test(cabeza)
+  if (!cabeza || esVia || corte >= texto.length - 1) return null
+  const address = texto.slice(corte + 1).trim()
+  return address ? { name: cabeza, address } : null
 }
 
 function safeDecode(value: string): string {
