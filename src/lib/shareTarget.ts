@@ -50,8 +50,7 @@ export function mapsLinkFromText(text: string): string | null {
 export function textoDeApoyo(text: string): string | null {
   const resto = text
     .replace(/https?:\/\/[^\s<>"']+/gi, '')
-    .split(/?
-/)
+    .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean)
     .join(', ')
