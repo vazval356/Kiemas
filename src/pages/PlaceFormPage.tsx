@@ -207,8 +207,12 @@ export function PlaceFormPage() {
 
   // ── Importar desde un enlace de Google Maps ──────────────────────────────
   const importParam = searchParams.get('import')
+  // Nombre y dirección que venían en el texto compartido: plan B si el enlace
+  // corto no se puede resolver.
+  const pistaCompartida = useRef<string | null>(null)
   useEffect(() => {
     if (!importParam || existing) return
+    pistaCompartida.current = searchParams.get('hint')
     autoImport.current = true
     setSugerido(null)
     go(0)
@@ -285,6 +289,19 @@ export function PlaceFormPage() {
     descartarSugerencia()
   }
 
+  /** Enlace imposible de resolver: se busca por el nombre que venía al compartir. */
+  function buscarPorPista(): boolean {
+    const pista = pistaCompartida.current
+    if (!pista) return false
+    pistaCompartida.current = null
+    setImportMessage({ kind: 'info', text: t('import.searchingShared') })
+    setImportUrl('')
+    setSmart(pista)
+    setQuery(pista)
+    void runSearch(pista, true)
+    return true
+  }
+
   async function runImport() {
     const mio = ++importSeq.current
     setImportMessage(null)
@@ -315,6 +332,7 @@ export function PlaceFormPage() {
           // leer, que es compatible con un enlace muerto, con una pantalla de
           // consentimiento de Google y con media docena de cosas más.
           console.warn('[kiemas] el enlace resolvió a:', largo)
+          if (buscarPorPista()) return
           setImportMessage({ kind: 'warn', text: t('import.deadLink') })
           return
         }
@@ -327,6 +345,7 @@ export function PlaceFormPage() {
         // viejo de la función, una sesión caducada o que Google haya cambiado
         // la cadena de redirecciones.
         console.warn('[kiemas] no se pudo resolver el enlace corto:', e)
+        if (buscarPorPista()) return
         setImportMessage({ kind: 'warn', text: t('import.shortLink') })
         return
       }

@@ -42,38 +42,59 @@ export function mapsLinkFromText(text: string): string | null {
   return null
 }
 
+/**
+ * El texto que acompaña al enlace: en Google Maps, el nombre del sitio y su
+ * dirección. Sirve de plan B cuando el enlace corto no se deja resolver, que
+ * es lo que pasaba y dejaba la importación sin nada que buscar.
+ */
+export function textoDeApoyo(text: string): string | null {
+  const resto = text
+    .replace(/https?:\/\/[^\s<>"']+/gi, '')
+    .split(/?
+/)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join(', ')
+    .slice(0, 160)
+  return resto.length >= 3 ? resto : null
+}
+
 /** Ruta del formulario de «Nuevo sitio» con el enlace ya puesto. */
-export function rutaDeImportacion(link: string): string {
-  return `/add?import=${encodeURIComponent(link)}`
+export function rutaDeImportacion(link: string, apoyo?: string | null): string {
+  const base = `/add?import=${encodeURIComponent(link)}`
+  return apoyo ? `${base}&hint=${encodeURIComponent(apoyo)}` : base
 }
 
 // ── Entrega ────────────────────────────────────────────────────────────────
 // Lo compartido puede llegar antes de que haya sesión y pantalla que lo use
 // (arranque en frío, o login pendiente). Se guarda hasta que alguien escuche.
 
-let pendiente: string | null = null
-const oyentes = new Set<(link: string) => void>()
+type Oyente = (link: string, apoyo: string | null) => void
+
+let pendiente: { link: string; apoyo: string | null } | null = null
+const oyentes = new Set<Oyente>()
 
 function publicar(text: string): void {
   const link = mapsLinkFromText(text)
   if (!link) return
+  const apoyo = textoDeApoyo(text)
   if (oyentes.size === 0) {
-    pendiente = link
+    pendiente = { link, apoyo }
     return
   }
-  oyentes.forEach((cb) => cb(link))
+  oyentes.forEach((cb) => cb(link, apoyo))
 }
 
 /**
  * Se suscribe a lo compartido con la app. Entrega también lo que llegó antes.
  * Devuelve la función para darse de baja.
  */
-export function suscribirseACompartido(cb: (link: string) => void): () => void {
+export function suscribirseACompartido(cb: Oyente): () => void {
   oyentes.add(cb)
   if (pendiente) {
-    const link = pendiente
+    const { link, apoyo } = pendiente
     pendiente = null
-    cb(link)
+    cb(link, apoyo)
   }
   return () => {
     oyentes.delete(cb)

@@ -204,7 +204,7 @@ function Shell() {
   const navigate = useNavigate()
   useEffect(() => {
     if (authStatus !== 'ready') return
-    return suscribirseACompartido((link) => navigate(rutaDeImportacion(link)))
+    return suscribirseACompartido((link, apoyo) => navigate(rutaDeImportacion(link, apoyo)))
   }, [authStatus, navigate])
 
   if (authStatus === 'loading') return <PantallaDeArranque />

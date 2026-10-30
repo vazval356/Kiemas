@@ -160,9 +160,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
         method: 'GET',
         redirect: 'manual',
         headers: {
+          // Móvil y no escritorio: comprobado con un enlace real, a un Chrome de
+          // escritorio Google le contesta 200 con una página sin redirección ni
+          // enlace dentro, y a un móvil le redirige (302) a `google.es/maps/place`.
           'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ' +
-            '(KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+            'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 ' +
+            '(KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36',
           'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
           // Google enseña una pantalla de consentimiento a las peticiones que
           // salen de un centro de datos europeo, y esa pantalla no redirige:

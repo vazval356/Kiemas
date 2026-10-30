@@ -292,6 +292,7 @@ const es = {
   'import.action': 'Importar',
   'import.resolving': 'Siguiendo el enlace…',
   'import.locating': 'Situando el sitio en el mapa…',
+  'import.searchingShared': 'No he podido abrir el enlace. Busco el sitio por su nombre: elige el correcto.',
   'import.noLocation': 'Hemos sacado el nombre, pero no la ubicación. Búscala abajo.',
   'import.notGoogleMaps': 'Eso no parece un enlace de Google Maps, Apple Maps o Waze',
   'import.deadLink':
@@ -1356,6 +1357,7 @@ const en: Record<TranslationKey, string> = {
   'import.action': 'Import',
   'import.resolving': 'Following the link…',
   'import.locating': 'Placing it on the map…',
+  'import.searchingShared': "Couldn't open the link. Searching by name: pick the right one.",
   'import.noLocation': 'We got the name but not the location. Search for it below.',
   'import.notGoogleMaps': "That doesn't look like a Google Maps, Apple Maps or Waze link",
   'import.deadLink':
