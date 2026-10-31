@@ -78,6 +78,10 @@ const FAMILIAS: { patron: RegExp; clave: TranslationKey }[] = [
     patron: /password.*(short|weak|length|at least|should contain)|weak_password/i,
     clave: 'auth.passwordTooShort',
   },
+  // Al elegir contraseña nueva se escribió la de siempre. Pasa mucho: se pide
+  // el cambio creyendo que se ha olvidado, y luego se recuerda. Sin este caso
+  // salía «Algo ha fallado», que no deja ver que la contraseña ya servía.
+  { patron: /same_password|different from the old password/i, clave: 'auth.samePassword' },
   {
     patron: /invalid email|email_address_invalid|unable to validate email/i,
     clave: 'auth.badEmail',

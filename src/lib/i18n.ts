@@ -64,6 +64,8 @@ const es = {
   'auth.toSignIn': '¿Ya tienes cuenta? Entrar',
   'auth.signOut': 'Cerrar sesión',
   'auth.passwordTooShort': 'La contraseña no cumple los requisitos',
+  'auth.samePassword':
+    'Esa es la contraseña que ya tienes. Con ella puedes entrar directamente; si quieres cambiarla, elige otra distinta.',
   // Las tres reglas, en la lista que se ve mientras se escribe. Redactadas en
   // positivo —lo que hace falta— y no en negativo —lo que falta—: es la misma
   // lista antes y después de cumplirla, y solo cambia la marca de al lado.
@@ -1156,6 +1158,8 @@ const en: Record<TranslationKey, string> = {
   'auth.toSignIn': 'Already have an account? Sign in',
   'auth.signOut': 'Sign out',
   'auth.passwordTooShort': 'That password does not meet the requirements',
+  'auth.samePassword':
+    'That is the password you already have. You can sign in with it as it is; to change it, choose a different one.',
   'password.ruleLength': 'At least {min} characters',
   'password.ruleCase': 'Upper and lower case',
   'password.ruleNumber': 'One number',
