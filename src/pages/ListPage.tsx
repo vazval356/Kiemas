@@ -158,17 +158,6 @@ export function ListPage() {
               active={onlyFavorites}
               onClick={() => setOnlyFavorites(!onlyFavorites)}
             />
-            {/* Colecciones era una fila entera entre los filtros y el primer
-                sitio, para enlazar a otra pantalla. Como chip ocupa lo mismo
-                que cualquier filtro y libera el alto de esa fila. */}
-            <Link
-              to="/collections"
-              data-tour="colecciones"
-              className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface-lowest px-4 py-2 text-sm font-medium text-on-surface shadow-[var(--shadow-surface)] squish"
-            >
-              <CollectionIcon className="size-4 text-primary" />
-              {t('collection.plural')}
-            </Link>
           </div>
 
           <button
@@ -241,6 +230,29 @@ export function ListPage() {
           </div>
         )}
 
+        {/* Colecciones, a la vista. Antes era el último chip de la tira de
+            filtros, que se desplaza: en un móvil quedaba fuera de pantalla y
+            nadie sabía que existía, ni que desde ahí se importan las listas de
+            Google Maps. Una fila propia, siempre visible, cuesta unos 60 px. */}
+        <Link
+          to="/collections"
+          data-tour="colecciones"
+          className="mt-2 flex items-center gap-3 rounded-card bg-surface-lowest px-4 py-3 shadow-[var(--shadow-surface)] squish"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-fixed">
+            <CollectionIcon className="size-5 text-primary" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold text-on-surface">{t('collection.plural')}</span>
+            <span className="block truncate text-xs text-on-surface-variant">
+              {t('list.collectionsHint')}
+            </span>
+          </span>
+          <span className="text-xl text-on-surface-variant" aria-hidden>
+            ›
+          </span>
+        </Link>
+
         {/* El orden importa: primero «todavía viene», luego «no ha venido», y
             solo al final «no hay nada». Al revés —que es como estaba— un grupo
             lleno de sitios enseñaba «aún no has guardado nada» mientras
@@ -276,7 +288,11 @@ export function ListPage() {
                     {hayAbiertos && ` · ${t('list.openFirst')}`}
                   </span>
                 </div>
-                <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 hide-scrollbar">
+                {/* `scroll-px-4`: el ajuste del carrusel ignora el relleno del
+                    contenedor y pegaba la primera tarjeta al borde de la
+                    pantalla, sin el margen del título y del resto de la página.
+                    Con esto se ajusta contando el mismo margen que el relleno. */}
+                <ul className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 hide-scrollbar">
                   {paraIr.map(({ place, abierto }) => (
                     <PlaceTall
                       key={place.id}

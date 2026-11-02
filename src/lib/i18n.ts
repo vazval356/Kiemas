@@ -752,6 +752,7 @@ const es = {
   'collection.inCollection': 'En la colección',
   'collection.deleteConfirm': '¿Borrar esta colección? Los sitios no se borran.',
   'collection.notFound': 'Esta colección ya no existe.',
+  'list.collectionsHint': 'Agrupa tus sitios o importa tus listas de Google Maps',
 
   // Importar una lista de Google Maps
   'importList.title': 'Importar de Google Maps',
@@ -1854,6 +1855,7 @@ const en: Record<TranslationKey, string> = {
   'collection.inCollection': 'In the collection',
   'collection.deleteConfirm': 'Delete this collection? The places stay.',
   'collection.notFound': 'This collection no longer exists.',
+  'list.collectionsHint': 'Group your places or import your Google Maps lists',
 
   // Importing a Google Maps list
   'importList.title': 'Import from Google Maps',
