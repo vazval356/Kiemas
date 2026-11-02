@@ -121,13 +121,23 @@ export function CollectionsPage() {
 
         <section className="mt-6">
           {!open ? (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="w-full rounded-card border-2 border-dashed border-outline-variant py-3 text-sm font-semibold text-on-surface-variant squish"
-            >
-              {t('collection.new')}
-            </button>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="w-full rounded-card border-2 border-dashed border-outline-variant py-3 text-sm font-semibold text-on-surface-variant squish"
+              >
+                {t('collection.new')}
+              </button>
+              {/* Mucha gente ya tiene sus sitios guardados en listas de Google
+                  Maps: traerlas de golpe es lo que evita empezar de cero. */}
+              <Link
+                to="/import-list"
+                className="block w-full rounded-card bg-primary-fixed py-3 text-center text-sm font-semibold text-primary squish"
+              >
+                {t('importList.entry')}
+              </Link>
+            </div>
           ) : (
             <div className="rounded-card bg-surface-container p-4 animate-pop">
               <input

@@ -2,7 +2,7 @@ import { App } from '@capacitor/app'
 import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Clipboard } from '@capacitor/clipboard'
 import { isNative } from './appUrl'
-import { parseMapLink } from './mapLinks'
+import { idDeLista, parseMapLink } from './mapLinks'
 
 /**
  * Lo que llega de fuera para importar un sitio: «Compartir» desde otra app y el
@@ -37,7 +37,9 @@ export function mapsLinkFromText(text: string): string | null {
   const urls = text.match(/https?:\/\/[^\s<>"']+/gi)
   if (!urls) return null
   for (const u of urls) {
-    if (parseMapLink(u)) return u
+    // Una lista larga no es un sitio para `parseMapLink`, pero sí algo que la
+    // app sabe importar: se acepta igual y se reencamina al resolverla.
+    if (idDeLista(u) || parseMapLink(u)) return u
   }
   return null
 }

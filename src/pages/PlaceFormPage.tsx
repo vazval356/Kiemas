@@ -2,7 +2,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { parseMapLink } from '../lib/mapLinks'
+import { idDeLista, parseMapLink } from '../lib/mapLinks'
 import { enlaceDelPortapapeles } from '../lib/shareTarget'
 import { rpcErrorCode } from '../lib/supabaseApi'
 import { TagPicker } from '../components/TagPicker'
@@ -306,6 +306,13 @@ export function PlaceFormPage() {
     const mio = ++importSeq.current
     setImportMessage(null)
     setRevision(null)
+    // Un enlace largo de una lista de Google Maps: no es un sitio, se lleva a
+    // la pantalla de importar listas.
+    const listaDirecta = idDeLista(importUrl)
+    if (listaDirecta) {
+      navigate(`/import-list?list=${listaDirecta}`, { replace: true })
+      return
+    }
     let parsed = parseMapLink(importUrl)
 
     if (!parsed) {
@@ -321,6 +328,15 @@ export function PlaceFormPage() {
       setImportMessage({ kind: 'info', text: t('import.resolving') })
       try {
         const largo = await resolveMapsLink(importUrl)
+        // «Compartir lista» da el mismo enlace corto que un sitio; solo al
+        // resolverlo se sabe que era una lista. Se redirige en vez de dar un
+        // error: es justo lo que quería quien la compartió.
+        const idLista = idDeLista(largo)
+        if (idLista) {
+          setImportMessage(null)
+          navigate(`/import-list?list=${idLista}`, { replace: true })
+          return
+        }
         parsed = parseMapLink(largo)
         // Resolver ha ido bien pero el destino sigue siendo el dominio corto:
         // el enlace no lleva a ninguna ficha. Pasa con los que se copian a

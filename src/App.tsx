@@ -65,6 +65,9 @@ const ExplorePage = cargaPerezosa(() =>
 const FollowedListsPage = cargaPerezosa(() =>
   import('./pages/FollowedListsPage').then((m) => ({ default: m.FollowedListsPage }))
 )
+const ImportListPage = cargaPerezosa(() =>
+  import('./pages/ImportListPage').then((m) => ({ default: m.ImportListPage }))
+)
 const LegalPage = cargaPerezosa(() => import('./pages/LegalPage').then((m) => ({ default: m.LegalPage })))
 const ListPage = cargaPerezosa(() => import('./pages/ListPage').then((m) => ({ default: m.ListPage })))
 const MapPage = cargaPerezosa(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })))
@@ -257,6 +260,7 @@ function Shell() {
             <Route path="/plan/:id" element={<PlanDetailPage />} />
             <Route path="/collections" element={<CollectionsPage />} />
             <Route path="/collections/:id" element={<CollectionDetailPage />} />
+            <Route path="/import-list" element={<ImportListPage />} />
             <Route path="/activity" element={<ActivityPage />} />
             <Route path="/following" element={<FollowedListsPage />} />
             <Route path="/explore" element={<ExplorePage />} />

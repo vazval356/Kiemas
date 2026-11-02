@@ -116,6 +116,41 @@ function parseWaze(url: URL): GoogleMapsLink | null {
   return resultado(q && !coordenadas(q) ? q : null, null, c)
 }
 
+/** Lo que Google usa como identificador de lista. Igual que en la función del servidor. */
+const ID_DE_LISTA = '[A-Za-z0-9_-]{10,64}'
+
+/**
+ * Identificador de una lista compartida de Google Maps, o null si el enlace no
+ * es de una lista.
+ *
+ * «Compartir lista» da un enlace corto, `maps.app.goo.gl/XXXX`, idéntico a
+ * primera vista al de un sitio suelto. La diferencia solo se ve al resolverlo:
+ * el sitio acaba en `/maps/place/…` y la lista en
+ *
+ *   google.com/maps/@/data=!3m1!4b1!4m3!11m2!2s<ID>!3e3
+ *
+ * También se reconoce la forma `placelists/list/<ID>`, que es la que devuelve
+ * el propio Google dentro de la respuesta de la lista.
+ */
+export function idDeLista(input: string): string | null {
+  let url: URL
+  try {
+    url = new URL(input.trim())
+  } catch {
+    return null
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
+  if (!/(^|\.)google\.[a-z.]{2,6}$/i.test(url.hostname)) return null
+
+  // `!11m2!2s<ID>!3e3`: el `!3e3` justo detrás es lo que lo distingue de
+  // cualquier otro campo de la dirección.
+  const enDatos = decodificar(url.pathname).match(new RegExp(`!11m2!2s(${ID_DE_LISTA})!3e3`))
+  if (enDatos) return enDatos[1]
+
+  const enRuta = url.pathname.match(new RegExp(`/placelists/list/(${ID_DE_LISTA})`))
+  return enRuta ? enRuta[1] : null
+}
+
 /** Lee un enlace de Google Maps, Apple Maps o Waze. null si no es de ninguno. */
 export function parseMapLink(input: string): GoogleMapsLink | null {
   const google = parseGoogleMapsUrl(input)
