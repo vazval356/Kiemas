@@ -9,23 +9,22 @@ const SUPERIOR: Record<IdiomaLanding, string> = { es: 'Descargar en la', en: 'Do
 /**
  * Botón negro de «Descargar en la App Store».
  *
- * El nombre accesible es el texto que se ve («Descargar en la App Store»): con
- * otro distinto («Descargar la app») fallaba WCAG 2.5.3 y quien maneja la
- * página por voz diciendo lo que lee no podía pulsarlo. `etiqueta` se conserva
- * como descripción del destino.
+ * Sin `aria-label`: el nombre accesible es el propio texto visible («Descargar
+ * en la App Store»). Con uno distinto («Descargar la app») fallaba WCAG 2.5.3 y
+ * quien maneja la página por voz diciendo lo que lee no podía pulsarlo. El icono
+ * sí va oculto a lectores. `etiqueta` queda como descripción (`title`).
  */
 export function BotonAppStore({ idioma, etiqueta }: { idioma: IdiomaLanding; etiqueta: string }) {
   return (
     <a
       href={APP_STORE_URL}
-      aria-label={`${SUPERIOR[idioma]} App Store`}
       title={etiqueta}
       className="squish inline-flex shrink-0 items-center gap-3 rounded-xl bg-black px-5 py-2.5 text-white ring-1 ring-white/40 shadow-[var(--shadow-float)]"
     >
       <svg aria-hidden viewBox="0 0 24 24" className="size-9 fill-current">
         <path d={MANZANA} />
       </svg>
-      <span aria-hidden className="flex flex-col text-left leading-none">
+      <span className="flex flex-col text-left leading-none">
         <span className="text-[11px]">{SUPERIOR[idioma]}</span>
         <span className="mt-1 font-display text-2xl font-semibold tracking-tight">App Store</span>
       </span>
