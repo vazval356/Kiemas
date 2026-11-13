@@ -24,6 +24,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { GUIAS } from './guias-datos.mjs'
 
 const tmp = mkdtempSync(join(tmpdir(), 'kiemas-legal-'))
 const bundle = join(tmp, 'legal.mjs')
@@ -203,8 +204,8 @@ pagina(legal.childSafetyDoc('es'), legal.childSafetyDoc('en'), 'seguridad-infant
 /**
  * El mapa del sitio, desde aquí y no a mano.
  *
- * Para Google, Kiemas son cinco direcciones y ninguna más: la portada y estas
- * cuatro páginas. Todo lo demás vive detrás de `#/`, y el fragmento no llega
+ * Para Google, Kiemas son la portada (en `/`, `/es` y `/en`), las guías y las
+ * páginas legales. Todo lo demás vive detrás de `#/`, y el fragmento no llega
  * siquiera al servidor.
  *
  * Se genera en este script porque la fecha de última modificación de las
@@ -215,7 +216,11 @@ pagina(legal.childSafetyDoc('es'), legal.childSafetyDoc('en'), 'seguridad-infant
 const SALTO = String.fromCharCode(10)
 const hoy = new Date().toISOString().slice(0, 10)
 const urls = [
-  { loc: '/', cambio: 'weekly', prioridad: '1.0', fecha: hoy },
+  { loc: '/', cambio: 'weekly', prioridad: '1.0', fecha: hoy, idiomas: true },
+  { loc: '/es', cambio: 'weekly', prioridad: '0.9', fecha: hoy, idiomas: true },
+  { loc: '/en', cambio: 'weekly', prioridad: '0.9', fecha: hoy, idiomas: true },
+  { loc: '/guias/', cambio: 'monthly', prioridad: '0.8', fecha: GUIAS.map((g) => g.revisada).sort().at(-1) },
+  ...GUIAS.map((g) => ({ loc: `/guias/${g.slug}.html`, cambio: 'monthly', prioridad: '0.7', fecha: g.revisada })),
   { loc: '/privacidad.html', cambio: 'yearly', prioridad: '0.5', fecha: legal.LEGAL_UPDATED },
   { loc: '/terminos.html', cambio: 'yearly', prioridad: '0.5', fecha: legal.LEGAL_UPDATED },
   { loc: '/aviso-legal.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
@@ -223,17 +228,23 @@ const urls = [
   { loc: '/seguridad-infantil.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
 ]
 
+/** Las tres versiones de la portada se declaran entre sí (hreflang), si no Google las trata como duplicados. */
+const IDIOMAS = `
+    <xhtml:link rel="alternate" hreflang="es" href="${SITIO}/es" />
+    <xhtml:link rel="alternate" hreflang="en" href="${SITIO}/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${SITIO}/" />`
+
 writeFileSync(
   join('public', 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls
   .map(
     (u) => `  <url>
     <loc>${SITIO}${u.loc}</loc>
     <lastmod>${u.fecha}</lastmod>
     <changefreq>${u.cambio}</changefreq>
-    <priority>${u.prioridad}</priority>
+    <priority>${u.prioridad}</priority>${u.idiomas ? IDIOMAS : ''}
   </url>`
   )
   .join(SALTO)}

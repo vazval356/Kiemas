@@ -877,6 +877,12 @@ function Pie({ idioma }: { idioma: IdiomaLanding }) {
           <p>{pie.lema}</p>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
+          {/* Las guías están solo en español: en la versión en inglés no se enseñan. */}
+          {idioma === 'es' && (
+            <a href="/guias/" className="hover:text-on-surface">
+              Guías
+            </a>
+          )}
           <a href="/#/legal/privacidad" className="hover:text-on-surface">
             {pie.privacidad}
           </a>

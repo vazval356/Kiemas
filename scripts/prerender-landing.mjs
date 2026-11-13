@@ -142,6 +142,8 @@ const ETIQUETAS_PIE = {
 function contenido(idioma, t) {
   const otro = idioma === 'es' ? 'en' : 'es'
   const e = ETIQUETAS_PIE[idioma]
+  // Las guías solo existen en español.
+  const guias = idioma === 'es' ? ' <a href="/guias/">Guías</a> ·' : ''
   return `<noscript>
       <div style="${ESTILO}">
         <h1>${esc(plano(t.hero.titulo))}</h1>
@@ -164,7 +166,7 @@ function contenido(idioma, t) {
         <h2>${esc(plano(t.faq.titulo))}</h2>
         ${t.faq.preguntas.map((p) => `<h3>${esc(plano(p.pregunta))}</h3>\n        <p>${esc(plano(p.respuesta))}</p>`).join('\n        ')}
         <p>
-          <a href="/${otro}">${esc(e.otro)}</a> ·
+          <a href="/${otro}">${esc(e.otro)}</a> ·${guias}
           <a href="/privacidad.html">${esc(t.pie.privacidad)}</a> ·
           <a href="/terminos.html">${esc(t.pie.terminos)}</a> ·
           <a href="/aviso-legal.html">${esc(t.pie.aviso)}</a>
