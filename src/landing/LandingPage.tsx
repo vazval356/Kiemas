@@ -21,6 +21,7 @@ import {
 import { resultadoDeConfirmacion } from '../lib/confirmacion'
 import { APP_STORE_URL } from './tiendas'
 import { BotonAppStore } from './BotonAppStore'
+import { useMedicionLanding } from '../lib/medicionLanding'
 import '@fontsource-variable/manrope/wght.css'
 import './landing.css'
 
@@ -42,6 +43,7 @@ import './landing.css'
 export function LandingPage({ idioma }: { idioma: IdiomaLanding }) {
   const { texto: t, ogLocale } = IDIOMAS_LANDING[idioma]
   useMetadatos(idioma, t.meta, ogLocale)
+  useMedicionLanding(idioma)
 
   return (
     <div className="kl h-full overflow-y-auto bg-surface-low text-on-surface">

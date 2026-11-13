@@ -115,7 +115,7 @@ export const legalIdentityComplete = Boolean(LEGAL_CONTACT.nif && LEGAL_CONTACT.
 export const PRO_PRICE_ES = '2,99 €'
 
 /** Cuándo se revisaron por última vez. Se enseña al pie del documento. */
-export const LEGAL_UPDATED = '2026-09-03'
+export const LEGAL_UPDATED = '2026-11-13'
 
 export interface LegalSection {
   heading: string
@@ -498,7 +498,7 @@ const privacidadEs: LegalDoc = {
         `· Si compras ${BRAND_NAME} Pro: que lo tienes, cuándo se activó y el identificador de la compra que devuelve la tienda. Nada más. Ni la tarjeta, ni la dirección, ni el nombre de facturación: eso se queda en Apple o en Google y no llega aquí en ningún momento.`,
         '· Si pulsas el botón de «mi ubicación» del mapa: tu posición aproximada, y solo mientras la pantalla está abierta. No se guarda, no se envía a ningún servidor y no queda registro de por dónde has estado. Sirve únicamente para centrar el mapa en tu dispositivo.',
         '· Registros técnicos de la conexión: los proveedores de infraestructura apuntan en sus registros la dirección IP, la fecha y la hora y datos del dispositivo o del navegador, como hace cualquier servidor. Sirven para detectar abusos y para diagnosticar averías. No se cruzan con tu actividad en la aplicación para hacer perfiles, y se conservan durante un tiempo limitado.',
-        'No se usan cookies de seguimiento ni perfilado publicitario, y tus datos no se venden ni se ceden a nadie con fines comerciales. Solo en la web y solo si tú lo activas en Ajustes, puede haber una medición opcional de visitas: cuenta qué pantallas se abren, sin cookies ni identificador persistente, con Vercel Web Analytics (el mismo proveedor que aloja la web). Viene apagada, se puede retirar en cualquier momento y, mientras no la actives, no se carga ni se envía nada. No se graba la pantalla ni lo que escribes, no se hacen repeticiones de sesión y no se manda el título de las páginas, solo su ruta. En la aplicación móvil no existe.',
+        'No se usan cookies de seguimiento ni perfilado publicitario, y tus datos no se venden ni se ceden a nadie con fines comerciales. Solo en la web y solo si tú lo activas en Ajustes, puede haber una medición opcional de visitas: cuenta qué pantallas se abren, sin cookies ni identificador persistente, con Vercel Web Analytics (el mismo proveedor que aloja la web). Viene apagada, se puede retirar en cualquier momento y, mientras no la actives, no se carga ni se envía nada. No se graba la pantalla ni lo que escribes, no se hacen repeticiones de sesión y no se manda el título de las páginas, solo su ruta. En la aplicación móvil no existe. Aparte, en la página de presentación (kiemas.com) se cuentan las visitas y los clics en los botones de descarga de la tienda con PostHog, alojado en la Unión Europea. Esa medición no usa cookies, no guarda nada en tu dispositivo, no crea ningún perfil tuyo, no graba la pantalla y no te reconoce de una visita a otra: solo se envía la dirección de la página, el idioma, el dominio desde el que llegas y si pulsas un botón de la tienda. La dirección IP se usa únicamente para deducir el país y no se guarda.',
       ],
     },
     {
@@ -508,6 +508,7 @@ const privacidadEs: LegalDoc = {
         'La base legal es la ejecución del contrato que aceptas al usar la aplicación.',
         'Para las notificaciones, la base es tu consentimiento, que puedes retirar en cualquier momento desde los ajustes de la aplicación o del dispositivo.',
         'Para la seguridad —detectar abusos, atender reportes, evitar el uso automatizado y diagnosticar averías— la base es el interés legítimo en que el servicio funcione y no se use para dañar a nadie. Puedes oponerte escribiendo al correo de contacto, y se te explicará qué se puede atender sin dejar el servicio indefenso.',
+        'Para saber cuánta gente llega a la página de presentación y si pulsa los botones de descarga, sin identificarte, la base es el interés legítimo en comprobar si el proyecto llega a las personas. No hace falta que hagas nada: no se guarda nada en tu dispositivo.',
         'Para cumplir obligaciones legales cuando aparezcan, como responder a un requerimiento de una autoridad.',
         'No se usan tus datos para tomar decisiones automatizadas ni para elaborar perfiles. Las decisiones de moderación las toma una persona.',
       ],
@@ -522,6 +523,7 @@ const privacidadEs: LegalDoc = {
         'Se apoya en estos proveedores, que tratan datos por cuenta nuestra como encargados, bajo contrato y con cláusulas tipo de la UE cuando hace falta:',
         '· Supabase: base de datos, autenticación, almacenamiento de archivos y envío de los correos de la cuenta (confirmar el registro y restablecer la contraseña).',
         '· Vercel: alojamiento de la aplicación web y, solo si tú lo activas, la medición anónima de visitas.',
+        '· PostHog (Unión Europea): medición de las visitas y de los clics en los botones de descarga de la página de presentación, sin cookies ni identificadores persistentes.',
         '· Firebase Cloud Messaging (Google) y el servicio de notificaciones de Apple: entrega de los avisos, solo si los activas.',
         `· RevenueCat: comprobación y registro de la compra de ${BRAND_NAME} Pro, solo si la compras.`,
         'Apple y Google son un caso distinto: cuando compras, no actúan por cuenta nuestra, sino como responsables independientes del cobro y de sus propios datos de facturación. Lo que nos llega de ellos es que la compra existe.',
@@ -627,7 +629,7 @@ const privacidadEn: LegalDoc = {
         `· If you buy ${BRAND_NAME} Pro: that you have it, when it was activated, and the purchase identifier the store returns. Nothing else. Not the card, not the address, not the billing name: that stays with Apple or Google and never reaches us.`,
         '· If you tap the map’s “my location” button: your approximate position, and only while that screen is open. It is not stored, not sent to any server, and no record is kept of where you have been. It is used solely to centre the map on your device.',
         '· Technical connection logs: infrastructure providers record the IP address, date and time, and device or browser details in their logs, as any server does. They serve to detect abuse and diagnose faults. They are not cross-referenced with your activity in the app to build profiles, and they are kept for a limited time.',
-        'No tracking cookies and no advertising profiling, and your data is not sold or handed to anyone for commercial purposes. On the web only, and only if you turn it on in Settings, there may be optional visit measurement: it counts which screens are opened, with no cookies and no persistent identifier, using Vercel Web Analytics (the same provider that hosts the web app). It is off by default, you can withdraw it at any time and, until you turn it on, nothing is loaded or sent. Your screen and what you type are not recorded, there are no session replays, and page titles are not sent, only their route. It does not exist in the mobile app.',
+        'No tracking cookies and no advertising profiling, and your data is not sold or handed to anyone for commercial purposes. On the web only, and only if you turn it on in Settings, there may be optional visit measurement: it counts which screens are opened, with no cookies and no persistent identifier, using Vercel Web Analytics (the same provider that hosts the web app). It is off by default, you can withdraw it at any time and, until you turn it on, nothing is loaded or sent. Your screen and what you type are not recorded, there are no session replays, and page titles are not sent, only their route. It does not exist in the mobile app. Separately, on the presentation page (kiemas.com), visits and clicks on the store download buttons are counted with PostHog, hosted in the European Union. That measurement uses no cookies, stores nothing on your device, builds no profile of you, records no screen and does not recognise you from one visit to the next: it only sends the page address, the language, the domain you arrive from and whether you press a store button. Your IP address is used only to work out the country and is not stored.',
       ],
     },
     {
@@ -637,6 +639,7 @@ const privacidadEn: LegalDoc = {
         'The legal basis is performance of the contract you accept by using the app.',
         'For notifications the basis is your consent, which you can withdraw at any time from the app’s settings or your device settings.',
         'For security — detecting abuse, handling reports, preventing automated use and diagnosing faults — the basis is the legitimate interest in the service working and not being used to harm anyone. You can object by writing to the contact address, and you will be told what can be honoured without leaving the service defenceless.',
+        'To know how many people reach the presentation page and whether they press the download buttons, without identifying you, the basis is our legitimate interest in checking whether the project reaches people. You do not need to do anything: nothing is stored on your device.',
         'To comply with legal obligations when they arise, such as responding to a request from an authority.',
         'Your data is not used for automated decision-making or profiling. Moderation decisions are made by a person.',
       ],
@@ -651,6 +654,7 @@ const privacidadEn: LegalDoc = {
         'The service relies on these providers, which process data on our behalf as processors, under contract and with the EU standard contractual clauses where needed:',
         '· Supabase: database, authentication, file storage and the account emails (confirming sign-up and resetting your password).',
         '· Vercel: hosting for the web app and, only if you turn it on, anonymous visit measurement.',
+        '· PostHog (European Union): measurement of visits and of clicks on the download buttons of the presentation page, with no cookies or persistent identifiers.',
         '· Firebase Cloud Messaging (Google) and the Apple push notification service: delivery of notifications, only if you enable them.',
         `· RevenueCat: verifying and recording your ${BRAND_NAME} Pro purchase, only if you buy it.`,
         'Apple and Google are a different case: when you buy, they do not act on our behalf but as independent controllers of the payment and their own billing data. What reaches us from them is that the purchase exists.',
