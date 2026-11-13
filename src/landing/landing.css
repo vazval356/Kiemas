@@ -385,8 +385,10 @@
 
 /* ── Eslogan: las palabras se encienden una a una ───────────────────────── */
 
+/* 0,5 y no 0,35: con 0,35 las palabras sin encender daban 2,2:1 sobre blanco y el texto
+   grande exige 3:1 (WCAG 1.4.3). 0,5 da ~3,3:1 y el efecto se sigue leyendo. */
 .kl-palabra {
-  opacity: 0.35;
+  opacity: 0.5;
   transition: opacity 700ms var(--kl-ease-out);
 }
 .kl-palabra.kl-encendida {

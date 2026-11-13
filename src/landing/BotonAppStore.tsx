@@ -6,12 +6,20 @@ const MANZANA =
 
 const SUPERIOR: Record<IdiomaLanding, string> = { es: 'Descargar en la', en: 'Download on the' }
 
-/** Botón negro de «Descargar en la App Store». `etiqueta` es el texto accesible. */
+/**
+ * Botón negro de «Descargar en la App Store».
+ *
+ * El nombre accesible es el texto que se ve («Descargar en la App Store»): con
+ * otro distinto («Descargar la app») fallaba WCAG 2.5.3 y quien maneja la
+ * página por voz diciendo lo que lee no podía pulsarlo. `etiqueta` se conserva
+ * como descripción del destino.
+ */
 export function BotonAppStore({ idioma, etiqueta }: { idioma: IdiomaLanding; etiqueta: string }) {
   return (
     <a
       href={APP_STORE_URL}
-      aria-label={etiqueta}
+      aria-label={`${SUPERIOR[idioma]} App Store`}
+      title={etiqueta}
       className="squish inline-flex shrink-0 items-center gap-3 rounded-xl bg-black px-5 py-2.5 text-white ring-1 ring-white/40 shadow-[var(--shadow-float)]"
     >
       <svg aria-hidden viewBox="0 0 24 24" className="size-9 fill-current">
