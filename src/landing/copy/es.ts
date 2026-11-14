@@ -2,9 +2,9 @@ import type { TextoLanding } from './tipos'
 
 export const es: TextoLanding = {
   meta: {
-    titulo: 'Kiemas · El mapa y los planes del grupo',
+    titulo: 'App para organizar planes con amigos · Kiemas',
     descripcion:
-      'Guardad los sitios que os apetecen en un mapa común, votad cuándo y dónde, y que la respuesta no se pierda entre mensajes. Para cenar, salir, ver un concierto o cualquier plan.',
+      'Kiemas: app para organizar planes con amigos. Guardad bares y restaurantes en un mapa compartido, votad cuándo y dónde ir y no perdáis el plan en el chat.',
   },
   nav: {
     descargar: 'Descargar',

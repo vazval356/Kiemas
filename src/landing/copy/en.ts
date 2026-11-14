@@ -2,9 +2,9 @@ import type { TextoLanding } from './tipos'
 
 export const en: TextoLanding = {
   meta: {
-    titulo: 'Kiemas · Your group’s map and plans',
+    titulo: 'App to plan nights out with friends · Kiemas',
     descripcion:
-      'Save the places you want to try on one shared map, vote on when and where, and stop losing the answer in the group chat. For dinners, drinks, gigs or any plan.',
+      'Kiemas: plan with friends in one app. Save restaurants and bars on a shared map, vote on when and where to go, and stop losing the plan in the group chat.',
   },
   nav: {
     menu: 'Open menu',

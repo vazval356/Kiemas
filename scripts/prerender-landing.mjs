@@ -179,7 +179,8 @@ function contenido(idioma, t) {
 const base = readFileSync(join(DIST, 'index.html'), 'utf-8')
 
 const PAGINAS = [
-  { ruta: '', idioma: 'es', url: `${ORIGEN}/` },
+  // La raíz sirve lo mismo que /es: su canónica (y og:url) es /es para que no compitan.
+  { ruta: '', idioma: 'es', url: `${ORIGEN}/es` },
   { ruta: 'es', idioma: 'es', url: `${ORIGEN}/es` },
   { ruta: 'en', idioma: 'en', url: `${ORIGEN}/en` },
 ]

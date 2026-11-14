@@ -216,8 +216,8 @@ pagina(legal.childSafetyDoc('es'), legal.childSafetyDoc('en'), 'seguridad-infant
 const SALTO = String.fromCharCode(10)
 const hoy = new Date().toISOString().slice(0, 10)
 const urls = [
-  { loc: '/', cambio: 'weekly', prioridad: '1.0', fecha: hoy, idiomas: true },
-  { loc: '/es', cambio: 'weekly', prioridad: '0.9', fecha: hoy, idiomas: true },
+  // La raíz `/` no se lista: su canónica es /es y un mapa solo debe llevar las canónicas.
+  { loc: '/es', cambio: 'weekly', prioridad: '1.0', fecha: hoy, idiomas: true },
   { loc: '/en', cambio: 'weekly', prioridad: '0.9', fecha: hoy, idiomas: true },
   { loc: '/guias/', cambio: 'monthly', prioridad: '0.8', fecha: GUIAS.map((g) => g.revisada).sort().at(-1) },
   ...GUIAS.map((g) => ({ loc: `/guias/${g.slug}.html`, cambio: 'monthly', prioridad: '0.7', fecha: g.revisada })),
@@ -228,11 +228,11 @@ const urls = [
   { loc: '/seguridad-infantil.html', cambio: 'yearly', prioridad: '0.3', fecha: legal.LEGAL_UPDATED },
 ]
 
-/** Las tres versiones de la portada se declaran entre sí (hreflang), si no Google las trata como duplicados. */
+/** Las versiones de la portada se declaran entre sí (hreflang), si no Google las trata como duplicados. `x-default` apunta a /es, que es la canónica de la raíz. */
 const IDIOMAS = `
     <xhtml:link rel="alternate" hreflang="es" href="${SITIO}/es" />
     <xhtml:link rel="alternate" hreflang="en" href="${SITIO}/en" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="${SITIO}/" />`
+    <xhtml:link rel="alternate" hreflang="x-default" href="${SITIO}/es" />`
 
 writeFileSync(
   join('public', 'sitemap.xml'),
