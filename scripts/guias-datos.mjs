@@ -158,4 +158,187 @@ export const GUIAS = [
       },
     ],
   },
+  {
+    slug: 'cuadrar-fechas-para-quedar-con-amigos',
+    titulo: 'Cómo cuadrar fechas para quedar con un grupo de amigos',
+    meta: 'Cómo cuadrar la fecha de un plan con un grupo de amigos sin cuarenta mensajes: proponer pocas opciones, votar y poner una hora límite para cerrar el día.',
+    fecha: '2026-11-14',
+    revisada: '2026-11-14',
+    intro:
+      'Quedar dos personas es fácil. Quedar ocho es una negociación: uno trabaja el sábado, otra viaja el domingo y alguien contesta tres días tarde. Estas son las reglas que más ayudan a cerrar el día sin que el chat se convierta en una hoja de cálculo.',
+    bloques: [
+      { h: 'Por qué cuesta tanto cerrar una fecha' },
+      {
+        p: 'Cada persona responde sobre su propia agenda, pero la decisión depende de la de todos. Nadie ve el conjunto, así que mensajes como «yo puedo el viernes, o el sábado por la tarde, según…» obligan a quien organiza a ir apuntando disponibilidades a mano. Cuantos más sois, más se multiplica.',
+      },
+      { h: '1. Proponed fechas concretas, no «cuando podáis»' },
+      {
+        p: 'Preguntar «¿cuándo os va bien?» abre un abanico infinito. Es mucho mejor llegar con dos o tres opciones cerradas (viernes por la noche, sábado a mediodía, domingo por la tarde) y que cada persona elija entre ellas.',
+      },
+      { h: '2. Votad donde se vea el resultado' },
+      {
+        p: 'Una votación solo ayuda si todos ven cuántos votos tiene cada opción y quién falta por votar. En un chat los votos se pierden entre mensajes; en una encuesta, o en una herramienta pensada para planes, el resultado está siempre a la vista.',
+      },
+      { h: '3. Poned una hora límite' },
+      {
+        p: 'Quien no vote antes de la hora límite acepta lo que salga. Es la regla que más tiempo ahorra: elimina el «espera, que miro mi agenda» eterno y deja claro que el plan sigue adelante con quien responda.',
+      },
+      { h: '4. Decidid por mayoría, no por unanimidad' },
+      {
+        p: 'Con más de cuatro o cinco personas casi nunca hay un día perfecto para todos. Acordad de antemano que gana la opción con más votos y que quien no pueda se lo pierde esa vez; si no, el grupo se queda esperando al más ocupado.',
+      },
+      { h: '5. Una vez fijada, que quede en un solo sitio' },
+      {
+        p: 'Cuando haya ganador, que el plan (día, hora y sitio) quede fijado donde todos lo vean, no enterrado en un mensaje de hace dos días. Y mandad un recordatorio la víspera: muchos plantones son simples olvidos.',
+      },
+      { h: 'Cómo encaja Kiemas' },
+      {
+        p: 'En Kiemas un plan puede tener fecha fija o votación si no os ponéis de acuerdo: se proponen varios días, cada persona vota y se ve de un vistazo quién falta y qué día gana. Una vez decidido, el plan se queda fijado en el calendario del grupo. Es gratis para empezar y está disponible para iPhone; la versión de Android llegará pronto a Google Play.',
+      },
+    ],
+  },
+  {
+    slug: 'ideas-de-planes-con-amigos',
+    titulo: 'Ideas de planes con amigos para cuando nadie sabe qué hacer',
+    meta: 'Ideas de planes con amigos para cualquier presupuesto, ordenadas por tipo, y un método para elegir cuando el grupo no se decide.',
+    fecha: '2026-11-14',
+    revisada: '2026-11-14',
+    intro:
+      'Todos quieren hacer algo y nadie propone nada. Esta lista no pretende ser definitiva: es un punto de partida ordenado por tipo de plan, para que la próxima vez que alguien pregunte «¿qué hacemos?» ya haya de dónde elegir.',
+    bloques: [
+      { h: 'Para comer y beber' },
+      {
+        ul: [
+          'Una ruta de tapas o pinchos en vez de una cena sentados: se come más variado y se puede ir y venir.',
+          'Probar una cocina que nadie del grupo conozca bien, y que cada persona elija un plato.',
+          'Un brunch o un desayuno largo un domingo, para los grupos que no quieren trasnochar.',
+          'Una comida en casa de alguien con cada persona trayendo un plato: barata y con mucha conversación.',
+          'Un vermut o una tarde de terrazas en lugar de la cena de siempre.',
+        ],
+      },
+      { h: 'Al aire libre' },
+      {
+        ul: [
+          'Una ruta de senderismo corta, sin mucho desnivel, con comida en un sitio bonito al final.',
+          'Un picnic en un parque con juegos de mesa o una pelota.',
+          'Alquilar bicis y recorrer una zona de la ciudad que no conozcáis.',
+          'Ver el atardecer desde un mirador y cenar algo por la zona después.',
+          'Un día de playa, río o piscina natural si el tiempo acompaña.',
+        ],
+      },
+      { h: 'Cultura y espectáculos' },
+      {
+        ul: [
+          'Un concierto pequeño en una sala: se improvisa mucho mejor que un festival.',
+          'Una obra de teatro, un monólogo o una sesión de improvisación.',
+          'Una exposición (algunas tienen entrada gratuita ciertos días) o un museo que lleváis años sin visitar.',
+          'Cine de verano o una sesión doble en una sala de reposición.',
+          'Un mercadillo, una feria o una fiesta de barrio que solo ocurre en esas fechas.',
+        ],
+      },
+      { h: 'Para jugar y moverse' },
+      {
+        ul: [
+          'Bolera, karts, minigolf, escape room o un bar de juegos de mesa.',
+          'Una pachanga o un torneo improvisado de lo que sepáis jugar.',
+          'Una clase de algo que nadie ha hecho: cerámica, cocina, baile.',
+        ],
+      },
+      { h: 'Cuando nadie sabe qué hacer' },
+      {
+        p: 'Tener ideas no basta si cada una vive en un sitio distinto. Lo que más ayuda es ir guardando los planes y los sitios que os apetecen, con su categoría, y recurrir a esa lista cuando toca decidir. Si aun así no hay manera, poned las opciones finalistas y dejad que el azar elija: un sorteo quita la presión de tener que decidir.',
+      },
+      { h: 'Cómo encaja Kiemas' },
+      {
+        p: 'Kiemas guarda en un mapa compartido los sitios que os apetecen, por categorías (restaurantes, aire libre, cultura, noche…). Y si nadie se decide, la ruleta elige por vosotros entre los sitios guardados, por categoría si queréis. Disponible para iPhone; la versión de Android llegará pronto a Google Play.',
+      },
+    ],
+  },
+  {
+    slug: 'organizar-una-escapada-de-fin-de-semana-con-amigos',
+    titulo: 'Cómo organizar una escapada de fin de semana con amigos',
+    meta: 'Cómo organizar una escapada de fin de semana con amigos sin líos: fecha, presupuesto, alojamiento, gastos y una lista de sitios para el itinerario.',
+    fecha: '2026-11-14',
+    revisada: '2026-11-14',
+    intro:
+      'Una escapada se planea con entusiasmo y se atasca en los detalles: quién puede, cuánto cuesta, dónde dormimos. Con un orden claro de decisiones, el grupo llega al viaje con menos discusiones y más ganas.',
+    bloques: [
+      { h: 'El orden de las decisiones importa' },
+      {
+        ol: [
+          'Fecha y duración primero. Sin saber qué fin de semana y cuántos días no se puede reservar nada. Votad entre dos o tres opciones y poned plazo.',
+          'Presupuesto aproximado. Una cifra por persona, con margen, antes de elegir destino: evita que alguien se baje a mitad de conversación por una cuestión de dinero.',
+          'Destino. Con fecha y presupuesto, la lista de destinos posibles se acorta sola.',
+          'Alojamiento y transporte. Lo que sube de precio con el tiempo, cuanto antes. Que una persona lo gestione y los demás confirmen.',
+          'Itinerario flexible. Un par de planes fijos (una comida o una actividad reservada) y el resto, sitios por si apetece.',
+        ],
+      },
+      { h: 'Reparto de gastos sin malos rollos' },
+      {
+        p: 'Lo que más estropea una escapada es el dinero. Decidid antes de salir cómo se reparte (a partes iguales, por consumo, con una caja común) y quién adelanta qué reservas. Y apuntad los gastos compartidos el mismo día, no a la vuelta, cuando ya nadie se acuerda.',
+      },
+      { h: 'Una lista de sitios del destino' },
+      {
+        p: 'Antes de viajar, que cada persona guarde los sitios que le llaman la atención del destino: restaurantes, miradores, un bar que le han recomendado. Ya en el viaje, en lugar de buscar sobre la marcha, miráis la lista y elegís según lo que tengáis cerca.',
+      },
+      { h: 'Qué llevar resuelto antes de salir' },
+      {
+        ul: [
+          'Quién conduce o cómo se llega a cada sitio.',
+          'Una persona de contacto para las reservas.',
+          'Un plan B para el mal tiempo.',
+          'Un acuerdo sobre horarios: no todos quieren madrugar para verlo todo.',
+        ],
+      },
+      { h: 'Cómo encaja Kiemas' },
+      {
+        p: 'Kiemas sirve para dos partes de la escapada: votar la fecha o el sitio entre todo el grupo, y tener un mapa compartido donde cada persona va guardando los lugares que quiere visitar, con su categoría y una nota. Gratis para empezar y disponible para iPhone; Android llegará pronto a Google Play.',
+      },
+    ],
+  },
+  {
+    slug: 'organizar-planes-por-whatsapp',
+    titulo: 'Organizar planes por WhatsApp: por qué se pierden y qué hacer',
+    meta: 'Por qué organizar planes por WhatsApp acaba mal en grupos grandes y cómo separar la conversación de las decisiones para que el plan no se pierda.',
+    fecha: '2026-11-14',
+    revisada: '2026-11-14',
+    intro:
+      'El grupo de WhatsApp es perfecto para charlar y bastante malo para decidir. No es culpa de nadie: un chat está hecho para que los mensajes nuevos tapen a los viejos, y una decisión necesita justo lo contrario. Así se arregla sin dejar de usarlo.',
+    bloques: [
+      { h: 'Por qué los planes se pierden en el chat' },
+      {
+        ul: [
+          'Los mensajes nuevos entierran los importantes: la fecha que se acordó el martes está a ochenta mensajes de distancia el jueves.',
+          'No se ve quién ha contestado y quién no, y hay que contarlo a mano.',
+          'Los enlaces y las capturas de sitios se mezclan con memes y audios.',
+          'Se contesta a destiempo y la decisión se reabre cada vez que entra alguien nuevo en la conversación.',
+        ],
+      },
+      { h: 'Lo que sí funciona del chat' },
+      {
+        p: 'La conversación, las bromas, el «ya voy» de última hora y los avisos rápidos. No hace falta renunciar a eso. El cambio es dejar de usar el chat como archivo de decisiones.',
+      },
+      { h: 'Una regla de tres para separar las cosas' },
+      {
+        ol: [
+          'El chat es para hablar. Ahí se charla y se avisa.',
+          'Los sitios van a una lista común. Nada de capturas ni enlaces sueltos: un único lugar al que todos puedan mirar.',
+          'Las decisiones se votan y se fijan. Cuando haya ganador (fecha, sitio), que quede escrito en un lugar visible, y en el chat solo se manda un aviso con el resumen.',
+        ],
+      },
+      { h: 'Cómo hacer el cambio sin pelearse con el grupo' },
+      {
+        ul: [
+          'Empezad con un solo plan, no con una revolución.',
+          'Que quien organiza dé el primer paso y comparta el enlace en el chat.',
+          'No exijáis que usen todas las funciones: con votar y ver el plan basta.',
+          'Si a la segunda vez nadie lo usa, no insistáis y probad otra forma.',
+        ],
+      },
+      { h: 'Cómo encaja Kiemas' },
+      {
+        p: 'Kiemas es ese sitio aparte para las decisiones: el mapa con los sitios de todos, votaciones para la fecha y el sitio, y el plan fijado en un calendario compartido. Se entra a un grupo con un enlace, así que lo pasáis por el chat de siempre. Gratis para empezar; disponible para iPhone, y la versión de Android llegará pronto a Google Play.',
+      },
+    ],
+  },
 ]
