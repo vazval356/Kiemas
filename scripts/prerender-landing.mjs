@@ -97,8 +97,20 @@ function jsonLd(idioma, t, url) {
         '@type': 'WebSite',
         '@id': `${ORIGEN}/#web`,
         name: 'Kiemas',
+        alternateName: 'Kiemas App',
         url: `${ORIGEN}/`,
         inLanguage: Object.keys(IDIOMAS_LANDING),
+        publisher: { '@id': `${ORIGEN}/#org` },
+      },
+      {
+        // Quién es «Kiemas» para Google: el nombre, el logo y dónde está la app.
+        // `sameAs` solo lleva perfiles que existen de verdad.
+        '@type': 'Organization',
+        '@id': `${ORIGEN}/#org`,
+        name: 'Kiemas',
+        url: `${ORIGEN}/`,
+        logo: `${ORIGEN}/icons/icon-512.png`,
+        sameAs: [APP_STORE_URL],
       },
       {
         '@type': 'MobileApplication',
